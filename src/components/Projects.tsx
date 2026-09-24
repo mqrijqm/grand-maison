@@ -13,44 +13,44 @@ type Block =
 
 type Item = { category: string; blocks: Block[] }
 
-// Svi projekti nose isti naziv: GRAND COMPANY. Razlikuju se po kategoriji i opisu.
+// Sve grupe ponude nose isti naziv: GRAND COMPANY. Razlikuju se po kategoriji i opisu.
 const ITEMS: Item[] = [
   {
-    category: 'Pakovanje',
+    category: 'Građevinski materijal',
     blocks: [
       {
         kind: 'wide',
-        text: 'Pakovanje se razvija za prodavnice i e-commerce, spajajući istorijski identitet sa svestranim savremenim jezikom.',
+        text: 'Opšta prodaja materijala za gradnju i opremanje objekata, u veleprodaji i u maloprodaji.',
       },
       {
         kind: 'pair',
-        text: 'Iz prošlosti se ponovo tumače ikonični logotipi, utisnuti zlatom na ambalaži od plavog papira.',
+        text: 'Za privatne kupce i za izvođače radova, uz stručan savjet pri izboru materijala.',
       },
     ],
   },
   {
-    category: 'Identitet – web-stranica',
+    category: 'Sistemi suhe gradnje',
     blocks: [
       {
         kind: 'tall',
-        text: 'Spaja umjetničku viziju i industrijski film u smjelu, elegantnu video-produkciju, inspirisanu prošlošću a oblikovanu za danas.',
+        text: 'Materijali za građenje i uređenje enterijera suhim postupkom.',
       },
       {
         kind: 'pair',
-        text: 'Kolekcija obuhvata osam likova i tri mirisa, objedinjenih zarđalim zlatom, kraljevskom paletom i modularnim pakovanjem.',
+        text: 'Stručni tim odgovara na pitanja i pomaže pri izboru pravog rješenja za vaš objekat.',
       },
     ],
   },
   {
-    category: 'Strategija – identitet',
+    category: 'Kamena vuna',
     blocks: [
       {
         kind: 'pair',
-        text: 'Projekat je definisao pozicioniranje i kulturni identitet, razvijajući logotip, vizuelni sistem i ton komunikacije.',
+        text: 'Izolacioni materijal koji prodajemo kao zaseban proizvod.',
       },
       {
         kind: 'wide',
-        text: 'Cilj je bio podići obnovljene proizvode na nivo koji se priželjkuje.',
+        text: 'Uz to, u našoj djelatnosti su i drvo i sanitarna oprema.',
       },
     ],
   },

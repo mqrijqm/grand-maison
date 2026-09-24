@@ -47,15 +47,15 @@ export default function Manifest() {
           data-lines
           className="invisible text-center text-[clamp(14px,1.56vw,28px)] uppercase leading-none"
         >
-          Pokušaj posjedovanja ljepote
+          Pristupačne cijene
           <br />
-          najneopreznija je opsesija
+          i stručan savjet
           <br />
-          koju je čovječanstvo ikada
+          za svakog investitora,
           <br />
-          nametnulo samo sebi.
+          a ne samo za velike
           <br />
-          Ali zar nije lijepa?
+          izvođače radova.
         </p>
       </div>
     </section>

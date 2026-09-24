@@ -6,7 +6,7 @@ import { EASE, INTRO, SIDE, fitFontSize } from '@/lib/motion'
 import BadgeMark from './BadgeMark'
 
 export const BRAND = 'GRAND COMPANY'
-const MARQUEE_ITEM = `2026 ${BRAND} posjeduj ljepotu`
+const MARQUEE_ITEM = `Od 2012. ${BRAND} građevinski materijal`
 
 // Boja koja u `mix-blend-mode: difference` na krem pozadini daje tačno boju teksta (#222A36).
 const DIFF = 'rgb(220, 203, 195)'

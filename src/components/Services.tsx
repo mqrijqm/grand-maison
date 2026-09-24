@@ -61,18 +61,17 @@ export default function Services() {
         </div>
 
         <p data-caption className="invisible text-[18px] uppercase leading-none">
-          Pomažemo brendovima
+          Šta nudimo
         </p>
 
         <p
           data-para
           className="para invisible mt-[5dvh] w-full text-[clamp(20px,2.6vw,48px)] uppercase leading-none"
         >
-          Definišemo strategiju brenda. — Pretvaramo trendove u opipljive proizvode i komunikacijske
-          strategije. — Kreiramo identitete brendova koji kroz jasno pozicioniranje plove kroz kulturne
-          promjene. — Dizajniramo pametna pakovanja i vizuelne identitete koje potrošači primjećuju,
-          priželjkuju i pamte. — Pričamo priče brendova kroz AI snimanje i 3D. — Gradimo iskustvene
-          web-stranice, e-commerce za brendove i imerzivne instalacije.
+          Građevinski materijal za gradnju i opremanje objekata. — Sistemi suhe gradnje za građenje i
+          uređenje enterijera. — Kamena vuna kao izolacioni materijal. — Drvo i sanitarna oprema. —
+          Veleprodaja i maloprodaja, za privatne kupce i za izvođače radova. — Pristupačne cijene i
+          stručan savjet, u Banjoj Luci od 2012. godine.
         </p>
       </div>
     </section>

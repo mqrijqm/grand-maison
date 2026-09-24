@@ -59,13 +59,15 @@ export default function Footer() {
 
       <div className="flex flex-col items-center gap-10">
         <BadgeMark className="w-[44px] text-bg" />
-        <a
+        <p
           data-talk
-          href="mailto:zdravo@grand-company.example"
           className="invisible text-[clamp(13px,1.25vw,20px)] uppercase leading-none tracking-[0.55em]"
         >
-          Hajde da razgovaramo
-        </a>
+          Banja Luka · od 2012.
+        </p>
+        <p className="max-w-[90vw] text-center text-[11px] uppercase leading-[1.5] tracking-[0.18em] opacity-60">
+          „GRAND COMPANY“ d.o.o. za usluge i trgovinu Banja Luka
+        </p>
       </div>
     </footer>
   )

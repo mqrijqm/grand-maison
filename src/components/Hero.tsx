@@ -124,7 +124,7 @@ export default function Hero() {
         data-caption
         className="invisible absolute left-0 top-[89.8%] w-full -translate-y-1/2 text-center text-[clamp(14px,1.56vw,26px)] uppercase leading-none"
       >
-        Posjeduj ljepotu
+        Građevinski materijal
       </p>
     </section>
   )

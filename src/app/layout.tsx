@@ -10,9 +10,9 @@ const interTight = Inter_Tight({
 });
 
 export const metadata: Metadata = {
-  title: "GRAND COMPANY — Posjeduj ljepotu",
+  title: "GRAND COMPANY — Građevinski materijal, Banja Luka",
   description:
-    "Kreativni studio za strategiju brenda, vizuelni identitet, pakovanje i iskustvene web-stranice.",
+    "GRAND COMPANY d.o.o. iz Banje Luke: veleprodaja i maloprodaja građevinskog materijala, sistemi suhe gradnje i kamena vuna. Pristupačne cijene i stručan savjet.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
