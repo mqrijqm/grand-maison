@@ -1,26 +1,81 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #fef5f9;
+  --ink: #222a36;
+  /* veličina wordmarka; postavlja se iz JS-a tako da tekst popuni širinu ekrana */
+  --wm-fs: 10.6vw;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-ink: var(--ink);
+  --font-sans: var(--font-inter-tight);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  background: var(--bg);
+  /* bez klasičnog scrollbara (Lenis sajtovi ga skrivaju); skrol i dalje radi */
+  scrollbar-width: none;
+}
+html::-webkit-scrollbar {
+  display: none;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+  font-weight: 700;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Marquee: pomjera se od 0 do -50%, pa je petlja bez šava kad su dvije kopije iste. */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+}
+
+/* Siva "video" ploča u hero okviru: lagano prelijevanje da se vidi da je živa. */
+@keyframes sheen {
+  from { background-position: 100% 0; }
+  to { background-position: 0 0; }
+}
+.hero-sheen {
+  background: linear-gradient(110deg, #c6c9ce 25%, #d8dade 50%, #c6c9ce 75%);
+  background-size: 250% 100%;
+  animation: sheen 6s ease-in-out infinite alternate;
+}
+
+/* SplitText maske sijeku sve što viri iznad reda (č, š, ž, ć). Padding proširuje masku, a negativna
+   margina vraća razmak na staro, pa se raspored ne mijenja. */
+.ln-mask,
+.ch-mask {
+  padding-block: 0.16em;
+  margin-block: -0.16em;
+}
+
+/* Paragraf poravnat obostrano: svaki red posebno, osim posljednjeg (nakon SplitText razdvajanja). */
+@media (min-width: 768px) {
+  .para {
+    text-align: justify;
+  }
+  .para .ln {
+    text-align-last: justify;
+  }
+  .para > :last-child .ln {
+    text-align-last: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
