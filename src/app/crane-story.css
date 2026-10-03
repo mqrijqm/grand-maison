@@ -198,10 +198,11 @@ html[data-hero-dark]:not([data-past-hero]) [data-badge] {
   min-height: calc(100svh - var(--story-header));
 }
 .story-immersion {
-  /* Prazan prostor kroz koji se scena odigrava: uspon uz kran od baze, tabla sa logom,
-     vožnja do kuke i tereta, spuštanje na krov, pa dovršavanje zgrade, ulazak kroz
+  /* Prazan prostor kroz koji se scena odigrava: uspon uz kran od baze,
+     direktna vožnja do kuke i tereta, spuštanje na krov, pa dovršavanje zgrade, ulazak kroz
      balkonska vrata u kupatilo i izlazak kroz prozor u nebo. */
-  height: 820svh;
+  /* Kraći scrub: od početnog kadra do izlaska kroz prozor ima oko 24% manje skrola. */
+  height: 620svh;
   pointer-events: none;
 }
 /* Kraj na nebu: scena je i dalje pinovana; prvi dio skrola ispisuje rečenicu, a ostatak
@@ -235,7 +236,7 @@ html[data-hero-dark]:not([data-past-hero]) [data-badge] {
   /* Na mobilnom je sadržaj kratak, pa prazan prostor drži scenu u kadru dovoljno dugo
      da se animacija krana odigra (bez njega je sekcija kraća od ekrana). */
   .story-immersion {
-    height: 700svh;
+    height: 530svh;
   }
   .story-outro {
     height: 260svh;

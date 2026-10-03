@@ -223,31 +223,35 @@ export function createCraneScene() {
   tower.cab(slew);
   tower.counterweight(slew);
   if(typeof document!=='undefined') {
-    // Kvadratna tabla: svijetla podloga, znak i GRAND COMPANY u tamno plavoj (štampa: oznaka `navy`).
-    const c=document.createElement('canvas');c.width=c.height=1024;
+    // Brending je izbijen direktno iz kobalt oplate: canvas je providan svuda osim na znaku
+    // i tekstu, pa se vidi prava geometrija krana — nema obojene ploče ni kvadratne podloge.
+    const c=document.createElement('canvas');c.width=1100;c.height=720;
     const tex=new THREE.CanvasTexture(c);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=8;
     const paint=(mark)=>{
-      const g=c.getContext('2d');g.fillStyle='#ffffff';g.fillRect(0,0,1024,1024);
+      const g=c.getContext('2d');g.clearRect(0,0,c.width,c.height);
       if(mark){
-        // Znak je izometrijsko "G" (odnos strana ~310:345); crta se dovoljno veliko da se
-        // vidi i na najmanjem kadru, a tekst ide ispod njega.
-        const w=430,h=w*345.38/310.29,t=document.createElement('canvas');t.width=w;t.height=h;const tc=t.getContext('2d');
-        tc.drawImage(mark,0,0,w,h);tc.globalCompositeOperation='source-in';tc.fillStyle='#1b2436';tc.fillRect(0,0,w,h);
-        g.drawImage(t,(1024-w)/2,150);
+        // Kompaktniji znak ostavlja dovoljno čistog plavog prostora oko cijelog potpisa.
+        const w=270,h=w*345.38/310.29,t=document.createElement('canvas');t.width=w;t.height=h;const tc=t.getContext('2d');
+        tc.drawImage(mark,0,0,w,h);tc.globalCompositeOperation='source-in';tc.fillStyle='#ffffff';tc.fillRect(0,0,w,h);
+        g.drawImage(t,(c.width-w)/2,58);
       }
       const fam=getComputedStyle(document.documentElement).getPropertyValue('--font-heavy').trim()||'sans-serif';
-      g.fillStyle='#1b2436';g.textAlign='center';g.textBaseline='alphabetic';g.font=`900 112px ${fam}`;
-      g.fillText('GRAND',512,700);g.fillText('COMPANY',512,824);
+      g.fillStyle='#ffffff';g.textAlign='center';g.textBaseline='alphabetic';g.font=`900 70px ${fam}`;
+      g.fillText('GRAND',c.width/2,480);g.fillText('COMPANY',c.width/2,562);
       tex.needsUpdate=true;
     };
     paint(null);
     const img=new Image();img.onload=()=>{document.fonts.ready.then(()=>paint(img));};img.src='/brand/mark.svg';
     document.fonts.ready.then(()=>paint(img.complete&&img.naturalWidth?img:null));
-    const boardMat=new THREE.MeshBasicMaterial({map:tex,color:'#ffffff'});boardMat.userData.navy=true;boardMat.userData.printSolid=true; // na materijalu: batch() ne čuva userData mesha
-    for(const side of [-1,1]){
-      const board=new THREE.Mesh(new THREE.PlaneGeometry(1.9,1.9),boardMat);
-      board.position.set(-5.3,.15,side*.78);board.rotation.y=side<0?Math.PI:0;board.userData.printSolid=true;slew.add(board);
-    }
+    // Jedna čista oplata tačno preko spoljne strane kontratega skriva samo fuge/tehničke linije
+    // na strani sa logom. Suprotna strana i ostatak krana zadržavaju postojeći line-art.
+    const coverMat=new THREE.MeshBasicMaterial({color:'#1e40d6'});coverMat.userData.flat=true;coverMat.userData.printSolid=true;
+    const coverPlate=new THREE.Mesh(new THREE.PlaneGeometry(2.2,1.44),coverMat);
+    coverPlate.position.set(-5.26,0,.752);coverPlate.userData.printSolid=true;slew.add(coverPlate);
+
+    const brandMat=new THREE.MeshBasicMaterial({map:tex,color:'#ffffff',transparent:true,alphaTest:.5});brandMat.userData.navy=true;brandMat.userData.printSolid=true; // shader odbacuje providne piksele: ostaju samo bijeli znak i natpis
+    const brand=new THREE.Mesh(new THREE.PlaneGeometry(2.2,1.44),brandMat);
+    brand.position.set(-5.26,0,.765);brand.userData.printSolid=true;slew.add(brand);
   }
   batch(slew);
 
@@ -489,44 +493,33 @@ export function createCraneScene() {
 
   // ——— Putanja kamere kroz cijelu priču (sirovi progres 0..1) ———
   // Jedna glatka kriva (Catmull-Rom) kroz ključeve, bez skokova i bez "plesa" oko krana:
-  //   .00-.235 kamera kreće odozdo, uz sam stub (worm's-eye), brzo se penje dok se kran okreće,
-  //            pa na nivou glave skreće ka kontrategu i dolazi na tablu sa logom (kraj krana);
-  //   .235-.365 u krupnom planu putuje horizontalno pored mašinskog poda i kabine, duž strijele,
-  //            do kolica, pa pogled spusti na kuku i teret;
-  //   .365-.61  blago se odmakne (najdalje: kuka, sajle, krov i gornji dio krana u istom kadru)
-  //            i tu miruje dok teret sleće na krov i kuka se otkači;
-  //   .61-.80  spust niz fasadu do balkona; .80-1 ulaz u kupatilo i izlaz kroz prozor u nebo.
-  // Kamera ne ulazi u ekstremni krupni plan i ne vraća se: jedan smjer, jedan pogled.
+  //   .00-.20 kamera kreće odozdo i penje se jednom čistom dijagonalom uz stub;
+  //   .20-.32 zadržava zoom, ali bez obilaska kontratega ide pravo ka kuki i teretu;
+  //   .32-.56 miruje u širokom kadru dok teret sleće i kuka se otkači;
+  //   .56-.76 kratko se spušta do balkona; .76-1 ulazi u kupatilo i izlazi kroz prozor.
+  // X/Y lukovi su namjerno plići: zoom ostaje, ali kadar više ne pleše lijevo-desno i gore-dolje.
   const EYE=ENTRY_Y+1.5;
   const CAMERA_KEYS=[
     // p      pozicija                 pogled
     [0,         [-2.8,2.2,9.6],        [-7.2,20.5,0]],    // baza: odozdo uz stub, kran se ne vidi cijeli
-    [.028,      [-3.1,2.9,9.4],        [-7.3,21.5,0]],    // polazak — lagano
-    [.058,      [-3.6,5.2,9.0],        [-7.4,23.2,0]],    // ubrzava uz stub
-    [.085,      [-4.4,8.4,8.3],        [-7,24.5,0]],      // uspon, stub se uspravlja u kadar
-    [.12,       [-5.6,13.6,7.8],       [-7.4,25.6,0]],    // brzi uspon (najveća brzina puta)
-    [.155,      [-7.6,18.8,7.2],       [-7.8,26.2,0]],    // tik uz stub, glava ulazi u kadar
-    [.185,      [-10.4,22.8,6.9],      [-9.6,26,0]],      // na nivou glave — skreće ka kontrategu
-    [.21,       [-11.9,24.6,6.5],      [-11.4,25.6,.2]],  // prilazi tabli
-    [.235,      [-12.25,25.15,6.3],    [-12.25,25.1,.2]], // TABLA SA LOGOM (kraj krana, izbliza)
-    [.27,       [-10.4,25.3,7.7],      [-9.5,26.2,0]],    // kreće dalje — pogled duž krana
-    [.30,       [-5.6,25.4,8.4],       [-4.5,26.3,0]],    // horizontalno pored mašinskog poda i kabine
-    [.335,      [1,24.7,8.6],          [5.5,26.5,0]],     // duž strijele ka kolicima
-    [.365,      [4.4,23.4,8.4],        [8.6,16.4,0]],     // kuka i teret u centru, sajle idu uvis
-    [.395,      [2.2,25,11],           [8,16.5,0]],       // otpočinje odmicanje — teret još visi
-    [.425,      [-.8,28,15.5],         [7,17.5,0]],       // širi se kadar
-    [.46,       [-2.2,31,20],          [5,19,0]],         // NAJDALJE: kuka, sajle, krov i vrh krana u kadru
-    [.52,       [-2.4,30.6,20],        [5,17,0]],         // teret putuje dole (kadar miruje)
-    [.575,      [-2.5,29.8,20.5],      [5,14.5,0]],       // teret sleće na krov
-    [.61,       [-3,29,21],            [5.6,14,0]],       // kuka se otkači i ide gore
-    [.655,      [-1,25.5,19],          [7.5,12.5,0]],     // počinje spust
-    [.70,       [1.5,20.5,17],         [8.2,10.4,0]],     // niz fasadu
-    [.745,      [4.6,15,15],           [8.5,8.6,0]],      // ka zgradi
-    [.775,      [6.6,11.6,13.5],       [8.5,7.4,0]],      // ka balkonu sprata ENTRY
-    [.80,       [8.1,EYE+.1,11.5],     [8.1,EYE-.1,0]],   // ispred balkonskih vrata
-    [.85,       [8.1,EYE,2.0],         [8.9,EYE-.25,-3]], // kroz vrata — umivaonik i ogledalo
-    [.89,       [8.9,EYE,.3],          [11.8,EYE-.15,-2.2]], // okret ka prozoru
-    [.93,       [10.3,EYE,0],          [14.5,EYE,0]],     // pred prozorom
+    [.035,      [-3.1,3.8,9.5],        [-7.2,21.4,0]],    // polazak — lagano
+    [.08,       [-3.8,8.4,9.3],        [-7.1,23.1,0]],    // čist uspon uz stub
+    [.13,       [-4.8,15.2,9.5],       [-6.8,24.3,0]],    // isti smjer, bez bočnog zaleta
+    [.18,       [-5.4,21.8,10.2],      [-4.8,24.3,0]],    // glava krana ulazi u kadar
+    [.22,       [-5.0,25.2,11.4],      [-1.4,22.8,0]],    // zadržan bliski zoom
+    [.26,       [-3.8,27.4,14.2],      [2.5,20.8,0]],     // direktno prema kuki
+    [.32,       [-2.4,30.0,19.2],      [5,18.5,0]],       // širok kadar prije spuštanja
+    [.40,       [-2.3,30.2,20],        [5,18,0]],         // teret počinje da se spušta
+    [.48,       [-2.4,30.0,20.2],      [5,16,0]],         // miran kadar tokom spuštanja
+    [.52,       [-2.5,29.6,20.4],      [5,14.5,0]],       // teret sleće na krov
+    [.56,       [-2.5,29.0,20.5],      [5.6,14,0]],       // kuka se otkači i ide gore
+    [.61,       [-1.1,25.2,18.8],      [7.4,12.3,0]],     // počinje kraći spust
+    [.67,       [1.7,19.4,16.5],       [8.2,10.1,0]],     // niz fasadu
+    [.72,       [4.8,13.8,14.3],       [8.5,8.3,0]],      // ka zgradi
+    [.76,       [8.1,EYE+.1,11.5],     [8.1,EYE-.1,0]],   // ispred balkonskih vrata
+    [.82,       [8.1,EYE,2.0],         [8.9,EYE-.25,-3]], // kroz vrata — umivaonik i ogledalo
+    [.87,       [8.9,EYE,.3],          [11.8,EYE-.15,-2.2]], // okret ka prozoru
+    [.92,       [10.3,EYE,0],          [14.5,EYE,0]],     // pred prozorom
     [.955,      [12.4,EYE+.05,0],      [18,EYE+.45,0]],   // kroz prozor
     [1,         [17.0,EYE+.4,0],       [22,EYE+3.4,0]],   // napolju — ostaje samo nebo
   ];
@@ -600,9 +593,9 @@ export function createCraneScene() {
   }
   // ——— Kran: okretanje, teret, kuka ———
   // Trenuci priče u sirovom progresu skrola. Okretanje ide uz uspon kamere (kran se okreće dok
-  // se penjemo); spuštanje tereta počinje kad je kadar najširi (.43) — tada se vidi kuka, sajle,
+  // se penjemo); spuštanje tereta počinje kad je kadar najširi (.40) — tada se vidi kuka, sajle,
   // krov i vrh krana, pa teret putuje dole u mirnom kadru.
-  const T={swing0:.035,swing1:.145,drop0:.46,drop1:.575,release0:.575,release1:.615,lift0:.595,lift1:.70,away0:.62,away1:.80};
+  const T={swing0:.035,swing1:.145,drop0:.40,drop1:.52,release0:.52,release1:.56,lift0:.54,lift1:.64,away0:.57,away1:.74};
   const MAST_X=-7;
   // Gornja tačka sajli: kolica se voze po donjim tetivama strijele, pa im visina prati x.
   const trolleyTop=(x)=>MAST_TOP+trolleyY(x)-.42;
@@ -675,8 +668,8 @@ export function createCraneScene() {
     }
     // Zgrada niče sprat po sprat dok se kran okreće; krov je gotov prije nego teret krene dolje.
     finish.update(p,.06,.07,.09);
-    interiorRoot.visible=p>.66;
-    interiorFade(smooth(.66,.72,p));
+    interiorRoot.visible=p>.62;
+    interiorFade(smooth(.62,.70,p));
     interiorLight.intensity=0;
     // Kamera: jedna kriva kroz cijelu priču. Na uskom (uspravnom) ekranu se, dok traje kran,
     // odmakne od tačke pogleda da kran i zgrada stanu u širinu; u sobi je normalna.
@@ -684,12 +677,12 @@ export function createCraneScene() {
     target.copy(path.look);
     // Uzak (uspravan) ekran: pogled se pomjeri ka sredini krana, da kontrateg ne ispadne iz kadra.
     const narrow=clamp((1-aspect)/.47);
-    if(narrow>0)target.x-=3.5*narrow*(1-smooth(.82,.90,p));
-    const pull=mix(Math.max(1,.92/aspect),1,smooth(.76,.84,p));
+    if(narrow>0)target.x-=3.5*narrow*(1-smooth(.78,.87,p));
+    const pull=mix(Math.max(1,.92/aspect),1,smooth(.72,.80,p));
     camera.position.copy(path.position).sub(target).multiplyScalar(pull).add(target);
     focus.copy(target);
     // U sobi je objektiv širi (naročito na uskom ekranu), da kupatilo stane u kadar.
-    const inside=smooth(.77,.83,p)*(1-smooth(.95,.985,p));
+    const inside=smooth(.73,.80,p)*(1-smooth(.95,.985,p));
     camera.fov=37+(aspect<1?24:9)*inside;
     camera.aspect=aspect;camera.lookAt(target);camera.updateProjectionMatrix();
     return {chapter:p<.17?0:p<.36?1:p<.58?2:p<.925?3:4};

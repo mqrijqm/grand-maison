@@ -137,7 +137,11 @@ const PRINT_FRAG = /* glsl */ `
     float light = .26 + .64 * lamb + .10 * (nw.y * .5 + .5);
     float base = baseTone;
     #ifdef PRINT_MAP
-      vec3 tex = texture2D(map, vUv).rgb;
+      vec4 texel = texture2D(map, vUv);
+      // Decal brending na kranu ima providnu pozadinu. Odbacivanje piksela ovdje znači da
+      // G-buffer ispod njega zadržava stvarnu plavu oplatu, umjesto kvadratne plane plohe.
+      if (texel.a < .5) discard;
+      vec3 tex = texel.rgb;
       float lum = pow(max(dot(tex, vec3(.2126, .7152, .0722)), 0.0), .4545);
       base = max(base, clamp((1.0 - lum) * 1.15, 0.0, 1.0));
     #endif
