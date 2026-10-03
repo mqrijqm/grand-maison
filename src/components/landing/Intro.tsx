@@ -116,7 +116,7 @@ export default function Intro() {
             <div data-track className="flex w-max items-start gap-[6vw] px-5 md:gap-[2.2vw] md:px-[6vw]">
               {SCENES.map((s, i) => (
                 <figure key={s.src} className="m-0 shrink-0 snap-start" style={{ marginTop: i % 2 ? '8vh' : 0 }}>
-                  <Link href="/prodavnica" data-cursor-plate="Katalog" className="group block">
+                  <Link href="/prodavnica" className="catalog-frame group block">
                     <div data-curtain className="relative h-[48vh] aspect-[2/3] overflow-hidden bg-plate md:h-[60vh]">
                       <img
                         decoding="async"
@@ -125,6 +125,9 @@ export default function Intro() {
                         alt={`${s.label} — ${s.note}`}
                         className="absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-[var(--ease-out)] group-hover:scale-[1.03]"
                       />
+                      <span aria-hidden className="catalog-frame__plate">
+                        KATALOG
+                      </span>
                     </div>
                   </Link>
                   <figcaption className="mt-3 text-[11px] tracking-[0.06em] text-ink/55">

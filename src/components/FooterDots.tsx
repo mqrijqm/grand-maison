@@ -2,16 +2,14 @@
 
 import { useEffect, useRef } from 'react'
 
-// Pozadina footera: raster tačaka (halftone, kao štampa u heroju) na tamnoj podlozi. Tačke su
-// stalno prigušene; oko miša se u mekom krugu upale u jarku kobalt plavu (i malo porastu).
-// Raster se nacrta JEDNOM u dvije verzije (prigušena i jarka), a svaki frejm samo složi
-// prigušenu + jarku unutar kruga oko miša — jeftino i na slabijem laptopu.
-// Bez miša (dodir) ili uz prefers-reduced-motion ostaje samo statična prigušena verzija.
+// Pozadina footera je tamni sloj sa diskretnim rasterom iznad jarkog kobalta. Kursor kroz taj
+// sloj pravi meke, spojene otvore i tako ostavlja plavi trag — kao da je boja fizički ispod
+// footera. Trag ostaje do narednog resizea/reloada. Na dodirnim ekranima ostaje miran raster.
 
 const STEP = 9 // razmak tačaka u CSS pikselima
-const DOT = 2.1 // najveći poluprečnik tačke
-const R = 190 // poluprečnik osvijetljenog kruga oko miša
-const INK = '61,99,255' // jarka plava (RGB)
+const DOT = 1.75 // najveći poluprečnik tačke
+const BRUSH = 132 // poluprečnik traga kursora
+const COBALT = '49,86,234'
 
 const hash = (x: number, y: number) => {
   const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453
@@ -27,12 +25,12 @@ function noise(x: number, y: number) {
 }
 
 // Veličina tačke prati blagi šum, pa raster ima "oblake" gušćih i rjeđih tačaka (kao štampa).
-function drawDots(ctx: CanvasRenderingContext2D, cols: number, rows: number, s: number, grow: number) {
+function drawDots(ctx: CanvasRenderingContext2D, cols: number, rows: number, s: number) {
   ctx.beginPath()
   for (let y = 0; y < rows; y++) {
     for (let x = 0; x < cols; x++) {
       const n = noise(x / 14, y / 14) * 0.7 + noise(x / 5 + 30, y / 5) * 0.3
-      const r = DOT * (0.3 + 0.7 * n) * grow * s
+      const r = DOT * (0.3 + 0.7 * n) * s
       if (r < 0.45 * s) continue
       const px = (x * STEP + (y % 2) * STEP * 0.5) * s, py = y * STEP * s
       ctx.moveTo(px + r, py)
@@ -44,92 +42,74 @@ function drawDots(ctx: CanvasRenderingContext2D, cols: number, rows: number, s: 
 
 export default function FooterDots({ className = '' }: { className?: string }) {
   const ref = useRef<HTMLCanvasElement>(null)
+  const follow = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const canvas = ref.current
+    const glow = follow.current
     const host = canvas?.parentElement
-    if (!canvas || !host) return
+    if (!canvas || !glow || !host) return
     const ctx = canvas.getContext('2d')!
-    const dim = document.createElement('canvas')
-    const bright = document.createElement('canvas')
-    const spot = document.createElement('canvas')
-    const sctx = spot.getContext('2d')!
-    const interactive =
-      window.matchMedia('(pointer: fine)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const interactive = window.matchMedia('(pointer: fine)').matches
 
     let dpr = 1, w = 0, h = 0
-    let mx = -1e4, my = -1e4, tx = -1e4, ty = -1e4
-    let a = 0, ta = 0
-    let raf = 0, last = 0, visible = true
+    let previous: { x: number; y: number } | null = null
 
     function build() {
+      canvas!.style.backgroundColor = 'var(--ink)'
       dpr = Math.min(2, window.devicePixelRatio || 1)
       w = host!.clientWidth
       h = host!.clientHeight
       const W = Math.max(1, Math.round(w * dpr)), H = Math.max(1, Math.round(h * dpr))
-      for (const c of [canvas!, dim, bright]) {
-        c.width = W
-        c.height = H
-      }
+      canvas!.width = W
+      canvas!.height = H
+      const ink = getComputedStyle(document.documentElement).getPropertyValue('--ink').trim() || '#1b2436'
+      ctx.globalCompositeOperation = 'source-over'
+      ctx.fillStyle = ink
+      ctx.fillRect(0, 0, W, H)
       const cols = Math.ceil(w / STEP) + 2, rows = Math.ceil(h / STEP) + 2
-      for (const [c, alpha, grow] of [[dim, 0.2, 1], [bright, 1, 1.3]] as const) {
-        const g = c.getContext('2d')!
-        g.fillStyle = `rgba(${INK},${alpha})`
-        drawDots(g, cols, rows, dpr, grow)
-      }
-      spot.width = spot.height = Math.round(2 * R * dpr)
-      draw()
+      ctx.fillStyle = `rgba(${COBALT},0.28)`
+      drawDots(ctx, cols, rows, dpr)
+      previous = null
+      canvas!.style.backgroundColor = 'transparent'
     }
 
-    function draw() {
-      ctx.clearRect(0, 0, canvas!.width, canvas!.height)
-      ctx.drawImage(dim, 0, 0)
-      if (a < 0.01) return
-      const S = spot.width, sx = Math.round((mx - R) * dpr), sy = Math.round((my - R) * dpr)
-      sctx.globalCompositeOperation = 'source-over'
-      sctx.clearRect(0, 0, S, S)
-      sctx.drawImage(bright, sx, sy, S, S, 0, 0, S, S)
-      // meki rub: zadrži samo dio unutar radijalnog gradijenta
-      sctx.globalCompositeOperation = 'destination-in'
-      const grad = sctx.createRadialGradient(S / 2, S / 2, 0, S / 2, S / 2, S / 2)
-      grad.addColorStop(0, `rgba(0,0,0,${a})`)
-      grad.addColorStop(0.55, `rgba(0,0,0,${a * 0.55})`)
+    function dab(x: number, y: number) {
+      const px = x * dpr, py = y * dpr, radius = BRUSH * dpr
+      const grad = ctx.createRadialGradient(px, py, 0, px, py, radius)
+      grad.addColorStop(0, 'rgba(0,0,0,0.98)')
+      grad.addColorStop(0.58, 'rgba(0,0,0,0.82)')
       grad.addColorStop(1, 'rgba(0,0,0,0)')
-      sctx.fillStyle = grad
-      sctx.fillRect(0, 0, S, S)
-      ctx.drawImage(spot, sx, sy)
-    }
-
-    function tick(t: number) {
-      const dt = Math.min(3, last ? (t - last) / 16.667 : 1)
-      last = t
-      const k = 1 - Math.pow(1 - 0.2, dt)
-      mx += (tx - mx) * k
-      my += (ty - my) * k
-      a += (ta - a) * (1 - Math.pow(1 - 0.12, dt))
-      draw()
-      const moving = Math.abs(tx - mx) > 0.3 || Math.abs(ty - my) > 0.3 || Math.abs(ta - a) > 0.005
-      raf = moving && visible ? requestAnimationFrame(tick) : 0
-      if (!raf) last = 0
-    }
-    const kick = () => {
-      if (!raf && visible) raf = requestAnimationFrame(tick)
+      ctx.globalCompositeOperation = 'destination-out'
+      ctx.fillStyle = grad
+      ctx.fillRect(px - radius, py - radius, radius * 2, radius * 2)
+      ctx.globalCompositeOperation = 'source-over'
     }
 
     const onMove = (e: PointerEvent) => {
+      if (e.pointerType !== 'mouse') return
       const r = host.getBoundingClientRect()
-      tx = e.clientX - r.left
-      ty = e.clientY - r.top
-      if (ta === 0) {
-        mx = tx
-        my = ty
+      const next = { x: e.clientX - r.left, y: e.clientY - r.top }
+      if (next.x < 0 || next.y < 0 || next.x > r.width || next.y > r.height) {
+        previous = null
+        glow.removeAttribute('data-active')
+        return
       }
-      ta = 1
-      kick()
-    }
-    const onLeave = () => {
-      ta = 0
-      kick()
+      glow.style.setProperty('--footer-x', `${next.x}px`)
+      glow.style.setProperty('--footer-y', `${next.y}px`)
+      glow.setAttribute('data-active', '')
+      if (!previous) {
+        dab(next.x, next.y)
+      } else {
+        const dx = next.x - previous.x, dy = next.y - previous.y
+        const distance = Math.hypot(dx, dy)
+        const steps = Math.max(1, Math.ceil(distance / (BRUSH * 0.22)))
+        for (let i = 1; i <= steps; i++) {
+          const t = i / steps
+          dab(previous.x + dx * t, previous.y + dy * t)
+        }
+      }
+      previous = next
     }
 
     let pending = 0
@@ -138,26 +118,20 @@ export default function FooterDots({ className = '' }: { className?: string }) {
       pending = requestAnimationFrame(build)
     })
     ro.observe(host)
-    const io = new IntersectionObserver(([e]) => {
-      visible = e.isIntersecting
-      if (visible) kick()
-    })
-    io.observe(host)
-    if (interactive) {
-      host.addEventListener('pointermove', onMove)
-      host.addEventListener('pointerleave', onLeave)
-    }
+    if (interactive) window.addEventListener('pointermove', onMove, { passive: true })
     build()
 
     return () => {
-      cancelAnimationFrame(raf)
       cancelAnimationFrame(pending)
       ro.disconnect()
-      io.disconnect()
-      host.removeEventListener('pointermove', onMove)
-      host.removeEventListener('pointerleave', onLeave)
+      window.removeEventListener('pointermove', onMove)
     }
   }, [])
 
-  return <canvas ref={ref} aria-hidden className={`pointer-events-none absolute inset-0 h-full w-full ${className}`} />
+  return (
+    <>
+      <canvas ref={ref} aria-hidden className={`pointer-events-none absolute inset-0 h-full w-full bg-ink ${className}`} />
+      <div ref={follow} aria-hidden className="footer-cursor-follow pointer-events-none absolute inset-0" />
+    </>
+  )
 }

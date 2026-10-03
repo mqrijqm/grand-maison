@@ -46,7 +46,7 @@ const COLS: { title: string; items: Item[] }[] = [
 
 const BLINK_URL = 'https://studioblink.ba'
 
-// Minimalan footer: tamna podloga sa rasterom tačaka koje se oko miša upale u jarko plavu
+// Minimalan footer: ispod tamne podloge je jarki kobalt koji kursor trajno otkriva kao trag
 // (FooterDots), gore tri kolone linkova, pa veliki wordmark preko cijele širine, a dolje lijevo
 // podaci firme i desno polje sa potpisom studija Blink.
 export default function Footer() {
@@ -90,7 +90,8 @@ export default function Footer() {
   )
 
   return (
-    <footer ref={root} id="kontakt" className="relative z-40 overflow-x-clip bg-ink text-bg">
+    <footer ref={root} id="kontakt" className="relative z-40 isolate overflow-x-clip bg-ink text-bg">
+      <div aria-hidden className="pointer-events-none absolute inset-0 bg-cobalt" />
       <FooterDots />
 
       <div className="relative">

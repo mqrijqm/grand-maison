@@ -538,6 +538,45 @@ html:not([data-past-hero]) [data-overlay-header] {
   /* nadoknada zadnjeg razmaka slova, da riječ stoji optički u sredini */
   padding-left: 0.2em;
 }
+
+/* Traka kadrova ispod "Građevinski materijal za profesionalce": KATALOG je stvarni
+   kvadratni overlay u centru fotografije, ne zavisi od prilagođenog kursora. */
+.catalog-frame__plate {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 10;
+  display: grid;
+  width: clamp(104px, 9vw, 136px);
+  aspect-ratio: 1;
+  place-items: center;
+  padding-left: 0.2em;
+  background: var(--cobalt);
+  color: #fff;
+  font-family: var(--font-text), "Helvetica Neue", Arial, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.72);
+  transition: opacity 180ms ease, transform 420ms var(--ease-out);
+}
+.catalog-frame:hover .catalog-frame__plate,
+.catalog-frame:focus-visible .catalog-frame__plate {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* Stovarište: eksplicitni slojevi osiguravaju da se plava ilustracija uvijek nacrta
+   iznad fotografije, nezavisno od utility generisanja. */
+.yard-card:hover .yard-card__photo {
+  transform: scale(1.03);
+}
+.yard-card:hover .yard-card__blue,
+.yard-card:focus-within .yard-card__blue {
+  opacity: 1;
+}
 @media (pointer: coarse), (hover: none) {
   .cursor {
     display: none;
@@ -1574,6 +1613,22 @@ html.menu-open .nav--home {
 .foot-link:focus-visible {
   color: var(--cobalt);
   transform: translateX(6px);
+}
+.footer-cursor-follow {
+  --footer-x: -999px;
+  --footer-y: -999px;
+  opacity: 0;
+  background: radial-gradient(
+    circle 190px at var(--footer-x) var(--footer-y),
+    rgb(49 86 234 / 0.98) 0%,
+    rgb(49 86 234 / 0.82) 38%,
+    rgb(49 86 234 / 0.3) 68%,
+    transparent 100%
+  );
+  transition: opacity 220ms ease;
+}
+.footer-cursor-follow[data-active] {
+  opacity: 1;
 }
 footer li + li {
   margin-top: 0 !important;

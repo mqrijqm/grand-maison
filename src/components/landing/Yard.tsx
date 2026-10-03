@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
+import Image from 'next/image'
 import Pw from '@/components/ui/Pw'
 import { useMediaMotion } from '@/lib/media'
 
@@ -10,14 +11,14 @@ import { useMediaMotion } from '@/lib/media'
 const PANELS = [
   {
     photo: '/stovariste/yard.webp',
-    blue: '/stovariste/yard-blue.webp',
+    blue: '/stovariste/yard-blue-v2.webp',
     alt: 'Stovarište Grand Company iz vazduha — redovi paleta građevinskog materijala',
     label: 'Dvorište odozgo',
     note: 'Palete ploča, izolacije i veziva, složene po vrsti',
   },
   {
     photo: '/stovariste/shop.webp',
-    blue: '/stovariste/shop-blue.webp',
+    blue: '/stovariste/shop-blue-v2.webp',
     alt: 'Ulaz u stovarište Grand Company sa natkrivenom prodajnom zonom',
     label: 'Ulaz i prodaja',
     note: 'Natkrivena zona za utovar i preuzimanje',
@@ -49,23 +50,23 @@ export default function Yard() {
 
       <div className="mt-[5vh] grid gap-px border-y border-ink/20 bg-ink/20 md:grid-cols-2">
         {PANELS.map((p) => (
-          <figure key={p.photo} data-curtain data-cursor="Pređi" className="group relative m-0 bg-bg">
+          <figure key={p.photo} data-curtain data-cursor="Pređi" className="yard-card group relative m-0 bg-bg">
             <div className="relative aspect-[16/10] overflow-hidden">
-              <img
-                decoding="async"
-                loading="lazy"
+              <Image
+                fill
                 src={p.photo}
                 alt={p.alt}
-                className="absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-[var(--ease-out)] group-hover:scale-[1.03]"
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="yard-card__photo absolute inset-0 z-0 h-full w-full object-cover transition-transform duration-[900ms] ease-[var(--ease-out)]"
               />
               {/* Plava ilustracija istog kadra: prelije se preko fotografije na hover (brzo, meko). */}
-              <img
+              <Image
                 aria-hidden
-                decoding="async"
-                loading="lazy"
+                fill
                 src={p.blue}
                 alt=""
-                className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-300 ease-[var(--ease-out)] group-hover:opacity-100 group-focus-within:opacity-100"
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="yard-card__blue absolute inset-0 z-10 h-full w-full object-cover opacity-0 transition-opacity duration-300 ease-[var(--ease-out)]"
               />
             </div>
             <figcaption className="px-5 py-4 text-[11px] tracking-[0.06em]">
