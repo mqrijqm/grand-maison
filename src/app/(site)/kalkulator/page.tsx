@@ -13,7 +13,7 @@ export default function CalculatorPage() {
     <div className="pb-[16dvh]">
       <header className="px-5 pb-[8dvh] pt-[18dvh] text-center md:pt-[20dvh]">
         <p className="label text-ink/50">Sistem W111 · pregradni zid</p>
-        <h1 className="display mt-6 text-[clamp(52px,10vw,170px)]">
+        <h1 className="display mt-6 text-[clamp(34px,12.5vw,170px)]">
           <Pw>Kalkulator</Pw>
         </h1>
         <p className="mx-auto mt-10 max-w-[46ch] text-[13px] text-ink/70">

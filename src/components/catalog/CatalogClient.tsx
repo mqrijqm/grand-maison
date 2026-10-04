@@ -194,7 +194,7 @@ export default function CatalogClient() {
               <button
                 type="button"
                 onClick={() => addToCart(p.id, defaultQty(p))}
-                className="mx-auto mb-6 text-[10.5px] tracking-[0.12em] underline decoration-1 underline-offset-[5px] opacity-0 transition-opacity duration-300 hover:text-signal focus-visible:opacity-100 group-hover:opacity-100 max-lg:opacity-60"
+                className="mx-auto mb-6 -my-2 py-2 text-[10.5px] tracking-[0.12em] underline decoration-1 underline-offset-[5px] opacity-0 transition-opacity duration-300 hover:text-signal focus-visible:opacity-100 group-hover:opacity-100 max-lg:opacity-60"
                 aria-label={`Dodaj u korpu: ${p.name}`}
               >
                 Dodaj
