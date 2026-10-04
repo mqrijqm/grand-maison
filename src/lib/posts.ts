@@ -80,7 +80,7 @@ export const POSTS: Post[] = [
     ],
   },
   {
-    slug: 'gkb-gkbi-gkf-ili-diamant',
+    slug: 'gkb-gkbi-gkf-ili-tvrda',
     title: 'GKB, GKBI ili GKF — koju ploču gdje',
     lead: 'Četiri ploče izgledaju slično, ali nisu zamjenjive u svakoj prostoriji.',
     tag: 'Materijal',

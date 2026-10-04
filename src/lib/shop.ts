@@ -147,7 +147,8 @@ export function calcW111({ L, H, cladding, plateSku, cwSku, woolSku, fillerSku, 
     items.push({ sku: woolSku, need: `${f2.format(woolM2)} m²`, qty: round2(panels * 0.6), note: `${panels} ploča po 0,6 m²` })
   }
 
-  const fillerKg = P * 0.6
+  // 0,5 kg/m² Uniflott za standardni W111 (Knauf tabela) — ista norma kao u lib/w111.ts.
+  const fillerKg = P * 0.5
   const bagSize = fillerSku === 'CHM-001' ? 5 : 25
   const bags = Math.ceil(fillerKg / bagSize)
   items.push({ sku: fillerSku, need: `${f2.format(fillerKg)} kg`, qty: bags, note: `${bags} vreća po ${bagSize} kg` })
@@ -156,9 +157,10 @@ export function calcW111({ L, H, cladding, plateSku, cwSku, woolSku, fillerSku, 
   const boxes = Math.ceil(screws / 1000)
   items.push({ sku: 'ACC-001', need: `${f0.format(screws)} kom`, qty: boxes, note: `${boxes} kutija po 1000 komada` })
 
+  // Bandaž traka nije dio sistema uz Uniflott — ide po potrebi, na rezanim i poprečnim spojevima.
   const tapeM = L * 1.5
   const rolls = Math.ceil(tapeM / 25)
-  items.push({ sku: 'ACC-003', need: `${f2.format(tapeM)} m`, qty: rolls, note: `${rolls} rola po 25 m` })
+  items.push({ sku: 'ACC-003', need: `${f2.format(tapeM)} m`, qty: rolls, note: `${rolls} rola po 25 m, po potrebi` })
 
   if (soundTape) {
     const stRolls = Math.ceil(uwM / 30)
