@@ -2,7 +2,7 @@
 
 // U tekstu (p, ul, ol, dl, box, note) mogu se koristiti oznake iz company.ts: {naziv}, {sjediste}, {jib},
 // {pdv}, {registracija}, {racun}, {email}, {telefon}, {web}, {direktor}, {grad}, {rokIsporuke}, {zonaDostave},
-// {besplatnaDostava}, {rokOdustanka}. Kurziv se piše kao *tekst*.
+// {rokOdustanka}. Kurziv se piše kao *tekst*.
 export type LegalBlock =
   | { t: 'p'; text: string }
   | { t: 'ul'; items: string[] }

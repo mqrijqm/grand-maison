@@ -4,7 +4,7 @@
 // Šta NIJE poznato ostaje `null`: u pravnim tekstovima se tada prikazuje kao istaknuta oznaka [žiro račun],
 // a u podnožju se red preskače. Ništa se ne izmišlja.
 
-import { COMPANY as GC, FREE_DELIVERY_OVER, km } from '@/gc/gc'
+import { COMPANY as GC } from '@/gc/gc'
 
 export const COMPANY = {
   brand: 'GRAND COMPANY',
@@ -18,7 +18,6 @@ export const COMPANY = {
   vat: GC.pib, // PIB = PDV broj
   mbs: GC.mbs,
   email: GC.emailInfo,
-  emailSales: GC.emailSales,
   phone: `${GC.phoneLandline}, ${GC.phoneMobile}`,
 
   // NEPOZNATO — dopuniti iz registracije firme:
@@ -27,17 +26,27 @@ export const COMPANY = {
   web: null as string | null,
 }
 
+// Radno vrijeme stovarišta (potvrđeno).
+export const HOURS: { days: string; time: string }[] = [
+  { days: 'Ponedjeljak – petak', time: '07–16' },
+  { days: 'Subota', time: '07–15' },
+  { days: 'Nedjelja', time: 'Zatvoreno' },
+]
+
+/** Isto radno vrijeme u jednoj liniji — za podnožje i kontakt. */
+export const HOURS_SHORT = 'Pon–Pet 07–16 · Sub 07–15 · Ned zatvoreno'
+
 // Lokacija stovarišta na Google mapi (Nenada Kostića 151, Zalužani). Svaka adresa na sajtu vodi ovdje.
 export const MAPS_URL =
   'https://www.google.com/maps/place/Grand+company/@44.8314274,17.1833883,17z/data=!3m1!4b1!4m6!3m5!1s0x475e0147a2de83a9:0xc6444a56e406d81b!8m2!3d44.8314236!4d17.1859632!16s%2Fg%2F11fp802zb2'
 
 // Poslovni uslovi iz podataka firme. Rok za odustanak od ugovora nije potvrđen, pa ostaje oznaka.
+// Rok, područje i trošak isporuke NISU unaprijed utvrđeni (nema potvrđenog cjenovnika ni radijusa),
+// pa se dogovaraju po narudžbi — tekstovi na sajtu to tako i kažu.
 export const TERMS = {
   currency: 'KM',
-  freeDeliveryFrom: FREE_DELIVERY_OVER,
-  deliveryDays: 'jednog dana (isti ili sljedeći dan) za robu koja je na stanju',
-  // Iz DELIVERY_ZONES: tri zone, najdalja do 50 km od Banje Luke.
-  deliveryZone: 'Banja Luka i regija do 50 km (Laktaši, Čelinac, Prijedor, Gradiška…)',
+  deliveryDays: 'po dogovoru, nakon potvrde narudžbe',
+  deliveryZone: 'Banja Luka i okolna mjesta',
   withdrawalDays: null as number | null,
 }
 
@@ -64,7 +73,6 @@ const TOKENS: Record<string, string | null> = {
   web: COMPANY.web,
   rokIsporuke: TERMS.deliveryDays,
   zonaDostave: TERMS.deliveryZone,
-  besplatnaDostava: km(TERMS.freeDeliveryFrom),
   rokOdustanka: TERMS.withdrawalDays ? `${TERMS.withdrawalDays} dana` : null,
 }
 

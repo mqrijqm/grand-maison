@@ -13,7 +13,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
     title: 'Dostava',
     group: 'kupovina',
     kicker: 'Isporuka',
-    lead: 'Robu dostavljamo na području {zonaDostave}, uobičajeno u roku od {rokIsporuke}. Možete je i preuzeti lično, a za izvođače radova isporuku na gradilište dogovaramo pojedinačno.',
+    lead: 'Robu dostavljamo u Banjoj Luci i okolnim mjestima. Rok i način isporuke dogovaramo prije potvrde narudžbe. Možete je i preuzeti lično, a za izvođače radova isporuku na gradilište dogovaramo pojedinačno.',
     updated: UPDATED,
     sections: [
       {
@@ -22,15 +22,15 @@ export const LEGAL_DOCS: LegalDoc[] = [
         blocks: [
           {
             t: 'p',
-            text: 'Dostavu vršimo na području: {zonaDostave}. Uobičajeni rok isporuke je {rokIsporuke}, računajući od potvrde narudžbe.',
+            text: 'Dostavu vršimo u Banjoj Luci i okolnim mjestima. Za ostale adrese isporuku dogovaramo pojedinačno — javite nam se prije naručivanja.',
           },
           {
             t: 'p',
-            text: 'Rok je okviran i zavisi od raspoloživosti artikala i obima narudžbe. Ako se plaća unaprijed po predračunu, robu otpremamo nakon što evidentiramo uplatu. Ako neki artikal nije na stanju, javit ćemo vam i dogovoriti novi termin prije isporuke.',
+            text: 'Rok isporuke nije unaprijed utvrđen: dogovaramo ga pri potvrdi narudžbe, zavisno od raspoloživosti artikala, obima narudžbe i udaljenosti.',
           },
           {
             t: 'p',
-            text: 'Za adrese izvan područja dostave isporuku dogovaramo pojedinačno. Javite nam se prije naručivanja.',
+            text: 'Ako se plaća unaprijed po predračunu, robu otpremamo nakon što evidentiramo uplatu. Ako neki artikal nije raspoloživ, javit ćemo vam i dogovoriti novi termin prije isporuke.',
           },
         ],
       },
@@ -40,7 +40,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
         blocks: [
           {
             t: 'p',
-            text: 'Dostava je besplatna za narudžbe od {besplatnaDostava}. Za manje narudžbe trošak dostave, ako se obračunava, saopštavamo vam prije potvrde narudžbe, tako da ga znate prije nego što se obavežete na plaćanje.',
+            text: 'Trošak dostave zavisi od lokacije, količine i vrste robe. Nemamo objavljen cjenovnik dostave — tačan iznos saopštavamo prije potvrde narudžbe, tako da ga znate prije nego što se obavežete na plaćanje.',
           },
           {
             t: 'p',
@@ -62,7 +62,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
           },
           {
             t: 'p',
-            text: 'Istovar kranom na etažu ili skelu radimo vlastitim kamionima sa kranom. Cijena prevoza i rada krana zavisi od zone dostave i navedena je u prodavnici, u dijelu „Isporuka“.',
+            text: 'Istovar na etažu ili skelu nije standardni dio isporuke. Ako vam je potreban, unaprijed dogovaramo vozilo i način istovara — uslovi zavise od lokacije, pristupa i vrste robe, a cijenu navodimo u ponudi ili potvrdi narudžbe.',
           },
           { t: 'p', text: 'Prije isporuke javite nam:' },
           {
@@ -762,7 +762,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
           },
           {
             t: 'p',
-            text: 'Trošak dostave, ako se obračunava, saopštava se prije nego što se obavežete na plaćanje. Za narudžbe od {besplatnaDostava} dostava je besplatna.',
+            text: 'Trošak dostave, ako se obračunava, saopštava se prije nego što se obavežete na plaćanje.',
           },
           {
             t: 'p',
@@ -788,7 +788,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
         blocks: [
           {
             t: 'p',
-            text: '*Isporuka.* Područje dostave, rokovi, troškovi, istovar i preuzimanje opisani su na stranici „Dostava“. Uobičajeni rok isporuke je {rokIsporuke}, a područje dostave: {zonaDostave}.',
+            text: '*Isporuka.* Područje dostave, rokovi, troškovi, istovar i preuzimanje opisani su na stranici „Dostava“. Područje dostave: {zonaDostave}, a rok isporuke {rokIsporuke}.',
           },
           {
             t: 'p',

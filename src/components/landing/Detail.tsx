@@ -93,7 +93,7 @@ export default function Detail() {
             <Cta href={COMPANY.phoneLandlineHref} solid>
               Pozovite
             </Cta>
-            <Cta href={`mailto:${COMPANY.emailSales}`}>Pišite</Cta>
+            <Cta href={`mailto:${COMPANY.emailInfo}`}>Pišite</Cta>
           </div>
         </div>
       </div>

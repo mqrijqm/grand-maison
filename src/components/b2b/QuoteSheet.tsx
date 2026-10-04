@@ -63,7 +63,7 @@ export default function QuoteSheet() {
               Tel. {COMPANY.phoneLandline} · Mob. {COMPANY.phoneMobile}
             </p>
             <p className="normal-case">
-              {COMPANY.emailSales} · {COMPANY.emailInfo}
+              {COMPANY.emailInfo}
             </p>
             <p>
               JIB {COMPANY.jib} · PIB {COMPANY.pib} · MBS {COMPANY.mbs}

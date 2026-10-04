@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRef } from 'react'
 import FooterDots from '@/components/FooterDots'
 import { COMPANY } from '@/gc/gc'
+import { HOURS_SHORT } from '@/lib/company'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { EASE, MQ, fitFontSize } from '@/lib/motion'
 import { revealChars } from '@/lib/reveal'
@@ -37,7 +38,7 @@ const COLS: { title: string; items: Item[] }[] = [
     title: 'Kontakt',
     items: [
       { label: 'Pozovite', href: COMPANY.phoneLandlineHref, external: true },
-      { label: 'Pišite', href: `mailto:${COMPANY.emailSales}`, external: true },
+      { label: 'Pišite', href: `mailto:${COMPANY.emailInfo}`, external: true },
       { label: 'Viber / WhatsApp', href: COMPANY.phoneMobileHref, external: true },
       { label: 'Stovarište na mapi', href: MAPS_URL, external: true },
     ],
@@ -131,7 +132,7 @@ export default function Footer() {
           <p className="max-w-[78ch] text-[11px] leading-[1.8] opacity-55">
             {COMPANY.address} · {COMPANY.phoneLandline} · {COMPANY.phoneMobile}
             <br />
-            {COMPANY.emailInfo} · Pon–Pet 07–17 · Sub 07–14
+            {COMPANY.emailInfo} · {HOURS_SHORT}
           </p>
 
           <a href={BLINK_URL} target="_blank" rel="noopener noreferrer" className="blink-field group" aria-label="Studio Blink — studioblink.ba">

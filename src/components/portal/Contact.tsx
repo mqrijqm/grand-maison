@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { COMPANY } from '@/gc/gc'
+import { HOURS_SHORT } from '@/lib/company'
 import type { FullPartner } from '@/lib/b2b'
 import Cta from '@/components/ui/Cta'
 import { MAPS_URL } from '@/lib/company'
@@ -72,7 +73,7 @@ export default function Contact({ partner }: { partner: FullPartner | null }) {
           {[
             ['Veleprodaja / stovarište', COMPANY.phoneLandline, COMPANY.phoneLandlineHref],
             ['Mobilni · Viber · WhatsApp', COMPANY.phoneMobile, COMPANY.phoneMobileHref],
-            ['Prodaja', COMPANY.emailSales, `mailto:${COMPANY.emailSales}`],
+            ['E-pošta', COMPANY.emailInfo, `mailto:${COMPANY.emailInfo}`],
           ].map(([k, v, href]) => (
             <div key={k} className={`border-t ${line} pt-4`}>
               <dt className="opacity-55">{k}</dt>
@@ -90,7 +91,7 @@ export default function Contact({ partner }: { partner: FullPartner | null }) {
                 {COMPANY.address} ↗
               </a>
             </dd>
-            <dd className="mt-1 opacity-70">Pon–Pet 07–17 h · Sub 07–14 h · Nedjelja ne radimo</dd>
+            <dd className="mt-1 opacity-70">{HOURS_SHORT}</dd>
           </div>
         </dl>
       </div>

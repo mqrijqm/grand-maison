@@ -186,7 +186,7 @@ export default function CartDrawer() {
               </div>
               {prefs.method === 'kran' && (
                 <p className="mt-2 text-[10.5px] leading-[1.5] opacity-60">
-                  Istovar paleta direktno na sprat ili etažu gradilišta (prevoz + rad dizalice).
+                  Istovar na etažu ili skelu — dogovara se prema lokaciji, pristupu i vrsti robe (prevoz + rad dizalice).
                 </p>
               )}
               {prefs.method !== 'preuzimanje' && (
@@ -238,10 +238,13 @@ export default function CartDrawer() {
                 <dd className="tabular-nums">{money(q.goods)}</dd>
               </div>
               <div className="flex justify-between opacity-80">
-                <dt>{METHOD_LABEL[prefs.method]}</dt>
+                <dt>{METHOD_LABEL[prefs.method]} · orijentaciono</dt>
                 <dd className="tabular-nums">{q.delivery ? money(q.delivery) : 'bez troška'}</dd>
               </div>
             </dl>
+            <p className="mt-2 text-[10.5px] leading-[1.5] opacity-50">
+              Trošak i način isporuke su orijentacioni — tačne uslove potvrđujemo prije narudžbe.
+            </p>
             <div className="mt-3 flex items-baseline justify-between border-t border-ink/15 pt-3">
               <p className="text-[11.5px] opacity-60">Ukupno sa PDV-om</p>
               <p className="num text-[28px]">{money(q.total)}</p>

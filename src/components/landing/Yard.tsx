@@ -3,6 +3,7 @@
 import { useRef } from 'react'
 import Image from 'next/image'
 import Pw from '@/components/ui/Pw'
+import { COMPANY } from '@/gc/gc'
 import { useMediaMotion } from '@/lib/media'
 
 // Stovarište (prije podnožja): dvije velike fotografije dvorišta; na hover se preko fotografije
@@ -42,8 +43,8 @@ export default function Yard() {
             </h2>
           </div>
           <p className="max-w-[46ch] text-[12.5px] leading-[1.7] text-ink/70 md:text-right" data-up data-delay="1">
-            Grand Company d.o.o. već dugi niz godina uspješno posluje i vodeća je firma u Banja Luci kada je u pitanju
-            prodaja građevinskog materijala.
+            Grand Company posluje od {COMPANY.founded}. godine i bavi se veleprodajom i prodajom građevinskog
+            materijala u Banja Luci.
           </p>
         </div>
       </div>

@@ -44,7 +44,7 @@ export default function Quote() {
               <p className="max-w-[46ch] text-small uppercase">
                 Ovo je demo prodavnica i forma još nije povezana. Pozovite{' '}
                 <a href={COMPANY.phoneLandlineHref} className="underline underline-offset-4">{COMPANY.phoneLandline}</a> ili pišite na{' '}
-                <a href={`mailto:${COMPANY.emailSales}`} className="underline underline-offset-4">{COMPANY.emailSales}</a>.
+                <a href={`mailto:${COMPANY.emailInfo}`} className="underline underline-offset-4">{COMPANY.emailInfo}</a>.
               </p>
               <button
                 type="button"
