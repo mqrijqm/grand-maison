@@ -8,17 +8,17 @@ import { bySku } from '@/gc/gc'
 import { useB2B, withDiscount } from '@/lib/b2b'
 import { addToCart, notify } from '@/lib/cart'
 import { money, shotOf } from '@/lib/shop'
-import { NORMS, WASTE, calcW111Area, wallThickness, type Cladding } from '@/lib/w111'
+import { NORMS, WASTE_DEFAULT, WASTE_OPTIONS, calcW111Area, wallThickness, type Cladding } from '@/lib/w111'
 
-// Kalkulator W111 (/kalkulator). Gore: unos — površina zida (veliki broj), obloga, ploča, vuna.
-// Sredina: presjek zida u razmjeri koji prati izbor (ploče u boji tipa, profili, vuna, debljina).
-// Dolje: spisak materijala sa količinama, pakovanjima i cijenom, i "Dodaj sve u korpu".
+// Kalkulator W111 (/kalkulator). Gore: unos — površina zida (veliki broj), obloga, ploča, vuna,
+// traka i rezerva za otpad. Sredina: presjek zida u razmjeri koji prati izbor (ploče u boji tipa,
+// profili, vuna, debljina). Dolje: orijentacioni proračun sa količinama, pakovanjima i cijenom.
 
 const PLATES = [
   { sku: 'GKP-001', code: 'GKB', note: 'standardna', color: '#ece6da' },
   { sku: 'GKP-002', code: 'GKBI', note: 'vlagootporna', color: '#a9c9b4' },
   { sku: 'GKP-003', code: 'GKF', note: 'vatrootporna', color: '#e4b0aa' },
-  { sku: 'GKP-004', code: 'Diamant', note: 'tvrda, zvučna', color: '#b7c3e2' },
+  { sku: 'GKP-004', code: 'Tvrda', note: 'povećane čvrstoće', color: '#b7c3e2' },
 ]
 
 const nf = (n: number, d = 2) => n.toLocaleString('de-DE', { minimumFractionDigits: 0, maximumFractionDigits: d })
@@ -91,10 +91,12 @@ export default function W111Calculator() {
   const [cladding, setCladding] = useState<Cladding>('single')
   const [plate, setPlate] = useState(PLATES[0].sku)
   const [wool, setWool] = useState(true)
+  const [tape, setTape] = useState(false)
+  const [waste, setWaste] = useState<number>(WASTE_DEFAULT)
   const { discount } = useB2B()
 
   const area = parse(raw)
-  const lines = useMemo(() => calcW111Area(area || 0, cladding, plate, wool), [area, cladding, plate, wool])
+  const lines = useMemo(() => calcW111Area(area || 0, cladding, plate, { wool, tape, waste }), [area, cladding, plate, wool, tape, waste])
   const rows = lines.map((l) => {
     const p = bySku(l.sku)
     const unitPrice = p ? withDiscount(p.price, discount) : 0
@@ -185,6 +187,31 @@ export default function W111Calculator() {
                 <span className="w111-seg__sub">Toplotna i zvučna izolacija između profila</span>
               </span>
             </label>
+
+            <label className="w111-toggle">
+              <input type="checkbox" checked={tape} onChange={(e) => setTape(e.target.checked)} />
+              <span>
+                <span className="block">05 · Bandaž traka</span>
+                <span className="w111-seg__sub">Nije dio sistema — dodaje se za rezane i poprečne spojeve</span>
+              </span>
+            </label>
+
+            <div>
+              <p className="w111-label">06 · Rezerva za otpad</p>
+              <div
+                className="w111-seg"
+                role="radiogroup"
+                aria-label="Rezerva za otpad"
+                style={{ gridTemplateColumns: 'repeat(3, 1fr)' }}
+              >
+                {WASTE_OPTIONS.map((w) => (
+                  <button key={w} type="button" role="radio" aria-checked={waste === w} onClick={() => setWaste(w)}>
+                    <span className="block">{Math.round(w * 100)}%</span>
+                    <span className="w111-seg__sub">{w === 0 ? 'bez rezerve' : w === 0.05 ? 'uobičajeno' : 'rezovi i kutevi'}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
 
@@ -220,10 +247,12 @@ export default function W111Calculator() {
       </section>
 
       {/* ——— Spisak materijala ——— */}
-      <section className="w111-bom" aria-label="Spisak materijala">
+      <section className="w111-bom" aria-label="Orijentacioni proračun materijala">
         <div className="w111-bom__head">
-          <h2 className="display text-[clamp(28px,3.4vw,52px)] !leading-[0.95]">Spisak materijala</h2>
-          <p className="w111-hint">Uračunato {Math.round(WASTE * 100)}% otpada · količine zaokružene na cijela pakovanja</p>
+          <h2 className="display text-[clamp(28px,3.4vw,52px)] !leading-[0.95]">Proračun materijala</h2>
+          <p className="w111-hint">
+            Orijentaciono · rezerva za otpad {Math.round(waste * 100)}% · količine zaokružene na cijela pakovanja
+          </p>
         </div>
 
         <div className="w111-table" role="table" aria-label="Materijal">
@@ -262,7 +291,7 @@ export default function W111Calculator() {
               <dd className="display tabular-nums">{money(total)}</dd>
             </div>
             <div>
-              <dt className="w111-label">Masa tereta</dt>
+              <dt className="w111-label">Masa tereta · orijentaciono</dt>
               <dd className="display tabular-nums">{nf(kg / 1000, 2)} t</dd>
             </div>
           </dl>
@@ -270,7 +299,11 @@ export default function W111Calculator() {
             <Cta solid onClick={addAll}>
               Dodaj sve u korpu
             </Cta>
-            <p className="w111-hint">{kg >= 1000 ? 'Preko tone — preporučujemo dostavu kamionom sa kranom.' : 'Za veće projekte pošaljite nacrt — vraćamo tačnu specifikaciju.'}</p>
+            <p className="w111-hint">
+              {kg >= 1000
+                ? 'Preko tone — za ovu količinu vozilo i način istovara dogovaramo pojedinačno.'
+                : 'Za veće projekte pošaljite nacrt — vraćamo detaljan proračun.'}
+            </p>
           </div>
         </div>
 
@@ -279,14 +312,20 @@ export default function W111Calculator() {
           <ul>
             {NORMS.map((n) => (
               <li key={n.key}>
-                <span>{n.label}</span>
+                <span>
+                  {n.label}
+                  {n.optional ? ' · opciono' : ''}
+                </span>
                 <span className="tabular-nums">
                   {nf(n.perM2.single)} / {nf(n.perM2.double)} {n.unit}
                 </span>
               </li>
             ))}
           </ul>
-          <p className="w111-hint">Jednostruka / dvostruka obloga, prije dodatka od 5% otpada. Orijentaciono, po Knauf tehničkom listu W111.</p>
+          <p className="w111-hint">
+            Jednostruka / dvostruka obloga, prije rezerve za otpad. Orijentaciono, po Knauf tehničkom listu W111 — taj
+            list količine prikazuje bez dodatka za otpad i rezanje.
+          </p>
         </details>
       </section>
     </div>

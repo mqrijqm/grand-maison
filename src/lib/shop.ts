@@ -387,6 +387,17 @@ export const money = (n: number) =>
 export const qtyLabel = (n: number, unit: string) =>
   `${n.toLocaleString('de-DE', { maximumFractionDigits: 2 })} ${unit}`
 
+/**
+ * Masa po jedinici artikla. `weight` je uvijek kg po jedinici prodaje (kg/m² za robu koja se
+ * prodaje po m², kg/kom ili kg/pakovanje za ostalo) — vidi lib/logistics.ts. Kod robe po m²
+ * dodajemo i masu pakovanja, da se vidi koliko teži jedna ploča ili rolna.
+ */
+export const massLabel = (p: { weight: number; unit: string; pack?: { size: number; name: string } }) => {
+  const f = (n: number) => n.toLocaleString('de-DE', { maximumFractionDigits: 2 })
+  const per = `${f(p.weight)} kg/${p.unit}`
+  return p.pack && p.unit === 'm²' ? `${per} · 1 ${p.pack.name} ≈ ${f(p.weight * p.pack.size)} kg` : per
+}
+
 export const artikala = (n: number) => `${n} ${plural(n, 'artikal', 'artikla', 'artikala')}`
 
 // Stavke lijepljive trake; id je ujedno i id sekcije na stranici.

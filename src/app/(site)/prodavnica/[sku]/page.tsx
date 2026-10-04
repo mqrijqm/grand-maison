@@ -7,7 +7,7 @@ import ProductBuy from '@/components/catalog/ProductBuy'
 import ProductCard from '@/components/catalog/ProductCard'
 import MotionScope from '@/components/shop/MotionScope'
 import { WALL_SYSTEMS } from '@/gc/gc'
-import { PRODUCTS, PRICE_NOTE, USES, categoryName, qtyLabel } from '@/lib/shop'
+import { PRODUCTS, PRICE_NOTE, USES, categoryName, massLabel, qtyLabel } from '@/lib/shop'
 import Pw from '@/components/ui/Pw'
 import Price from '@/components/b2b/Price'
 
@@ -40,8 +40,10 @@ export default async function ProductPage({ params }: PageProps<'/prodavnica/[sk
   const uses = USES.filter((u) => product.uses.includes(u.id))
   const specs = [
     ['Dimenzije', product.spec],
-    ...(product.pack ? [['Pakovanje', `${qtyLabel(product.pack.size, product.unit)} — 1 ${product.pack.name}`]] : []),
-    ['Masa', `${product.weight.toLocaleString('de-DE')} kg`],
+    // Pakovanje se prikazuje samo gdje je veličina izražena u jedinici artikla (m²); kod vreća i
+    // kutija isto piše u specifikaciji ("Vreća 5 kg"), pa se ne ponavlja.
+    ...(product.pack && product.unit === 'm²' ? [['Pakovanje', `${qtyLabel(product.pack.size, product.unit)} — 1 ${product.pack.name}`]] : []),
+    ['Masa', massLabel(product)],
     ['Brend', product.brand],
     ...(systems.length ? [['Sistemi', systems.map((s) => s.code).join(', ')]] : []),
     ['Šifra', product.sku],
