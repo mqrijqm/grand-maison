@@ -43,7 +43,7 @@ export default function Delivery() {
   )
 
   return (
-    <section ref={root} id="isporuka" className="relative z-20 h-[240vh] bg-bg" aria-label="Isporuka kranom">
+    <section ref={root} id="isporuka" className="relative z-20 h-[240vh] bg-bg" aria-label="Isporuka i istovar">
       {/* Fotografija ostaje u kadru do samog kraja sekcije (sticky do dna), pa plave stepenice
           sljedeće trake padaju direktno na nju — bez krem trake između. */}
       <div className="sticky top-0 h-dvh overflow-hidden">
@@ -56,24 +56,24 @@ export default function Delivery() {
           <h2 className="display text-[clamp(44px,8.4vw,150px)]">
             <span className="block overflow-hidden pb-[0.08em]">
               <span data-line className="block">
-                Istovar
+                Dostava
               </span>
             </span>
             <span className="block overflow-hidden pb-[0.08em]">
               <span data-line className="block">
-                na sprat
+                i istovar
               </span>
             </span>
           </h2>
           <p data-foot className="absolute inset-x-0 bottom-10 flex flex-col items-center gap-3 text-[12.5px] md:bottom-14">
             <span className="flex items-center gap-3">
               <span className="max-w-[52ch] opacity-90">
-                Vlastiti kamioni sa hidrauličnom dizalicom — paletirani materijal istovaramo direktno na spratove i visoke
-                etaže gradilišta u regiji Banja Luke i šire.
+                Dostava i istovar građevinskog materijala — uslovi i način istovara dogovaraju se prema lokaciji i vrsti
+                robe, uz mogućnost kranskog istovara u regiji Banja Luke i šire.
               </span>
             </span>
             <Link href="/dostava" className="ulink">
-              Dostava i kran-transport
+              Detalji o dostavi
             </Link>
           </p>
         </div>

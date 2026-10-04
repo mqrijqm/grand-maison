@@ -27,7 +27,7 @@ const w111 = calcW111({
   L: 4,
   H: 2.5,
   cladding: 'single',
-  plateSku: 'KNF-001',
+  plateSku: 'GKP-001',
   cwSku: 'PRF-075',
   woolSku: 'ISO-001',
   fillerSku: 'CHM-001',
@@ -36,13 +36,13 @@ const w111 = calcW111({
 export const POSTS: Post[] = [
   {
     slug: 'pregradni-zid-w111-korak-po-korak',
-    title: 'Pregradni zid W111, korak po korak',
+    title: 'Pregradni zid, korak po korak',
     lead: 'Redoslijed montaže standardnog zida sa jednom pločom sa svake strane.',
     tag: 'Sistemi',
     date: '2026-09-18',
     read: 7,
     art: 'wall-section',
-    skus: ['KNF-001', 'PRF-075', 'PRF-UW75', 'ISO-001', 'ACC-001', 'ACC-003'],
+    skus: ['GKP-001', 'PRF-075', 'PRF-UW75', 'ISO-001', 'ACC-001', 'ACC-003'],
     body: [
       { t: 'h', text: 'Prije montaže' },
       {
@@ -81,19 +81,19 @@ export const POSTS: Post[] = [
   },
   {
     slug: 'gkb-gkbi-gkf-ili-diamant',
-    title: 'GKB, GKBI, GKF ili Diamant — koju ploču gdje',
+    title: 'GKB, GKBI ili GKF — koju ploču gdje',
     lead: 'Četiri ploče izgledaju slično, ali nisu zamjenjive u svakoj prostoriji.',
     tag: 'Materijal',
     date: '2026-08-26',
     read: 5,
     art: 'pallet',
-    skus: ['KNF-001', 'KNF-002', 'KNF-003', 'KNF-004'],
+    skus: ['GKP-001', 'GKP-002', 'GKP-003', 'GKP-004'],
     body: [
       { t: 'h', text: 'Birajte prema zahtjevu' },
       {
         t: 'p',
         text: 'GKB je standard za suhe prostorije. GKBI je impregnirana ploča za kupatila, kuhinje i vešernice. '
-          + 'GKF se koristi kada sistem mora imati definisanu otpornost na požar, a Diamant kada su uz to važni udar, nosivost i zvuk.',
+          + 'GKF se koristi kada sistem mora imati definisanu otpornost na požar, a tvrda ploča povećane čvrstoće kada su uz to važni udar, nosivost i zvuk.',
       },
       {
         t: 'spec',
@@ -101,7 +101,7 @@ export const POSTS: Post[] = [
           ['GKB', 'Standardni zidovi i plafoni'],
           ['GKBI', 'Prostorije sa povremenom vlagom'],
           ['GKF', 'Protivpožarne obloge'],
-          ['Diamant DFH2IR', 'Čvrstoća, zvuk, vlaga i požar'],
+          ['Tvrda ploča', 'Čvrstoća, zvuk, vlaga i požar'],
         ],
       },
       {
@@ -200,7 +200,7 @@ export const POSTS: Post[] = [
   },
   {
     slug: 'istovar-kranom-priprema-gradilista',
-    title: 'Istovar kranom: šta pripremiti na gradilištu',
+    title: 'Istovar na gradilištu: šta pripremiti',
     lead: 'Pet provjera prije dolaska kamiona štedi vrijeme i čuva materijal.',
     tag: 'Isporuka',
     date: '2026-04-15',
@@ -232,7 +232,7 @@ export const POSTS: Post[] = [
     date: '2026-03-11',
     read: 6,
     art: 'ceiling-grid',
-    skus: ['KNF-001', 'PRF-CD60', 'PRF-UD28', 'ACC-001', 'ACC-006'],
+    skus: ['GKP-001', 'PRF-CD60', 'PRF-UD28', 'ACC-001', 'ACC-006'],
     body: [
       { t: 'h', text: 'Nivelacija' },
       {

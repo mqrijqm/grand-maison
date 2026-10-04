@@ -55,7 +55,7 @@ export default function Featured() {
       gsap.fromTo(cards, { autoAlpha: 0, yPercent: 12 }, { autoAlpha: 1, yPercent: 0, duration: 0.5, ease: EASE.quint, stagger: 0.03 })
 
       const mm = gsap.matchMedia()
-      mm.add({ desktop: '(min-width: 768px) and (prefers-reduced-motion: no-preference)' }, () => {
+      mm.add({ desktop: '(min-width: 1024px) and (prefers-reduced-motion: no-preference)' }, () => {
         const distance = () => Math.max(0, track.scrollWidth - viewport.clientWidth)
         // Omotač je visok koliko traje vožnja trake: ekran + dužina trake. Mjeri se prije svakog
         // osvježavanja ScrollTriggera, da start/end budu izmjereni na tačnoj visini.
@@ -150,6 +150,9 @@ export default function Featured() {
               )
             })}
           </div>
+          <p className="mt-4 text-[10.5px] leading-[1.6] opacity-45">
+            Cijene, šifre i stanje artikala su orijentacioni — ponudu i dostupnost potvrđujemo po upitu.
+          </p>
         </div>
 
         {/* Traka: na desktopu je vozi skrol (GSAP), na mobilnom je običan swipe sa "snap"-om. */}

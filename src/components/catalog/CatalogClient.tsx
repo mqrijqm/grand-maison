@@ -19,7 +19,7 @@ import Price from '@/components/b2b/Price'
 
 // Naslovna fotografija za svaku grupu: jedan tipičan artikal iz nje.
 const COVER: Record<CategoryId, string> = {
-  'suha-gradnja': 'KNF-001',
+  'suha-gradnja': 'GKP-001',
   izolacija: 'ISO-002',
   veziva: 'CHM-002',
   oprema: 'ACC-003',
@@ -63,7 +63,7 @@ export default function CatalogClient() {
   useGSAP(
     () => {
       const cells = grid.current?.querySelectorAll('[data-cell]')
-      if (!cells?.length || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+      if (!cells?.length || window.matchMedia('(prefers-reduced-motion: reduce), (max-width: 1023px)').matches) return
       gsap.fromTo(cells, { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.5, ease: EASE.quint, stagger: 0.025, scrollTrigger: { trigger: grid.current, start: 'top 85%' } })
     },
     { scope: grid, dependencies: [cat, use], revertOnUpdate: true },
@@ -182,7 +182,9 @@ export default function CatalogClient() {
                     className="cell-shot absolute inset-0 h-full w-full object-contain transition-transform duration-700 ease-[var(--ease-out)] group-hover:-translate-y-2 group-hover:scale-[1.03]"
                   />
                 </span>
-                <span className="mt-5 text-[9.5px] tracking-[0.12em] opacity-50">{p.brand}</span>
+                <span className="mt-5 text-[9.5px] tracking-[0.12em] opacity-50">
+                  {p.brand === 'Ostali proizvođači' ? '\u00A0' : p.brand}
+                </span>
                 <span className="mt-1 max-w-[30ch] text-[11px] leading-[1.45]">{p.name}</span>
                 <span className="mt-1 max-w-[34ch] text-[10px] normal-case leading-[1.4] tracking-normal opacity-55">{p.spec}</span>
                 <span className="mt-1.5 text-[12px] tabular-nums transition-colors group-hover:text-signal">

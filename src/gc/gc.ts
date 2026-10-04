@@ -88,7 +88,7 @@ const PHOTOS = raw.PRODUCT_PHOTOS as Record<string, string>
 // Pexels stock photos (free licence, see /stock/credits.json) showing the same
 // kind of material. Articles with our own photo (PRODUCT_PHOTOS) keep it.
 const STOCK_BY_SKU: Record<string, string> = {
-  'KNF-001': 'board-stack', 'KNF-002': 'board-green', 'KNF-003': 'board-stack-2', 'KNF-004': 'board-cut',
+  'GKP-001': 'board-stack', 'GKP-002': 'board-green', 'GKP-003': 'board-stack-2', 'GKP-004': 'board-cut',
   'PRF-050': 'profiles-stack', 'PRF-075': 'profiles-stack', 'PRF-100': 'profiles-stack', 'PRF-UW75': 'profiles-stack-2',
   'PRF-CD60': 'profile-texture', 'PRF-UD28': 'profile-wall',
   'ISO-001': 'wool-closeup', 'ISO-002': 'wool-roof', 'ISO-005': 'eps-blocks', 'ISO-006': 'eps-board',

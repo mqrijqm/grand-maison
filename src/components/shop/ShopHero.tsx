@@ -28,7 +28,8 @@ export default function ShopHero({ onAll }: { onAll: () => void }) {
 
         <div className="flex flex-col items-start gap-10 lg:flex-row lg:items-center lg:justify-between">
           <p data-up className="max-w-[38ch] text-[11.5px] leading-[1.6]">
-            Radimo sa Knauf, Knauf Insulation, Ceresit i Lukavac — biramo samo sisteme koji su provjereni na gradilištu.
+            U katalogu su sistemi suhe gradnje, izolacija, veziva i pribor — biramo materijal koji se pokazao na
+            gradilištu. Šire grupe asortimana nabavljamo po upitu.
           </p>
           <BladeOutline label="Svi artikli" onClick={onAll} className="shrink-0 self-center lg:mr-[2vw]" />
         </div>

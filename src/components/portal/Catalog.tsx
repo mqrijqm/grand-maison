@@ -83,7 +83,7 @@ export default function Catalog({ partner }: { partner: FullPartner | null }) {
         })}
       </div>
       <div className={`mt-4 grid gap-3 border-b ${line} pb-6 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_auto]`}>
-        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Šifra ili naziv (npr. KNF-002, CW 75)" className={field} aria-label="Pretraga" />
+        <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Šifra ili naziv (npr. GKP-002, CW 75)" className={field} aria-label="Pretraga" />
         <select value={brand} onChange={(e) => setBrand(e.target.value)} className={field} aria-label="Brend">
           <option value="sve">Svi brendovi</option>
           {BRANDS.map((b) => (

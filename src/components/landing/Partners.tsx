@@ -63,6 +63,10 @@ export default function Partners() {
         ))}
       </div>
 
+      <p data-up className="mx-auto mt-6 w-[calc(100%-40px)] max-w-[1200px] text-[11px] opacity-55">
+        Prikazani nivoi su okvirni — konkretan rabat, kreditni limit i valuta plaćanja dogovaraju se ugovorom.
+      </p>
+
       <div data-up className="mt-[8vh] flex flex-wrap justify-center gap-3 px-5">
         <Cta href="/portal" solid>
           B2B portal

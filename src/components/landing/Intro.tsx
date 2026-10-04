@@ -19,10 +19,10 @@ const SCENES = [
   { src: '/editorial/pro/02-paleta.webp', label: 'Složaj ploča na paleti', note: 'Suho skladištenje' },
   { src: '/editorial/pro/03-stub.webp', label: 'Stub krana odozdo', note: 'Vlastita logistika' },
   { src: '/editorial/pro/04-bandaza.webp', label: 'Bandaža i glet', note: 'Suha gradnja' },
-  { src: '/editorial/pro/05-profili.webp', label: 'Pocinkovani profili', note: 'Knauf sistemi' },
+  { src: '/editorial/pro/05-profili.webp', label: 'Pocinkovani profili', note: 'Sistemi suhe gradnje' },
   { src: '/editorial/pro/06-vuna.webp', label: 'Kamena vuna', note: 'Toplotna i zvučna izolacija' },
   { src: '/editorial/pro/07-kontrateg.webp', label: 'Kontrateg i pod', note: 'Naš toranjski kran' },
-  { src: '/editorial/pro/08-vijci.webp', label: 'Vijci za suhu gradnju', note: 'Sitni materijal' },
+  { src: '/editorial/pro/08-vijci.webp', label: 'Montažni pribor', note: 'Sitni materijal' },
 ]
 
 export default function Intro() {
@@ -50,7 +50,7 @@ export default function Intro() {
       const track = el.querySelector<HTMLElement>('[data-track]')!
 
       const mm = gsap.matchMedia()
-      mm.add({ desktop: '(min-width: 768px) and (prefers-reduced-motion: no-preference)' }, () => {
+      mm.add({ desktop: '(min-width: 1024px) and (prefers-reduced-motion: no-preference)' }, () => {
         const distance = () => Math.max(0, track.scrollWidth - viewport.clientWidth)
         // Omotač je visok koliko traje vožnja: ekran + dužina trake. Mjeri se prije svakog
         // osvježavanja ScrollTriggera, da start/end budu izmjereni na tačnoj visini.
@@ -93,8 +93,9 @@ export default function Intro() {
         <div data-up data-delay="0.1" className="mt-12 flex justify-end">
           <div className="max-w-[52ch]">
             <p className="text-[15px] leading-[1.7] opacity-75">
-              Snabdijevamo građevinske firme i izvođače: materijal sa stovarišta u Banjoj Luci, vaša cijena i dostava
-              vlastitim kamionima sa kranom — direktno na gradilište. Suha gradnja i Knauf sistemi su naša specijalizacija.
+              Snabdijevamo građevinske firme i izvođače: materijal sa stovarišta u Banjoj Luci, cijena prema dogovoru i
+              dostava teške i paletirane robe uz mogućnost kranskog istovara. Sistemi suhe gradnje jedna su od ključnih
+              oblasti naše ponude.
             </p>
             <div data-up data-delay="0.2" className="mt-7 flex flex-wrap gap-3">
               <Cta href="/portal" solid>

@@ -12,7 +12,7 @@ type Norm = { key: string; label: string; sku: string; perM2: Record<Cladding, n
 
 // Ploča se bira (GKB, GKBI, GKF, Diamant); ostalo je fiksno iz kataloga.
 export const NORMS: Norm[] = [
-  { key: 'board', label: 'Gips-kartonska ploča 12,5 mm', sku: 'KNF-001', perM2: { single: 2, double: 4 }, unit: 'm²', pack: 2.5, packName: 'ploča' },
+  { key: 'board', label: 'Gips-kartonska ploča 12,5 mm', sku: 'GKP-001', perM2: { single: 2, double: 4 }, unit: 'm²', pack: 2.5, packName: 'ploča' },
   { key: 'cw', label: 'Zidni profil CW 75', sku: 'PRF-075', perM2: { single: 2, double: 2 }, unit: 'm', pack: 3, packName: 'kom (3 m)' },
   { key: 'uw', label: 'Vodeći profil UW 75', sku: 'PRF-UW75', perM2: { single: 0.7, double: 0.7 }, unit: 'm', pack: 4, packName: 'kom (4 m)' },
   { key: 'wool', label: 'Kamena vuna 50 mm', sku: 'ISO-001', perM2: { single: 1, double: 1 }, unit: 'm²', pack: 0.6, packName: 'ploča', optional: 'wool' },

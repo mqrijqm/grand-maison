@@ -64,8 +64,8 @@ export default function Bento() {
           </span>
         </h2>
         <p className="max-w-[340px] text-[12.5px] leading-[1.55] text-ink/75 md:mb-[1.2vw] md:mr-[2vw]">
-          Za građevinske firme i izvođače: vaša ugovorena cijena, kreditni limit i stanje na stovarištu. Naručite
-          online — dovozimo na gradilište.
+          Za građevinske firme i izvođače: ugovorena cijena, kreditni limit i uvid u asortiman. Naručite online —
+          dostavu dogovaramo prema lokaciji i vrsti robe.
         </p>
       </div>
 
@@ -80,7 +80,7 @@ export default function Bento() {
             <Tag tone="blue">Nivo 3 · 18–22%</Tag>
           </span>
           <span className="mb-8 mt-auto max-w-[260px] pt-12 text-[12px] leading-[1.5] opacity-85">
-            Zanatlije i manji izvođači, srednje građevinske firme i veliki ugovorni partneri —
+            Zanatlije i manji izvođači, srednje firme i veliki ugovorni partneri. Okvirni nivoi — tačan rabat se dogovara.
           </span>
           <Arrow className="bg-white text-cobalt" />
         </Link>
@@ -94,7 +94,7 @@ export default function Bento() {
             <Tag tone="dark">Menica / garancija</Tag>
           </span>
           <span className="mb-8 mt-auto max-w-[260px] pt-12 text-[12px] leading-[1.5] opacity-85">
-            Odobreni limit uz odgođeno plaćanje; iskorištenost limita vidite na portalu u realnom vremenu —
+            Odobreni limit uz odgođeno plaćanje; iskorištenost limita vidite na portalu. Okvirno — tačan limit i valuta se dogovaraju.
           </span>
           <Arrow className="bg-white text-[#1e1e1e]" />
         </Link>
@@ -112,7 +112,7 @@ export default function Bento() {
           </div>
           <div className="flex flex-1 flex-col p-7">
             <p className="font-pretty max-w-[600px] text-[clamp(20px,1.7vw,28px)] leading-[1.15]">
-              Vidite šta je na stanju — prije nego krenete na gradilište.
+              Vidite šta je u ponudi — prije nego krenete na gradilište.
             </p>
             <Arrow className="mt-auto bg-ink pt-0 text-white" />
           </div>

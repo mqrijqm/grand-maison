@@ -15,10 +15,10 @@ import { NORMS, WASTE, calcW111Area, wallThickness, type Cladding } from '@/lib/
 // Dolje: spisak materijala sa količinama, pakovanjima i cijenom, i "Dodaj sve u korpu".
 
 const PLATES = [
-  { sku: 'KNF-001', code: 'GKB', note: 'standardna', color: '#ece6da' },
-  { sku: 'KNF-002', code: 'GKBI', note: 'vlagootporna', color: '#a9c9b4' },
-  { sku: 'KNF-003', code: 'GKF', note: 'vatrootporna', color: '#e4b0aa' },
-  { sku: 'KNF-004', code: 'Diamant', note: 'tvrda, zvučna', color: '#b7c3e2' },
+  { sku: 'GKP-001', code: 'GKB', note: 'standardna', color: '#ece6da' },
+  { sku: 'GKP-002', code: 'GKBI', note: 'vlagootporna', color: '#a9c9b4' },
+  { sku: 'GKP-003', code: 'GKF', note: 'vatrootporna', color: '#e4b0aa' },
+  { sku: 'GKP-004', code: 'Diamant', note: 'tvrda, zvučna', color: '#b7c3e2' },
 ]
 
 const nf = (n: number, d = 2) => n.toLocaleString('de-DE', { minimumFractionDigits: 0, maximumFractionDigits: d })

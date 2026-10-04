@@ -6,8 +6,8 @@ import { notFound } from 'next/navigation'
 import ProductBuy from '@/components/catalog/ProductBuy'
 import ProductCard from '@/components/catalog/ProductCard'
 import MotionScope from '@/components/shop/MotionScope'
-import { DELIVERY_ZONES, WALL_SYSTEMS } from '@/gc/gc'
-import { PRODUCTS, USES, categoryName, qtyLabel } from '@/lib/shop'
+import { WALL_SYSTEMS } from '@/gc/gc'
+import { PRODUCTS, PRICE_NOTE, USES, categoryName, qtyLabel } from '@/lib/shop'
 import Pw from '@/components/ui/Pw'
 import Price from '@/components/b2b/Price'
 
@@ -42,7 +42,7 @@ export default async function ProductPage({ params }: PageProps<'/prodavnica/[sk
     ['Dimenzije', product.spec],
     ...(product.pack ? [['Pakovanje', `${qtyLabel(product.pack.size, product.unit)} — 1 ${product.pack.name}`]] : []),
     ['Masa', `${product.weight.toLocaleString('de-DE')} kg`],
-    ['Proizvođač', product.brand],
+    ['Brend', product.brand],
     ...(systems.length ? [['Sistemi', systems.map((s) => s.code).join(', ')]] : []),
     ['Šifra', product.sku],
   ]
@@ -72,7 +72,7 @@ export default async function ProductPage({ params }: PageProps<'/prodavnica/[sk
           </Pw></h1>
 
           <p className="fade-up mt-6 text-[clamp(22px,1.8vw,30px)] tabular-nums" style={{ animationDelay: '0.16s' }}>
-            <Price value={product.price} unit={product.unit} /> <span className="text-[0.6em] opacity-50">sa PDV-om</span>
+            <Price value={product.price} unit={product.unit} /> <span className="text-[0.6em] opacity-50">sa PDV-om · orijentaciono</span>
           </p>
 
           <p className="fade-up mt-8 max-w-[44ch] text-[13px] leading-[1.55] opacity-80" style={{ animationDelay: '0.24s' }}>
@@ -80,7 +80,7 @@ export default async function ProductPage({ params }: PageProps<'/prodavnica/[sk
           </p>
 
           <div className="fade-up mt-10" style={{ animationDelay: '0.32s' }}>
-            <ProductBuy product={product} zones={DELIVERY_ZONES} />
+            <ProductBuy product={product} />
           </div>
 
           <dl className="mt-14 max-w-[520px] text-[14px]" data-up>
@@ -91,6 +91,8 @@ export default async function ProductPage({ params }: PageProps<'/prodavnica/[sk
               </div>
             ))}
           </dl>
+
+          <p className="mt-6 max-w-[52ch] text-[10.5px] leading-[1.6] opacity-45">{PRICE_NOTE}</p>
 
           {uses.length > 0 && (
             <p className="mt-8 flex flex-wrap gap-x-5 gap-y-1 text-[14px]" data-up>

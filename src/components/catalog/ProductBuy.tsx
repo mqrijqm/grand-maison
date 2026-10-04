@@ -1,23 +1,20 @@
 'use client'
 
 import { useState } from 'react'
-import { STOCK_LABEL, stockLevel, type DeliveryZone } from '@/gc/gc'
 import { addToCart, toggleSaved, useShop } from '@/lib/cart'
 import { defaultQty, money, qtyLabel, type Product } from '@/lib/shop'
 import Price from '@/components/b2b/Price'
 import { useB2B, withDiscount } from '@/lib/b2b'
 import Cta from '@/components/ui/Cta'
 
-type Props = { product: Product; zones: DeliveryZone[] }
+type Props = { product: Product }
 
 // Kupovina na stranici artikla: količina u kapsuli (− / +), dugme sa ukupnim iznosom i "Sačuvaj".
-export default function ProductBuy({ product, zones }: Props) {
+export default function ProductBuy({ product }: Props) {
   const step = defaultQty(product)
   const [qty, setQty] = useState(step)
   const { saved } = useShop()
   const isSaved = saved.includes(product.id)
-  const level = stockLevel(product)
-  const cheapest = Math.min(...zones.map((zone) => zone.standard))
   const { discount, partner } = useB2B()
 
   return (
@@ -65,10 +62,10 @@ export default function ProductBuy({ product, zones }: Props) {
           <span className="ulink">{isSaved ? 'Sačuvano' : 'Sačuvaj'}</span>
         </button>
         <span className="flex items-center gap-2 opacity-60">
-          <span className={`size-1.5 rounded-full ${level === 'low' ? 'bg-signal' : 'bg-ink'}`} />
-          {STOCK_LABEL[level]}
+          <span className="size-1.5 rounded-full bg-ink" />
+          Dostupno po upitu
         </span>
-        <span className="opacity-60">Dostava od {money(cheapest)}</span>
+        <span className="opacity-60">Dostava po dogovoru</span>
       </div>
     </div>
   )

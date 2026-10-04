@@ -62,9 +62,9 @@ export default function BrandStory() {
               <Pw>Naš brend</Pw>
             </h2>
             <p data-up className="mt-8 max-w-[62ch] text-[11.5px] leading-[1.75]">
-              {COMPANY.name} od {COMPANY.founded}. radi veleprodaju i maloprodaju građevinskog materijala: Knauf sisteme suhe
-              gradnje, izolaciju, veziva i pribor. Ne prodajemo samo ploču — slažemo sistem, od profila i vijaka do mase za spojeve,
-              i spuštamo ga kranom na vašu etažu.
+              {COMPANY.name} od {COMPANY.founded}. radi veleprodaju i maloprodaju građevinskog materijala: sisteme suhe
+              gradnje, izolaciju, veziva i pribor. Ne prodajemo samo ploču — slažemo sistem, od profila i montažnog
+              pribora do mase za spojeve, a uslove i način istovara dogovaramo prema lokaciji i vrsti robe.
             </p>
           </div>
         </div>

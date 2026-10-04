@@ -121,20 +121,20 @@ const ARTS = [rays, torus, globe, grains]
 
 const USPS: { title: string; text: string }[] = [
   {
-    title: 'Kran do sprata',
-    text: 'Vlastiti vozni park sa kamionima koji imaju ugrađene kranove. Paletirani materijal — gipsane ploče, vunu, ciglu — istovaramo direktno na spratove i visoke etaže gradilišta u regiji Banja Luke i šire.',
+    title: 'Dostava i istovar',
+    text: 'Dostava teške i paletirane robe — gipsanih ploča, vune, cigle. Uslovi i način istovara dogovaraju se prema lokaciji i vrsti robe, uz mogućnost kranskog istovara u regiji Banja Luke i šire.',
   },
   {
     title: 'Vaša cijena',
-    text: 'Firme i izvođači kupuju po ugovorenom rabatu do 22%, sa kreditnim limitom i plaćanjem na 30, 60 ili 90 dana.',
+    text: 'Firme i izvođači kupuju po ugovorenom rabatu, uz kreditni limit i odgođeno plaćanje. Konkretan rabat, limit i valuta dogovaraju se ugovorom.',
   },
   {
-    title: 'Na stanju',
-    text: 'Centralno stovarište u Banjoj Luci: ploče, vuna, profili i veziva spremni za utovar. Stanje vidite prije narudžbe.',
+    title: 'Stovarište',
+    text: 'Stovarište u Banjoj Luci: ploče, vuna, profili i veziva. Dostupnost i količine potvrđujemo prije narudžbe.',
   },
   {
     title: 'Suha gradnja',
-    text: 'Ovlašteni Knauf distributer: kompletni sistemi za zidove, plafone i fasade — i savjet kako ih složiti.',
+    text: 'Sistemi suhe gradnje jedna su od ključnih oblasti naše ponude: zidovi, plafoni i fasade — i savjet kako ih složiti.',
   },
 ]
 
@@ -182,8 +182,8 @@ export default function BrandsSplit() {
         </h2>
         <div className="split-panel__foot">
           <p data-lead className="split-panel__lead">
-            Grand Company snabdijeva gradilišta građevinskim materijalom: vlastiti kamioni sa kranom, B2B uslovi za firme
-            i specijalizacija za suhu gradnju.
+            Grand Company snabdijeva gradilišta građevinskim materijalom: dostava i istovar po dogovoru, B2B uslovi
+            za firme i sistemi suhe gradnje u ponudi.
           </p>
           <Cta href="/portal" className="[--cta-fill:var(--bg)] [--cta-ink:var(--navy)]">
             B2B portal

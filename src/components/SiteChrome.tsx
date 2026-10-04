@@ -258,7 +258,7 @@ export default function SiteChrome() {
           e.preventDefault()
           window.__gcLenis.scrollTo(target.getBoundingClientRect().top + window.scrollY - 80)
         }}
-        aria-label="Artikli na stanju"
+        aria-label="Artikli u ponudi"
         className="fixed bottom-4 right-4 z-[500] block w-[22px] mix-blend-difference transition-transform duration-300 hover:scale-110 md:bottom-6 md:right-6 md:w-[28px]"
         style={{ color: DIFF }}
       >

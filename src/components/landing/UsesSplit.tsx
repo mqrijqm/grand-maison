@@ -19,29 +19,29 @@ import Pw from '@/components/ui/Pw'
 // Sistemi iz kataloga (PDF, tačka 4): oznaka sistema, naziv i šta ulazi u njega — stvarni artikli.
 const SYSTEM: Record<UseId, { code: string; title: string; text: string }> = {
   'pregradni-zid': {
-    code: 'Knauf W111 / W112',
+    code: 'Zid 100–155 mm',
     title: 'Pregradni zid',
-    text: 'Gips-kartonske ploče GKB, GKBI, GKF i Diamant 12,5 mm na CW i UW profilima (lim 0,6 mm), kamena vuna NaturBoard u šupljini.',
+    text: 'Gips-kartonske ploče GKB, GKBI i GKF 12,5 mm na CW i UW profilima (lim 0,6 mm), kamena vuna u šupljini.',
   },
   'spusteni-plafon': {
-    code: 'Knauf D112',
+    code: 'Plafon 27 mm',
     title: 'Spušteni plafon',
     text: 'Nosivi i montažni CD 60/27 profili, obodni UD 28/27 i direktni ovjes 120 mm, obloga od gips-kartonskih ploča.',
   },
   fasada: {
-    code: 'DEMIT',
+    code: 'ETICS',
     title: 'Kontaktna fasada',
-    text: 'Fasadni stiropor EPS 70 ili grafitni Neopor, Ceresit CT 83 za lijepljenje i CT 85 za armiranje mrežice.',
+    text: 'Fasadni stiropor EPS 70 ili grafitni EPS, ljepilo za lijepljenje ploča i masa za armiranje mrežice (Ceresit).',
   },
   potkrovlje: {
-    code: 'Izolacija',
+    code: 'Kosi krov',
     title: 'Potkrovlje',
-    text: 'Staklena vuna Unifit 035 u rolni za kose krovove, kamena vuna 100 mm i obloga od ploča na CD profilima.',
+    text: 'Staklena vuna u rolni za kose krovove, kamena vuna 100 mm i obloga od ploča na CD profilima.',
   },
   podovi: {
-    code: 'Podovi i temelji',
+    code: 'Pod i temelj',
     title: 'Podovi',
-    text: 'Podni stiropor EPS 100, stirodur XPS za temelje i cokle, cement Lukavac CEM II 42,5N i Ceresit CM 16 za keramiku.',
+    text: 'Podni stiropor EPS 100, XPS ploče za temelje i cokle, cement CEM II 42,5N i ljepilo za keramiku.',
   },
 }
 
@@ -94,8 +94,8 @@ export default function UsesSplit() {
         </h2>
         <div className="split-panel__foot">
           <p className="split-panel__lead">
-            Naša specijalizacija: kompletni sistemi za pregradne zidove, plafone, fasade i potkrovlja — ploče, profili,
-            izolacija i veziva iz jednog skladišta, uz savjet kako ih složiti.
+            Sistemi suhe gradnje jedna su od ključnih oblasti naše ponude: pregradni zidovi, plafoni, fasade i
+            potkrovlja — ploče, profili, izolacija i veziva iz jednog skladišta, uz savjet kako ih složiti.
           </p>
           <Cta href="/prodavnica" solid>
             Katalog

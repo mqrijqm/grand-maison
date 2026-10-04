@@ -31,7 +31,7 @@ export type Category = (typeof GC_CATEGORIES)[number] & { name: string }
 export const CATEGORIES: Category[] = GC_CATEGORIES.map((c) => ({ ...c, name: c.label }))
 
 export const USES: { id: UseId; name: string; hint: string }[] = [
-  { id: 'pregradni-zid', name: 'Pregradni zid', hint: 'Ploče, CW i UW profili, vuna, vijci' },
+  { id: 'pregradni-zid', name: 'Pregradni zid', hint: 'Ploče, CW i UW profili, vuna, pribor' },
   { id: 'spusteni-plafon', name: 'Spušteni plafon', hint: 'Ploče, CD i UD profili, ovjesi' },
   { id: 'fasada', name: 'Fasada i demit', hint: 'Stiropor, ljepilo, masa za armiranje' },
   { id: 'potkrovlje', name: 'Potkrovlje', hint: 'Vuna u rolni, ploče, CD profili' },
@@ -40,10 +40,10 @@ export const USES: { id: UseId; name: string; hint: string }[] = [
 // Za koju vrstu radova se artikal koristi. Izvedeno iz namjene artikla (opis u katalogu i sistemi zidova).
 const DRY = ['pregradni-zid', 'spusteni-plafon', 'potkrovlje'] as const satisfies UseId[]
 const USE_MAP: Record<string, UseId[]> = {
-  'KNF-001': [...DRY],
-  'KNF-002': [...DRY],
-  'KNF-003': [...DRY],
-  'KNF-004': ['pregradni-zid'],
+  'GKP-001': [...DRY],
+  'GKP-002': [...DRY],
+  'GKP-003': [...DRY],
+  'GKP-004': ['pregradni-zid'],
   'PRF-050': ['pregradni-zid'],
   'PRF-075': ['pregradni-zid'],
   'PRF-100': ['pregradni-zid'],
@@ -76,7 +76,11 @@ const USE_MAP: Record<string, UseId[]> = {
 // Zamjenjuju crteže i stock fotografije iz zajedničkog kataloga.
 export const shotOf = (sku: string) => `/shop/${sku}.webp`
 
-export const PRODUCTS: Product[] = GC_PRODUCTS.map((p) => ({
+// Artikli koji nisu u ponudi kataloga (vijci su povučeni iz ponude), ali ostaju u podacima —
+// norme utroška u kalkulatoru i demo narudžbe i dalje ih navode po šifri.
+const NOT_IN_OFFER = new Set(['ACC-001'])
+
+const decorate = (p: GcProduct): Product => ({
   ...p,
   image: shotOf(p.sku),
   photo: shotOf(p.sku),
@@ -85,9 +89,15 @@ export const PRODUCTS: Product[] = GC_PRODUCTS.map((p) => ({
   id: p.sku,
   uses: USE_MAP[p.sku] ?? [],
   badge: p.featured ? 'Najčešće birano' : undefined,
-}))
+})
 
-export const PRODUCT_MAP: Record<string, Product> = Object.fromEntries(PRODUCTS.map((p) => [p.id, p]))
+/** Svi artikli iz podataka, i oni van ponude — korpa, kalkulator i demo narudžbe rade sa njima. */
+export const ALL_PRODUCTS: Product[] = GC_PRODUCTS.map(decorate)
+
+/** Katalog: samo artikli koji su u ponudi. */
+export const PRODUCTS: Product[] = ALL_PRODUCTS.filter((p) => !NOT_IN_OFFER.has(p.sku))
+
+export const PRODUCT_MAP: Record<string, Product> = Object.fromEntries(ALL_PRODUCTS.map((p) => [p.id, p]))
 export const FEATURED = PRODUCTS.filter((p) => p.featured)
 
 export const categoryName = (id: CategoryId) => CATEGORIES.find((c) => c.id === id)?.name ?? ''
@@ -242,7 +252,7 @@ export type Bundle = {
 // Norma W111 važi za zid na jednom redu CW profila: W111 (jednostruka) i W112 (dvostruka obloga).
 function bundleOf(s: WallSystem): Bundle {
   const find = (prefix: string) => s.skus.find((k) => k.startsWith(prefix))
-  const plateSku = find('KNF-')
+  const plateSku = find('GKP-')
   const cwSku = s.skus.find((k) => /^PRF-0\d\d$|^PRF-1\d\d$/.test(k))
   const fillerSku = find('CHM-')
   const fits = (s.code === 'W111' || s.code === 'W112') && plateSku && cwSku && fillerSku
@@ -362,6 +372,13 @@ export function filterProducts(f: Filters, saved: string[]): Product[] {
 }
 
 // ——— Formatiranje ———
+
+/** Napomena uz cijene i šifre: demo podaci nisu stvarna ponuda firme. */
+export const PRICE_NOTE =
+  'Cijene, šifre i stanje artikala su orijentacioni demo podaci — tačnu ponudu, cijenu i dostupnost potvrđujemo po upitu.'
+
+/** Kraća verzija uz pojedinačne cijene. */
+export const PRICE_NOTE_SHORT = 'Cijena je orijentaciona — ponuda po upitu.'
 
 export const money = (n: number) =>
   `${n.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} KM`

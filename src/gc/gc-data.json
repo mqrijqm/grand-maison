@@ -32,12 +32,12 @@
    ],
    "app": "img/app/drywall-frame.webp",
    "color": "#4F6D8F",
-   "usage": "Knauf sistemi suhe gradnje za pregradne zidove, obloge i spuštene plafone. Ploče se razlikuju po boji kartona: bijela je standardna, zelena vlagootporna, crvena vatrootporna, a plava ojačana Diamant ploča. Profili se biraju prema debljini zida i sistemu."
+   "usage": "Sistemi suhe gradnje za pregradne zidove, obloge i spuštene plafone. Ploče se razlikuju po boji kartona: bijela je standardna, zelena vlagootporna, crvena vatrootporna, a plava tvrda ploča povećane čvrstoće. Profili se biraju prema debljini zida i sistemu."
   },
   {
    "id": "izolacija",
    "label": "Izolacija i fasade",
-   "lead": "Kamena i staklena vuna, stiropor i stirodur",
+   "lead": "EPS i XPS ploče, kamena i staklena vuna",
    "image": "img/facade.webp",
    "gallery": [
     "img/facade.webp",
@@ -48,7 +48,7 @@
   },
   {
    "id": "veziva",
-   "label": "Veziva i ljepila",
+   "label": "Veziva i vrećasti materijali",
    "lead": "Mase za spojeve, ljepila, glet i cement",
    "image": "img/concrete-curves.webp",
    "gallery": [
@@ -61,8 +61,8 @@
   },
   {
    "id": "oprema",
-   "label": "Vijci i oprema",
-   "lead": "Samourezni vijci, trake i ovjesi",
+   "label": "Pribor i oprema",
+   "lead": "Trake, ovjesi i montažni pribor",
    "image": "img/steel-frame.webp",
    "gallery": [
     "img/steel-frame.webp",
@@ -70,14 +70,14 @@
    ],
    "app": "img/app/taping.webp",
    "color": "#A8432F",
-   "usage": "Pribor za montažu sistema suhe gradnje: vijci za jednostruku i dvostruku oblogu, trake za ojačanje spojeva, akustične trake ispod vodećih profila i direktni ovjesi za plafone."
+   "usage": "Pribor za montažu sistema suhe gradnje: trake za ojačanje spojeva, akustične trake ispod vodećih profila i direktni ovjesi za plafone."
   }
  ],
  "PRODUCTS": [
   {
-   "sku": "KNF-001",
-   "name": "Knauf gips-kartonska ploča GKB 12,5 mm",
-   "brand": "Knauf",
+   "sku": "GKP-001",
+   "name": "Gips-kartonska ploča GKB 12,5 mm",
+   "brand": "Ostali proizvođači",
    "spec": "2000 × 1250 × 12,5 mm, ploča 2,5 m²",
    "desc": "Standardna ploča za zidove i plafone u suhim prostorijama.",
    "price": 5.2,
@@ -97,9 +97,9 @@
    }
   },
   {
-   "sku": "KNF-002",
-   "name": "Knauf impregnirana ploča GKBI 12,5 mm",
-   "brand": "Knauf",
+   "sku": "GKP-002",
+   "name": "Impregnirana gips-kartonska ploča GKBI 12,5 mm",
+   "brand": "Ostali proizvođači",
    "spec": "2000 × 1250 × 12,5 mm, ploča 2,5 m²",
    "desc": "Vlagootporna zelena ploča za kupatila, kuhinje i vešernice.",
    "price": 7.4,
@@ -119,9 +119,9 @@
    }
   },
   {
-   "sku": "KNF-003",
-   "name": "Knauf vatrootporna ploča GKF 12,5 mm",
-   "brand": "Knauf",
+   "sku": "GKP-003",
+   "name": "Vatrootporna gips-kartonska ploča GKF 12,5 mm",
+   "brand": "Ostali proizvođači",
    "spec": "2000 × 1250 × 12,5 mm, ploča 2,5 m²",
    "desc": "Crvena ploča za protivpožarne obloge, klasa reakcije na požar A2-s1,d0.",
    "price": 8.8,
@@ -140,9 +140,9 @@
    }
   },
   {
-   "sku": "KNF-004",
-   "name": "Knauf Diamant tvrda ploča DFH2IR 12,5 mm",
-   "brand": "Knauf",
+   "sku": "GKP-004",
+   "name": "Tvrda gips-kartonska ploča 12,5 mm",
+   "brand": "Ostali proizvođači",
    "spec": "2000 × 1250 × 12,5 mm, ploča 2,5 m²",
    "desc": "Ekstra čvrsta ploča sa boljom zvučnom izolacijom i otpornošću na vatru i udarce.",
    "price": 14.5,
@@ -157,7 +157,7 @@
    "art": {
     "kind": "board",
     "face": "#7F9DC2",
-    "label": "DFH2IR 12,5"
+    "label": "Tvrda 12,5"
    }
   },
   {
@@ -239,8 +239,8 @@
   },
   {
    "sku": "ISO-001",
-   "name": "Kamena vuna Knauf Insulation NaturBoard 50 mm",
-   "brand": "Knauf Insulation",
+   "name": "Kamena vuna u ploči 50 mm",
+   "brand": "Ostali proizvođači",
    "spec": "Debljina 50 mm, ploča 1000 × 600 mm",
    "desc": "Za pregradne zidove: toplotna i zvučna izolacija, negoriva.",
    "price": 6.9,
@@ -258,13 +258,13 @@
     "material": "stonewool",
     "thick": 22,
     "count": 4,
-    "label": "NaturBoard 50"
+    "label": "Kamena vuna 50"
    }
   },
   {
    "sku": "ISO-002",
-   "name": "Kamena vuna Knauf Insulation NaturBoard 100 mm",
-   "brand": "Knauf Insulation",
+   "name": "Kamena vuna u ploči 100 mm",
+   "brand": "Ostali proizvođači",
    "spec": "Debljina 100 mm, ploča 1000 × 600 mm",
    "desc": "Za zidove visoke izolacije i potkrovlja.",
    "price": 12.8,
@@ -281,13 +281,13 @@
     "material": "stonewool",
     "thick": 32,
     "count": 3,
-    "label": "NaturBoard 100"
+    "label": "Kamena vuna 100"
    }
   },
   {
    "sku": "ISO-003",
-   "name": "Staklena mineralna vuna Unifit 035 u rolni",
-   "brand": "Knauf Insulation",
+   "name": "Staklena vuna u rolni 035",
+   "brand": "Ostali proizvođači",
    "spec": "Debljina 100 mm, rolna oko 6 m², λ = 0,035 W/mK",
    "desc": "Lagana vuna u rolni za kose krovove i potkrovlja.",
    "price": 5.5,
@@ -301,7 +301,7 @@
    },
    "art": {
     "kind": "roll",
-    "label": "Unifit 035"
+    "label": "Staklena vuna 035"
    }
   },
   {
@@ -329,7 +329,7 @@
   },
   {
    "sku": "ISO-006",
-   "name": "Grafitni stiropor EPS Neopor, sivi",
+   "name": "Grafitni stiropor EPS, sivi",
    "brand": "Ostali proizvođači",
    "spec": "Debljina 100 mm, λ = 0,031 W/mK",
    "desc": "Nisko-energetska fasadna izolacija sa tanjom pločom.",
@@ -344,13 +344,13 @@
     "material": "graphite",
     "thick": 32,
     "count": 3,
-    "label": "Neopor 100"
+    "label": "Grafitni EPS 100"
    }
   },
   {
    "sku": "CHM-001",
-   "name": "Knauf Uniflott masa za spojeve",
-   "brand": "Knauf",
+   "name": "Gipsana masa za spojeve",
+   "brand": "Ostali proizvođači",
    "spec": "Vreća 5 kg",
    "desc": "Masa visoke čvrstoće za ispunu spojeva gips-kartonskih ploča bez trake.",
    "price": 14.5,
@@ -363,15 +363,15 @@
     "kind": "bag",
     "body": "#F4F1EA",
     "band": "#2F5FA7",
-    "label": "Uniflott",
+    "label": "Masa za spojeve",
     "weight": "5 kg",
     "small": true
    }
   },
   {
    "sku": "CHM-002",
-   "name": "Knauf Fugenfüller Leicht",
-   "brand": "Knauf",
+   "name": "Gipsana masa za fugovanje",
+   "brand": "Ostali proizvođači",
    "spec": "Vreća 25 kg",
    "desc": "Standardna gipsana masa za fugovanje sa trakom.",
    "price": 28,
@@ -383,7 +383,7 @@
     "kind": "bag",
     "body": "#F4F1EA",
     "band": "#2F5FA7",
-    "label": "Fugenfüller",
+    "label": "Gips masa",
     "weight": "25 kg"
    }
   },
@@ -428,8 +428,8 @@
   },
   {
    "sku": "ACC-001",
-   "name": "Knauf TN samourezni vijci 3,5 × 25 mm",
-   "brand": "Knauf",
+   "name": "Samourezni vijci 3,5 × 25 mm",
+   "brand": "Ostali proizvođači",
    "spec": "Kutija 1000 komada",
    "desc": "Za montažu jednog sloja gips ploča na metalne profile.",
    "price": 12.5,
@@ -440,7 +440,7 @@
    "featured": true,
    "art": {
     "kind": "box",
-    "label": "TN 3,5 × 25",
+    "label": "3,5 × 25",
     "sub": "1000 kom"
    }
   },
@@ -527,7 +527,7 @@
      "deliveryCost": 90,
      "items": [
       [
-       "KNF-001",
+       "GKP-001",
        150
       ],
       [
@@ -604,11 +604,11 @@
      "deliveryCost": 130,
      "items": [
       [
-       "KNF-002",
+       "GKP-002",
        250
       ],
       [
-       "KNF-001",
+       "GKP-001",
        400
       ],
       [
@@ -714,11 +714,11 @@
      "deliveryCost": 90,
      "items": [
       [
-       "KNF-001",
+       "GKP-001",
        600
       ],
       [
-       "KNF-003",
+       "GKP-003",
        200
       ],
       [
@@ -776,7 +776,7 @@
      "deliveryCost": 90,
      "items": [
       [
-       "KNF-004",
+       "GKP-004",
        150
       ],
       [
@@ -853,20 +853,20 @@
  "CRANE_RECOMMEND_OVER_KG": 1000,
  "BRAND_NOTES": [
   [
-   "Knauf",
-   "Gips-kartonske ploče i kompletni sistemi suhe gradnje. Ovlašćeni smo distributer."
+   "Baumit",
+   "Fasadni sistemi, malteri i toplotna izolacija."
   ],
   [
-   "Knauf Insulation",
-   "Kamena i staklena mineralna vuna za zidove, plafone i potkrovlja."
+   "Tondach",
+   "Crijep i elementi za krov."
   ],
   [
    "Ceresit",
    "Ljepila, mase za armiranje i fasadni sistemi."
   ],
   [
-   "Lukavac",
-   "Cement iz domaće proizvodnje, u vrećama i na paleti."
+   "Baumalt",
+   "Brend iz aktuelne partnerske liste — asortiman po upitu."
   ]
  ],
  "WALL_SYSTEMS": [
@@ -879,7 +879,7 @@
    "build": "1 × GKB 12,5 mm sa svake strane, CW 75 na razmaku 62,5 cm, kamena vuna 50 mm",
    "rw": 47,
    "skus": [
-    "KNF-001",
+    "GKP-001",
     "PRF-075",
     "PRF-UW75",
     "ISO-001",
@@ -896,7 +896,7 @@
    "build": "2 × GKB 12,5 mm sa svake strane, CW 75, kamena vuna 50 mm",
    "rw": 54,
    "skus": [
-    "KNF-001",
+    "GKP-001",
     "PRF-075",
     "PRF-UW75",
     "ISO-001",
@@ -913,7 +913,7 @@
    "build": "2 × GKB 12,5 mm spolja, dva odvojena reda CW 50, vuna u oba polja",
    "rw": 64,
    "skus": [
-    "KNF-001",
+    "GKP-001",
     "PRF-075",
     "ISO-001",
     "CHM-001"
@@ -929,7 +929,7 @@
    "build": "GKB 12,5 mm na ukrštenoj CD rešetki, direktni ovjesi, obodni UD profil",
    "rw": null,
    "skus": [
-    "KNF-001",
+    "GKP-001",
     "PRF-CD60",
     "PRF-UD28",
     "ACC-001"
@@ -952,17 +952,17 @@
   ],
   [
    "Istovar",
-   "Kamion sa kranom spušta paletu na etažu ili skelu, ne na ulicu."
+   "Dostava i istovar dogovaraju se prema lokaciji i vrsti robe — po potrebi i uz mogućnost kranskog istovara."
   ]
  ],
  "HOME_FAQ": [
   [
    "Imate li robu na stanju ili se čeka?",
-   "Stanje na sajtu čitamo iz Pantheona, istog iz kojeg radi prodaja. Zeleno „na stanju\" znači da je roba u Zalužanima danas. Za veće količine ipak nazovite, jer se jedna narudžba može podudariti sa vašom."
+   "Stanje artikala na sajtu je orijentaciono. Zeleno „na stanju\" znači da artikal uobičajeno imamo, ali tačnu dostupnost i količine potvrđujemo prije narudžbe. Za veće količine ipak nazovite, jer se jedna narudžba može podudariti sa vašom."
   ],
   [
    "Dobijem li atest i deklaraciju uz robu?",
-   "Da. CE deklaraciju i protivpožarni atest izdajemo uz otpremnicu, za tehnički prijem. Za Knauf sisteme dajemo i tehnički list sistema."
+   "Da. CE deklaraciju i protivpožarni atest izdajemo uz otpremnicu, za tehnički prijem. Za sisteme suhe gradnje dajemo i tehnički list sistema."
   ],
   [
    "Postoji li minimalna narudžba?",

@@ -41,7 +41,7 @@ function pathBounds(parts: Part[], pad = 8) {
 
 function boardArt(product: Product): Part[] {
   const parts: Part[] = []
-  const thick = product.sku === 'KNF-004' ? 5 : 4
+  const thick = product.sku === 'GKP-004' ? 5 : 4
   for (let layer = 0; layer < 4; layer += 1) {
     const item = box(0, layer * 2, layer * 5, 116, 72, thick, O)
     parts.push({ sil: item.sil, edges: item.edges })
@@ -53,11 +53,11 @@ function boardArt(product: Product): Part[] {
     .join('')
   let cue = line([12, 16, z], [104, 16, z], O)
   const [x, y] = iso([58, 38, z], O)
-  if (product.sku === 'KNF-002') {
+  if (product.sku === 'GKP-002') {
     cue += `M${x} ${y - 13}C${x - 11} ${y} ${x - 9} ${y + 11} ${x} ${y + 11}C${x + 9} ${y + 11} ${x + 11} ${y} ${x} ${y - 13}Z`
-  } else if (product.sku === 'KNF-003') {
+  } else if (product.sku === 'GKP-003') {
     cue += `M${x} ${y + 12}C${x - 13} ${y + 4} ${x - 4} ${y - 4} ${x - 7} ${y - 15}C${x + 9} ${y - 7} ${x + 13} ${y + 4} ${x} ${y + 12}Z`
-  } else if (product.sku === 'KNF-004') {
+  } else if (product.sku === 'GKP-004') {
     cue += `M${x} ${y - 14}L${x + 14} ${y}L${x} ${y + 14}L${x - 14} ${y}Z`
   }
   parts.push({ sil: face, edges: edge, detail: cue, open: true })

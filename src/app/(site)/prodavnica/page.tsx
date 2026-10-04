@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import Assortment from '@/components/catalog/Assortment'
 import CatalogClient from '@/components/catalog/CatalogClient'
+import Groups from '@/components/catalog/Groups'
 import BrandStory from '@/components/shop/BrandStory'
 import Pw from '@/components/ui/Pw'
 
@@ -18,8 +19,8 @@ export default function CataloguePage() {
         <h1 className="display fade-up text-display"><Pw>
           Kata<em>log</em>
         </Pw></h1>
-        <p className="fade-up mx-auto mt-8 max-w-[34ch] text-[13px] leading-snug opacity-70" style={{ animationDelay: '0.12s' }}>
-          Materijal za zid, plafon, fasadu i pod — na stanju u Banjoj Luci.
+        <p className="fade-up mx-auto mt-8 max-w-[42ch] text-[13px] leading-snug opacity-70" style={{ animationDelay: '0.12s' }}>
+          Materijal za zid, plafon, fasadu i pod. Cijene su orijentacione — dostupnost i tačnu ponudu potvrđujemo po upitu.
         </p>
       </header>
 
@@ -29,6 +30,7 @@ export default function CataloguePage() {
 
       <Assortment />
 
+      <Groups />
 
       <BrandStory />
       <div aria-hidden className="h-[22vh]" />

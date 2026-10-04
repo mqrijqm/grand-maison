@@ -6,9 +6,8 @@ import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import Price from '@/components/b2b/Price'
 import Pw from '@/components/ui/Pw'
-import { STOCK_LABEL, stockLevel } from '@/gc/gc'
 import { addToCart } from '@/lib/cart'
-import { CATEGORIES, PRODUCTS, defaultQty, qtyLabel, type CategoryId } from '@/lib/shop'
+import { CATEGORIES, PRODUCTS, PRICE_NOTE, defaultQty, type CategoryId } from '@/lib/shop'
 
 // Kompletan asortiman (dno prodavnice, #asortiman): gusta lista svih artikala — drugačija od mreže
 // "Najprodavanije" iznad. Pretraga, grupa, brend, sortiranje i "samo na stanju"; redovi su grupisani
@@ -30,14 +29,11 @@ const BRANDS = [...new Set(PRODUCTS.map((p) => p.brand))].sort((a, b) =>
 
 const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'dj')
 
-const DOT: Record<string, string> = { high: 'bg-[#2e9e5b]', mid: 'bg-[#d9a400]', low: 'bg-[#d0573f]' }
-
 export default function Assortment() {
   const [q, setQ] = useState('')
   const [cat, setCat] = useState<Cat>('sve')
   const [brand, setBrand] = useState<string>('sve')
   const [sort, setSort] = useState<Sort>('preporuceno')
-  const [inStock, setInStock] = useState(false)
   const [added, setAdded] = useState<string | null>(null)
   // Accordion (dropdown): bez filtera se vide samo natpisi kategorija (+ pritisne se i otvori).
   // Kad su aktivni filteri/pretraga, grupe s rezultatima su automatski otvorene — sve se računa
@@ -51,7 +47,6 @@ export default function Assortment() {
       (p) =>
         (cat === 'sve' || p.category === cat) &&
         (brand === 'sve' || p.brand === brand) &&
-        (!inStock || stockLevel(p) !== 'low') &&
         words.every((w) => norm(`${p.sku} ${p.name} ${p.brand} ${p.spec}`).includes(w)),
     )
     if (sort === 'cijena-rastuce') out.sort((a, b) => a.price - b.price)
@@ -59,7 +54,7 @@ export default function Assortment() {
     else if (sort === 'naziv') out.sort((a, b) => a.name.localeCompare(b.name, 'bs'))
     else out.sort((a, b) => Number(!!b.featured) - Number(!!a.featured))
     return out
-  }, [q, cat, brand, sort, inStock])
+  }, [q, cat, brand, sort])
 
   // Uz "Preporučeno" lista je grupisana po grupi artikala; inače je jedna lista.
   const groups =
@@ -67,7 +62,7 @@ export default function Assortment() {
       ? CATEGORIES.map((c) => ({ id: c.id, name: c.name, items: list.filter((p) => p.category === c.id) })).filter((g) => g.items.length)
       : [{ id: 'sve', name: '', items: list }]
 
-  const isFiltered = q.trim() !== '' || cat !== 'sve' || brand !== 'sve' || inStock || sort !== 'preporuceno'
+  const isFiltered = q.trim() !== '' || cat !== 'sve' || brand !== 'sve' || sort !== 'preporuceno'
 
   const isOpen = (id: string) => (isFiltered ? !closed.has(id) : manualOpen.has(id))
 
@@ -106,7 +101,6 @@ export default function Assortment() {
     setQ('')
     setCat('sve')
     setBrand('sve')
-    setInStock(false)
     setSort('preporuceno')
   }
 
@@ -116,8 +110,9 @@ export default function Assortment() {
         <div>
           <p className="asort-label">Kompletan asortiman</p>
           <h2 className="display mt-3 text-[clamp(30px,4vw,64px)] !leading-[0.95]">
-            <Pw>Sve na stanju u Banjoj Luci</Pw>
+            <Pw>Materijal po grupama</Pw>
           </h2>
+          <p className="mt-4 max-w-[54ch] text-[11px] leading-[1.6] opacity-55">{PRICE_NOTE}</p>
         </div>
         <p className="asort-count tabular-nums">
           {PRODUCTS.length} artikala · {BRANDS.length} brendova
@@ -156,10 +151,6 @@ export default function Assortment() {
             ))}
           </div>
           <div className="flex items-center gap-5">
-            <label className="asort-check">
-              <input type="checkbox" checked={inStock} onChange={(e) => setInStock(e.target.checked)} />
-              Samo dostupno odmah
-            </label>
             <label className="asort-sort">
               <span className="sr-only">Sortiranje</span>
               <select value={sort} onChange={(e) => setSort(e.target.value as Sort)}>
@@ -207,7 +198,6 @@ export default function Assortment() {
                 <div id={`acc-${g.id}`} className="asort-acc__body">
                   <ul className="asort-list">
                     {g.items.map((p) => {
-                      const lvl = stockLevel(p)
                       return (
                         <li key={p.id} className="asort-item">
                           <Link href={`/prodavnica/${p.sku}`} className="asort-thumb" aria-hidden tabIndex={-1}>
@@ -215,18 +205,14 @@ export default function Assortment() {
                           </Link>
                           <div className="asort-main">
                             <span className="asort-sku">
-                              {p.sku} · {p.brand}
+                              {p.brand === 'Ostali proizvođači' ? p.sku : `${p.sku} · ${p.brand}`}
                             </span>
                             <Link href={`/prodavnica/${p.sku}`} className="asort-name">
                               {p.name}
                             </Link>
                             <span className="asort-spec">{p.spec}</span>
                           </div>
-                          <span className="asort-stock">
-                            <i className={DOT[lvl]} />
-                            {STOCK_LABEL[lvl]}
-                            <span className="opacity-50">{qtyLabel(p.stock, p.unit)}</span>
-                          </span>
+                          <span className="asort-stock opacity-65">Dostupno po upitu</span>
                           <span className="asort-price tabular-nums">
                             <Price value={p.price} unit={p.unit} />
                           </span>
