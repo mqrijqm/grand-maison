@@ -1,62 +1,213 @@
-'use client'
+﻿'use client'
 
-import { useRef } from 'react'
 import Cta from '@/components/ui/Cta'
-import { gsap, useGSAP } from '@/lib/gsap'
-import { MQ, EASE } from '@/lib/motion'
+import { useRef } from 'react'
+import { gsap, ScrollTrigger, useGSAP } from '@/lib/gsap'
+import { EASE, MQ } from '@/lib/motion'
 import { revealChars } from '@/lib/reveal'
-import ProcurementArt from './ProcurementArt'
-import styles from './Procurement.module.css'
 
-const STEPS = [
-  { label: 'Upit', title: 'Pošaljite upit', text: 'Navedite materijal, količine, lokaciju i rok u kojem vam je roba potrebna.' },
-  { label: 'Ponuda', title: 'Provjerite ponudu', text: 'Provjerite dostupnost, cijene i moguće zamjene za traženi materijal.' },
-  { label: 'Dogovor', title: 'Potvrdite narudžbu', text: 'Dogovorite količine, uslove i način preuzimanja prije potvrde narudžbe.' },
-  { label: 'Preuzimanje', title: 'Preuzmite materijal', text: 'Preuzmite robu na stovarištu ili dogovorite dostavu prema lokaciji i vrsti materijala.' },
+// Četiri prednosti (PDF, tačka 3). Desno stoji panel (veliki naslov u stepenastim redovima, tekst
+// dolje desno, dugme), lijevo se skrola po jedna prednost sa generativnim linijskim crtežom
+// (zrake, torus, globus, prstenovi tačaka) koji se okreće dok se skrola — crtež se računa iz
+// ugla `t`, pa ga skrol "vrti" bez ijednog video ili slikovnog fajla.
+
+const R = 110
+const f = (n: number) => n.toFixed(2)
+
+type Art = { init: (g: SVGGElement) => void; draw: (g: SVGGElement, t: number) => void }
+
+// Knauf: zrake iz centra, dužine kao talas koji putuje po krugu.
+const rays: Art = {
+  init: (g) => {
+    for (let i = 0; i < 96; i++) g.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'line'))
+  },
+  draw: (g, t) => {
+    const lines = g.querySelectorAll('line')
+    lines.forEach((l, i) => {
+      const a = (i / lines.length) * Math.PI * 2
+      const r0 = 14 + 10 * (0.5 + 0.5 * Math.sin(a * 3 + t * 4))
+      const r1 = R - 6 - 26 * (0.5 + 0.5 * Math.sin(a * 5 - t * 3))
+      l.setAttribute('x1', f(Math.cos(a) * r0))
+      l.setAttribute('y1', f(Math.sin(a) * r0))
+      l.setAttribute('x2', f(Math.cos(a) * r1))
+      l.setAttribute('y2', f(Math.sin(a) * r1))
+      l.setAttribute('stroke-dasharray', i % 2 ? '2 3' : '')
+    })
+  },
+}
+
+// Knauf Insulation: torus — elipse okrenute oko vertikalne ose; faza `t` ih rotira u 3D.
+const torus: Art = {
+  init: (g) => {
+    for (let i = 0; i < 14; i++) g.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'ellipse'))
+  },
+  draw: (g, t) => {
+    g.querySelectorAll('ellipse').forEach((e, i, all) => {
+      const a = (i / all.length) * Math.PI + t * 2
+      const cx = Math.cos(a) * R * 0.46
+      e.setAttribute('cx', f(cx))
+      e.setAttribute('cy', '0')
+      e.setAttribute('rx', f(Math.abs(Math.sin(a)) * R * 0.5 + 1))
+      e.setAttribute('ry', f(R * 0.56))
+      e.setAttribute('opacity', f(0.35 + 0.65 * Math.abs(Math.sin(a))))
+    })
+  },
+}
+
+// Ceresit: globus — meridijani (elipse čija širina prati ugao) i paralele, u tačkastom okviru.
+const globe: Art = {
+  init: (g) => {
+    const ns = 'http://www.w3.org/2000/svg'
+    for (let i = 0; i < 7; i++) g.appendChild(document.createElementNS(ns, 'ellipse'))
+    ;[-0.55, 0, 0.55].forEach((k) => {
+      const l = document.createElementNS(ns, 'line')
+      const y = k * R * 0.9
+      const w = Math.sqrt(1 - (y / (R * 0.9)) ** 2) * R * 0.9
+      l.setAttribute('x1', f(-w))
+      l.setAttribute('x2', f(w))
+      l.setAttribute('y1', f(y))
+      l.setAttribute('y2', f(y))
+      l.dataset.fixed = ''
+      g.appendChild(l)
+    })
+    const frame = document.createElementNS(ns, 'rect')
+    frame.setAttribute('x', f(-R * 0.95))
+    frame.setAttribute('y', f(-R * 0.95))
+    frame.setAttribute('width', f(R * 1.9))
+    frame.setAttribute('height', f(R * 1.9))
+    frame.setAttribute('stroke-dasharray', '1 3')
+    g.appendChild(frame)
+  },
+  draw: (g, t) => {
+    g.querySelectorAll('ellipse').forEach((e, i, all) => {
+      const a = (i / all.length) * Math.PI + t * 1.6
+      e.setAttribute('rx', f(Math.abs(Math.cos(a)) * R * 0.9 + 0.5))
+      e.setAttribute('ry', f(R * 0.9))
+    })
+  },
+}
+
+// Lukavac (cement): zrnca u prstenovima; svaki prsten se okreće svojom brzinom.
+const grains: Art = {
+  init: (g) => {
+    const ns = 'http://www.w3.org/2000/svg'
+    ;[18, 34, 50, 66, 82, 98].forEach((r, k) => {
+      const ring = document.createElementNS(ns, 'g')
+      ring.dataset.k = String(k)
+      const n = Math.round((2 * Math.PI * r) / 9)
+      for (let i = 0; i < n; i++) {
+        const c = document.createElementNS(ns, 'circle')
+        const a = (i / n) * Math.PI * 2
+        c.setAttribute('cx', f(Math.cos(a) * r))
+        c.setAttribute('cy', f(Math.sin(a) * r))
+        c.setAttribute('r', i % 3 ? '0.9' : '1.8')
+        ring.appendChild(c)
+      }
+      g.appendChild(ring)
+    })
+    const outer = document.createElementNS(ns, 'circle')
+    outer.setAttribute('r', String(R))
+    g.appendChild(outer)
+  },
+  draw: (g, t) => {
+    g.querySelectorAll<SVGGElement>('g[data-k]').forEach((ring) => {
+      const k = Number(ring.dataset.k)
+      ring.setAttribute('transform', `rotate(${f((k % 2 ? -1 : 1) * t * (40 + k * 22))})`)
+    })
+  },
+}
+
+const ARTS = [rays, torus, globe, grains]
+
+const USPS: { title: string; text: string }[] = [
+  {
+    title: 'Dostava i istovar',
+    text: 'Za dostavu paletirane i teške robe pošaljite lokaciju i količine. Mogućnosti isporuke i kranskog istovara provjerite s prodajom prema robi i pristupu gradilištu.',
+  },
+  {
+    title: 'Cijena prilagođena vama',
+    text: 'Pošaljite spisak materijala i potrebne količine. Ponudu i uslove saradnje dogovorite s prodajom prema potrebama vaše firme i projekta.',
+  },
+  {
+    title: 'Stovarište',
+    text: 'Stovarište u Banjoj Luci: ploče, vuna, profili i veziva. Dostupnost i količine potvrđujemo prije narudžbe.',
+  },
+  {
+    title: 'Suha gradnja',
+    text: 'Sistemi suhe gradnje jedna su od ključnih oblasti naše ponude: zidovi, plafoni i fasade — i savjet kako ih složiti.',
+  },
 ]
 
 export default function BrandsSplit() {
   const root = useRef<HTMLElement>(null)
-  useGSAP(() => {
-    const mm = gsap.matchMedia()
-    mm.add(MQ, ctx => {
-      const { reduce } = ctx.conditions as { reduce: boolean }
+
+  useGSAP(
+    () => {
       const el = root.current!
-      revealChars(el.querySelector('[data-head]')!, reduce, 'top 80%')
-      el.querySelectorAll('[data-step]').forEach(row => {
-        revealChars(row.querySelector('[data-title]')!, reduce, 'top 85%', row)
-        if (reduce) return
-        gsap.from(row.querySelector('[data-process-art]'), {
-          y: 24, autoAlpha: 0, duration: .7, ease: EASE.quint,
-          scrollTrigger: { trigger: row, start: 'top 80%' },
-        })
-        gsap.from(row.querySelectorAll('[data-detail]'), {
-          strokeDasharray: 600, strokeDashoffset: 600, duration: 1.2, stagger: .06,
-          ease: 'power2.out', scrollTrigger: { trigger: row, start: 'top 75%' },
+      const mm = gsap.matchMedia()
+      mm.add(MQ, (ctx) => {
+        const { reduce } = ctx.conditions as { reduce: boolean }
+        revealChars(el.querySelector('[data-head]')!, reduce, 'top 75%')
+
+        gsap.utils.toArray<HTMLElement>('[data-brand]', el).forEach((row, i) => {
+          revealChars(row.querySelector('[data-title]')!, reduce, 'top 80%', row)
+          const g = row.querySelector<SVGGElement>('[data-gen]')!
+          const art = ARTS[i]
+          if (!g.childElementCount) art.init(g)
+          art.draw(g, 0)
+          const svg = row.querySelector('svg')!
+          if (reduce) return
+          gsap.fromTo(svg, { scale: 0.6, autoAlpha: 0, rotate: -20 }, { scale: 1, autoAlpha: 1, rotate: 0, duration: 0.6, ease: EASE.quint, scrollTrigger: { trigger: row, start: 'top 75%' } })
+          ScrollTrigger.create({
+            trigger: row,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 0.6,
+            onUpdate: (self) => art.draw(g, self.progress * Math.PI),
+          })
         })
       })
-    })
-  }, { scope: root })
+    },
+    { scope: root },
+  )
 
   return (
-    <section ref={root} id="prednosti" className={styles.process} aria-labelledby="process-title">
-      <div className={styles.processPanel}>
-        <div>
-          <p className="label mb-6 opacity-65">Kako do materijala</p>
-          <h2 id="process-title" data-head className={`display invisible ${styles.processTitle}`}>Od upita do preuzimanja</h2>
-        </div>
-        <div className={styles.processFoot}>
-          <p>Četiri koraka do dogovorene nabavke. Krenite od spiska materijala ili specifikacije projekta.</p>
-          <Cta href="/upit-za-izvodjace" className="[--cta-fill:var(--bg)] [--cta-ink:var(--cobalt)]">Zatražite ponudu</Cta>
+    <section ref={root} id="prednosti" className="relative z-20 md:grid md:grid-cols-2" aria-label="Zašto Grand Company">
+      {/* Plavi panel lijevo; originalni animirani crteži na svijetloj pozadini desno. */}
+      <div className="split-panel bg-navy text-bg md:sticky md:top-0 md:h-dvh md:self-start">
+        <h2 data-head className="split-panel__head display invisible">
+          <span className="block">Četiri</span>
+          <span className="block">prednosti</span>
+          <span className="block">saradnje</span>
+        </h2>
+        <div className="split-panel__foot">
+          <p data-lead className="split-panel__lead">
+            Grand Company snabdijeva gradilišta građevinskim materijalom: dostava i istovar po dogovoru, B2B uslovi
+            za firme i sistemi suhe gradnje u ponudi.
+          </p>
+          <Cta href="/portal" className="[--cta-fill:var(--bg)] [--cta-ink:var(--navy)]">
+            B2B portal
+          </Cta>
         </div>
       </div>
-      <div className={styles.steps}>
-        {STEPS.map((step, i) => (
-          <article data-step className={styles.step} key={step.label}>
-            <div className={styles.stepMeta}><span>0{i + 1} / 04</span><span>{step.label}</span></div>
-            <ProcurementArt step={i} className={styles.art} />
-            <h3 data-title className={`display invisible ${styles.stepTitle}`}>{step.title}</h3>
-            <p className={styles.stepCopy}>{step.text}</p>
+
+      {/* Prednosti sa originalnim generativnim crtežima. */}
+      <div className="bg-bg min-w-0">
+        {USPS.map((u, i) => (
+          <article
+            key={u.title}
+            data-brand
+            className="flex flex-col items-center justify-center gap-10 border-b border-ink/10 px-6 py-[14vh] text-center md:min-h-[90dvh] md:px-[5vw]"
+          >
+            <svg viewBox={`${-R - 6} ${-R - 6} ${2 * R + 12} ${2 * R + 12}`} className="art w-[min(60vw,280px)]" fill="none" stroke="currentColor" strokeWidth={1} aria-hidden>
+              {i !== 2 && i !== 3 && <circle r={R} />}
+              <g data-gen />
+              <circle r={3} fill="var(--signal)" stroke="none" />
+            </svg>
+            <h3 data-title className="display invisible max-w-full text-[clamp(28px,3.6vw,64px)]">
+              {u.title}
+            </h3>
+            <p className="max-w-[48ch] text-[12.5px] leading-[1.65] opacity-75">{u.text}</p>
           </article>
         ))}
       </div>
