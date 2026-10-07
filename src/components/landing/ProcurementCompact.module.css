@@ -1,0 +1,39 @@
+.section > div:first-child {
+  margin-bottom: 40px;
+}
+
+.section article {
+  padding: 26px;
+}
+
+.section article h3 {
+  margin-top: 22px;
+  font-size: clamp(25px, 2vw, 32px);
+}
+
+.details {
+  display: grid;
+  gap: 0;
+  margin: 24px 0;
+  padding: 0;
+  list-style: none;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.details li {
+  padding: 10px 0;
+  border-bottom: 1px solid currentColor;
+  border-color: color-mix(in srgb, currentColor 25%, transparent);
+}
+
+.section article p {
+  margin-top: auto;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 767px) {
+  .section article {
+    padding: 24px;
+  }
+}

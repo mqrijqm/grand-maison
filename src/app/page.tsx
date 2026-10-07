@@ -5,6 +5,7 @@ import SiteHeader from "@/components/site/SiteHeader";
 import CartDrawer from "@/components/shop/CartDrawer";
 import Panels from "@/components/shop/Panels";
 import LoginModal from "@/components/b2b/LoginModal";
+import Procurement from "@/components/landing/Procurement";
 import Bento from "@/components/landing/Bento";
 import BrandsSplit from "@/components/landing/BrandsSplit";
 import Delivery from "@/components/landing/Delivery";
@@ -32,6 +33,7 @@ export default function Home() {
         {/* Program → materijal prema radovima → poslovna nabavka → postupak nabavke. */}
         <Intro />
         <UsesSplit />
+        <Procurement />
         <Bento />
         <BrandsSplit />
         <Featured />
