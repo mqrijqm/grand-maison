@@ -4,7 +4,7 @@
 
 import { useRef, useState } from 'react'
 import Link from 'next/link'
-import GcMonogram from '@/components/GcMonogram'
+import LogoMark from '@/components/site/LogoMark'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { EASE, MQ } from '@/lib/motion'
 import { revealChars } from '@/lib/reveal'
@@ -146,7 +146,7 @@ export default function Featured() {
         </div>
         <div className={styles.content}>
           <div data-orbit className={styles.stage} role="group" aria-label="Lepeza materijala — odaberite sliku za detalje">
-            <div className={styles.mark} aria-hidden><GcMonogram /></div>
+            <div className={styles.mark} aria-hidden><LogoMark /></div>
             {TILES.map((tile, i) => {
               const entry = ITEMS[tile.item]
               const angle = i / TILES.length * Math.PI * 2
