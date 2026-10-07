@@ -1,183 +1,193 @@
 'use client'
 
+/* eslint-disable @next/next/no-img-element -- optimizovane WebP fotografije iz /public */
+
 import { useRef, useState } from 'react'
-import ProductCard from '@/components/catalog/ProductCard'
-import Cta from '@/components/ui/Cta'
-import Pw from '@/components/ui/Pw'
-import { gsap, ScrollTrigger, useGSAP } from '@/lib/gsap'
+import Link from 'next/link'
+import GcMonogram from '@/components/GcMonogram'
+import { gsap, useGSAP } from '@/lib/gsap'
 import { EASE, MQ } from '@/lib/motion'
 import { revealChars } from '@/lib/reveal'
-import { CATEGORIES, PRODUCTS, type CategoryId } from '@/lib/shop'
+import { FEATURED_OFFERINGS as ITEMS } from '@/lib/featured-offerings'
+import styles from './FeaturedOrbit.module.css'
 
-// Najčešće birano: sekcija se zaustavi (CSS sticky u višem omotaču) i skrol, umjesto na sljedeću
-// sekciju, vodi traku kartica vodoravno. Sticky drži browser sam — bez GSAP pina, pa nema skoka
-// od jednog kadra na početku i kraju zaustavljanja (pin + smooth scroll je to radio). Kartice stoje stepenasto (prva najviša, svaka sljedeća niže, pa iznova), a dok
-// traka klizi svaka se njiše gore-dolje (talas), bez naginjanja — kartice ostaju uspravne.
-// Na mobilnom (i uz reduced-motion) traka je običan vodoravni swipe, bez pinovanja.
-
-type Key = CategoryId | 'sve'
-const COUNT = 10
-
-const pick = (k: Key) => {
-  const pool = k === 'sve' ? PRODUCTS : PRODUCTS.filter((p) => p.category === k)
-  return [...pool].sort((a, b) => Number(!!b.featured) - Number(!!a.featured)).slice(0, COUNT)
+// Lepeza i dinamika prema korisničkoj referenci:
+// https://github.com/mqrijqm/grand-cipher/blob/main/src/components/Constellation.tsx
+const TILES = Array.from({ length: ITEMS.length * 2 }, (_, i) => ({
+  item: i % ITEMS.length, detail: i >= ITEMS.length,
+}))
+const random = (i: number, salt: number) => {
+  const n = Math.sin(i * 12.9898 + salt * 78.233) * 43758.5453
+  return n - Math.floor(n)
 }
-
-// Stepenice: 0, 1, 2, 3, pa iznova (u jedinicama --step)
-const STAIR = 4
+const JITTER = TILES.map((_, i) => ({
+  angle: (random(i, 1) - .5) * .16, radius: 1 + (random(i, 2) - .5) * .1,
+}))
+type Controls = { enter: (i: number) => void; leave: () => void }
 
 export default function Featured() {
   const root = useRef<HTMLElement>(null)
-  const [cat, setCat] = useState<Key>('sve')
-  const list = pick(cat)
+  const controls = useRef<Controls>({ enter: () => {}, leave: () => {} })
+  const [selected, setSelected] = useState(0)
+  const item = ITEMS[selected]
 
-  useGSAP(
-    () => {
-      const mm = gsap.matchMedia()
-      mm.add(MQ, (ctx) => {
-        const { reduce } = ctx.conditions as { reduce: boolean }
-        revealChars(root.current!.querySelector('[data-head]')!, reduce, 'top 80%')
-      })
-    },
-    { scope: root },
-  )
+  useGSAP((_, contextSafe) => {
+    const el = root.current!
+    const stage = el.querySelector<HTMLElement>('[data-orbit]')!
+    const tiles = [...stage.querySelectorAll<HTMLElement>('[data-tile]')]
+    const mm = gsap.matchMedia()
+    mm.add(MQ, ctx => {
+      const { reduce } = ctx.conditions as { reduce: boolean }
+      revealChars(el.querySelector('[data-head]')!, reduce, 'top 80%')
+      const state = { angle: 0, introAngle: reduce ? 0 : -1.3, slow: 1, kick: 0, tx: 0, ty: 0, ox: 0, oy: 0 }
+      const tileState = tiles.map(() => ({ intro: reduce ? 1 : 0, scale: 1, dim: 1 }))
+      let width = 0, height = 0, tileWidth = 0, tileHeight = 0, rx = 0, ry = 0
+      let visible = false, entered = reduce, hovered = -1
 
-  // Vodoravna traka: pravi se iznova kad se promijeni grupa (druga lista, druga širina).
-  useGSAP(
-    () => {
-      const el = root.current!
-      const wrap = el.parentElement as HTMLElement
-      const viewport = el.querySelector<HTMLElement>('[data-viewport]')!
-      const track = el.querySelector<HTMLElement>('[data-track]')!
-      const cards = gsap.utils.toArray<HTMLElement>('[data-fan]', track)
-
-      // Kartice nove liste izranjaju jedna za drugom.
-      gsap.fromTo(cards, { autoAlpha: 0, yPercent: 12 }, { autoAlpha: 1, yPercent: 0, duration: 0.5, ease: EASE.quint, stagger: 0.03 })
-
-      const mm = gsap.matchMedia()
-      mm.add({ desktop: '(min-width: 1024px) and (prefers-reduced-motion: no-preference)' }, () => {
-        const distance = () => Math.max(0, track.scrollWidth - viewport.clientWidth)
-        // Omotač je visok koliko traje vožnja trake: ekran + dužina trake. Mjeri se prije svakog
-        // osvježavanja ScrollTriggera, da start/end budu izmjereni na tačnoj visini.
-        const setHeight = () => {
-          wrap.style.height = `${window.innerHeight + distance()}px`
-        }
-        setHeight()
-        ScrollTrigger.addEventListener('refreshInit', setHeight)
-        const setters = cards.map((c) => gsap.quickSetter(c, 'y', 'px'))
-        // Njihanje: zavisi od toga gdje je kartica u odnosu na sredinu ekrana.
-        // Sredine kartica (u odnosu na ekran, kad je traka na x=0) mjere se samo pri osvježavanju;
-        // u toku skrola se računa iz pomaka trake — bez čitanja rasporeda u svakom kadru (to je trzalo).
-        let centers: number[] = []
-        let vw = window.innerWidth
-        let vh = window.innerHeight
-        const measure = () => {
-          const x = Number(gsap.getProperty(track, 'x')) || 0
-          vw = window.innerWidth
-          vh = window.innerHeight
-          centers = cards.map((c) => {
-            const r = c.getBoundingClientRect()
-            return r.left + r.width / 2 - x
-          })
-        }
-        const fan = () => {
-          const mid = vw / 2
-          const x = Number(gsap.getProperty(track, 'x')) || 0
-          centers.forEach((c, i) => {
-            const d = (c + x - mid) / mid // -1 lijevo … 1 desno
-            setters[i](Math.sin(d * Math.PI + i * 0.9) * vh * 0.035 + Math.abs(d) * 24)
-          })
-        }
-        const tween = gsap.to(track, {
-          x: () => -distance(),
-          ease: 'none',
-          scrollTrigger: {
-            trigger: wrap,
-            start: 'top top',
-            end: () => `+=${distance()}`,
-            scrub: 0.8,
-            invalidateOnRefresh: true,
-            onUpdate: fan,
-            onRefresh: () => {
-              measure()
-              fan()
-            },
-          },
+      const draw = () => {
+        tiles.forEach((tile, i) => {
+          const angle = state.angle + state.introAngle + i / tiles.length * Math.PI * 2 + JITTER[i].angle
+          const depth = Math.sin(angle)
+          const scale = (.96 + .07 * (depth + 1) / 2) * tileState[i].scale * (.7 + .3 * tileState[i].intro)
+          const x = width / 2 + rx * Math.cos(angle) * JITTER[i].radius + state.ox - tileWidth / 2
+          const y = height / 2 + ry * depth * JITTER[i].radius + state.oy - tileHeight / 2
+          tile.style.transform = `translate3d(${x}px,${y}px,0) scale(${scale})`
+          tile.style.opacity = String(tileState[i].intro * tileState[i].dim)
+          tile.style.zIndex = String(hovered === i ? 260 : 100 + Math.round(depth * 80))
         })
-        measure()
-        fan()
-        return () => {
-          ScrollTrigger.removeEventListener('refreshInit', setHeight)
-          wrap.style.height = ''
-          tween.scrollTrigger?.kill()
-          tween.kill()
-          gsap.set(cards, { clearProps: 'transform' })
-        }
+      }
+      const layout = () => {
+        width = stage.clientWidth; height = stage.clientHeight
+        tileWidth = Math.min(width * .235, height * .32)
+        tileHeight = tileWidth * .64
+        rx = width * .325; ry = height * .315
+        stage.style.setProperty('--tile-width', `${tileWidth}px`)
+        stage.style.setProperty('--tile-height', `${tileHeight}px`)
+        gsap.set(tiles, { left: 0, top: 0 })
+        draw()
+      }
+      layout()
+      const observer = new ResizeObserver(layout)
+      observer.observe(stage)
+      const enterView = contextSafe!(() => {
+        if (entered) return
+        entered = true
+        gsap.to(tileState, { intro: 1, duration: 1, ease: EASE.expo, stagger: .055 })
+        gsap.to(state, { introAngle: 0, duration: 2.2, ease: EASE.out })
       })
-    },
-    { scope: root, dependencies: [cat], revertOnUpdate: true },
-  )
+      const visibility = new IntersectionObserver(([entry]) => {
+        visible = entry.isIntersecting
+        if (visible) enterView()
+      }, { threshold: .08 })
+      visibility.observe(stage)
 
-  const chips: { id: Key; name: string }[] = [{ id: 'sve', name: 'Najčešće' }, ...CATEGORIES.map((c) => ({ id: c.id, name: c.name }))]
+      const update = (_time: number, milliseconds: number) => {
+        if (!visible || document.hidden) return
+        const dt = Math.min(milliseconds, 50) / 1000
+        if (!reduce) {
+          state.kick *= Math.pow(.04, dt)
+          state.angle += (.15 * state.slow + (hovered !== -1 ? 0 : state.kick)) * dt
+          const ease = 1 - Math.exp(-5 * dt)
+          state.ox += (state.tx - state.ox) * ease
+          state.oy += (state.ty - state.oy) * ease
+        }
+        draw()
+      }
+      if (!reduce) gsap.ticker.add(update)
+      controls.current.enter = contextSafe!((i: number) => {
+        hovered = i
+        setSelected(TILES[i].item)
+        gsap.to(state, { slow: 0, duration: reduce ? 0 : .65, overwrite: 'auto' })
+        tileState.forEach((tile, j) => gsap.to(tile, {
+          scale: i === j ? 1.3 : 1, dim: i === j ? 1 : .45,
+          duration: reduce ? 0 : .65, ease: EASE.expo, overwrite: 'auto',
+        }))
+        draw()
+      })
+      controls.current.leave = contextSafe!(() => {
+        hovered = -1
+        gsap.to(state, { slow: 1, duration: reduce ? 0 : .8, overwrite: 'auto' })
+        gsap.to(tileState, { scale: 1, dim: 1, duration: reduce ? 0 : .65, ease: EASE.out, overwrite: 'auto' })
+        draw()
+      })
+      const move = (event: PointerEvent) => {
+        if (reduce || event.pointerType !== 'mouse') return
+        const rect = stage.getBoundingClientRect()
+        state.tx = ((event.clientX - rect.left) / width - .5) * -18
+        state.ty = ((event.clientY - rect.top) / height - .5) * -12
+      }
+      const reset = () => { state.tx = 0; state.ty = 0 }
+      const wheel = (event: WheelEvent) => {
+        if (!reduce && hovered === -1) state.kick = Math.max(-.7, Math.min(.7, state.kick + event.deltaY * .0006))
+      }
+      stage.addEventListener('pointermove', move)
+      stage.addEventListener('pointerleave', reset)
+      stage.addEventListener('wheel', wheel, { passive: true })
+      return () => {
+        observer.disconnect(); visibility.disconnect()
+        gsap.ticker.remove(update)
+        stage.removeEventListener('pointermove', move)
+        stage.removeEventListener('pointerleave', reset)
+        stage.removeEventListener('wheel', wheel)
+        controls.current = { enter: () => {}, leave: () => {} }
+      }
+    })
+  }, { scope: root })
 
   return (
-    <>
-      <div data-pinwrap className="relative z-20 bg-bg">
-      <section ref={root} id="najcesce" className="relative z-20 overflow-hidden bg-bg md:sticky md:top-0 md:flex md:h-dvh md:flex-col md:justify-center">
-        <div className="px-5 pt-[16vh] text-center md:pt-[11vh]">
-          <h2 data-head className="display invisible text-[clamp(44px,5.4vw,96px)]">
-            <Pw>
-              Najčešće <em>birano</em>
-            </Pw>
-          </h2>
-          <div role="tablist" aria-label="Grupa artikala" className="mt-6 flex flex-wrap justify-center gap-x-8 gap-y-2 text-[12.5px] max-md:-mx-5 max-md:gap-x-6 max-md:px-8 max-md:flex-nowrap max-md:justify-start max-md:overflow-x-auto max-md:[scrollbar-width:none] max-md:[&::-webkit-scrollbar]:hidden max-md:[&>*]:shrink-0 max-md:[&>*]:whitespace-nowrap">
-            {chips.map((c) => {
-              const on = c.id === cat
+    <section ref={root} id="najcesce" className={styles.section} aria-labelledby="featured-title">
+      <div className="gutter">
+        <div className={styles.heading}>
+          <div>
+            <p className="label mb-6 opacity-65">Materijal za vaš projekat</p>
+            <h2 id="featured-title" data-head className={`display invisible ${styles.title}`}>Izdvojeno iz asortimana</h2>
+          </div>
+          <p className={styles.lead}>Od ploča i izolacije do drvnog i sanitarnog programa. Istražite materijal i nastavite prema ponudi.</p>
+        </div>
+        <div className={styles.content}>
+          <div data-orbit className={styles.stage} role="group" aria-label="Lepeza materijala — odaberite sliku za detalje">
+            <div className={styles.mark} aria-hidden><GcMonogram /></div>
+            {TILES.map((tile, i) => {
+              const entry = ITEMS[tile.item]
+              const angle = i / TILES.length * Math.PI * 2
               return (
-                <button
-                  key={c.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={on}
-                  onClick={() => setCat(c.id)}
-                  className={`relative flex min-h-10 items-center transition-opacity duration-300 ${on ? '' : 'opacity-45 hover:opacity-100'}`}
-                >
-                  <span
-                    className={`absolute -left-3.5 size-1.5 rounded-full bg-signal transition-transform duration-500 ${on ? 'scale-100' : 'scale-0'}`}
-                  />
-                  {c.name}
+                <button key={i} type="button" data-tile className={styles.tile}
+                  style={{ left: `${50 + Math.cos(angle) * 32.5}%`, top: `${50 + Math.sin(angle) * 31.5}%`, transform: 'translate(-50%,-50%)' }}
+                  aria-label={`${tile.detail ? 'Prikaz programa' : 'Odaberite'}: ${entry.name}`}
+                  aria-pressed={selected === tile.item} aria-controls="featured-details"
+                  onPointerEnter={event => { if (event.pointerType === 'mouse') controls.current.enter(i) }}
+                  onPointerLeave={() => controls.current.leave()}
+                  onFocus={() => controls.current.enter(i)} onBlur={() => controls.current.leave()}
+                  onClick={() => setSelected(tile.item)}>
+                  <img src={tile.detail ? entry.detail : entry.image} alt="" width={900} height={1350}
+                    loading="lazy" decoding="async" style={{ objectPosition: tile.detail ? '50% 72%' : '50% 48%' }} />
+                  <span className={styles.index}>0{tile.item + 1} ↗</span>
                 </button>
               )
             })}
           </div>
-          <p className="mt-4 text-[10.5px] leading-[1.6] opacity-45">
-            Cijene, šifre i stanje artikala su orijentacioni — ponudu i dostupnost potvrđujemo po upitu.
-          </p>
-        </div>
-
-        {/* Traka: na desktopu je vozi skrol (GSAP), na mobilnom je običan swipe sa "snap"-om. */}
-        <div data-viewport className="hs-viewport mt-[5vh] md:mt-[4vh] md:flex-1">
-          <div data-track className="flex w-max gap-[4vw] px-5 pb-[10vh] [--step:3.5vh] md:gap-[2.4vw] md:px-[8vw] md:pb-0 md:[--step:5vh]">
-            {list.map((p, i) => (
-              <div
-                key={p.id}
-                data-fan
-                className="w-[64vw] shrink-0 snap-start will-change-transform sm:w-[38vw] md:w-[18.5vw]"
-                style={{ marginTop: `calc(var(--step) * ${i % STAIR})` }}
-              >
-                <ProductCard product={p} stacked />
-              </div>
-            ))}
-            {/* Kraj trake: poziv na cijeli katalog */}
-            <div className="flex w-[64vw] shrink-0 snap-start items-center justify-center sm:w-[38vw] md:w-[22vw]">
-              <Cta href={cat === 'sve' ? '/prodavnica' : `/prodavnica?kategorija=${cat}`}>Katalog</Cta>
+          <div id="featured-details" className={styles.center}>
+            <div className={styles.selection}>
+              <span aria-live="polite">0{selected + 1} / 0{ITEMS.length}</span>
+              <button type="button" aria-label="Prethodna stavka" onClick={() => setSelected((selected + ITEMS.length - 1) % ITEMS.length)}>←</button>
+              <button type="button" aria-label="Sljedeća stavka" onClick={() => setSelected((selected + 1) % ITEMS.length)}>→</button>
+            </div>
+            <span className={styles.category}>{item.program}</span>
+            <h3 className={`font-pretty ${styles.itemTitle}`}>{item.name}</h3>
+            <p className={styles.spec}>{item.spec}</p>
+            <p className={styles.unit}>{item.unit ? `Jedinica: ${item.unit}` : 'Količine prema specifikaciji'}</p>
+            <div className={styles.actions}>
+              <Link href={item.quote} className={styles.action}><span>{item.action}</span><span aria-hidden>↗</span></Link>
+              <Link href={item.href} className={styles.detailLink}>{item.detailAction}</Link>
             </div>
           </div>
         </div>
-      </section>
+        <div className={styles.footer}>
+          <div className={styles.footerLeft}>
+            <p className={styles.hint}>Odaberite sliku za detalje. Fotografije ilustruju materijal; dostupnost se provjerava po upitu.</p>
+          </div>
+        </div>
       </div>
-      {/* Predah poslije trake: više bijelog prostora prije sljedeće sekcije */}
-      <div aria-hidden className="relative z-20 h-[12vh] bg-bg md:h-[30vh]" />
-    </>
+    </section>
   )
 }

@@ -1,76 +1,61 @@
 'use client'
 
-/* eslint-disable @next/next/no-img-element -- fotografije iz /public, već u WebP */
-
 import Link from 'next/link'
 import { useRef } from 'react'
-import Cta from '@/components/ui/Cta'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { EASE, MQ } from '@/lib/motion'
 import { revealChars } from '@/lib/reveal'
-import { POSTS, postPhoto } from '@/lib/posts'
-import Pw, { pw } from '@/components/ui/Pw'
+import styles from './ClosingSections.module.css'
 
-// Tri najnovija vodiča (ranije "objave"). Svaka kartica ima fotografiju teme (krupni plan materijala ili
-// rada); na hover se fotografija blago približi.
-
-// Datum ručno (dd.mm.gggg.): Node i browser nemaju iste podatke za lokal sr-Latn-BA, pa bi
-// toLocaleDateString dao različit tekst na serveru i u browseru (greška pri hidrataciji).
-const date = (iso: string) => iso.split('-').reverse().join('.') + '.'
+const CARDS = [
+  { title: 'Pripremite spisak materijala', copy: 'Materijal, količina i jedinica mjere. Dodajte lokaciju i željeni rok.', href: '/upit-za-izvodjace', cta: 'Pripremite upit', rows: [['Materijal', 'Naziv'], ['Količina', 'Broj'], ['Jedinica', 'm² / kom']], kind: 'list' },
+  { title: 'Pronađite odgovarajući materijal', copy: 'Vodiči prema namjeni i vrsti radova, za lakši izbor materijala.', href: '/vodici', cta: 'Istražite vodiče', rows: [['Suha gradnja', '↗'], ['Izolacija', '↗'], ['Završni radovi', '↗']], kind: 'list' },
+  { title: 'Tehnički listovi i dokumentacija', copy: 'Navedite proizvod za koji vam trebaju tehnički podaci ili dokumentacija.', href: '/upit-za-izvodjace?vrsta=dokumentacija', cta: 'Zatražite dokumentaciju', rows: [['Tehnički list', '01'], ['Uputstvo za ugradnju', '02'], ['Deklaracija proizvoda', '03']], kind: 'docs' },
+]
 
 export default function PostsTeaser() {
   const root = useRef<HTMLElement>(null)
-  const latest = [...POSTS].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3)
-
-  useGSAP(
-    () => {
+  useGSAP(() => {
+    gsap.matchMedia().add(MQ, ctx => {
+      const { reduce } = ctx.conditions as { reduce: boolean }
       const el = root.current!
-      const mm = gsap.matchMedia()
-      mm.add(MQ, (ctx) => {
-        const { reduce } = ctx.conditions as { reduce: boolean }
-        revealChars(el.querySelector('[data-head]')!, reduce, 'top 80%')
-        const cards = el.querySelectorAll('[data-post]')
-        if (reduce) return
-        gsap.fromTo(
-          cards,
-          { y: 80, autoAlpha: 0 },
-          { y: 0, autoAlpha: 1, duration: 0.55, ease: EASE.quint, stagger: 0.05, scrollTrigger: { trigger: el.querySelector('[data-grid]'), start: 'top 85%' } },
-        )
+      revealChars(el.querySelector('[data-head]')!, reduce, 'top 85%')
+      el.querySelectorAll('[data-guide]').forEach(card => {
+        if (reduce) { gsap.set(card, { autoAlpha: 1, y: 0 }); return }
+        gsap.fromTo(card, { autoAlpha: 0, y: 32 }, { autoAlpha: 1, y: 0, duration: .5, ease: EASE.quint, scrollTrigger: { trigger: card, start: 'top 95%' } })
       })
-    },
-    { scope: root },
-  )
-
+    })
+  }, { scope: root })
   return (
-    <section ref={root} id="vodici" className="relative z-20 py-[14vh]" aria-label="Vodiči">
-      <h2 data-head className="display invisible mx-auto px-5 text-center text-title"><Pw>
-        Znanje sa <em>gradilišta</em>
-      </Pw></h2>
-
-      <div data-grid className="mx-auto mt-[10vh] grid w-[calc(100%-40px)] gap-x-[2vw] gap-y-16 md:w-[88vw] md:grid-cols-3">
-        {latest.map((p, i) => (
-          <Link key={p.slug} href={`/vodici/${p.slug}`} data-post data-cursor="Čitaj" className={`group flex flex-col ${i === 1 ? 'md:mt-[10vh]' : ''}`}>
-            <span className="relative block aspect-[4/5] overflow-hidden bg-plate">
-              <img decoding="async"
-                src={postPhoto(p.slug)}
-                alt=""
-                loading="lazy"
-                className="absolute inset-0 h-full w-full object-cover transition-transform duration-[1.4s] ease-[var(--ease-out)] group-hover:scale-[1.05]"
-              />
-            </span>
-            <span className="mt-5 flex justify-between text-[13px] opacity-60">
-              <span>{p.tag}</span>
-              <span className="tabular-nums not-italic">{date(p.date)}</span>
-            </span>
-            <span className="font-pretty mt-2 block text-[clamp(24px,2vw,34px)] leading-[1.1]">
-              <span className="ulink">{pw(p.title)}</span>
-            </span>
-          </Link>
-        ))}
-      </div>
-
-      <div className="mt-[10vh] flex justify-center">
-        <Cta href="/vodici">Vodiči</Cta>
+    <section ref={root} id="vodici" className={styles.guides} aria-labelledby="guides-title">
+      <div className="gutter">
+        <div className={styles.heading}>
+          <div>
+            <p className="label mb-6 opacity-60">Prije naručivanja</p>
+            <h2 id="guides-title" data-head className={`display invisible ${styles.title}`}>Savjeti i tehnička dokumentacija</h2>
+          </div>
+          <p className={styles.lead}>Pripremite upit, pronađite materijal prema namjeni ili zatražite podatke za konkretan proizvod.</p>
+        </div>
+        <div className={styles.cards}>
+          {CARDS.map((card, i) => (
+            <article data-guide className={styles.card} key={card.title}>
+              <div className={styles.art} aria-hidden>
+                <span className="label opacity-50">0{i + 1} · {card.kind === 'docs' ? 'Dokumentacija po upitu' : 'Za lakši izbor'}</span>
+                {card.rows.map(([label, value], j) => (
+                  <div className={styles.artRow} key={label}>
+                    {card.kind === 'docs' ? <svg viewBox="0 0 26 30" className={styles.document} fill="none" stroke="currentColor" strokeWidth="1"><path d="M3 1h13l7 7v21H3ZM16 1v7h7M7 14h12M7 19h12M7 24h7" /></svg> : <span className={styles.artNum}>0{j + 1}</span>}
+                    <span>{label}</span><span className="opacity-60">{value}</span>
+                  </div>
+                ))}
+              </div>
+              <div className={styles.cardBottom}>
+                <h3 className={`font-pretty ${styles.cardTitle}`}>{card.title}</h3>
+                <p className={styles.cardCopy}>{card.copy}</p>
+              </div>
+              <Link href={card.href} className={styles.cardLink}><span>{card.cta}</span><span aria-hidden>↗</span></Link>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   )

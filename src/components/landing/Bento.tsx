@@ -1,122 +1,122 @@
 'use client'
 
-/* eslint-disable @next/next/no-img-element -- editorijalna fotografija iz /public, već u WebP */
-
-import Link from 'next/link'
 import { useRef } from 'react'
+import Link from 'next/link'
+import Cta from '@/components/ui/Cta'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { useMediaMotion } from '@/lib/media'
 import { EASE, MQ } from '@/lib/motion'
-
-// B2B Partner Portal kao "bento" blok: veliko zaobljeno polje sa ogromnom riječju i kratkim tekstom
-// desno, ispod tri kartice — rabatna skala (kobalt), kreditni limit i valuta (tamna) i Pantheon ERP
-// zalihe (fotografija). Podaci iz dokumentacije firme (PDF, tačke 3 i 5).
-
-const Arrow = ({ className = '' }: { className?: string }) => (
-  <span className={`grid size-[26px] place-items-center transition-transform duration-500 group-hover:translate-x-1.5 ${className}`} aria-hidden>
-    <svg viewBox="0 0 12 12" className="size-[11px]" fill="none" stroke="currentColor" strokeWidth="1.8">
-      <path d="M2 6h8M6.5 2.5 10 6l-3.5 3.5" />
-    </svg>
-  </span>
-)
-
-const Tag = ({ children, tone }: { children: string; tone: 'blue' | 'dark' | 'photo' }) => (
-  <span
-    className={`inline-flex min-h-8 items-center px-3.5 text-[11px] font-medium uppercase tracking-[0.1em] ${
-      tone === 'blue' ? 'bg-white/15' : tone === 'dark' ? 'bg-white/12' : 'bg-[#3a3a3a]/85 backdrop-blur'
-    }`}
-  >
-    {children}
-  </span>
-)
+import { revealChars } from '@/lib/reveal'
+import styles from './Procurement.module.css'
 
 export default function Bento() {
   const root = useRef<HTMLElement>(null)
   useMediaMotion(root)
-
-  useGSAP(
-    () => {
-      const mm = gsap.matchMedia()
-      mm.add(MQ, (ctx) => {
-        const { reduce } = ctx.conditions as { reduce: boolean }
-        const el = root.current!
-        const cards = el.querySelectorAll('[data-bento]')
-        const word = el.querySelector('[data-word]')
-        if (reduce) return
-        gsap.fromTo(word, { yPercent: 105 }, { yPercent: 0, duration: 0.6, ease: EASE.quint, scrollTrigger: { trigger: el, start: 'top 90%' } })
-        gsap.fromTo(
-          cards,
-          { y: 80, autoAlpha: 0 },
-          { y: 0, autoAlpha: 1, duration: 0.55, ease: EASE.quint, stagger: 0.05, scrollTrigger: { trigger: cards[1], start: 'top 92%' } },
-        )
+  useGSAP(() => {
+    const mm = gsap.matchMedia()
+    mm.add(MQ, ctx => {
+      const { reduce } = ctx.conditions as { reduce: boolean }
+      const el = root.current!
+      revealChars(el.querySelector('[data-head]')!, reduce, 'top 80%')
+      if (reduce) return
+      el.querySelectorAll('[data-bento]').forEach(card => {
+        gsap.from(card, { y: 45, autoAlpha: 0, duration: .6, ease: EASE.quint,
+          scrollTrigger: { trigger: card, start: 'top 90%' } })
       })
-    },
-    { scope: root },
-  )
+    })
+  }, { scope: root })
 
   return (
-    <section ref={root} id="b2b" className="relative z-20 bg-bg px-3 py-[14vh] md:px-4" aria-label="B2B Partner Portal">
-      {/* Gornje polje: ogromna riječ + kratak tekst desno */}
-      <div className="flex flex-col gap-8 border-[1.5px] border-ink/80 px-6 py-10 md:flex-row md:items-end md:justify-between md:px-8 md:pb-[3.2vw] md:pt-[9vw]">
-        <h2 className="overflow-hidden pb-[0.06em]">
-          <span data-word className="display block text-[clamp(52px,10vw,170px)] !leading-[0.86]">
-            B2B portal
-          </span>
-        </h2>
-        <p className="max-w-[340px] text-[12.5px] leading-[1.55] text-ink/75 md:mb-[1.2vw] md:mr-[2vw]">
-          Za građevinske firme i izvođače: ugovorena cijena, kreditni limit i uvid u asortiman. Naručite online —
-          dostavu dogovaramo prema lokaciji i vrsti robe.
-        </p>
-      </div>
-
-      <div className="mt-2.5 grid gap-2.5 md:grid-cols-[1fr_1fr_2fr]">
-        {/* Plava kartica: rabatna skala */}
-        <Link href="/portal" data-bento className="group flex min-h-[340px] flex-col bg-cobalt p-7 text-white md:min-h-[460px]" data-cursor="Portal">
-          <span className="label">Rabatna skala</span>
-          <span className="display mt-auto text-[clamp(34px,3vw,52px)]">10–22%</span>
-          <span className="mt-4 flex flex-wrap gap-1.5">
-            <Tag tone="blue">Nivo 1 · 10%</Tag>
-            <Tag tone="blue">Nivo 2 · 15%</Tag>
-            <Tag tone="blue">Nivo 3 · 18–22%</Tag>
-          </span>
-          <span className="mb-8 mt-auto max-w-[260px] pt-12 text-[12px] leading-[1.5] opacity-85">
-            Zanatlije i manji izvođači, srednje firme i veliki ugovorni partneri. Okvirni nivoi — tačan rabat se dogovara.
-          </span>
-          <Arrow className="bg-white text-cobalt" />
-        </Link>
-
-        {/* Tamna kartica: kreditni limit i valuta */}
-        <Link href="/portal" data-bento className="group flex min-h-[340px] flex-col bg-char p-7 text-white md:min-h-[460px]" data-cursor="Portal">
-          <span className="label">Kreditni limit</span>
-          <span className="display mt-auto text-[clamp(34px,3vw,52px)]">30/60/90</span>
-          <span className="mt-4 flex flex-wrap gap-1.5">
-            <Tag tone="dark">Dana valute</Tag>
-            <Tag tone="dark">Menica / garancija</Tag>
-          </span>
-          <span className="mb-8 mt-auto max-w-[260px] pt-12 text-[12px] leading-[1.5] opacity-85">
-            Odobreni limit uz odgođeno plaćanje; iskorištenost limita vidite na portalu. Okvirno — tačan limit i valuta se dogovaraju.
-          </span>
-          <Arrow className="bg-white text-[#1e1e1e]" />
-        </Link>
-
-        {/* Fotografija + svijetli panel: Pantheon ERP zalihe */}
-        <Link href="/prodavnica" data-bento className="group flex min-h-[340px] flex-col overflow-hidden bg-[#d9d9d9] text-ink md:min-h-[460px]" data-cursor="Katalog">
-          <div data-parallax="6" className="relative h-[260px] overflow-hidden bg-[#111] md:h-[54%]">
-            <img decoding="async" loading="lazy" src="/editorial/bento-mono.webp" alt="Pocinčani profili na regalima skladišta" className="absolute inset-0 h-full w-full object-cover" />
-            <span className="label absolute left-7 top-7 text-white">Stovarište</span>
-            <span className="absolute right-6 top-6 flex gap-1.5 text-white max-md:left-7 max-md:right-auto max-md:top-14">
-              <Tag tone="photo">Zalihe</Tag>
-              <Tag tone="photo">Predračun</Tag>
-              <Tag tone="photo">Fakture</Tag>
-            </span>
+    <section ref={root} id="b2b" className="relative z-20 bg-bg py-[14vh]" aria-labelledby="procurement-title">
+      <div className="gutter">
+        <div className={styles.heading}>
+          <div>
+            <p className="label mb-6 opacity-60">Veleprodaja · Poslovni kupci</p>
+            <h2 id="procurement-title" data-head className={`display invisible ${styles.title}`}>Nabavka za firme i izvođače</h2>
           </div>
-          <div className="flex flex-1 flex-col p-7">
-            <p className="font-pretty max-w-[600px] text-[clamp(20px,1.7vw,28px)] leading-[1.15]">
-              Vidite šta je u ponudi — prije nego krenete na gradilište.
-            </p>
-            <Arrow className="mt-auto bg-ink pt-0 text-white" />
+          <p data-up className={styles.lead}>Pošaljite spisak materijala, količine i lokaciju projekta. Započnite upit za ponudu na jednom mjestu.</p>
+        </div>
+        <div className={styles.cards}>
+          <article data-bento className={`${styles.card} ${styles.blue}`}>
+            <div className={styles.eyebrow}><span>Imate predmjer?</span><span>01</span></div>
+            <h3 className={`font-pretty ${styles.cardTitle}`}>Ponuda prema vašem spisku</h3>
+            <div className={styles.mockup}>
+              <div className={styles.sheet}>
+                <div className={styles.sheetHead}><span>Spisak materijala</span><span className={styles.sheetLabel}>Primjer</span></div>
+                <table className={styles.table} aria-label="Primjer spiska za upit">
+                  <thead><tr><th>Materijal</th><th>Količina</th><th>Jedinica</th></tr></thead>
+                  <tbody>
+                    <tr><td>Gipsane ploče</td><td>120</td><td>m²</td></tr>
+                    <tr><td>Kamena vuna</td><td>80</td><td>m²</td></tr>
+                    <tr><td>Ljepilo</td><td>24</td><td>vreće</td></tr>
+                  </tbody>
+                </table>
+                <div className={styles.attachments}><span>PDF</span><span>Excel</span><span>Fotografija spiska</span></div>
+              </div>
+            </div>
+            <p className={styles.copy}>Već znate šta vam treba? Pripremite materijal, količine i jedinice mjere.</p>
+            <Link className={styles.link} href="/upit-za-izvodjace?vrsta=spisak"><span>Pošaljite spisak materijala</span><span aria-hidden>↗</span></Link>
+          </article>
+          <article data-bento className={styles.card}>
+            <div className={styles.eyebrow}><span>Planirate radove?</span><span>02</span></div>
+            <h3 className={`font-pretty ${styles.cardTitle}`}>Nabavka za projekat</h3>
+            <div className={styles.mockup}>
+              <div className={styles.sheet}>
+                <div className={styles.sheetHead}><span>Vaš projekat</span><span className={styles.sheetLabel}>Za upit</span></div>
+                <div className={styles.field}><span>Lokacija</span><span>Mjesto radova</span></div>
+                <div className={styles.field}><span>Faza</span><span>Vrsta radova</span></div>
+                <div className={styles.field}><span>Količine</span><span>Prema specifikaciji</span></div>
+                <div className={styles.field}><span>Termin</span><span>Željeni rok</span></div>
+              </div>
+            </div>
+            <p className={styles.copy}>Pošaljite specifikaciju i plan radova. Mogućnosti nabavke i isporuke dogovorite s prodajom.</p>
+            <Link className={styles.link} href="/upit-za-izvodjace?vrsta=projekat"><span>Zatražite ponudu za projekat</span><span aria-hidden>↗</span></Link>
+          </article>
+          <article data-bento className={`${styles.card} ${styles.dark}`}>
+            <div className={styles.eyebrow}><span>Nabavljate redovno?</span><span>03</span></div>
+            <h3 className={`font-pretty ${styles.cardTitle}`}>Saradnja za redovnu nabavku</h3>
+            <div className={styles.mockup}>
+              <div className={styles.cycle}>
+                {[
+                  ['Vaša firma', 'Djelatnost i kontakt'],
+                  ['Vaše potrebe', 'Program i obim nabavke'],
+                  ['Način saradnje', 'Razgovor s prodajom'],
+                ].map(([title, note], i) => (
+                  <div key={title} className={styles.cycleRow}>
+                    <span className={styles.cycleNumber}>0{i + 1}</span>
+                    <div><span className={styles.cycleTitle}>{title}</span><span className={styles.cycleNote}>{note}</span></div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <p className={styles.copy}>Za firme i izvođače koji nabavljaju kontinuirano. Javite nam šta vam treba i koliko često.</p>
+            <Link className={styles.link} href="/upit-za-izvodjace?vrsta=saradnja"><span>Kontaktirajte prodaju za firme</span><span aria-hidden>↗</span></Link>
+          </article>
+        </div>
+        <div id="partneri" className={styles.terms}>
+          <div>
+            <p className="label mb-4 opacity-60">Uslovi saradnje</p>
+            <h3 className={`font-pretty ${styles.termsTitle}`}>Prema vašoj nabavci</h3>
+            <p className={styles.termsText}>Navedite obim i učestalost nabavke. Konkretne cijene i uslove provjerite s prodajom.</p>
           </div>
-        </Link>
+          <div>
+            {[
+              ['Cijene i rabat', 'Prema ponudi'],
+              ['Uslovi plaćanja', 'Prema dogovoru'],
+              ['Preuzimanje i dostava', 'Prema robi i lokaciji'],
+            ].map(([name, answer], i) => (
+              <div key={name} className={styles.termRow}>
+                <span className={styles.termNumber}>0{i + 1}</span>
+                <span className={styles.termName}>{name}</span>
+                <span className={styles.termAnswer}>{answer}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className={styles.portal}>
+          <p><span className="font-medium">Već imate poslovni nalog?</span><br />Pristupite partnerskom portalu.</p>
+          <Cta href="/portal">B2B portal</Cta>
+        </div>
       </div>
     </section>
   )

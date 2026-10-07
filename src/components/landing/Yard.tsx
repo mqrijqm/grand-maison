@@ -1,84 +1,53 @@
 'use client'
 
+/* eslint-disable @next/next/no-img-element -- postojeće WebP fotografije stovarišta */
 import { useRef } from 'react'
-import Image from 'next/image'
-import Pw from '@/components/ui/Pw'
+import Cta from '@/components/ui/Cta'
 import { COMPANY } from '@/gc/gc'
-import { useMediaMotion } from '@/lib/media'
+import { MAPS_URL } from '@/lib/company'
+import { gsap, useGSAP } from '@/lib/gsap'
+import { MQ } from '@/lib/motion'
+import { revealChars } from '@/lib/reveal'
+import styles from './ClosingSections.module.css'
 
-// Stovarište (prije podnožja): dvije velike fotografije dvorišta; na hover se preko fotografije
-// meko (i brzo) prelije plava ilustracija istog kadra — kao „nacrt" preko slike.
-// Tekst: rečenica o firmi. Sekcija je usputna, mirna, u jeziku ostatka sajta.
-const PANELS = [
-  {
-    photo: '/stovariste/yard.webp',
-    blue: '/stovariste/yard-blue-v2.webp',
-    alt: 'Stovarište Grand Company iz vazduha — redovi paleta građevinskog materijala',
-    label: 'Dvorište odozgo',
-    note: 'Palete ploča, izolacije i veziva, složene po vrsti',
-  },
-  {
-    photo: '/stovariste/shop.webp',
-    blue: '/stovariste/shop-blue-v2.webp',
-    alt: 'Ulaz u stovarište Grand Company sa natkrivenom prodajnom zonom',
-    label: 'Ulaz i prodaja',
-    note: 'Natkrivena zona za utovar i preuzimanje',
-  },
+const PHOTOS = [
+  { photo: '/stovariste/yard.webp', blue: '/stovariste/yard-blue-v2.webp', label: 'Stovarište', alt: 'Pregled stovarišta Grand Company u Banjoj Luci' },
+  { photo: '/stovariste/shop.webp', blue: '/stovariste/shop-blue-v2.webp', label: 'Prodaja', alt: 'Prodajni objekat Grand Company na lokaciji stovarišta' },
 ]
-
 export default function Yard() {
   const root = useRef<HTMLElement>(null)
-  useMediaMotion(root)
-
+  useGSAP(() => {
+    gsap.matchMedia().add(MQ, ctx => {
+      const { reduce } = ctx.conditions as { reduce: boolean }
+      revealChars(root.current!.querySelector('[data-head]')!, reduce, 'top 85%')
+    })
+  }, { scope: root })
   return (
-    <section ref={root} id="stovariste" aria-label="Stovarište" className="relative z-[46] bg-bg pt-[10vh]">
+    <section ref={root} id="stovariste" className={styles.section} aria-labelledby="yard-title">
       <div className="gutter">
-        <div className="flex flex-wrap items-end justify-between gap-x-10 gap-y-6 border-b border-ink/20 pb-7">
-          <div className="min-w-0">
-            <p className="label text-ink/50" data-up>
-              Stovarište
-            </p>
-            <h2 className="display mt-4 max-w-[13ch] text-[clamp(36px,4.4vw,76px)]" data-up>
-              <Pw>Naše dvorište i magacin</Pw>
-            </h2>
+        <div className={styles.heading}>
+          <div>
+            <p className="label mb-6 opacity-60">Grand Company · Banja Luka</p>
+            <h2 id="yard-title" data-head className={`display invisible ${styles.title}`}>Prodaja i stovarište u Banjoj Luci</h2>
           </div>
-          <p className="max-w-[46ch] text-[12.5px] leading-[1.7] text-ink/70 md:text-right" data-up data-delay="1">
-            Grand Company posluje od {COMPANY.founded}. godine i bavi se veleprodajom i prodajom građevinskog
-            materijala u Banja Luci.
-          </p>
+          <p className={styles.lead}>Za izbor materijala i razgovor o nabavci javite se prodaji ili nas pronađite na adresi stovarišta.</p>
         </div>
-      </div>
-
-      <div className="mt-[5vh] grid gap-px border-y border-ink/20 bg-ink/20 md:grid-cols-2">
-        {PANELS.map((p) => (
-          <figure key={p.photo} data-curtain data-cursor="Pređi" className="yard-card group relative m-0 bg-bg">
-            <div className="relative aspect-[16/10] overflow-hidden">
-              <Image
-                fill
-                src={p.photo}
-                alt={p.alt}
-                sizes="(min-width: 768px) 50vw, 100vw"
-                className="yard-card__photo absolute inset-0 z-0 h-full w-full object-cover transition-transform duration-[900ms] ease-[var(--ease-out)]"
-              />
-              {/* Plava ilustracija istog kadra: prelije se preko fotografije na hover (brzo, meko). */}
-              <Image
-                aria-hidden
-                fill
-                src={p.blue}
-                alt=""
-                sizes="(min-width: 768px) 50vw, 100vw"
-                className="yard-card__blue absolute inset-0 z-10 h-full w-full object-cover opacity-0 transition-opacity duration-300 ease-[var(--ease-out)]"
-              />
-            </div>
-            <figcaption className="px-5 py-4 text-[11px] tracking-[0.06em]">
-              <span className="font-medium">{p.label}</span>
-              <span className="mt-1 block max-w-[52ch] leading-[1.5] text-ink/45">
-                <span className="hidden [@media(hover:hover)]:inline">Pređi mišem · </span>
-                {p.note}
-              </span>
-            </figcaption>
-          </figure>
-        ))}
+        <div className={styles.photos}>
+          {PHOTOS.map((photo, i) => (
+            <figure className="m-0" key={photo.photo}>
+              <div className={styles.photoWrap}>
+                <img className={styles.photo} src={photo.photo} alt={photo.alt} width={1360} height={765} loading="lazy" decoding="async" />
+                <img className={`${styles.photo} ${styles.photoBlue}`} src={photo.blue} alt="" aria-hidden width={1360} height={765} loading="lazy" decoding="async" />
+              </div>
+              <figcaption className={styles.caption}><span>{photo.label}</span><span className="opacity-45">0{i + 1}</span></figcaption>
+            </figure>
+          ))}
+        </div>
+        <div className={styles.location}>
+          <div><p className="label mb-3 opacity-50">Adresa</p><p className={styles.address}>{COMPANY.address}</p></div>
+          <div className={styles.contact}><p className="label mb-1 opacity-50">Prodaja</p><a href={COMPANY.phoneLandlineHref}>{COMPANY.phoneLandline}</a><a href={`mailto:${COMPANY.emailInfo}`}>{COMPANY.emailInfo}</a></div>
+          <div className={styles.locationActions}><Cta href={MAPS_URL}>Otvorite mapu</Cta></div>
+        </div>
       </div>
     </section>
   )

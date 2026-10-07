@@ -43,7 +43,7 @@ export default function Splash() {
     }
 
     // Uz reduced motion uvoda nema (CSS ga sakrije), pa nema ni čekanja.
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    if (window.matchMedia('(prefers-reduced-motion: reduce), (max-width: 1023px)').matches) {
       finish()
       return
     }

@@ -7,9 +7,6 @@ import BadgeMark from './BadgeMark'
 
 export const BRAND = 'GRAND COMPANY'
 
-// Boja koja u `mix-blend-mode: difference` na krem pozadini daje tačno boju teksta (#222A36).
-const DIFF = 'rgb(220, 203, 195)'
-
 // Elementi koji stoje fiksno preko cijele stranice: wordmark i značka.
 export default function SiteChrome() {
   const root = useRef<HTMLDivElement>(null)
@@ -31,7 +28,7 @@ export default function SiteChrome() {
 
       const boot = contextSafe!(() => {
         if (dead) return
-        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce), (max-width: 1023px)').matches
 
         // Slova u maskama: svako slovo izranja odozdo. Razdvaja se PRIJE mjerenja širine.
         // U dev-u se efekat montira dvaput, pa se drugo razdvajanje preskače (ono na već
@@ -60,6 +57,22 @@ export default function SiteChrome() {
           const overScene = hero ? hero.getBoundingClientRect().bottom > line : false
           band.classList.toggle('brand-light', light)
           band.classList.toggle('brand-dark', !light && !overScene)
+          // Znak prati stvarnu podlogu na svojoj poziciji, uključujući podijeljene sekcije.
+          // Normalno miješanje čuva bijelu boju preko kobalta.
+          const badge = el.querySelector<HTMLElement>('[data-badge]')
+          if (badge) {
+            const rect = badge.getBoundingClientRect()
+            const beneath = document.elementsFromPoint(rect.left + rect.width / 2, rect.top + rect.height / 2)
+            let dark = overScene
+            for (const node of beneath) {
+              if (el.contains(node)) continue
+              const color = getComputedStyle(node).backgroundColor.match(/[\d.]+/g)?.map(Number)
+              if (!color || color.length < 3 || (color[3] !== undefined && color[3] < 0.95)) continue
+              dark = (color[0] * 0.2126 + color[1] * 0.7152 + color[2] * 0.0722) < 155
+              break
+            }
+            badge.style.color = dark ? '#fff' : 'var(--ink)'
+          }
         }
         // Provjera ide i na skrol i na kratak interval: `scroll` event ne stiže uvijek
         // (smooth scroll), a rAF/GSAP ticker znaju da spavaju. Interval je 4x u sekundi,
@@ -259,8 +272,8 @@ export default function SiteChrome() {
           window.__gcLenis.scrollTo(target.getBoundingClientRect().top + window.scrollY - 80)
         }}
         aria-label="Artikli u ponudi"
-        className="fixed bottom-4 right-4 z-[500] block w-[22px] mix-blend-difference transition-transform duration-300 hover:scale-110 md:bottom-6 md:right-6 md:w-[28px]"
-        style={{ color: DIFF }}
+        className="fixed bottom-4 right-4 z-[500] block w-[22px] transition-transform duration-300 hover:scale-110 md:bottom-6 md:right-6 md:w-[28px]"
+        style={{ color: '#fff' }}
       >
         <BadgeMark />
       </a>

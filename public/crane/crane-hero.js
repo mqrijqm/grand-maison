@@ -6,8 +6,8 @@
 // Dodat je i dispose() da se scena ugasi ako se stranica montira ponovo.
 import * as THREE from '../vendor/three.module.min.js';
 import {createCraneRenderer, STAGES, stageAt} from './crane-print.js?v=33';
-import {craneQuality} from './crane-quality.js?v=20';
-import {createCraneScene, clamp, smooth} from './crane-scene.js?v=64';
+import {craneQuality} from './crane-quality.js?v=21';
+import {createCraneScene, clamp, smooth} from './crane-scene.js?v=65';
 
 const cover=document.querySelector('.construction-story');
 const viewport=cover?.querySelector('.crane-viewport');
@@ -26,7 +26,7 @@ function topOffset() {
 
 // Ne čekamo `load` (slike i fontovi ostatka strane): scena kreće čim je modul tu, dok splash traje.
 if(new URLSearchParams(location.search).has('debug'))console.info(`[crane] modul pokrenut: ${Math.round(performance.now())} ms`);
-if(canvas)init();
+if(canvas&&!window.__gcCraneAbort&&!matchMedia('(max-width: 1023px), (prefers-reduced-motion: reduce)').matches)init();
 async function init() {
   if(!cover||!viewport)return;
   if(window.__gcCrane)window.__gcCrane.dispose();
@@ -53,9 +53,10 @@ async function init() {
   renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.04;
   const breathe=()=>new Promise(r=>setTimeout(r,0));
   await breathe();
+  if(cancelled){renderer.dispose();window.__gcCrane=null;return;}
   const world=createCraneScene();
   await breathe();
-  if(cancelled){renderer.dispose();return;}
+  if(cancelled){world.dispose();renderer.dispose();window.__gcCrane=null;return;}
   world.lighting.key.shadow.mapSize.setScalar(quality().shadowSize);
   const textures=new Set();
   world.scene.traverse(object=>{
@@ -78,16 +79,17 @@ async function init() {
   const tCompile=performance.now();
   await pipeline.compile();
   if(debug)console.info(`[crane] šejderi: ${Math.round(performance.now()-tCompile)} ms, programa ${renderer.info.programs.length}`);
-  if(cancelled){pipeline.dispose();renderer.dispose();return;}
+  if(cancelled){pipeline.dispose();world.dispose();renderer.dispose();window.__gcCrane=null;return;}
   for(const p of [0,.2,.4,.5,.62,.72,.86]) {
     const tw=performance.now();
     world.update(p,1.6);pipeline.setStyle(p);pipeline.render(1);
     if(debug)console.info(`[crane] zagrijavanje p=${p}: ${Math.round(performance.now()-tw)} ms, programa ${renderer.info.programs.length}: ${renderer.info.programs.slice(-12).map(x=>x.name).join(',')}`);
     await new Promise(r=>setTimeout(r,0));
-    if(cancelled){pipeline.dispose();renderer.dispose();return;}
+    if(cancelled){pipeline.dispose();world.dispose();renderer.dispose();window.__gcCrane=null;return;}
   }
   const reduced=matchMedia('(prefers-reduced-motion: reduce)');
   let extra=0,frameHeight=1,lastShadowKey='',skippedShadow=false,progress=0,targetProgress=0,targetOutro=0,outroP=0,frame=0,active=true,width=1,height=1,lastTime=0;
+  let scrollOffset=0,scrollDistance=1,outroHeight=0;
   // ——— Rezolucija po mjeri GPU-a ———
   // Najteži kadar (cijelo gradilište) se nacrta u rezoluciji 1 i u punoj, pa iz ta dva vremena
   // (trošak ≈ fiksni dio + dio po pikselu) izračunamo najveću rezoluciju koja staje u ~18 ms.
@@ -156,6 +158,9 @@ async function init() {
     // pojas je "prozor" produžen naviše — kadar scene je isti kao prije, piksel za piksel.
     extra=Math.max(0,-parseFloat(getComputedStyle(viewport).top)||0);
     frameHeight=Math.max(1,height-extra);
+    scrollOffset=topOffset();
+    outroHeight=outro?outro.offsetHeight:0;
+    scrollDistance=Math.max(1,cover.offsetHeight-window.innerHeight+scrollOffset-outroHeight);
     if(extra>0)world.camera.setViewOffset(width,frameHeight,0,-extra,width,height);
     else world.camera.clearViewOffset();
     cover.dataset.renderResolution=`${canvas.width}×${canvas.height}`;
@@ -165,20 +170,10 @@ async function init() {
   function onScroll() {
     // Native page distance drives the illustration only. Text stays in document flow.
     const rect=cover.getBoundingClientRect();
-    const offset=topOffset();
     // Outro (kraj na nebu) je dodatni skrol iza animacije: scena ga ne troši, on vozi samo tekst.
-    const outroHeight=outro?outro.offsetHeight:0;
-    const distance=Math.max(1,cover.offsetHeight-window.innerHeight+offset-outroHeight);
-    const scrolled=offset-rect.top;
-    targetProgress=reduced.matches?0:clamp(scrolled/distance);
-    targetOutro=reduced.matches?1:clamp((scrolled-distance)/Math.max(1,outroHeight));
-    // U outru je skrol "teži": kotačić ide upola sporije da se rečenica ne preleti.
-    const lenis=window.__gcLenis;
-    if(lenis?.options){
-      const slow=targetOutro>0&&targetOutro<1;
-      lenis.options.wheelMultiplier=slow?.5:1;
-      lenis.options.lerp=slow?.06:.1;
-    }
+    const scrolled=scrollOffset-rect.top;
+    targetProgress=reduced.matches?0:clamp(scrolled/scrollDistance);
+    targetOutro=reduced.matches?1:clamp((scrolled-scrollDistance)/Math.max(1,outroHeight));
     requestDraw();
   }
   function requestDraw() {if(!frame&&active&&!document.hidden)frame=requestAnimationFrame(draw);}
@@ -219,9 +214,9 @@ async function init() {
     govern(gapMs,gapMs>0&&gapMs<60);
     const dt=Math.min(.1,(now-lastTime)/1000||1/60);lastTime=now;
     mouse.x+=(mouseTarget.x-mouse.x)*(1-Math.exp(-4*dt));mouse.y+=(mouseTarget.y-mouse.y)*(1-Math.exp(-4*dt));
-    // Lenis već ublažava skrol; ovdje je mekši filter nego prije (18/s), da kamera ne trza
+    // Lenis već ublažava skrol; drugi, blagi filter (14/s) smiruje kameru
     // za točkićem — duža putanja se čita mirnije.
-    progress=Math.abs(targetProgress-progress)<.00015?targetProgress:progress+(targetProgress-progress)*(1-Math.exp(-18*dt));
+    progress=Math.abs(targetProgress-progress)<.00015?targetProgress:progress+(targetProgress-progress)*(1-Math.exp(-14*dt));
     const state=world.update(progress,width/frameHeight);
     pipeline.setStyle(progress,mouse,window.innerWidth<768);
     // Boja wordmarka prati poglavlje ispod njega (na plavom bloku je svijetao).

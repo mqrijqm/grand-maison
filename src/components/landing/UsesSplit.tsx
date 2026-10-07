@@ -1,131 +1,71 @@
 'use client'
 
 import Link from 'next/link'
-import Cta from '@/components/ui/Cta'
 import { useRef } from 'react'
+import Cta from '@/components/ui/Cta'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { drawOnScroll } from '@/lib/draw'
 import { MQ } from '@/lib/motion'
 import { revealChars } from '@/lib/reveal'
-import { PRODUCTS, USES, artikala, type UseId } from '@/lib/shop'
 import { axisShift } from './iso'
-import UseArt from './UseArt'
-import Pw from '@/components/ui/Pw'
+import WorkArt, { type WorkKind } from './WorkArt'
+import styles from './WorkSections.module.css'
 
-// Sistemi: lijevo stoji naslov, desno (tamno plava kolona) se skrola pet sistema iz kataloga
-// (W111/W112 zid, D112 plafon, DEMIT fasada, potkrovlje, podovi). Uz svaki ide rastavljeni
-// presjek sistema koji se iscrtava i razmiče po slojevima dok red prolazi kroz ekran.
-
-// Sistemi iz kataloga (PDF, tačka 4): oznaka sistema, naziv i šta ulazi u njega — stvarni artikli.
-const SYSTEM: Record<UseId, { code: string; title: string; text: string }> = {
-  'pregradni-zid': {
-    code: 'Zid 100–155 mm',
-    title: 'Pregradni zid',
-    text: 'Gips-kartonske ploče GKB, GKBI i GKF 12,5 mm na CW i UW profilima (lim 0,6 mm), kamena vuna u šupljini.',
-  },
-  'spusteni-plafon': {
-    code: 'Plafon 27 mm',
-    title: 'Spušteni plafon',
-    text: 'Nosivi i montažni CD 60/27 profili, obodni UD 28/27 i direktni ovjes 120 mm, obloga od gips-kartonskih ploča.',
-  },
-  fasada: {
-    code: 'ETICS',
-    title: 'Kontaktna fasada',
-    text: 'Fasadni stiropor EPS 70 ili grafitni EPS, ljepilo za lijepljenje ploča i masa za armiranje mrežice (Ceresit).',
-  },
-  potkrovlje: {
-    code: 'Kosi krov',
-    title: 'Potkrovlje',
-    text: 'Staklena vuna u rolni za kose krovove, kamena vuna 100 mm i obloga od ploča na CD profilima.',
-  },
-  podovi: {
-    code: 'Pod i temelj',
-    title: 'Podovi',
-    text: 'Podni stiropor EPS 100, XPS ploče za temelje i cokle, cement CEM II 42,5N i ljepilo za keramiku.',
-  },
-}
+const WORKS: { id: WorkKind; title: string; label: string; description: string; href: string; cta: string }[] = [
+  { id:'suha-gradnja', title:'Pregradni zidovi i plafoni', label:'Suha gradnja', description:'Ploče, profili, izolacija i pribor — povežite komponente prema namjeni prostora.', href:'/prodavnica?kategorija=suha-gradnja', cta:'Materijal za suhu gradnju' },
+  { id:'izolacija', title:'Izolacija prostora', label:'Toplotna i zvučna', description:'Krenite od mjesta ugradnje: zid, krov ili pod. Zatim izaberite materijal.', href:'/prodavnica?kategorija=izolacija', cta:'Izolacija prema namjeni' },
+  { id:'zidanje-krov', title:'Zidanje i krov', label:'Program po upitu', description:'Pošaljite specifikaciju za provjeru programa, količina i dostupnosti.', href:'/upit-za-izvodjace?program=zidni-krovni', cta:'Pošaljite specifikaciju' },
+  { id:'kupatilo', title:'Opremanje kupatila', label:'Sanitarni program', description:'Istražite program i zatražite ponudu prema potrebama svog prostora.', href:'/prodavnica#program-sanitarije', cta:'Istražite sanitarnu opremu' },
+]
 
 export default function UsesSplit() {
-  const root = useRef<HTMLElement>(null)
-
-  useGSAP(
-    () => {
-      const el = root.current!
-      const mm = gsap.matchMedia()
-      mm.add(MQ, (ctx) => {
-        const { reduce } = ctx.conditions as { reduce: boolean }
-
-        revealChars(el.querySelector('[data-head]')!, reduce, 'top 75%')
-
-        gsap.utils.toArray<HTMLElement>('[data-use]', el).forEach((row) => {
-          revealChars(row.querySelector('[data-title]')!, reduce, 'top 80%', row)
-
-          const svg = row.querySelector('svg')!
-          drawOnScroll(svg, reduce, { trigger: row, start: 'top bottom' })
-
-
-          if (reduce) return
-          // Razmicanje slojeva: od sklopljenog sistema (red ulazi) do rastavljenog (red izlazi).
-          const axis = svg.dataset.axis as 'x' | 'y' | 'z'
-          const gap = Number(svg.dataset.gap)
-          gsap.utils.toArray<SVGGElement>('[data-layer]', svg).forEach((layer, k) => {
-            const { x, y } = axisShift(axis, k * gap)
-            gsap.fromTo(
-              layer,
-              { x: 0, y: 0 },
-              { x, y, ease: 'none', scrollTrigger: { trigger: row, start: 'top 60%', end: 'bottom 30%', scrub: 0.8 } },
-            )
+  const root=useRef<HTMLElement>(null)
+  useGSAP(()=>{
+    const el=root.current!
+    const mm=gsap.matchMedia()
+    mm.add(MQ,ctx=>{
+      const { reduce }=ctx.conditions as { reduce:boolean }
+      revealChars(el.querySelector('[data-head]')!,reduce,'top 75%')
+      gsap.utils.toArray<HTMLElement>('[data-use]',el).forEach(row=>{
+        revealChars(row.querySelector('[data-title]')!,reduce,'top 80%',row)
+        row.querySelectorAll<SVGSVGElement>('[data-work-art] svg').forEach(svg=>{
+          drawOnScroll(svg,reduce,{trigger:row,start:'top bottom'})
+          if(reduce)return
+          const axis=svg.dataset.axis as 'x'|'y'|'z'
+          const gap=Number(svg.dataset.gap)
+          if(!gap)return
+          gsap.utils.toArray<SVGGElement>('[data-layer]',svg).forEach((layer,k)=>{
+            const { x,y }=axisShift(axis,k*gap)
+            gsap.fromTo(layer,{x:0,y:0},{x,y,ease:'none',scrollTrigger:{trigger:row,start:'top 60%',end:'bottom 30%',scrub:.8}})
           })
         })
-
       })
-    },
-    { scope: root },
-  )
+    })
+  },{scope:root})
 
-  return (
-    <section ref={root} id="namjena" className="relative z-20 bg-bg md:grid md:grid-cols-2" aria-label="Materijal po vrsti radova">
-      {/* Lijevo: raspored kao na referenci — naslov u stepenastim redovima gore, tekst dolje desno, dugme. */}
-      <div className="split-panel md:sticky md:top-0 md:h-dvh md:self-start">
-        <h2 data-head className="split-panel__head display invisible">
-          <span className="block">Sistemi</span>
-          <span className="block text-right">suhe</span>
-          <span className="block">gradnje</span>
-        </h2>
-        <div className="split-panel__foot">
-          <p className="split-panel__lead">
-            Sistemi suhe gradnje jedna su od ključnih oblasti naše ponude: pregradni zidovi, plafoni, fasade i
-            potkrovlja — ploče, profili, izolacija i veziva iz jednog skladišta, uz savjet kako ih složiti.
-          </p>
-          <Cta href="/prodavnica" solid>
-            Katalog
-          </Cta>
+  return <section ref={root} id="namjena" aria-labelledby="work-heading" className="relative z-20 bg-bg md:grid md:grid-cols-2">
+    <div className={styles.panel}>
+      <h2 id="work-heading" data-head className={`display invisible ${styles.heading}`}>Materijal<br />prema vrsti<br />radova</h2>
+      <div className={styles.foot}>
+        <p className="text-lead text-ink/70">Od posla koji planirate do odgovarajućeg izbora materijala.</p>
+        <Cta href="/upit-za-izvodjace" solid>Pošaljite spisak</Cta>
+      </div>
+    </div>
+    <div className="bg-navy text-bg [--art-fill:var(--navy)] [--signal:var(--accent)]">
+      {WORKS.map((work,i)=><article id={`radovi-${work.id}`} key={work.id} data-use className={`scroll-mt-24 ${styles.row}`}>
+        <div>
+          <p className="label flex items-center justify-between gap-6 text-bg/65"><span>{String(i+1).padStart(2,'0')} / 04</span><span>{work.label}</span></p>
+          <h3 data-title className={`display invisible ${styles.title}`}>{work.title}</h3>
         </div>
-      </div>
-
-      {/* Desno: tamno plava kolona, pet vrsta radova. */}
-      <div className="bg-navy text-bg [--art-fill:var(--navy)]">
-        {USES.map((u) => {
-          const items = PRODUCTS.filter((p) => p.uses.includes(u.id))
-          return (
-            <article
-              key={u.id}
-              data-use
-              className="flex flex-col items-center gap-10 border-b border-bg/10 px-6 py-[14vh] text-center md:min-h-dvh md:justify-center md:px-[5vw]"
-            >
-              <p className="label text-accent">{SYSTEM[u.id].code}</p>
-              <h3 data-title className="display invisible -mt-6 text-[clamp(36px,3.8vw,68px)]">
-                <Pw>{SYSTEM[u.id].title}</Pw>
-              </h3>
-              <UseArt use={u.id} className="w-full max-w-[520px] text-bg/90" title={`Presjek sistema: ${SYSTEM[u.id].title}`} />
-              <p className="max-w-[46ch] text-[12.5px] leading-[1.6] opacity-80">{SYSTEM[u.id].text}</p>
-              <Link href={`/prodavnica?namjena=${u.id}`} className="ulink text-[12.5px] max-md:py-3">
-                {artikala(items.length)} →
-              </Link>
-            </article>
-          )
-        })}
-      </div>
-    </section>
-  )
+        <div className={styles.illustration}><WorkArt kind={work.id} /></div>
+        <div className={styles.bottom}>
+          <p className={styles.description}>{work.description}</p>
+          <div className={styles.actions}>
+            <Cta href={work.href} className={styles.button}>{work.cta}</Cta>
+            {work.id==='suha-gradnja' && <Link href="/kalkulator" className="ulink inline-flex min-h-11 items-center gap-3 text-[11px]">Kalkulator za pregradni zid<span aria-hidden>→</span></Link>}
+          </div>
+        </div>
+      </article>)}
+    </div>
+  </section>
 }

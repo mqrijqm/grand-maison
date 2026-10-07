@@ -15,6 +15,9 @@ const eslintConfig = defineConfig([
     // Three.js i crane moduli su preuzeti kao gotovi fajlovi (public/crane, public/vendor);
     // minifikovani kod se ne lintuje.
     "public/**",
+    // Lokalni Playwright snimci i pomoćni CommonJS skriptovi nisu dio aplikacije.
+    ".playwright-mcp/**",
+    "scripts/*.cjs",
   ]),
 ]);
 

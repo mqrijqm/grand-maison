@@ -82,7 +82,21 @@ html[data-hero-dark]:not([data-past-hero]) [data-badge] {
   margin: 0;
   z-index: 1;
 }
+.crane-fallback,
+.crane-fallback img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.crane-fallback {
+  position: absolute;
+  inset: 0;
+}
+.crane-fallback img {
+  object-fit: cover;
+}
 .crane-viewport canvas {
+  position: relative;
   display: block;
   width: 100%;
   height: 100%;
@@ -201,14 +215,13 @@ html[data-hero-dark]:not([data-past-hero]) [data-badge] {
   /* Prazan prostor kroz koji se scena odigrava: uspon uz kran od baze,
      direktna vožnja do kuke i tereta, spuštanje na krov, pa dovršavanje zgrade, ulazak kroz
      balkonska vrata u kupatilo i izlazak kroz prozor u nebo. */
-  /* Kraći scrub: od početnog kadra do izlaska kroz prozor ima oko 24% manje skrola. */
-  height: 620svh;
+  height: 320svh;
   pointer-events: none;
 }
 /* Kraj na nebu: scena je i dalje pinovana; prvi dio skrola ispisuje rečenicu, a ostatak
    je mirovanje na gotovom tekstu da se ne proleti pored njega. Ne ulazi u animaciju krana. */
 .story-outro {
-  height: 300svh;
+  height: 80svh;
   pointer-events: none;
 }
 
@@ -236,10 +249,10 @@ html[data-hero-dark]:not([data-past-hero]) [data-badge] {
   /* Na mobilnom je sadržaj kratak, pa prazan prostor drži scenu u kadru dovoljno dugo
      da se animacija krana odigra (bez njega je sekcija kraća od ekrana). */
   .story-immersion {
-    height: 530svh;
+    height: 320svh;
   }
   .story-outro {
-    height: 260svh;
+    height: 80svh;
   }
   .scene-caption {
     bottom: 16px;
@@ -273,4 +286,35 @@ html[data-hero-dark]:not([data-past-hero]) [data-badge] {
     position: relative;
     top: 0;
   }
+}
+
+/* Na manjim ekranima puni WebGL bi blokirao dodir i skrol. Isti početni kadar
+   ostaje vidljiv, ali hero zauzima samo jedan ekran i odmah pušta ostatak sajta. */
+@media (max-width: 1023px), (prefers-reduced-motion: reduce) {
+  .construction-story .crane-stage {
+    position: relative;
+    top: 0;
+    height: calc(100svh - var(--story-header));
+    margin-bottom: 0;
+  }
+  .construction-story .story-content,
+  .construction-story .story-type,
+  .construction-story .scene-caption,
+  .construction-story .crane-viewport canvas {
+    display: none;
+  }
+}
+
+/* Isti bezbjedni izlaz važi i za desktop ako se WebGL ne pripremi dovoljno brzo. */
+.construction-story.crane-static .crane-stage {
+  position: relative;
+  top: 0;
+  height: calc(100svh - var(--story-header));
+  margin-bottom: 0;
+}
+.construction-story.crane-static .story-content,
+.construction-story.crane-static .story-type,
+.construction-story.crane-static .scene-caption,
+.construction-story.crane-static .crane-viewport canvas {
+  display: none;
 }

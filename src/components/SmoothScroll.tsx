@@ -20,14 +20,12 @@ declare global {
 export default function SmoothScroll({ children }: { children: React.ReactNode }) {
   const lenisRef = useRef<LenisRef>(null)
 
-  // Browser pri reload-u vraća staru poziciju skrola dok se 3D scena još učitava i visine sekcija
-  // se mijenjaju — triggeri se tada izmjere na pogrešnim mjestima (skokovi, sadržaj koji ne izroni).
-  // Scrollytelling uvijek kreće od vrha.
+  // Ručno vraćanje pozicije sprečava kasni skok kad se stranica hidrira.
+  // Ne pomjeramo korisnika na vrh: možda je već počeo da skroluje.
   useEffect(() => {
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual'
     // React je preuzeo stranicu: dijelovi koji zavise od podataka iz browsera (prijava, korpa) se sada pokažu.
     document.documentElement.setAttribute('data-hydrated', '')
-    window.scrollTo(0, 0)
   }, [])
 
   useEffect(() => {

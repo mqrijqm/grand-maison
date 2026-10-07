@@ -76,7 +76,41 @@ export const metadata: Metadata = {
 
 // Prije prvog crtanja: (1) elementi koji izranjaju na skrol su odmah sakriveni; (2) sadržaj čeka
 // fontove (najviše 800 ms), da se prvi kadar ne nacrta rezervnim fontom pa preslaže (skok teksta).
-const MOTION_FLAG = "var d=document.documentElement;if(!matchMedia('(prefers-reduced-motion: reduce)').matches)d.setAttribute('data-motion','');if(document.fonts&&document.fonts.load){d.setAttribute('data-fonts','');var f=function(){d.removeAttribute('data-fonts')};Promise.all([document.fonts.load('800 1em Montserrat'),document.fonts.load('400 1em Inter'),document.fonts.load('500 1em Inter')]).then(f,f);setTimeout(f,800)}"
+const MOTION_FLAG = "var d=document.documentElement;if(!matchMedia('(prefers-reduced-motion: reduce), (max-width: 1023px)').matches)d.setAttribute('data-motion','');if(document.fonts&&document.fonts.load){d.setAttribute('data-fonts','');var f=function(){d.removeAttribute('data-fonts')};Promise.all([document.fonts.load('800 1em Montserrat'),document.fonts.load('400 1em Inter'),document.fonts.load('500 1em Inter')]).then(f,f);setTimeout(f,800)}"
+
+// Na direktnom dolasku na početnu WebGL počinje čim je canvas u HTML-u, prije
+// hidratacije svih sekcija. Ostale stranice ne preuzimaju 3D modul.
+const HERO_BOOT = `
+if(location.pathname==='/'){
+  if(matchMedia('(max-width: 1023px), (prefers-reduced-motion: reduce)').matches){
+    window.__gcCraneReady=true;
+  }else{
+    window.__gcCraneAbort=false;
+    var abort=function(){
+      var hero=document.querySelector('#hero');
+      if(window.__gcCraneReady||!hero)return;
+      window.__gcCraneAbort=true;
+      if(window.__gcCrane)window.__gcCrane.dispose();
+      hero.classList.add('crane-static');
+      window.__gcCraneReady=true;
+      window.dispatchEvent(new CustomEvent('gc:crane-ready'));
+    };
+    var timer=setTimeout(abort,3500);
+    window.addEventListener('gc:crane-ready',function(){clearTimeout(timer)},{once:true});
+    window.addEventListener('wheel',abort,{once:true,passive:true});
+    window.addEventListener('touchstart',abort,{once:true,passive:true});
+    var start=function(){
+      if(!document.querySelector('#hero canvas'))return false;
+      if(window.__gcCraneAbort)return true;
+      window.__gcCraneBoot=import('/crane/crane-hero.js?boot=3').catch(function(){window.__gcCraneBoot=null;window.dispatchEvent(new Event('gc:crane-boot-failed'))});
+      return true;
+    };
+    if(!start()){
+      var observer=new MutationObserver(function(){if(start())observer.disconnect()});
+      observer.observe(document,{childList:true,subtree:true});
+    }
+  }
+}`
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
@@ -84,6 +118,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <head>
         {/* Prije prvog crtanja: elementi koji izranjaju na skrol odmah su sakriveni (ne bljesnu pa nestanu). */}
         <script dangerouslySetInnerHTML={{ __html: MOTION_FLAG }} />
+        <script dangerouslySetInnerHTML={{ __html: HERO_BOOT }} />
       </head>
       <body>
         <SmoothScroll>

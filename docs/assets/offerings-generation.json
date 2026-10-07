@@ -1,0 +1,42 @@
+{
+  "mode": "built-in image_gen",
+  "purpose": "Oblasti naše ponude — illustrative material photography",
+  "assets": [
+    {
+      "name": "suha-gradnja",
+      "prompt": "Use case: photorealistic-natural. Asset type: portrait 2:3 editorial material photograph for Grand Company building-material wholesale website. A refined, tactile close view of materials in a quiet clean workshop, warm off-white background #f4f1ec, soft natural side light, honest neutral tones, subtle deep blue accent #3156ea only where natural. No people, no lettering, no brands, no logos, no watermark, no collage, no UI. Frame a simple sculptural arrangement filling most of the image, crisp physical texture, consistent professional editorial photography, realistic materials, not a CGI render. Subject: A neatly stacked bundle of pale gypsum plasterboard sheets with exposed layered edges and three galvanized steel channel profiles leaning beside them. Clear geometries, close material-focused framing.",
+      "source": "C:\\Users\\marija\\.codex\\generated_images\\01a11739-699b-7970-af60-54bfda2d469e\\exec-9ae98da6-1016-441b-80c8-53e79d24da56.png",
+      "output": "public/editorial/programs/suha-gradnja.webp"
+    },
+    {
+      "name": "izolacija",
+      "prompt": "Use case: photorealistic-natural. Asset type: portrait 2:3 editorial material photograph for Grand Company building-material wholesale website. A refined, tactile close view of materials in a quiet clean workshop, warm off-white background #f4f1ec, soft natural side light, honest neutral tones, subtle deep blue accent #3156ea only where natural. No people, no lettering, no brands, no logos, no watermark, no collage, no UI. Frame a simple sculptural arrangement filling most of the image, crisp physical texture, consistent professional editorial photography, realistic materials, not a CGI render. Subject: A sculptural close view of two thick stone wool insulation slabs, one standing upright and one lying flat. Golden beige fibrous cut edges clearly visible, realistic densely compressed mineral fibres.",
+      "source": "C:\\Users\\marija\\.codex\\generated_images\\01a11739-699b-7970-af60-54bfda2d469e\\exec-51e31b77-3fc3-4cff-b21d-99a07c3c2670.png",
+      "output": "public/editorial/programs/izolacija.webp"
+    },
+    {
+      "name": "zidni-krovni",
+      "prompt": "Use case: photorealistic-natural. Asset type: portrait 2:3 editorial material photograph for Grand Company building-material wholesale website. A refined, tactile close view of materials in a quiet clean workshop, warm off-white background #f4f1ec, soft natural side light, honest neutral tones, subtle deep blue accent #3156ea only where natural. No people, no lettering, no brands, no logos, no watermark, no collage, no UI. Frame a simple sculptural arrangement filling most of the image, crisp physical texture, consistent professional editorial photography, realistic materials, not a CGI render. Subject: A small neatly arranged group of terracotta hollow masonry blocks and two unbranded clay roof tiles, close material-focused framing, terracotta and warm cream tones.",
+      "source": "C:\\Users\\marija\\.codex\\generated_images\\01a11739-699b-7970-af60-54bfda2d469e\\exec-377efd71-b0ce-4a4c-be52-7363c3f53c40.png",
+      "output": "public/editorial/programs/zidni-krovni.webp"
+    },
+    {
+      "name": "veziva",
+      "prompt": "Use case: photorealistic-natural. Asset type: portrait 2:3 editorial material photograph for Grand Company building-material wholesale website. A refined, tactile close view of materials in a quiet clean workshop, warm off-white background #f4f1ec, soft natural side light, honest neutral tones, subtle deep blue accent #3156ea only where natural. No people, no lettering, no brands, no logos, no watermark, no collage, no UI. Frame a simple sculptural arrangement filling most of the image, crisp physical texture, consistent professional editorial photography, realistic materials, not a CGI render. Subject: Two unbranded kraft paper bags of dry construction binder beside a small sample of grey mortar and a clean steel trowel, powder texture subtle, no writing on the bags.",
+      "source": "C:\\Users\\marija\\.codex\\generated_images\\01a11739-699b-7970-af60-54bfda2d469e\\exec-14a2737a-72d8-4a08-b04a-0af1972f7747.png",
+      "output": "public/editorial/programs/veziva.webp"
+    },
+    {
+      "name": "drvni-program",
+      "prompt": "Use case: photorealistic-natural. Asset type: portrait 2:3 editorial material photograph for Grand Company building-material wholesale website. A refined, tactile close view of materials in a quiet clean workshop, warm off-white background #f4f1ec, soft natural side light, honest neutral tones, subtle deep blue accent #3156ea only where natural. No people, no lettering, no brands, no logos, no watermark, no collage, no UI. Frame a simple sculptural arrangement filling most of the image, crisp physical texture, consistent professional editorial photography, realistic materials, not a CGI render. Subject: A neatly aligned bundle of square-cut construction timber beams and broad boards with clearly visible end grain and pale natural wood surfaces, close material-focused framing.",
+      "source": "C:\\Users\\marija\\.codex\\generated_images\\01a11739-699b-7970-af60-54bfda2d469e\\exec-950d55a9-6f00-4d4f-a7ab-854cb0f1a9db.png",
+      "output": "public/editorial/programs/drvni-program.webp"
+    },
+    {
+      "name": "sanitarna-oprema",
+      "prompt": "Use case: photorealistic-natural. Asset type: portrait 2:3 editorial material photograph for Grand Company building-material wholesale website. A refined, tactile close view of materials in a quiet clean workshop, warm off-white background #f4f1ec, soft natural side light, honest neutral tones, subtle deep blue accent #3156ea only where natural. No people, no lettering, no brands, no logos, no watermark, no collage, no UI. Frame a simple sculptural arrangement filling most of the image, crisp physical texture, consistent professional editorial photography, realistic materials, not a CGI render. Subject: A simple white ceramic basin with a restrained chrome tap beside it, clearly product-focused and unbranded, no luxury room, no styled bathroom installation, warm off-white studio workshop setting.",
+      "source": "C:\\Users\\marija\\.codex\\generated_images\\01a11739-699b-7970-af60-54bfda2d469e\\exec-f69744b4-9ec5-4ce0-adda-43f424719061.png",
+      "output": "public/editorial/programs/sanitarna-oprema.webp"
+    }
+  ]
+}

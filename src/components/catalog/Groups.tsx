@@ -10,30 +10,35 @@ import { useMediaMotion } from '@/lib/media'
 // drvo, dugi profili, sanitarije), ali za njih nemamo potvrđene šifre, cijene ni stanje —
 // zato stoje kao opisi grupa, bez cijena, sa upitom umjesto korpe.
 
-type Group = { name: string; lead: string; items: string[] }
+type Group = { id: string; name: string; lead: string; items: string[] }
 
 const GROUPS: Group[] = [
   {
+    id: 'program-zidanje',
     name: 'Blok i opeka',
     lead: 'Zidni blokovi, opeka i prateći elementi za grubu gradnju.',
     items: ['Betonski blokovi i blok opeka', 'Puna i fasadna opeka', 'Gredice i nadvoji', 'Zidni dodaci i mort'],
   },
   {
+    id: 'program-celik',
     name: 'Armaturne mreže i čelik',
     lead: 'Armatura i čelični proizvodi za betonske konstrukcije.',
     items: ['Armaturne mreže', 'Armaturno gvožđe', 'Čelični profili i nosači', 'Vezivo za armaturu'],
   },
   {
+    id: 'program-drvo',
     name: 'Drvo i drvni program',
     lead: 'Građevinsko drvo, pločasti materijali i stolarija.',
     items: ['Rezana građa — grede i daske', 'Pločasti materijali', 'Lamperija i podne obloge', 'Stolarija'],
   },
   {
+    id: 'program-sanitarije',
     name: 'Sanitarije',
     lead: 'Sanitarna oprema za kupatila i mokre čvorove.',
     items: ['Sanitarna keramika', 'Kade i tuš kabine', 'Slavine i ventili', 'Kupatilski namještaj i galanterija'],
   },
   {
+    id: 'program-profili-cijevi',
     name: 'Dugi profili i cijevi',
     lead: 'Dugi elementi za instalacije i konstrukcije.',
     items: ['PVC i PP cijevi za instalacije', 'Metalne cijevi i fitinzi', 'Oluci i opšivi', 'Profili po mjeri'],
@@ -65,7 +70,7 @@ export default function Groups() {
 
       <div className="mt-[9vh] grid gap-px border-y border-ink/20 bg-ink/20 md:grid-cols-2 lg:grid-cols-3">
         {GROUPS.map((g) => (
-          <article key={g.name} data-up className="flex flex-col gap-5 bg-bg px-6 py-10 md:px-[2.4vw] md:py-[2.6vw]">
+          <article key={g.name} id={g.id} data-up className="flex scroll-mt-28 flex-col gap-5 bg-bg px-6 py-10 md:px-[2.4vw] md:py-[2.6vw]">
             <h3 className="font-pretty text-[clamp(21px,1.8vw,28px)] leading-[1.1]">{g.name}</h3>
             <p className="max-w-[34ch] text-[11.5px] leading-[1.6] opacity-65">{g.lead}</p>
             <ul className="flex flex-col gap-1.5 text-[11.5px] leading-[1.5]">

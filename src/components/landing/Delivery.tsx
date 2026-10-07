@@ -1,81 +1,60 @@
 'use client'
 
-/* eslint-disable @next/next/no-img-element -- editorijalna fotografija iz /public, već u WebP */
-
+/* eslint-disable @next/next/no-img-element -- optimizovana editorijalna fotografija iz /public */
 import { useRef } from 'react'
-import Link from 'next/link'
+import Cta from '@/components/ui/Cta'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { EASE, MQ } from '@/lib/motion'
+import { revealChars } from '@/lib/reveal'
+import styles from './DeliveryOverview.module.css'
 
-// Isporuka: jedna velika fotografija. Sekcija je visoka 240vh, a unutra stoji "sticky" ekran.
-// Dok se skrola, okvir (transform: scale) raste iz malog prozora do punog ekrana, slika se smiruje sa zuma,
-// a preko nje izroni rečenica. Na kraju ostaje jedan tihi link.
+const FIELDS = [
+  ['Materijal', 'Vrsta robe'],
+  ['Količine', 'Količina i pakovanje'],
+  ['Adresa', 'Lokacija isporuke'],
+  ['Termin', 'Željeni dan i rok'],
+]
+
 export default function Delivery() {
   const root = useRef<HTMLElement>(null)
-
-  useGSAP(
-    () => {
+  useGSAP(() => {
+    gsap.matchMedia().add(MQ, ctx => {
+      const { reduce } = ctx.conditions as { reduce: boolean }
       const el = root.current!
-      const frame = el.querySelector<HTMLElement>('[data-frame]')!
-      const img = el.querySelector<HTMLElement>('img')!
-      const lines = el.querySelectorAll<HTMLElement>('[data-line]')
-      const foot = el.querySelector<HTMLElement>('[data-foot]')!
-      const mm = gsap.matchMedia()
-      mm.add(MQ, (ctx) => {
-        const { reduce, mobile } = ctx.conditions as { reduce: boolean; mobile: boolean }
-        if (reduce) {
-          gsap.set(frame, { scale: 1 })
-          gsap.set([lines, foot], { autoAlpha: 1, yPercent: 0 })
-          return
-        }
-        const tl = gsap.timeline({
-          scrollTrigger: { trigger: el, start: 'top top', end: 'bottom bottom', scrub: 0.8 },
-        })
-        // Prozor raste preko transform: scale (radi ga GPU). Ranije je to bio clip-path preko
-        // cijelog ekrana, koji browser mora ponovo da iscrta u svakom kadru — to je trzalo.
-        tl.fromTo(frame, { scale: mobile ? 0.84 : 0.42 }, { scale: 1, ease: 'none', duration: 1, force3D: true })
-          .fromTo(img, { scale: 1.35 }, { scale: 1, ease: 'none', duration: 1.2 }, 0)
-          .fromTo(lines, { yPercent: 110 }, { yPercent: 0, ease: EASE.out, duration: 0.4, stagger: 0.12 }, 0.55)
-          .fromTo(foot, { autoAlpha: 0 }, { autoAlpha: 1, duration: 0.3 }, 0.95)
+      revealChars(el.querySelector('[data-head]')!, reduce, 'top 85%')
+      el.querySelectorAll('[data-up]').forEach(block => {
+        if (reduce) { gsap.set(block, { autoAlpha: 1, y: 0 }); return }
+        gsap.fromTo(block, { autoAlpha: 0, y: 24 }, { autoAlpha: 1, y: 0, duration: .4, ease: EASE.quint,
+          scrollTrigger: { trigger: block, start: 'top 95%' } })
       })
-    },
-    { scope: root },
-  )
+    })
+  }, { scope: root })
 
   return (
-    <section ref={root} id="isporuka" className="relative z-20 h-[240vh] bg-bg" aria-label="Isporuka i istovar">
-      {/* Fotografija ostaje u kadru do samog kraja sekcije (sticky do dna), pa plave stepenice
-          sljedeće trake padaju direktno na nju — bez krem trake između. */}
-      <div className="sticky top-0 h-dvh overflow-hidden">
-        <div data-frame className="absolute inset-0 overflow-hidden bg-ink will-change-transform" data-cursor="Isporuka">
-          <img decoding="async" loading="lazy" src="/editorial/delivery.webp" alt="Kamion sa kranom podiže paletu ploča na sprat zgrade u izgradnji" className="h-full w-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-t from-ink/55 via-ink/10 to-transparent" />
+    <section ref={root} id="isporuka" className={styles.section} aria-labelledby="delivery-title">
+      <div className={`gutter ${styles.top}`}>
+        <div className={styles.intro}>
+          <p className="label mb-6 opacity-60">Dostava na vašu lokaciju</p>
+          <h2 id="delivery-title" data-head className={`display invisible ${styles.title}`}>Materijal do vašeg gradilišta</h2>
+          <p data-up className={styles.lead}>Pošaljite lokaciju i spisak robe. S prodajom provjerite mogućnost isporuke, termin i trošak dostave.</p>
+          <p data-up className={styles.unload}><span className="font-medium">Pristup i istovar</span><br />Opišite prilaz lokaciji i mjesto odlaganja robe. Način istovara dogovorite prema materijalu i uslovima na terenu.</p>
+          <div data-up><Cta href="/dostava" className={styles.deliveryCta} solid>Provjerite mogućnosti dostave</Cta></div>
         </div>
-
-        <div className="relative flex h-full flex-col items-center justify-center px-5 text-center text-bg">
-          <h2 className="display text-[clamp(44px,8.4vw,150px)]">
-            <span className="block overflow-hidden pb-[0.08em]">
-              <span data-line className="block">
-                Dostava
-              </span>
-            </span>
-            <span className="block overflow-hidden pb-[0.08em]">
-              <span data-line className="block">
-                i istovar
-              </span>
-            </span>
-          </h2>
-          <p data-foot className="absolute inset-x-0 bottom-10 flex flex-col items-center gap-3 text-[12.5px] md:bottom-14">
-            <span className="flex items-center gap-3">
-              <span className="max-w-[52ch] opacity-90">
-                Dostava i istovar građevinskog materijala — uslovi i način istovara dogovaraju se prema lokaciji i vrsti
-                robe, uz mogućnost kranskog istovara u regiji Banja Luke i šire.
-              </span>
-            </span>
-            <Link href="/dostava" className="ulink">
-              Detalji o dostavi
-            </Link>
-          </p>
+        <figure data-up className={styles.figure}>
+          <img className={styles.photo} src="/editorial/delivery-pickup-v2.webp" alt="Paletirani materijal pripremljen za otpremu — ilustrativna fotografija" width={1536} height={1024} loading="lazy" decoding="async" />
+          <figcaption className={styles.caption}>Priprema materijala za otpremu · ilustracija</figcaption>
+        </figure>
+      </div>
+      <div data-up className={`gutter ${styles.brief}`}>
+        <p className="label opacity-60">Za dogovor dostave</p>
+        <div className={styles.fields}>
+          {FIELDS.map(([name, note], i) => (
+            <div className={styles.field} key={name}>
+              <span className={styles.number}>0{i + 1}</span>
+              <span className={styles.fieldName}>{name}</span>
+              <span className={styles.fieldNote}>{note}</span>
+            </div>
+          ))}
         </div>
       </div>
     </section>

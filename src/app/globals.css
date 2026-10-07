@@ -198,7 +198,7 @@ button:not(:disabled),
 .hs-viewport::-webkit-scrollbar {
   display: none;
 }
-@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
   .hs-viewport {
     overflow: visible;
     scroll-snap-type: none;
@@ -229,10 +229,11 @@ button:not(:disabled),
   margin-top: -100svh;
 }
 #hero.crane-reduced + .sky-swipe,
-#hero.crane-failed + .sky-swipe {
+#hero.crane-failed + .sky-swipe,
+#hero.crane-static + .sky-swipe {
   display: none;
 }
-@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: reduce), (max-width: 1023px) {
   .sky-swipe {
     display: none;
   }

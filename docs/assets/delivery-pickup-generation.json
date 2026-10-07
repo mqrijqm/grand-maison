@@ -1,0 +1,8 @@
+{
+  "tool": "built-in image_gen",
+  "use_case": "photorealistic-natural",
+  "asset": "public/editorial/delivery-pickup-v2.webp",
+  "source": "C:/Users/marija/.codex/generated_images/01a11739-699b-7970-af60-54bfda2d469e/exec-460a1761-c8f3-4792-b093-ebbaff42d9d9.png",
+  "illustrative": true,
+  "prompt": "Use case: photorealistic-natural. Asset type: wide 3:2 editorial photograph for construction-material wholesale website section about delivery and pickup. Primary request: neatly prepared palletized construction materials at a generic unbranded warehouse dispatch area, ready for pickup. Subject: pallet of neatly stacked gypsum boards in foreground, a small stack of mineral wool insulation bundles behind, straight sawn timber stacked alongside, realistic wooden pallets and strapping. Scene: neutral light grey warehouse facade and clean concrete forecourt, no workers, no vehicles, no crane, no signage. Composition: wide landscape, materials occupy right two thirds, quiet neutral architecture at left, moderate eye-level perspective, tactile sharp details, believable industrial scale. Lighting: soft natural side daylight, same calm cream and warm grey material photography aesthetic as premium architectural editorial, natural timber warm hues and subtle blue-grey steel details. Constraints: no logos, no brands, no text, no watermark, no fictitious company identity; this is illustrative material photography and must not look like a branded company yard. Avoid black backgrounds, dramatic cinematic spotlights, oversaturated orange, excessive objects or clutter."
+}

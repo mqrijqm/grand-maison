@@ -11,14 +11,13 @@ import Delivery from "@/components/landing/Delivery";
 import Featured from "@/components/landing/Featured";
 import Intro from "@/components/landing/Intro";
 import StepBand from "@/components/ui/StepBand";
-import Partners from "@/components/landing/Partners";
 import PostsTeaser from "@/components/landing/PostsTeaser";
 import Yard from "@/components/landing/Yard";
+import QuoteSection from "@/components/landing/QuoteSection";
 import SkySwipe from "@/components/landing/SkySwipe";
 import UsesSplit from "@/components/landing/UsesSplit";
 
-// Početna hibridne B2B + B2C platforme (glavni naglasak B2B). Sadržaj isključivo iz dokumentacije
-// firme (PDF "Kompletna dokumentacija i katalog").
+// Početna sa naglaskom na nabavku za firme i izvođače.
 export default function Home() {
   return (
     <>
@@ -30,16 +29,11 @@ export default function Home() {
       <main className="home-flow">
         <CraneHero />
         <SkySwipe />
-        {/* B2B prvo: ko smo → sistemi → B2B portal → prednosti (kran, Knauf, Pantheon, atesti) →
-            rabatna skala → artikli na stanju → isporuka kranom → vodiči */}
+        {/* Program → materijal prema radovima → poslovna nabavka → postupak nabavke. */}
         <Intro />
         <UsesSplit />
         <Bento />
         <BrandsSplit />
-        {/* Stepenasti prelaz (pravougaonici) u plavu sekciju i nazad */}
-        <StepBand tone="navy" profile="diag" steps={12} aria-label="Rabatna skala">
-          <Partners />
-        </StepBand>
         <Featured />
         <Delivery />
         <StepBand tone="navy" profile="valley" steps={11} aria-label="Vodiči" className="!z-[45]">
@@ -47,6 +41,7 @@ export default function Home() {
         </StepBand>
         {/* Usputna sekcija pred podnožje: stovarište (foto → plava ilustracija na hover). */}
         <Yard />
+        <QuoteSection />
         <Footer />
       </main>
       <CartDrawer />

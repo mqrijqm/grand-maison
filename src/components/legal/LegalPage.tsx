@@ -5,6 +5,7 @@ import { LEGAL_DOCS, legalBySlug } from '@/lib/legal'
 import Cta from '@/components/ui/Cta'
 import { T } from './LegalText'
 import Pw, { pw } from '@/components/ui/Pw'
+import QuoteSection from '@/components/landing/QuoteSection'
 
 // Pravne i servisne stranice: mirna stranica za čitanje. Naslov u sredini, jedna rečenica uvoda,
 // pa jedan centriran stub teksta (~62 znaka u redu). Sadržaj (lijevo, sitno) samo na desktopu i samo
@@ -74,6 +75,7 @@ function Block({ b }: { b: LegalBlock }) {
 }
 
 export default function LegalPage({ doc }: { doc: LegalDoc }) {
+  if (doc.slug === 'upit-za-izvodjace') return <QuoteSection standalone />
   const cta = CTA[doc.slug]
   const long = doc.sections.length > 4
 
@@ -174,7 +176,7 @@ export function PoliciesCombined() {
         ))}
       </nav>
 
-      <main className="mt-[14vh]">
+      <div className="mt-[14vh]">
         {docs.map((d, i) => (
           <section
             key={d.slug}
@@ -238,7 +240,7 @@ export function PoliciesCombined() {
             </ul>
           </section>
         )}
-      </main>
+      </div>
     </div>
   )
 }

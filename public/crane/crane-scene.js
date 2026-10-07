@@ -523,19 +523,39 @@ export function createCraneScene() {
     [.955,      [12.4,EYE+.05,0],      [18,EYE+.45,0]],   // kroz prozor
     [1,         [17.0,EYE+.4,0],       [22,EYE+3.4,0]],   // napolju — ostaje samo nebo
   ];
-  const cameraCurve=new THREE.CatmullRomCurve3(CAMERA_KEYS.map(k=>new THREE.Vector3(...k[1])),false,'centripetal');
-  const lookCurve=new THREE.CatmullRomCurve3(CAMERA_KEYS.map(k=>new THREE.Vector3(...k[2])),false,'centripetal');
+  const cameraPoints=CAMERA_KEYS.map(k=>new THREE.Vector3(...k[1]));
+  const lookPoints=CAMERA_KEYS.map(k=>new THREE.Vector3(...k[2]));
+  // Ključni kadrovi imaju različite vremenske razmake. Tangente računamo u odnosu na
+  // vrijeme skrola, da brzina kamere i pogleda bude ista s obje strane svakog kadra.
+  function pathTangents(points) {
+    return points.map((point,i)=>{
+      if(i===0||i===points.length-1)return new THREE.Vector3();
+      const before=(CAMERA_KEYS[i][0]-CAMERA_KEYS[i-1][0]);
+      const after=(CAMERA_KEYS[i+1][0]-CAMERA_KEYS[i][0]);
+      const incoming=point.clone().sub(points[i-1]).divideScalar(before);
+      const outgoing=points[i+1].clone().sub(point).divideScalar(after);
+      return new THREE.Vector3(...['x','y','z'].map(axis=>
+        incoming[axis]*outgoing[axis]<=0?0:(incoming[axis]*after+outgoing[axis]*before)/(before+after)
+      ));
+    });
+  }
+  const cameraTangents=pathTangents(cameraPoints),lookTangents=pathTangents(lookPoints);
   const _pathPos=new THREE.Vector3(),_pathLook=new THREE.Vector3();
+  function pathPoint(points,tangents,i,f,duration,out) {
+    const f2=f*f,f3=f2*f;
+    return out.copy(points[i]).multiplyScalar(2*f3-3*f2+1)
+      .addScaledVector(tangents[i],(f3-2*f2+f)*duration)
+      .addScaledVector(points[i+1],-2*f3+3*f2)
+      .addScaledVector(tangents[i+1],(f3-f2)*duration);
+  }
   function cameraPath(p) {
     const k=CAMERA_KEYS,last=k.length-1;
     let i=last-1;
     for(let j=0;j<last;j++)if(p<k[j+1][0]){i=j;break;}
-    let f=clamp((p-k[i][0])/(k[i+1][0]-k[i][0]));
-    // Prvi i poslednji segment se ublaže — kamera kreće i staje mekano.
-    if(i===0)f=f*f*(3-2*f)*.5+f*.5;
-    if(i===last-1)f=1-(1-f)*(1-f);
-    const u=(i+f)/last;
-    cameraCurve.getPoint(u,_pathPos);lookCurve.getPoint(u,_pathLook);
+    const duration=k[i+1][0]-k[i][0];
+    const f=clamp((p-k[i][0])/duration);
+    pathPoint(cameraPoints,cameraTangents,i,f,duration,_pathPos);
+    pathPoint(lookPoints,lookTangents,i,f,duration,_pathLook);
     return {position:_pathPos,look:_pathLook};
   }
   // Tlo: veliki svijetli disk; u daljini se tačke prorijede i stapa se sa papirom (magla u crane-print).

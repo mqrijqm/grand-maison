@@ -9,21 +9,12 @@ import { gsap, ScrollTrigger, useGSAP } from '@/lib/gsap'
 import { useMediaMotion } from '@/lib/media'
 import { MQ } from '@/lib/motion'
 import { revealChars } from '@/lib/reveal'
+import { OFFERINGS } from '@/lib/offerings'
+import styles from './Offerings.module.css'
 
-// Prvi ekran poslije herosa: ko smo (B2B veleprodaja, Knauf sistematika). Tekst je uz lijevu
-// ivicu (naslov, opis, ulazi — sve u istoj liniji), a ispod njega vodoravna traka krupnih,
-// mirnih kadrova: kran, ploče, profili, vuna, bandaža. Skrol vozi traku udesno (na mobilnom
-// i uz reduced-motion je običan swipe). id="radovi" je okidač za odlazak velikog wordmarka.
-const SCENES = [
-  { src: '/editorial/pro/01-kuka.webp', label: 'Kuka i svežanj ploča', note: 'Istovar na gradilištu' },
-  { src: '/editorial/pro/02-paleta.webp', label: 'Složaj ploča na paleti', note: 'Suho skladištenje' },
-  { src: '/editorial/pro/03-stub.webp', label: 'Stub krana odozdo', note: 'Vlastita logistika' },
-  { src: '/editorial/pro/04-bandaza.webp', label: 'Bandaža i glet', note: 'Suha gradnja' },
-  { src: '/editorial/pro/05-profili.webp', label: 'Pocinkovani profili', note: 'Sistemi suhe gradnje' },
-  { src: '/editorial/pro/06-vuna.webp', label: 'Kamena vuna', note: 'Toplotna i zvučna izolacija' },
-  { src: '/editorial/pro/07-kontrateg.webp', label: 'Kontrateg i pod', note: 'Naš toranjski kran' },
-  { src: '/editorial/pro/08-vijci.webp', label: 'Montažni pribor', note: 'Sitni materijal' },
-]
+// Prvi ekran poslije herosa: B2B veleprodaja i šest programskih ulaza. Postojeći vizuelni
+// sistem galerije ostaje: fotografije, hover i vodoravna vožnja skrolom.
+// Na telefonu je swipe. id="radovi" je postojeći okidač za odlazak velikog wordmarka.
 
 export default function Intro() {
   const root = useRef<HTMLElement>(null)
@@ -77,63 +68,60 @@ export default function Intro() {
   )
 
   return (
-    <section ref={root} id="radovi" className="relative z-20 bg-bg pb-[8vh] pt-[24vh]">
-      <div className="gutter">
-        {/* Naslov u istom jeziku kao "Sistemi suhe gradnje" — riječi u stepenastim redovima —
-            ali je cijeli blok centriran na stranici. */}
+    <section ref={root} id="radovi" aria-labelledby="offerings-title" className="relative z-20 bg-bg pb-[8vh] pt-[24vh]">
+      <div className={`gutter ${styles.heading}`}>
         <h2
+          id="offerings-title"
           data-head
-          className="display invisible mx-auto w-fit text-center text-[clamp(36px,5.6vw,108px)] leading-[0.9] tracking-[-0.03em]"
+          className={`display invisible ${styles.title}`}
         >
-          <span className="block text-left">Građevinski</span>
-          <span className="block text-right">materijal</span>
-          <span className="block text-left">za profesionalce</span>
+          Građevinski materijal za profesionalce
         </h2>
 
-        <div data-up data-delay="0.1" className="mt-12 flex justify-end">
-          <div className="max-w-[52ch]">
+        <div data-up data-delay="0.1" className={styles.lead}>
             <p className="text-[15px] leading-[1.7] opacity-75">
-              Snabdijevamo građevinske firme i izvođače: materijal sa stovarišta u Banjoj Luci, cijena prema dogovoru i
-              dostava teške i paletirane robe uz mogućnost kranskog istovara. Sistemi suhe gradnje jedna su od ključnih
-              oblasti naše ponude.
+              Veleprodaja građevinskog materijala u Banjoj Luci. Za firme, izvođače i vaš sljedeći projekat.
             </p>
             <div data-up data-delay="0.2" className="mt-7 flex flex-wrap gap-3">
-              <Cta href="/portal" solid>
-                B2B portal
+              <Cta href="/prodavnica" solid>
+                Asortiman
               </Cta>
-              <Cta href="/prodavnica">Maloprodaja</Cta>
+              <Cta href="/upit-za-izvodjace">Pošaljite spisak</Cta>
             </div>
-          </div>
         </div>
       </div>
 
       {/* Traka kadrova: sticky sekcija, skrol je vozi udesno. */}
       <div data-pinwrap className="relative mt-[12vh] bg-bg">
         <section
-          aria-label="Sa gradilišta i iz stovarišta"
+          aria-label="Šest oblasti ponude"
           className="relative overflow-hidden bg-bg md:sticky md:top-0 md:flex md:h-dvh md:items-center"
         >
           <div data-viewport className="hs-viewport w-full">
             <div data-track className="flex w-max items-start gap-[6vw] px-5 md:gap-[2.2vw] md:px-[6vw]">
-              {SCENES.map((s, i) => (
-                <figure key={s.src} className="m-0 shrink-0 snap-start" style={{ marginTop: i % 2 ? '8vh' : 0 }}>
-                  <Link href="/prodavnica" className="catalog-frame group block">
-                    <div data-curtain className="relative h-[48vh] aspect-[2/3] overflow-hidden bg-plate md:h-[60vh]">
+              {OFFERINGS.map((s, i) => (
+                <figure key={s.id} className="m-0 w-[72vw] max-w-[400px] shrink-0 snap-start sm:w-[42vw] lg:w-[min(28vw,38vh)]" style={{ marginTop: i % 2 ? '5vh' : 0 }}>
+                  <Link href={s.href} className={styles.card} aria-label={`${s.name} — ${s.cta}`}>
+                    <div data-curtain className={styles.image}>
                       <img
                         decoding="async"
                         loading="lazy"
-                        src={s.src}
-                        alt={`${s.label} — ${s.note}`}
-                        className="absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-[var(--ease-out)] group-hover:scale-[1.03]"
+                        src={s.image}
+                        alt={s.alt}
+                        width={1024}
+                        height={1536}
+                        className={styles.photo}
                       />
-                      <span aria-hidden className="catalog-frame__plate">
-                        KATALOG
-                      </span>
+                      <div className={styles.reveal}>
+                        <div className={styles.words}>{s.keywords.map(word => <span key={word} className={styles.word}>{word}</span>)}</div>
+                        <span className={styles.action}>{s.cta}<span aria-hidden>↗</span></span>
+                      </div>
+                    </div>
+                    <div className={styles.caption}>
+                      <h3 className={`font-pretty ${styles.name}`}>{s.name}</h3>
+                      <span className={styles.number}>{String(i + 1).padStart(2, '0')}</span>
                     </div>
                   </Link>
-                  <figcaption className="mt-3 text-[11px] tracking-[0.06em] text-ink/55">
-                    <span className="font-medium text-ink/80">{String(i + 1).padStart(2, '0')}</span> · {s.label}
-                  </figcaption>
                 </figure>
               ))}
             </div>

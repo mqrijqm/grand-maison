@@ -1,12 +1,15 @@
 'use client'
 
 import { Fragment, useEffect, useRef } from 'react'
-import { preloadModule } from 'react-dom'
 
 declare global {
   interface Window {
     /** Ručka koju ostavlja public/crane/crane-hero.js da bi scena mogla da se ugasi. */
     __gcCrane?: { dispose: () => void } | null
+    /** Rano pokretanje scene na direktnom dolasku na početnu. */
+    __gcCraneBoot?: Promise<unknown> | null
+    /** Slab uređaj ili rani skrol: ne pokušavaj ponovo tešku 3D scenu. */
+    __gcCraneAbort?: boolean
     /** Da li je 3D scena spremna. Uvodni splash čeka ovaj flag prije nego pusti animaciju. */
     __gcCraneReady?: boolean
   }
@@ -45,23 +48,63 @@ const WORD_GLYPHS = WORDS.map((word) => {
 // animacija krana odigra.
 export default function CraneHero() {
   const root = useRef<HTMLElement>(null)
-  // Three.js (najveći fajl, ~680 KB) i scena se skidaju odmah sa HTML-om, a ne tek kad React
-  // pokrene efekat ispod. URL-ovi moraju biti isti kao u importima (uključujući ?v=).
-  preloadModule('/vendor/three.module.min.js')
-  preloadModule('/crane/crane-scene.js?v=64')
-  preloadModule('/crane/crane-print.js?v=33')
-
   useEffect(() => {
-    const script = document.createElement('script')
-    script.type = 'module'
-    // Jedinstven upit po montaži: ES modul sa istim URL-om se drugi put ne izvršava,
-    // pa bi pri povratku na početnu (klijentska navigacija) scena ostala prazna.
-    script.src = `${SCRIPT}?m=${Date.now()}`
-    document.body.appendChild(script)
+    let script: HTMLScriptElement | null = null
+    let safety = 0
+    const staticMedia = window.matchMedia('(max-width: 1023px), (prefers-reduced-motion: reduce)')
+    const fallback = () => {
+      if (staticMedia.matches || window.__gcCraneReady || window.__gcCraneAbort) return
+      window.__gcCraneAbort = true
+      window.__gcCrane?.dispose()
+      script?.remove()
+      script = null
+      root.current?.classList.add('crane-static')
+      window.__gcCraneReady = true
+      window.dispatchEvent(new CustomEvent('gc:crane-ready'))
+    }
+    const start = () => {
+      if (staticMedia.matches || window.__gcCraneAbort || window.__gcCraneBoot || script) return
+      script = document.createElement('script')
+      script.type = 'module'
+      // Nova montaža mora ponovo izvršiti modul poslije klijentske navigacije.
+      script.src = `${SCRIPT}?m=${Date.now()}`
+      document.body.appendChild(script)
+      safety = window.setTimeout(fallback, 3500)
+    }
+    const updateMode = () => {
+      if (staticMedia.matches) {
+        root.current?.classList.add('crane-static')
+        window.__gcCrane?.dispose()
+        script?.remove()
+        script = null
+        window.clearTimeout(safety)
+        window.__gcCraneBoot = null
+        window.__gcCraneReady = true
+        window.dispatchEvent(new CustomEvent('gc:crane-ready'))
+      } else if (window.__gcCraneAbort) {
+        root.current?.classList.add('crane-static')
+        window.__gcCraneReady = true
+      } else {
+        root.current?.classList.remove('crane-static')
+        if (!root.current?.classList.contains('crane-ready')) window.__gcCraneReady = false
+        start()
+      }
+    }
+    updateMode()
+    staticMedia.addEventListener('change', updateMode)
+    window.addEventListener('gc:crane-boot-failed', start)
+    const onReady = () => window.clearTimeout(safety)
+    window.addEventListener('gc:crane-ready', onReady)
 
     return () => {
-      script.remove()
+      window.clearTimeout(safety)
+      window.removeEventListener('gc:crane-ready', onReady)
+      staticMedia.removeEventListener('change', updateMode)
+      window.removeEventListener('gc:crane-boot-failed', start)
+      script?.remove()
       window.__gcCrane?.dispose()
+      window.__gcCraneBoot = null
+      window.__gcCraneReady = false
     }
   }, [])
 
@@ -72,9 +115,14 @@ export default function CraneHero() {
 
       <section id="hero" ref={root} className="construction-story">
         <div className="crane-stage" aria-hidden="true">
-          {/* Cijela slika (pozadinski grad, kran, zgrada, soba) je jedna štampa u tačkama u
-              WebGL-u (public/crane/crane-print.js). Dok se scena ne učita, vidi se samo papir. */}
+          {/* Prvi kadar je slika iste scene: kran se vidi odmah, a WebGL se meko pojavi preko nje. */}
           <figure className="crane-viewport">
+            <picture className="crane-fallback">
+              <source media="(max-width: 599px)" srcSet="/crane/hero-fallback-390.webp" />
+              <source media="(max-width: 1023px)" srcSet="/crane/hero-fallback-768.webp" />
+              <source media="(min-width: 1920px)" srcSet="/crane/hero-fallback-2560.webp" />
+              <img src="/crane/hero-fallback-1440.webp" alt="" width={1440} height={900} fetchPriority="high" decoding="async" />
+            </picture>
             <canvas />
           </figure>
 
