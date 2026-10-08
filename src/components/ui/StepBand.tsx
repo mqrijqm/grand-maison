@@ -3,6 +3,7 @@
 import { useRef } from 'react'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { MQ } from '@/lib/motion'
+import css from './StepBand.module.css'
 
 // Stepenasta traka: sekcija čija su gornja i donja ivica stepenice ("pikselizovana dijagonala"),
 // kao na referencama. Stepenice su kolone (div-ovi) iznad i ispod sekcije; skrol ih izvlači
@@ -17,7 +18,7 @@ import { MQ } from '@/lib/motion'
 //   flat-top  — ravno gore, stepenice samo dolje (za prvu traku ispod herosa)
 
 export type StepProfile = 'diag' | 'diag-rev' | 'valley' | 'flat-top'
-export type StepTone = 'navy' | 'bg'
+export type StepTone = 'navy' | 'ink' | 'bg'
 
 // Visine kolona (0..1) za gornju i donju ivicu.
 export function stepHeights(profile: StepProfile, n: number) {
@@ -53,101 +54,94 @@ type Props = {
   steps?: number
   /** visina stepeništa (CSS dužina) */
   depth?: string
+  bottom?: boolean
   id?: string
   className?: string
   as?: 'section' | 'div'
   'aria-label'?: string
 }
 
-const FILL: Record<StepTone, string> = { navy: 'bg-navy', bg: 'bg-bg' }
-const TEXT: Record<StepTone, string> = { navy: 'text-bg', bg: 'text-ink' }
+// Visina stuba = zrnasta kapa (--step-grain) + dio stepeništa; i najniži stub tako ima punu kapu.
+const colStyle = (h: number, depth: string): React.CSSProperties => ({
+  height: `calc(var(--step-grain) + ${h} * (${depth} - var(--step-grain)))`,
+})
+
+const FILL: Record<StepTone, string> = { navy: 'bg-navy', ink: 'bg-ink', bg: 'bg-bg' }
+const TEXT: Record<StepTone, string> = { navy: 'text-bg', ink: 'text-bg', bg: 'text-ink' }
 
 export default function StepBand({
   children,
   profile = 'diag',
   tone = 'navy',
   steps = 10,
-  depth = 'clamp(90px, 16vh, 200px)',
+  depth = 'clamp(300px, 46vh, 480px)',
+  bottom = true,
   id,
   className = '',
   as: Tag = 'section',
   ...rest
 }: Props) {
   const root = useRef<HTMLElement>(null)
-  const { top, bottom } = stepHeights(profile, steps)
+  const { top, bottom: bottomHeights } = stepHeights(profile, steps)
 
   useGSAP(
     () => {
       const el = root.current!
-      const tops = gsap.utils.toArray<HTMLElement>('[data-step-top]', el)
-      const bots = gsap.utils.toArray<HTMLElement>('[data-step-bottom]', el)
+      const tops = gsap.utils.toArray<HTMLElement>('[data-step-edge="top"] [data-step-col]', el)
+      const bots = gsap.utils.toArray<HTMLElement>('[data-step-edge="bottom"] [data-step-col]', el)
       const mm = gsap.matchMedia()
       mm.add(MQ, (ctx) => {
         const { reduce } = ctx.conditions as { reduce: boolean }
         if (reduce) {
-          gsap.set([...tops, ...bots], { scaleY: 1 })
+          gsap.set([...tops, ...bots], { yPercent: 0 })
           return
         }
-        // Svaka kolona ima svoj odsječak skrola: najviša kreće prva, najniža zadnja. `steps(5)`
-        // daje pikselizovan rast (skokovi, ne glatko), kao da se stepenište slaže od blokova.
-        const grow = (cols: HTMLElement[], hs: number[], edge: 'top' | 'bottom') =>
-          cols.forEach((c, i) => {
-            const lag = (1 - hs[i]) * 22 // procenti visine ekrana
-            gsap.fromTo(
-              c,
-              { scaleY: 0 },
-              {
-                scaleY: 1,
-                ease: 'steps(5)',
-                scrollTrigger: {
-                  trigger: el,
-                  start: `${edge} ${100 - lag}%`,
-                  end: `${edge} ${62 - lag}%`,
-                  scrub: 0.4,
-                },
-              },
-            )
-          })
+        // Stub se ne skalira (zrno bi se razvuklo) nego izlazi iz ivice trake: translate + overflow:hidden
+        // na traci. Okidač je sama traka: počinje kad njena spoljna ivica uđe u ekran, a završava kad
+        // unutrašnja stigne do ~30% visine — dugačak, miran prelaz prije teksta ispod.
+        // Niži stubovi kreću ranije, viši kasnije, pa ivica naraste u stepenište.
+        const grow = (cols: HTMLElement[], hs: number[], edge: 'top' | 'bottom') => {
+          if (!cols.length) return
+          const band = cols[0].parentElement!
+          const from = edge === 'top' ? 100 : -100
+          const timeline = gsap.timeline({ scrollTrigger: { trigger: band, start: 'top 100%', end: 'bottom 30%', scrub: 0.8 } })
+          cols.forEach((column, index) => timeline.fromTo(column, { yPercent: from }, { yPercent: 0, duration: 1, ease: 'power2.out' }, (1 - hs[index]) * 0.6))
+        }
         grow(tops, top, 'top')
-        grow(bots, bottom, 'bottom')
+        grow(bots, bottomHeights, 'bottom')
       })
     },
     { scope: root },
   )
 
-  const col = 'flex-1'
   return (
     <Tag
       ref={root as React.Ref<HTMLElement & HTMLDivElement>}
       id={id}
       data-step-band={tone}
       className={`relative z-[5] ${FILL[tone]} ${TEXT[tone]} ${className}`}
-      style={{ marginBlock: profile === 'flat-top' ? `0 ${depth}` : `${depth}` }}
+      style={{ marginTop: profile === 'flat-top' ? 0 : depth, marginBottom: bottom ? depth : 0 }}
       {...rest}
     >
       {profile !== 'flat-top' && (
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-[calc(100%-1px)] flex items-end" style={{ height: depth }}>
+        <div aria-hidden data-step-edge="top" className={`${css.band} pointer-events-none absolute inset-x-0 bottom-[calc(100%-1px)] flex items-end`} style={{ height: depth }}>
           {top.map((h, i) => (
-            <span
-              key={i}
-              data-step-top
-              className={`${col} ${FILL[tone]} ${i % 2 && steps > 6 ? 'max-md:hidden' : ''}`}
-              style={{ height: `${h * 100}%`, transformOrigin: '50% 100%' }}
-            />
+            <span key={i} data-step-col className={`${css.col} ${i % 2 && steps > 6 ? 'max-md:hidden' : ''}`} style={colStyle(h, depth)}>
+              <i className={`${css.grain} ${FILL[tone]}`} style={{ '--gx': `${(i * 173) % 1024}px` } as React.CSSProperties} />
+              <b className={`${css.body} ${FILL[tone]}`} />
+            </span>
           ))}
         </div>
       )}
       {children}
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-[calc(100%-1px)] flex items-start" style={{ height: depth }}>
-        {bottom.map((h, i) => (
-          <span
-            key={i}
-            data-step-bottom
-            className={`${col} ${FILL[tone]} ${i % 2 && steps > 6 ? 'max-md:hidden' : ''}`}
-            style={{ height: `${h * 100}%`, transformOrigin: '50% 0%' }}
-          />
+      {bottom && <div aria-hidden data-step-edge="bottom" className={`${css.band} pointer-events-none absolute inset-x-0 top-[calc(100%-1px)] flex items-start`} style={{ height: depth }}>
+        {bottomHeights.map((h, i) => (
+          <span key={i} data-step-col className={`${css.col} ${i % 2 && steps > 6 ? 'max-md:hidden' : ''}`} style={colStyle(h, depth)}>
+            <b className={`${css.body} ${FILL[tone]}`} />
+            <i className={`${css.grain} ${css.grainBottom} ${FILL[tone]}`} style={{ '--gx': `${(i * 173 + 91) % 1024}px` } as React.CSSProperties} />
+          </span>
         ))}
-      </div>
+      </div>}
     </Tag>
   )
 }

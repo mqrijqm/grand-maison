@@ -1,0 +1,58 @@
+/* Stepenasta traka: svaki stub ima zrnastu (dither) kapu na spoljnoj ivici.
+   Maska je /public/textures/step-dither.png — alfa gusta uz stub, sve rjeđa ka ivici.
+   Boju daje tone-klasa na kapi i tijelu, pa ista maska radi za navy / ink / bg. */
+
+.band {
+  --step-grain: 160px;
+  --step-tile: 1024px;
+  overflow: hidden;
+}
+
+@media (max-width: 767px) {
+  .band {
+    --step-grain: 100px;
+    --step-tile: 640px;
+  }
+}
+
+.col {
+  position: relative;
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  /* 1px preklapanja između stubova, da ne ostane šav od zaokruživanja širine */
+  margin-right: -1px;
+  will-change: transform;
+}
+.col:last-child {
+  margin-right: 0;
+}
+
+.grain {
+  flex: none;
+  height: var(--step-grain);
+  /* maska je pikselizovana na 2px "zrno"; ne glačati je pri skaliranju */
+  -webkit-mask-image: url('/textures/step-dither.png');
+  mask-image: url('/textures/step-dither.png');
+  -webkit-mask-repeat: repeat-x;
+  mask-repeat: repeat-x;
+  -webkit-mask-size: var(--step-tile) var(--step-grain);
+  mask-size: var(--step-tile) var(--step-grain);
+  -webkit-mask-position: var(--gx, 0px) 0;
+  mask-position: var(--gx, 0px) 0;
+  image-rendering: pixelated;
+}
+/* donja traka visi naniže — kapa je na dnu i ogledalo je */
+.grainBottom {
+  transform: scaleY(-1);
+}
+
+.body {
+  flex: 1 1 auto;
+}
+.body:first-child {
+  margin-bottom: -1px;
+}
+.grain + .body {
+  margin-top: -1px;
+}

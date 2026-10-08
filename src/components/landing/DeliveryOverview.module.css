@@ -1,4 +1,4 @@
-.section { position:relative; z-index:20; background:var(--bg); padding-top:64px; padding-bottom:clamp(150px,22vh,230px); }
+.section { position:relative; z-index:20; background:var(--bg); padding-top:64px; padding-bottom:clamp(300px,46vh,480px); }
 .top { display:grid; gap:40px; align-items:start; }
 .intro { min-width:0; }
 .title { max-width:15ch; font-size:clamp(36px,4.9vw,88px); line-height:.95; letter-spacing:-.025em; }

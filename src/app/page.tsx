@@ -36,7 +36,9 @@ export default function Home() {
         <Procurement />
         <Bento />
         <BrandsSplit />
-        <Featured />
+        <StepBand as="div" tone="navy" profile="diag-rev" steps={11} className="!z-[47]">
+          <Featured />
+        </StepBand>
         <Delivery />
         <StepBand tone="navy" profile="valley" steps={11} aria-label="Vodiči" className="!z-[45]">
           <PostsTeaser />
