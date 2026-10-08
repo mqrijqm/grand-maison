@@ -9,6 +9,10 @@ import Intro from "@/components/landing/Intro";
 import Yard from "@/components/landing/Yard";
 import SkySwipe from "@/components/landing/SkySwipe";
 import UsesSplit from "@/components/landing/UsesSplit";
+import HowItWorks from "@/components/landing/HowItWorks";
+import CalcTeaser from "@/components/landing/CalcTeaser";
+import ForBusiness from "@/components/landing/ForBusiness";
+import QuoteBand from "@/components/landing/QuoteBand";
 
 // Početna sa naglaskom na nabavku za firme i izvođače.
 export default function Home() {
@@ -22,12 +26,17 @@ export default function Home() {
       <main className="home-flow">
         <CraneHero />
         <SkySwipe />
-        {/* Šta prodajemo → za koje radove → prednosti → asortiman → stovarište → kontakt (podnožje). */}
+        {/* Šta prodajemo → šta gradite → kako se naručuje → koliko treba → za firme → prednosti →
+            stovarište → završni poziv → podnožje. */}
         <Intro />
         <UsesSplit />
+        <HowItWorks />
+        <CalcTeaser />
+        <ForBusiness />
         <BrandsSplit />
-        {/* Usputna sekcija pred podnožje: stovarište (foto → plava ilustracija na hover). */}
+        {/* Stovarište (foto → plava ilustracija na hover). */}
         <Yard />
+        <QuoteBand />
         <Footer />
       </main>
       <CartDrawer />

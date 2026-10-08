@@ -12,11 +12,13 @@ import { axisShift } from './iso'
 import WorkArt, { type WorkKind } from './WorkArt'
 import styles from './WorkSections.module.css'
 
+// Svaki red = jedan posao i tačno ono što za njega prodajemo (u labeli, prije opisa). Kupatilo je
+// sanitarna oprema (registrovana djelatnost), ne pločice ni materijal za zidove kupatila.
 const WORKS: { id: WorkKind; title: string; label: string; description: string; href: string; cta: string }[] = [
-  { id:'suha-gradnja', title:'Pregradni zidovi i plafoni', label:'Suha gradnja', description:'Ploče, profili, izolacija i pribor — povežite komponente prema namjeni prostora.', href:'/prodavnica?kategorija=suha-gradnja#artikli', cta:'Materijal za suhu gradnju' },
-  { id:'izolacija', title:'Izolacija prostora', label:'Toplotna i zvučna', description:'Krenite od mjesta ugradnje: zid, krov ili pod. Zatim izaberite materijal.', href:'/prodavnica?kategorija=izolacija#artikli', cta:'Izolacija prema namjeni' },
-  { id:'zidanje-krov', title:'Zidanje i krov', label:'Program po upitu', description:'Pošaljite specifikaciju za provjeru programa, količina i dostupnosti.', href:'/upit-za-izvodjace?program=zidni-krovni', cta:'Pošaljite specifikaciju' },
-  { id:'kupatilo', title:'Opremanje kupatila', label:'Sanitarni program', description:'Istražite program i zatražite ponudu prema potrebama svog prostora.', href:'/prodavnica?kategorija=sanitarna-oprema#artikli', cta:'Istražite sanitarnu opremu' },
+  { id:'suha-gradnja', title:'Pregradni zid ili spušteni plafon', label:'Ploče · profili · vijci', description:'Gips-kartonske ploče, metalni profili, vuna i pribor: sve za zid ili plafon u suhoj gradnji.', href:'/prodavnica?kategorija=suha-gradnja#artikli', cta:'Materijal za suhu gradnju' },
+  { id:'izolacija', title:'Toplotna i zvučna izolacija', label:'Kamena vuna · stiropor', description:'Kamena i staklena vuna i fasadni stiropor. Krenite od mjesta ugradnje: zid, krov ili fasada.', href:'/prodavnica?kategorija=izolacija#artikli', cta:'Materijal za izolaciju' },
+  { id:'zidanje-krov', title:'Zidanje i pokrivanje krova', label:'Blokovi · crijep · po upitu', description:'Blokovi za zidove i crijep za krov. Pošaljite specifikaciju; provjeravamo program, količine i dostupnost.', href:'/upit-za-izvodjace?program=zidni-krovni', cta:'Pošaljite specifikaciju' },
+  { id:'kupatilo', title:'Sanitarna oprema za kupatilo', label:'Umivaonik · WC · slavine', description:'Sanitarna oprema za opremanje kupatila. Program i dostupnost provjeravamo po upitu.', href:'/prodavnica?kategorija=sanitarna-oprema#artikli', cta:'Sanitarna oprema' },
 ]
 
 export default function UsesSplit() {
@@ -46,8 +48,9 @@ export default function UsesSplit() {
 
   return <section ref={root} id="namjena" aria-labelledby="work-heading" className="relative z-20 bg-bg md:grid md:grid-cols-2">
     <div className={styles.panel}>
-      <h2 id="work-heading" data-head className={`display invisible ${styles.heading}`}>Materijal<br />prema vrsti<br />radova</h2>
+      <h2 id="work-heading" data-head className={`display invisible ${styles.heading}`}>Šta<br />gradite?</h2>
       <div className={styles.foot}>
+        <p className="text-[14px] leading-[1.7] opacity-75">Izaberite posao, a mi vam pokažemo materijal koji za njega prodajemo: četiri vrste radova, od zida do kupatila.</p>
         <Cta href="/upit-za-izvodjace" solid>Pošaljite spisak</Cta>
       </div>
     </div>

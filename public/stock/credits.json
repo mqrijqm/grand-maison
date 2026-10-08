@@ -298,5 +298,69 @@
   "source": "Pexels",
   "url": "https://www.pexels.com/photo/3958953/",
   "license": "Pexels License (free for commercial use, no attribution required)"
+ },
+ "firme/kran": {
+  "id": 7121536,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/7121536/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/editorial/firme/kran.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "firme/kran-wide": {
+  "id": 14169558,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/14169558/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/editorial/firme/kran-wide.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "firme/spisak": {
+  "id": 544965,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/544965/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/editorial/firme/spisak.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "firme/planovi": {
+  "id": 5584052,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/5584052/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/editorial/firme/planovi.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "firme/crijep": {
+  "id": 31763543,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/31763543/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/editorial/firme/crijep.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "firme/javni-objekat": {
+  "id": 37293743,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/37293743/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/editorial/firme/javni-objekat.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "firme/skele": {
+  "id": 13890649,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/13890649/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/editorial/firme/skele.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "firme/ekipa": {
+  "id": 8961064,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/8961064/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/editorial/firme/ekipa.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
  }
 }
