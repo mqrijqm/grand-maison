@@ -13,16 +13,63 @@ export const LEGAL_DOCS: LegalDoc[] = [
     title: 'Dostava',
     group: 'kupovina',
     kicker: 'Isporuka',
-    lead: 'Robu dostavljamo u Banjoj Luci i okolnim mjestima. Rok i način isporuke dogovaramo prije potvrde narudžbe. Možete je i preuzeti lično, a za izvođače radova isporuku na gradilište dogovaramo pojedinačno.',
+    lead: 'Lično preuzimanje ili upit za dostavu materijala. Mogućnost isporuke, rok, trošak i način istovara provjerite s prodajom prema robi i lokaciji.',
     updated: UPDATED,
     sections: [
+      {
+        id: 'kako-do-robe',
+        title: 'Kako do robe: preuzimanje, dostava i istovar',
+        blocks: [
+          {
+            t: 'ol',
+            items: [
+              'Lično preuzimanje: Stovarište je u Banjoj Luci. Prije dolaska provjerite raspoloživost robe i dogovorite preuzimanje.',
+              'Dostava na adresu: Pošaljite adresu i spisak materijala. Prodaja provjerava mogućnost, termin i trošak isporuke.',
+              'Pristup i istovar: Navedite kakav je prilaz lokaciji i gdje robu treba odložiti. Način istovara dogovara se prema robi i uslovima na terenu.',
+            ],
+          },
+        ],
+      },
+      {
+        id: 'sta-poslati',
+        title: 'Šta nam poslati za upit o dostavi',
+        blocks: [
+          {
+            t: 'ul',
+            items: [
+              'materijal i količinu;',
+              'adresu isporuke ili informaciju da robu preuzimate lično;',
+              'željeni termin;',
+              'uslove prilaza i istovara.',
+            ],
+          },
+          {
+            t: 'p',
+            text: 'Upit pošaljite preko stranice „Upit za izvođače i projekte“ ili direktno prodaji na {telefon}.',
+          },
+        ],
+      },
+      {
+        id: 'prije-narucivanja',
+        title: 'Prije nego naručite',
+        blocks: [
+          {
+            t: 'ul',
+            items: [
+              'Priprema upita: navedite materijal, specifikaciju, količinu i jedinicu mjere. Priložite predmjer ako ga imate.',
+              'Izbor materijala: vodiči za izbor ploča, izolacije i materijala za različite faze radova nalaze se na stranici „Vodiči“.',
+              'Tehnička dokumentacija: pošaljite naziv ili šifru artikla za koji vam je potreban tehnički list, uputstvo za ugradnju ili deklaracija proizvoda.',
+            ],
+          },
+        ],
+      },
       {
         id: 'podrucje-i-rok',
         title: 'Područje i rok isporuke',
         blocks: [
           {
             t: 'p',
-            text: 'Dostavu vršimo u Banjoj Luci i okolnim mjestima. Za ostale adrese isporuku dogovaramo pojedinačno — javite nam se prije naručivanja.',
+            text: 'Za dostavu u Banjoj Luci, okolini ili na drugoj lokaciji pošaljite adresu i spisak robe. Mogućnost isporuke prodaja provjerava pojedinačno prije potvrde narudžbe.',
           },
           {
             t: 'p',
@@ -58,7 +105,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
           },
           {
             t: 'p',
-            text: 'Osim ako je drugačije dogovoreno, kupac obezbjeđuje slobodan pristup vozilu do mjesta istovara te ljude ili opremu za istovar (radnike, viljuškar, dizalicu). Ako je istovar posebno dogovoren i naveden u potvrdi narudžbe ili ponudi, vršimo ga prema dogovoru.',
+            text: 'Prije potvrde narudžbe dogovorite slobodan pristup vozilu do mjesta istovara i ko obezbjeđuje ljude ili opremu za istovar. Ako je istovar posebno ugovoren i naveden u ponudi, primjenjuju se ti dogovoreni uslovi.',
           },
           {
             t: 'p',

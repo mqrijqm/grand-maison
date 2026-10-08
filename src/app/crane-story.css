@@ -218,10 +218,12 @@ html[data-hero-dark]:not([data-past-hero]) [data-badge] {
   height: 320svh;
   pointer-events: none;
 }
-/* Kraj na nebu: scena je i dalje pinovana; prvi dio skrola ispisuje rečenicu, a ostatak
-   je mirovanje na gotovom tekstu da se ne proleti pored njega. Ne ulazi u animaciju krana. */
+/* Kraj na nebu: scena je i dalje pinovana. Redom: ispisivanje rečenice (~58svh skrola),
+   mirovanje na gotovom tekstu da se pročita (~40svh), pa krem stepenice (SkySwipe, poslednjih
+   100svh herosa) brišu nebo. Zato outro mora biti duži od SkySwipe-a: 200svh = 100 (tekst + mirovanje)
+   + 100 (prelaz). Ne ulazi u animaciju krana. */
 .story-outro {
-  height: 80svh;
+  height: 200svh;
   pointer-events: none;
 }
 

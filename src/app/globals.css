@@ -1119,10 +1119,9 @@ html.scroll-held body {
   font-size: 11px;
   opacity: 0.6;
 }
-@media (max-width: 1180px) {
-  .nav__links li:nth-child(n + 4) {
-    display: none;
-  }
+@media (min-width: 900px) and (max-width: 1350px) {
+  .nav__mode-desk { display: none; }
+  .nav__link { padding-inline: clamp(10px, 1vw, 16px); font-size: 12px; }
 }
 @media (max-width: 899px) {
   .nav__mode-desk {
@@ -1558,6 +1557,7 @@ html.menu-open .nav--home {
     --nav-h: 50px;
     --nav-inset: 8px;
   }
+  .menu__panel { justify-content: flex-start; overflow-y: auto; }
   .nav__side {
     align-items: center;
   }
@@ -1588,6 +1588,7 @@ html.menu-open .nav--home {
 .nav__buy {
   background: var(--ink);
   color: var(--bg);
+  white-space: nowrap;
 }
 .nav__buy:hover {
   background: var(--cobalt);
@@ -1718,7 +1719,7 @@ footer li + li {
 
 /* Početna: puno praznog prostora između sekcija (od "Sistemi" nadalje; hero, prelaz i uvod ostaju spojeni) */
 .home-flow > :is(section, footer, .pin-spacer, [data-pinwrap]):nth-child(n + 5) {
-  margin-top: clamp(96px, 16vh, 220px);
+  margin-top: clamp(140px, 26vh, 340px);
 }
 
 /* Navbar i dugme u footeru: isti široki, fini sans kao tekst sajta (Inter), verzal sa razmakom */
@@ -1742,10 +1743,6 @@ footer li + li {
 
 /* Početna: footer se podvuče pod donje stepenice plave trake (Vodiči), pa stepenice padaju na
    tamnu podlogu sa tačkama umjesto na krem papir. Dubina = depth iz StepBand-a. */
-.home-flow > footer#kontakt {
-  margin-top: calc(-1 * clamp(90px, 16vh, 200px));
-  padding-top: calc(clamp(90px, 16vh, 200px) + 6vh);
-}
 
 /* Početna: navbar se pojavi tek posle naslova (data-intro-done postavlja SiteChrome). */
 html:not([data-intro-done]) .nav--home .nav__bar {
@@ -2098,12 +2095,6 @@ html:not([data-hydrated]) :is([data-client-state], .nav__mode-desk, .nav__cart-c
   }
 }
 
-
-/* Početna: plava traka "Vodiči" stoji tik uz kraj fotografije kamiona (Isporuka) — bez razmaka
-   između, pa gornje stepenice padaju direktno na fotografiju (nema krem trake). */
-.home-flow > section#isporuka + section[aria-label='Vodiči'] {
-  margin-top: 0 !important;
-}
 
 /* ——— Kalkulator W111 (/kalkulator) ——— */
 .w111 {

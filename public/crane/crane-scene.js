@@ -478,6 +478,50 @@ export function createCraneScene() {
   finishRoot.userData.printInside=true; // zgrada oko sobe (plafon, zidovi) nije "pogled kroz prozor"
   const finish=buildFinish({parent:finishRoot,box,rod,group,batch,m,pallet});
   finishRoot.visible=false;
+
+  // ——— Zgrade koje niču iza glavne ———
+  // Dok kran spusti teret i kamera krene niz fasadu, iza zgrade se iz temelja podižu nove, istog
+  // izgleda (isti buildFinish, ista linijska štampa). Niču sporo, sprat po sprat, i nastavljaju da
+  // rastu dok kamera ulazi u zgradu; unutra se ostavljaju za sobom (skriju se kad kamera uđe u sobu).
+  // Prije `RISE_FROM` ništa od ovoga nije u sceni, pa raniji kadrovi ostaju isti.
+  const RISE_FROM=.50,RISE_TO=.84;
+  const SKYLINE=[
+    // x, z: položaj; n: spratova; sx, sz: razvlačenje tlocrta; at: početak; step: razmak spratova; span: trajanje sprata
+    {x:-8,  z:-16, n:6, sx:1.25, sz:1.0,  at:.545, step:.024, span:.07},
+    {x:3,   z:-22, n:8, sx:1.0,  sz:1.15, at:.565, step:.022, span:.075},
+    {x:16,  z:-17, n:7, sx:1.3,  sz:1.0,  at:.58,  step:.022, span:.07},
+    {x:28,  z:-13, n:5, sx:1.0,  sz:1.1,  at:.60,  step:.024, span:.07},
+    {x:-20, z:-24, n:8, sx:1.15, sz:1.1,  at:.585, step:.021, span:.075},
+    {x:30,  z:-28, n:8, sx:1.2,  sz:1.0,  at:.615, step:.02,  span:.07},
+    {x:-1,  z:-36, n:7, sx:1.5,  sz:1.1,  at:.63,  step:.02,  span:.07},
+  ];
+  const skyline=group(scene);
+  const risers=SKYLINE.map(s=>{
+    const root=group(skyline,s.x,0,s.z);
+    root.scale.set(s.sx,1,s.sz);
+    root.userData.printLine=true;
+    const built=buildFinish({parent:root,box,rod,group,batch,m,pallet,storeys:s.n});
+    // Temelj: betonska stopa u iskopu, oplata po rubu i armatura koja viri iz nje.
+    const foundation=group(root);
+    box(foundation,m.concrete,0,-.6,0,8.4,1.4,7.4);
+    box(foundation,m.timber,0,.08,3.8,8.7,.1,.1);box(foundation,m.timber,0,.08,-3.8,8.7,.1,.1);
+    box(foundation,m.timber,4.35,.08,0,.1,.1,7.5);box(foundation,m.timber,-4.35,.08,0,.1,.1,7.5);
+    for(const px of [-3.5,-1.75,0,1.75,3.5])for(const pz of [-3,0,3])rod(foundation,m.steel,[px,0,pz],[px,1.1,pz],.022);
+    batch(foundation);
+    return {...s,foundation,finish:built};
+  });
+  skyline.visible=false;
+  function updateSkyline(p) {
+    const on=p>RISE_FROM&&p<RISE_TO;
+    skyline.visible=on;
+    if(!on)return;
+    for(const b of risers) {
+      const k=smooth(b.at-.03,b.at+.015,p);
+      b.foundation.visible=k>.001;
+      b.foundation.scale.y=Math.max(.001,k);
+      b.finish.update(p,b.at,b.step,b.span);
+    }
+  }
   const ENTRY_Y=ENTRY*2.35+.2;
   const interiorRoot=new THREE.Group();
   // Štampa: soba je "unutra"; dok je kamera u sobi, sve ostalo (kroz prozor) je plavi grad.
@@ -688,6 +732,7 @@ export function createCraneScene() {
     }
     // Zgrada niče sprat po sprat dok se kran okreće; krov je gotov prije nego teret krene dolje.
     finish.update(p,.06,.07,.09);
+    updateSkyline(p);
     interiorRoot.visible=p>.62;
     interiorFade(smooth(.62,.70,p));
     interiorLight.intensity=0;

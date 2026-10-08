@@ -20,7 +20,7 @@ export default function PostsPage() {
           Znanje sa <em>gradilišta</em>
         </Pw></h1>
         <p className="mx-auto mt-12 max-w-[38ch] text-[13px] text-ink/70">
-          Kratki vodiči za izbor, obračun i montažu materijala.
+          Od spiska za ponudu do izbora materijala: krenite od pitanja koje sada imate.
         </p>
       </header>
 

@@ -23,7 +23,7 @@ const SCRIPT = '/crane/crane-hero.js'
 // Rečenica koja se na kraju hero-a (kad kamera izađe kroz prozor i vidi se opet nebo)
 // polako ispisuje, slovo po slovo. Skrol je vozi: scena postavlja `--type-p` (0..1) na sekciju,
 // a svako slovo ima svoj prag `--th` i pojavi se (mekano) tačno kad skrol stigne dotle.
-const PHRASE = 'Građevinski materijal. Veleprodaja. Dostava na gradilište.'
+const PHRASE = 'Građevinski materijal za profesionalce. Veleprodaja. Dostava na gradilište.'
 // Slova se drže u rečima (nowrap), da se reč nikad ne prelomi usred slova na uskom ekranu.
 const WORDS = PHRASE.split(' ')
 const TOTAL = [...PHRASE].length
@@ -69,7 +69,7 @@ export default function CraneHero() {
       // Nova montaža mora ponovo izvršiti modul poslije klijentske navigacije.
       script.src = `${SCRIPT}?m=${Date.now()}`
       document.body.appendChild(script)
-      safety = window.setTimeout(fallback, 3500)
+      safety = window.setTimeout(fallback, 9000)
     }
     const updateMode = () => {
       if (staticMedia.matches) {
@@ -123,7 +123,7 @@ export default function CraneHero() {
               <source media="(min-width: 1920px)" srcSet="/crane/hero-fallback-2560.webp" />
               <img src="/crane/hero-fallback-1440.webp" alt="" width={1440} height={900} fetchPriority="high" decoding="async" />
             </picture>
-            <canvas />
+            <canvas suppressHydrationWarning />
           </figure>
 
           <div className="scene-caption">

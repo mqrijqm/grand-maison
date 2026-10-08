@@ -1,14 +1,14 @@
 ﻿'use client'
 
-import Cta from '@/components/ui/Cta'
+import BlueWipe from '@/components/ui/BlueWipe'
 import { useRef } from 'react'
 import { gsap, ScrollTrigger, useGSAP } from '@/lib/gsap'
 import { EASE, MQ } from '@/lib/motion'
 import { revealChars } from '@/lib/reveal'
 
-// Četiri prednosti (PDF, tačka 3). Desno stoji panel (veliki naslov u stepenastim redovima, tekst
+// Tri prednosti saradnje (PDF, tačka 3). Desno stoji panel (veliki naslov u stepenastim redovima, tekst
 // dolje desno, dugme), lijevo se skrola po jedna prednost sa generativnim linijskim crtežom
-// (zrake, torus, globus, prstenovi tačaka) koji se okreće dok se skrola — crtež se računa iz
+// (zrake, torus, globus) koji se okreće dok se skrola — crtež se računa iz
 // ugla `t`, pa ga skrol "vrti" bez ijednog video ili slikovnog fajla.
 
 const R = 110
@@ -87,37 +87,7 @@ const globe: Art = {
   },
 }
 
-// Lukavac (cement): zrnca u prstenovima; svaki prsten se okreće svojom brzinom.
-const grains: Art = {
-  init: (g) => {
-    const ns = 'http://www.w3.org/2000/svg'
-    ;[18, 34, 50, 66, 82, 98].forEach((r, k) => {
-      const ring = document.createElementNS(ns, 'g')
-      ring.dataset.k = String(k)
-      const n = Math.round((2 * Math.PI * r) / 9)
-      for (let i = 0; i < n; i++) {
-        const c = document.createElementNS(ns, 'circle')
-        const a = (i / n) * Math.PI * 2
-        c.setAttribute('cx', f(Math.cos(a) * r))
-        c.setAttribute('cy', f(Math.sin(a) * r))
-        c.setAttribute('r', i % 3 ? '0.9' : '1.8')
-        ring.appendChild(c)
-      }
-      g.appendChild(ring)
-    })
-    const outer = document.createElementNS(ns, 'circle')
-    outer.setAttribute('r', String(R))
-    g.appendChild(outer)
-  },
-  draw: (g, t) => {
-    g.querySelectorAll<SVGGElement>('g[data-k]').forEach((ring) => {
-      const k = Number(ring.dataset.k)
-      ring.setAttribute('transform', `rotate(${f((k % 2 ? -1 : 1) * t * (40 + k * 22))})`)
-    })
-  },
-}
-
-const ARTS = [rays, torus, globe, grains]
+const ARTS = [rays, torus, globe]
 
 const USPS: { title: string; text: string }[] = [
   {
@@ -131,10 +101,6 @@ const USPS: { title: string; text: string }[] = [
   {
     title: 'Stovarište',
     text: 'Stovarište u Banjoj Luci: ploče, vuna, profili i veziva. Dostupnost i količine potvrđujemo prije narudžbe.',
-  },
-  {
-    title: 'Suha gradnja',
-    text: 'Sistemi suhe gradnje jedna su od ključnih oblasti naše ponude: zidovi, plafoni i fasade — i savjet kako ih složiti.',
   },
 ]
 
@@ -174,22 +140,19 @@ export default function BrandsSplit() {
   return (
     <section ref={root} id="prednosti" className="relative z-20 md:grid md:grid-cols-2" aria-label="Zašto Grand Company">
       {/* Plavi panel lijevo; originalni animirani crteži na svijetloj pozadini desno. */}
-      <div className="split-panel bg-navy text-bg md:sticky md:top-0 md:h-dvh md:self-start">
+      <BlueWipe from="left" className="text-bg md:sticky md:top-0 md:h-dvh md:self-start" contentClassName="split-panel">
         <h2 data-head className="split-panel__head display invisible">
-          <span className="block">Četiri</span>
+          <span className="block">Tri</span>
           <span className="block">prednosti</span>
           <span className="block">saradnje</span>
         </h2>
         <div className="split-panel__foot">
           <p data-lead className="split-panel__lead">
-            Grand Company snabdijeva gradilišta građevinskim materijalom: dostava i istovar po dogovoru, B2B uslovi
-            za firme i sistemi suhe gradnje u ponudi.
+            Grand Company snabdijeva gradilišta građevinskim materijalom: dostava i istovar po dogovoru i stovarište u
+            Banjoj Luci.
           </p>
-          <Cta href="/portal" className="[--cta-fill:var(--bg)] [--cta-ink:var(--navy)]">
-            B2B portal
-          </Cta>
         </div>
-      </div>
+      </BlueWipe>
 
       {/* Prednosti sa originalnim generativnim crtežima. */}
       <div className="bg-bg min-w-0">
@@ -200,7 +163,7 @@ export default function BrandsSplit() {
             className="flex flex-col items-center justify-center gap-10 border-b border-ink/10 px-6 py-[14vh] text-center md:min-h-[90dvh] md:px-[5vw]"
           >
             <svg viewBox={`${-R - 6} ${-R - 6} ${2 * R + 12} ${2 * R + 12}`} className="art w-[min(60vw,280px)]" fill="none" stroke="currentColor" strokeWidth={1} aria-hidden>
-              {i !== 2 && i !== 3 && <circle r={R} />}
+              {i !== 2 && <circle r={R} />}
               <g data-gen />
               <circle r={3} fill="var(--signal)" stroke="none" />
             </svg>

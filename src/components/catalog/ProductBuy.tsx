@@ -1,71 +1,41 @@
 'use client'
 
+import Link from 'next/link'
 import { useState } from 'react'
-import { addToCart, toggleSaved, useShop } from '@/lib/cart'
-import { defaultQty, money, qtyLabel, type Product } from '@/lib/shop'
+import { addToCart } from '@/lib/cart'
+import { defaultQty, qtyLabel, type Product } from '@/lib/shop'
+import { inquiryQty, setInquiryQuantity, useCatalogInquiry } from '@/lib/catalog-inquiry'
 import Price from '@/components/b2b/Price'
-import { useB2B, withDiscount } from '@/lib/b2b'
-import Cta from '@/components/ui/Cta'
+import styles from './CatalogSupport.module.css'
 
 type Props = { product: Product }
 
-// Kupovina na stranici artikla: količina u kapsuli (− / +), dugme sa ukupnim iznosom i "Sačuvaj".
 export default function ProductBuy({ product }: Props) {
   const step = defaultQty(product)
-  const [qty, setQty] = useState(step)
-  const { saved } = useShop()
-  const isSaved = saved.includes(product.id)
-  const { discount, partner } = useB2B()
+  const [input, setInput] = useState(String(step))
+  const qty = inquiryQty(input)
+  const items = useCatalogInquiry()
+  const changeQuantity = (direction: number) => setInput(String(Math.round(Math.min(9999, Math.max(step, (qty ?? step) + direction * step)) * 100) / 100))
 
   return (
     <div>
-      {discount > 0 && partner && (
-        <p className="mb-5 flex flex-wrap items-baseline gap-x-3 gap-y-1 rounded-[12px] border border-ink/15 px-4 py-3 text-[11.5px]">
-          <span className="opacity-60">Vaša B2B cijena</span>
-          <span className="num text-[20px]">{money(withDiscount(product.price, discount))}</span>
-          <span className="opacity-60">/ {product.unit} · rabat {Math.round(discount * 100)}% · {partner.name}</span>
-        </p>
-      )}
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="flex h-[50px] items-center border border-ink/20">
-          <button
-            type="button"
-            aria-label="Smanji količinu"
-            onClick={() => setQty(Math.max(step, Math.round((qty - step) * 100) / 100))}
-            className="grid size-[52px] place-items-center text-xl transition-colors hover:text-signal"
-          >
-            −
-          </button>
-          <span className="min-w-[5.5rem] text-center text-[12.5px] tabular-nums" aria-live="polite">
-            {qtyLabel(qty, product.unit)}
-          </span>
-          <button
-            type="button"
-            aria-label="Povećaj količinu"
-            onClick={() => setQty(Math.round((qty + step) * 100) / 100)}
-            className="grid size-[52px] place-items-center text-xl transition-colors hover:text-signal"
-          >
-            +
-          </button>
+      <div className={styles.purchase}>
+        <label className="label opacity-55" htmlFor={`qty-${product.sku}`}>Količina u jedinici prodaje</label>
+        <div className={styles.quantityRow}>
+          <div className={styles.quantity}>
+            <button type="button" aria-label="Smanji količinu" onClick={() => changeQuantity(-1)}>−</button>
+            <input id={`qty-${product.sku}`} type="number" min={.01} max={9999} step={.01} required value={input} onChange={event => setInput(event.target.value)} aria-invalid={qty === null} aria-describedby={`quantity-hint-${product.sku}`} />
+            <span className="pr-3 text-[12px]">{product.unit}</span>
+            <button type="button" aria-label="Povećaj količinu" onClick={() => changeQuantity(1)}>+</button>
+          </div>
+          {qty !== null && <span className="text-[12px]" aria-live="polite"><span className="block text-[9px] opacity-55">Orijentacioni iznos</span><Price value={product.price} qty={qty} /></span>}
         </div>
-        <Cta solid onClick={() => addToCart(product.id, qty)}>
-          Dodaj
-        </Cta>
-        <span className="text-[12.5px] opacity-80" aria-live="polite">
-          <Price value={product.price} qty={qty} />
-        </span>
-      </div>
-
-      <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-[14px]">
-        <button type="button" onClick={() => toggleSaved(product.id)} aria-pressed={isSaved} className="flex min-h-11 items-center gap-2">
-          <span className={`size-2.5 rounded-full border transition-colors ${isSaved ? 'border-signal bg-signal' : 'border-ink/50'}`} />
-          <span className="ulink">{isSaved ? 'Sačuvano' : 'Sačuvaj'}</span>
-        </button>
-        <span className="flex items-center gap-2 opacity-60">
-          <span className="size-1.5 rounded-full bg-ink" />
-          Dostupno po upitu
-        </span>
-        <span className="opacity-60">Dostava po dogovoru</span>
+        <p id={`quantity-hint-${product.sku}`} className="text-[10px] normal-case leading-relaxed opacity-60">{qty === null ? 'Unesite količinu od 0,01 do 9.999.' : product.pack ? `Pakovanje: ${qtyLabel(product.pack.size, product.unit)} / ${product.pack.name}. Količine i dostupnost potvrđuje prodaja.` : `Jedinica prodaje: ${product.unit}. Količine i dostupnost potvrđuje prodaja.`}</p>
+        <div className={styles.purchaseActions}>
+          <button type="button" disabled={qty === null} onClick={() => { if (qty !== null) setInquiryQuantity(product.sku, qty) }}><span>{items[product.sku] ? 'Ažuriraj količinu u upitu' : 'Dodaj u upit za ponudu'}</span><span aria-hidden>+</span></button>
+          <button type="button" disabled={qty === null} onClick={() => { if (qty !== null) addToCart(product.id, qty) }}><span>Dodaj u korpu</span><span aria-hidden>+</span></button>
+        </div>
+        <p className={styles.purchaseStatus} aria-live="polite">{items[product.sku] && <><span>U spisku: {qtyLabel(items[product.sku], product.unit)} · </span><Link href="/prodavnica#katalog-spisak">Pregledajte cijeli upit ↗</Link></>}</p>
       </div>
     </div>
   )

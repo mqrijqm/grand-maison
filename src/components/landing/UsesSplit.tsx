@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useRef } from 'react'
+import BlueWipe from '@/components/ui/BlueWipe'
 import Cta from '@/components/ui/Cta'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { drawOnScroll } from '@/lib/draw'
@@ -12,10 +13,10 @@ import WorkArt, { type WorkKind } from './WorkArt'
 import styles from './WorkSections.module.css'
 
 const WORKS: { id: WorkKind; title: string; label: string; description: string; href: string; cta: string }[] = [
-  { id:'suha-gradnja', title:'Pregradni zidovi i plafoni', label:'Suha gradnja', description:'Ploče, profili, izolacija i pribor — povežite komponente prema namjeni prostora.', href:'/prodavnica?kategorija=suha-gradnja', cta:'Materijal za suhu gradnju' },
-  { id:'izolacija', title:'Izolacija prostora', label:'Toplotna i zvučna', description:'Krenite od mjesta ugradnje: zid, krov ili pod. Zatim izaberite materijal.', href:'/prodavnica?kategorija=izolacija', cta:'Izolacija prema namjeni' },
+  { id:'suha-gradnja', title:'Pregradni zidovi i plafoni', label:'Suha gradnja', description:'Ploče, profili, izolacija i pribor — povežite komponente prema namjeni prostora.', href:'/prodavnica?kategorija=suha-gradnja#artikli', cta:'Materijal za suhu gradnju' },
+  { id:'izolacija', title:'Izolacija prostora', label:'Toplotna i zvučna', description:'Krenite od mjesta ugradnje: zid, krov ili pod. Zatim izaberite materijal.', href:'/prodavnica?kategorija=izolacija#artikli', cta:'Izolacija prema namjeni' },
   { id:'zidanje-krov', title:'Zidanje i krov', label:'Program po upitu', description:'Pošaljite specifikaciju za provjeru programa, količina i dostupnosti.', href:'/upit-za-izvodjace?program=zidni-krovni', cta:'Pošaljite specifikaciju' },
-  { id:'kupatilo', title:'Opremanje kupatila', label:'Sanitarni program', description:'Istražite program i zatražite ponudu prema potrebama svog prostora.', href:'/prodavnica#program-sanitarije', cta:'Istražite sanitarnu opremu' },
+  { id:'kupatilo', title:'Opremanje kupatila', label:'Sanitarni program', description:'Istražite program i zatražite ponudu prema potrebama svog prostora.', href:'/prodavnica?kategorija=sanitarna-oprema#artikli', cta:'Istražite sanitarnu opremu' },
 ]
 
 export default function UsesSplit() {
@@ -47,11 +48,10 @@ export default function UsesSplit() {
     <div className={styles.panel}>
       <h2 id="work-heading" data-head className={`display invisible ${styles.heading}`}>Materijal<br />prema vrsti<br />radova</h2>
       <div className={styles.foot}>
-        <p className="text-lead text-ink/70">Od posla koji planirate do odgovarajućeg izbora materijala.</p>
         <Cta href="/upit-za-izvodjace" solid>Pošaljite spisak</Cta>
       </div>
     </div>
-    <div className="bg-navy text-bg [--art-fill:var(--navy)] [--signal:var(--accent)]">
+    <BlueWipe from="right" className="text-bg [--art-fill:var(--navy)] [--signal:var(--accent)]">
       {WORKS.map((work,i)=><article id={`radovi-${work.id}`} key={work.id} data-use className={`scroll-mt-24 ${styles.row}`}>
         <div>
           <p className="label flex items-center justify-between gap-6 text-bg/65"><span>{String(i+1).padStart(2,'0')} / 04</span><span>{work.label}</span></p>
@@ -66,6 +66,6 @@ export default function UsesSplit() {
           </div>
         </div>
       </article>)}
-    </div>
+    </BlueWipe>
   </section>
 }

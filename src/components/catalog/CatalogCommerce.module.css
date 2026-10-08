@@ -1,0 +1,79 @@
+.productCard { display:flex; flex-direction:column; min-width:0; background:var(--bg); border-right:1px solid rgb(27 36 54 / .2); border-bottom:1px solid rgb(27 36 54 / .2); transition:background .25s,color .25s; }
+.photoArea { position:relative; aspect-ratio:4/4.5; min-height:310px; }
+.productPhoto { position:absolute; inset:18px 18px 0; display:block; background:var(--plate); }
+.productPhoto img { display:block; width:100%; height:100%; object-fit:contain; }
+.productInfo { display:flex; align-items:start; justify-content:space-between; gap:12px; padding:22px 20px 26px; }
+.productTitle { min-width:0; font-size:clamp(18px,1.35vw,24px); line-height:1.15; overflow-wrap:break-word; hyphens:manual; }
+.detailsToggle { display:grid; place-items:center; flex-shrink:0; width:44px; height:44px; margin-top:-10px; font-size:22px; }
+.productDetails { position:absolute; inset:0; display:flex; flex-direction:column; padding:24px 20px; color:#fff; background:var(--cobalt); }
+.productDetails[hidden] { display:none; }
+.detailsOpen { background:var(--cobalt); color:#fff; }
+.productMeta { display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; font-size:9px; line-height:1.5; opacity:.7; }
+.spec { margin:22px 0 8px; font-size:12px; line-height:1.6; text-transform:none; }
+.pack { margin-bottom:20px; font-size:10px; line-height:1.5; opacity:.7; text-transform:none; }
+.price { display:flex; flex-direction:column; align-items:flex-start; gap:8px; margin-top:auto; font-size:14px; }
+.priceLabel { font-size:9px; opacity:.7; }
+.cardActions { display:grid; grid-template-columns:1.45fr 1fr; gap:8px; margin-top:20px; }
+.cardActions button { display:flex; align-items:center; justify-content:space-between; gap:8px; min-height:44px; padding:12px; border:1px solid rgb(255 255 255 / .5); font-size:10px; text-align:left; }
+.cardActions button:first-child { background:var(--bg); border-color:var(--bg); color:var(--ink); }
+.cardActions button:hover { background:var(--ink); border-color:var(--ink); color:#fff; }
+.cardActions button[aria-pressed='true'] { background:var(--ink); border-color:var(--ink); color:#fff; }
+.grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); border-top:1px solid rgb(27 36 54 / .2); border-left:1px solid rgb(27 36 54 / .2); background:transparent; }
+.selectionBar { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; margin:24px 0; padding:18px 20px; background:var(--cobalt); color:#fff; font-size:11px; line-height:1.5; }
+.selectionBar a { text-decoration:underline; text-underline-offset:4px; }
+.tableHead { display:none; padding:14px 0; border-block:1px solid rgb(27 36 54 / .2); font-size:9px; opacity:.5; }
+.row { display:grid; grid-template-columns:64px minmax(0,1fr) auto; align-items:center; gap:16px; padding:20px 0; border-bottom:1px solid rgb(27 36 54 / .15); }
+.thumb { width:64px; height:80px; object-fit:contain; background:var(--plate); }
+.rowMain { min-width:0; }
+.rowMeta { display:block; margin-bottom:8px; font-size:9px; opacity:.5; }
+.rowTitle { display:block; font-family:var(--font-heavy),Arial,sans-serif; font-size:15px; font-weight:700; line-height:1.35; }
+.rowTitle:hover { color:var(--cobalt); }
+.rowSpec { display:block; margin-top:6px; font-size:11px; line-height:1.5; opacity:.65; text-transform:none; }
+.rowPrice { grid-column:2; font-size:13px; line-height:1.5; }
+.rowAction { grid-column:3; grid-row:1/span 2; min-width:90px; min-height:44px; padding:12px; border:1px solid rgb(27 36 54 / .3); font-size:10px; }
+.rowAction:hover, .rowAction[aria-pressed='true'] { background:var(--cobalt); border-color:var(--cobalt); color:#fff; }
+.project { margin-top:clamp(72px,14vh,140px); padding:64px 0; background:var(--cobalt); color:#fff; scroll-margin-top:90px; }
+.banded { margin-top:0; }
+.projectLayout { display:grid; gap:40px; align-items:start; }
+.projectTitle { max-width:15ch; margin-top:22px; font-size:clamp(34px,4.1vw,68px); line-height:.97; letter-spacing:-.025em; }
+.projectLead { max-width:37ch; margin-top:28px; font-size:13px; line-height:1.7; opacity:.8; }
+.projectSteps { margin-top:36px; padding:0; list-style:none; font-size:11px; }
+.projectSteps li { display:flex; align-items:center; gap:18px; padding:16px 0; border-top:1px solid rgb(255 255 255 / .3); }
+.projectSteps span { opacity:.5; }
+.listPanel { border:1px solid rgb(255 255 255 / .4); padding:28px; min-width:0; }
+.listHeading { display:flex; justify-content:space-between; gap:16px; padding-bottom:20px; border-bottom:1px solid rgb(255 255 255 / .3); font-size:11px; }
+.emptyList { padding:28px 0; font-size:13px; line-height:1.7; opacity:.8; }
+.draftList { list-style:none; padding:0; }
+.draftRow { display:grid; grid-template-columns:minmax(0,1fr) 104px 32px; align-items:center; gap:16px; padding:18px 0; border-bottom:1px solid rgb(255 255 255 / .25); }
+.draftName { font-family:var(--font-heavy),Arial,sans-serif; font-size:13px; font-weight:700; line-height:1.4; }
+.draftSpec { display:block; margin-top:6px; font-size:10px; line-height:1.5; opacity:.65; text-transform:none; }
+.quantity { display:flex; flex-direction:column; gap:6px; font-size:10px; }
+.quantity input { width:100%; min-width:0; height:40px; padding:10px; background:var(--bg); color:var(--ink); font-size:13px; text-transform:none; }
+.quantity input:focus { outline:2px solid white; outline-offset:3px; }
+.remove { width:32px; height:40px; border:1px solid rgb(255 255 255 / .35); font-size:18px; }
+.remove:hover { background:rgb(255 255 255 / .15); }
+.send { display:flex; align-items:center; justify-content:space-between; gap:16px; width:100%; min-height:50px; margin-top:24px; padding:16px; background:var(--bg); color:var(--ink); font-size:11px; text-align:left; }
+.send:hover { background:var(--ink); color:var(--bg); }
+.listHelp { margin-top:14px; font-size:10px; line-height:1.6; opacity:.65; }
+@media(min-width:1024px) { .grid { grid-template-columns:repeat(4,minmax(0,1fr)); } .tableHead { display:grid; grid-template-columns:minmax(0,1fr) 150px 130px; gap:24px; } .row { grid-template-columns:64px minmax(0,1fr) 150px 130px; gap:24px; } .rowPrice { grid-column:3; } .rowAction { grid-column:4; grid-row:auto; } .projectLayout { grid-template-columns:1fr 1.3fr; gap:8vw; } }
+@media(max-width:767px) { .productTitle { font-size:14px; } .productInfo { padding:16px 12px 20px; gap:6px; } .photoArea { min-height:0; } .productPhoto { inset:12px 12px 0; } .detailsOpen .photoArea { aspect-ratio:auto; } .detailsOpen .productPhoto { display:none; } .productDetails { position:relative; padding:22px 14px; min-height:250px; } .productInfo { padding:18px 14px; } .productTitle { font-size:clamp(16px,4.5vw,21px); } .cardActions { grid-template-columns:minmax(0,1fr); } .row { grid-template-columns:48px minmax(0,1fr) 74px; gap:12px; } .thumb { width:48px; height:64px; } .rowTitle { font-size:13px; } .rowAction { min-width:0; padding:10px 7px; font-size:9px; } .project { padding:48px 0; } .listPanel { padding:20px 16px; } .draftRow { grid-template-columns:minmax(0,1fr) 84px 28px; gap:10px; } .draftName { font-size:11px; } .remove { width:28px; } }
+@media(max-width:359px) { .grid { grid-template-columns:minmax(0,1fr); } }
+@media(prefers-reduced-motion:reduce) { .productCard { transition:none; } }
+
+.embedded { margin-top:32px; }
+
+/* Mala kartica za veliku lepezu kataloga */
+.dense .photoArea { min-height:0; aspect-ratio:4/5; }
+.dense .productPhoto { inset:8px 8px 0; }
+.dense .productInfo { padding:12px 10px 14px; gap:6px; }
+.dense .productTitle { font-size:12.5px; line-height:1.2; }
+.dense .detailsToggle { width:32px; height:32px; margin-top:-6px; font-size:18px; }
+.dense .productDetails { padding:12px 10px; overflow:hidden; }
+.dense .spec { margin:12px 0 6px; font-size:10.5px; line-height:1.45; }
+.dense .pack { margin-bottom:10px; font-size:9px; }
+.dense .price { font-size:12px; gap:4px; }
+.dense .priceLabel { font-size:8px; }
+.dense .cardActions { grid-template-columns:1fr; gap:6px; margin-top:12px; }
+.dense .cardActions button { min-height:36px; padding:8px 10px; font-size:9px; }
+.dense .productMeta { font-size:8px; }
+@media(max-width:767px) { .dense .photoArea { aspect-ratio:4/5; } .dense .detailsOpen .productPhoto { display:none; } }

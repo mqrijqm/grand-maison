@@ -95,10 +95,11 @@ if(location.pathname==='/'){
       window.__gcCraneReady=true;
       window.dispatchEvent(new CustomEvent('gc:crane-ready'));
     };
-    var timer=setTimeout(abort,3500);
+    var timer=setTimeout(abort,9000);
     window.addEventListener('gc:crane-ready',function(){clearTimeout(timer)},{once:true});
-    window.addEventListener('wheel',abort,{once:true,passive:true});
-    window.addEventListener('touchstart',abort,{once:true,passive:true});
+    var early=function(){if(performance.now()>6000){abort();window.removeEventListener('wheel',early);window.removeEventListener('touchstart',early)}};
+    window.addEventListener('wheel',early,{passive:true});
+    window.addEventListener('touchstart',early,{passive:true});
     var start=function(){
       if(!document.querySelector('#hero canvas'))return false;
       if(window.__gcCraneAbort)return true;

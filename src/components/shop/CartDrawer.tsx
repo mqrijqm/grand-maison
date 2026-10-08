@@ -3,7 +3,7 @@
 import { useEffect, useRef } from 'react'
 import { useLenis } from 'lenis/react'
 import { useRouter } from 'next/navigation'
-import { cartCount, cartLines, closeCart, notify, removeFromCart, setQty, useShop } from '@/lib/cart'
+import { cartCount, cartLines, closeCart, removeFromCart, setQty, useShop } from '@/lib/cart'
 import { artikala, money, qtyLabel } from '@/lib/shop'
 import ProductImage from './ProductImage'
 import { useScrollTo } from '@/lib/useScrollTo'
@@ -11,13 +11,12 @@ import Cta from '@/components/ui/Cta'
 import Price from '@/components/b2b/Price'
 import { buildQuote } from '@/components/b2b/quote'
 import { METHOD_LABEL, setPrefs, useDeliveryPrefs } from '@/components/b2b/prefs'
-import { creditUsage, openLogin, useB2B } from '@/lib/b2b'
+import { useB2B } from '@/lib/b2b'
 import { DELIVERY_ZONES, recommendCrane, tons, type DeliveryMethod } from '@/lib/logistics'
-import Link from 'next/link'
 
 const FOCUSABLE = 'button:not(:disabled), a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
 
-// Korpa je ladica sa desne strane. U B2B načinu (prijavljen partner) cijene su sa ugovorenim rabatom,
+// Korpa je ladica sa desne strane. 
 // bira se gradilište, provjerava raspoloživi kreditni limit i nudi predračun. Isporuka: masa tereta u
 // tonama, zona i način (preuzimanje / standardna / kamion sa kranom) — lib/logistics.
 // Nalazi se IZVAN prodavnice u DOM-u, jer značka i marquee iz landinga
@@ -30,12 +29,9 @@ export default function CartDrawer() {
   const panel = useRef<HTMLDivElement>(null)
   const lines = cartLines(cart)
   const count = cartCount(cart)
-  const { mode, partner, discount } = useB2B()
-  const b2b = mode === 'b2b' && !!partner
+  const { discount } = useB2B()
   const prefs = useDeliveryPrefs()
   const q = buildQuote(cart, discount, prefs)
-  const credit = partner ? creditUsage(partner) : null
-  const overCredit = b2b && credit ? q.total > credit.available : false
 
   // Dok je korpa otvorena, stranica iza nje ne skrola. Tab ostaje unutar ladice, Esc je zatvara.
   useEffect(() => {
@@ -201,19 +197,6 @@ export default function CartDrawer() {
                   </select>
                 </label>
               )}
-              {b2b && partner && (
-                <label className="mt-4 grid gap-1.5 text-[10.5px] opacity-80">
-                  Gradilište
-                  <select value={prefs.siteId ?? ''} onChange={(e) => setPrefs({ siteId: e.target.value || null })} className="b2b-input">
-                    <option value="">— izaberite gradilište —</option>
-                    {partner.sites.map((st) => (
-                      <option key={st.id} value={st.id}>
-                        {st.name}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              )}
             </section>
           )}
         </div>
@@ -249,43 +232,10 @@ export default function CartDrawer() {
               <p className="text-[11.5px] opacity-60">Ukupno sa PDV-om</p>
               <p className="num text-[28px]">{money(q.total)}</p>
             </div>
-            {b2b && credit && (
-              <p className={`mt-2 text-[10.5px] ${overCredit ? 'text-signal' : 'opacity-60'}`}>
-                {overCredit
-                  ? `Iznos prelazi raspoloživi kreditni limit (${money(credit.available)}).`
-                  : `Raspoloživi kreditni limit: ${money(credit.available)} · valuta ${partner?.paymentDays} dana`}
-              </p>
-            )}
-            {!b2b && <p className="mt-2 text-[10.5px] opacity-50">Demo prodavnica — ništa se ne naplaćuje.</p>}
             <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
-              {b2b ? (
-                <>
-                  <Cta
-                    solid
-                    onClick={() => {
-                      closeCart()
-                      notify(overCredit ? 'Narudžba čeka odobrenje komercijaliste (demo)' : 'Narudžba je poslata na odgođeno plaćanje (demo)')
-                    }}
-                  >
-                    Naruči
-                  </Cta>
-                  <Link href="/portal/predracun" onClick={closeCart} className="cta">
-                    <span className="cta-roll">
-                      <span>Predračun</span>
-                      <span aria-hidden>Predračun</span>
-                    </span>
-                  </Link>
-                </>
-              ) : (
-                <>
-                  <Cta solid onClick={() => go('ponuda')}>
-                    Upit
-                  </Cta>
-                  <button type="button" onClick={openLogin} className="ulink text-[11px]">
-                    B2B prijava
-                  </button>
-                </>
-              )}
+              <Cta solid onClick={() => go('ponuda')}>
+                Upit
+              </Cta>
             </div>
             <button type="button" onClick={closeCart} className="ulink mx-auto mt-4 block text-[11px] opacity-70">
               Nastavi kupovinu

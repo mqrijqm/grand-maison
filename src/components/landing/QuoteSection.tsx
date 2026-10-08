@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { COMPANY } from '@/gc/gc'
 import { OFFERINGS } from '@/lib/offerings'
 import { PRODUCTS } from '@/lib/shop'
+import { inquiryTextFromQuery } from '@/lib/catalog-inquiry'
 import { QUOTE_MAX_BYTES, QUOTE_MAX_FILES, QUOTE_FILE_TYPES, quoteText, readQuote, validateQuote, type QuoteRequest } from '@/lib/quote-request'
 import styles from './QuoteSection.module.css'
 
@@ -54,8 +55,16 @@ export default function QuoteSection({ standalone = false }: { standalone?: bool
     const field = (name: string) => form.current?.elements.namedItem(name) as HTMLInputElement | null
     if (program && field('program')) field('program')!.value = program.name
     if (product && field('materials')) field('materials')!.value = product.name + '\nKoličina: '
+    if (standalone) {
+      const materialList = inquiryTextFromQuery(query)
+      if (materialList && field('materials')) field('materials')!.value = materialList
+      const topic = query.get('vrsta')
+      if (topic === 'projekat' && field('note')) field('note')!.value = 'Upit za nabavku materijala za projekat. Faza radova i željeni termini: '
+      if (topic === 'saradnja' && field('note')) field('note')!.value = 'Želim dogovoriti redovnu nabavku za firmu. Program i okvirni obim nabavke: '
+      if (topic === 'dostava' && field('note')) field('note')!.value = 'Upit za dostavu. Pristup lokaciji i željeni način istovara: '
+    }
     if (query.get('vrsta') === 'dokumentacija' && field('note')) field('note')!.value = 'Tražim tehničku dokumentaciju za materijal naveden u upitu.'
-  }, [])
+  }, [standalone])
 
   function addFiles(selected: FileList | null) {
     if (!selected) return
@@ -97,6 +106,13 @@ export default function QuoteSection({ standalone = false }: { standalone?: bool
           <p className="label mb-6 opacity-70">Upit za ponudu</p>
           <Heading id="quote-title" className={`display ${styles.title}`}>Imate spisak materijala?</Heading>
           <p className={styles.lead}>Pošaljite materijal, količine, lokaciju i željeni rok. Poslovni nalog nije potreban.</p>
+          {standalone && <div className={styles.guide} aria-label="Šta poslati u upitu">
+            <p className="label">Dovoljno je da navedete</p>
+            <div><span>01</span><p>Materijal, količinu i jedinicu mjere</p></div>
+            <div><span>02</span><p>Mjesto isporuke ili lično preuzimanje</p></div>
+            <div><span>03</span><p>Željeni rok i važnu napomenu za pristup</p></div>
+            <p className={styles.guideNote}>Imate predmjer? Dodajte PDF, Excel ili fotografiju spiska u obrazac.</p>
+          </div>}
           <div className={styles.contact}><p className="label mb-3 opacity-70">Razgovarajte s prodajom</p><a href={COMPANY.phoneLandlineHref}>{COMPANY.phoneLandline}</a><a href={`mailto:${COMPANY.emailInfo}`}>{COMPANY.emailInfo}</a></div>
         </div>
         <form ref={form} className={styles.form} onSubmit={submit} onChangeCapture={() => { if (!pending) { setMessage(''); setDraft(null) } }}>

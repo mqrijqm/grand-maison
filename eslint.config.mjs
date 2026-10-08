@@ -17,6 +17,7 @@ const eslintConfig = defineConfig([
     "public/**",
     // Lokalni Playwright snimci i pomoćni CommonJS skriptovi nisu dio aplikacije.
     ".playwright-mcp/**",
+    "output/**",
     "scripts/*.cjs",
   ]),
 ]);

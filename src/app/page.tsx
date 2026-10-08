@@ -4,17 +4,9 @@ import SiteChrome from "@/components/SiteChrome";
 import SiteHeader from "@/components/site/SiteHeader";
 import CartDrawer from "@/components/shop/CartDrawer";
 import Panels from "@/components/shop/Panels";
-import LoginModal from "@/components/b2b/LoginModal";
-import Procurement from "@/components/landing/Procurement";
-import Bento from "@/components/landing/Bento";
 import BrandsSplit from "@/components/landing/BrandsSplit";
-import Delivery from "@/components/landing/Delivery";
-import Featured from "@/components/landing/Featured";
 import Intro from "@/components/landing/Intro";
-import StepBand from "@/components/ui/StepBand";
-import PostsTeaser from "@/components/landing/PostsTeaser";
 import Yard from "@/components/landing/Yard";
-import QuoteSection from "@/components/landing/QuoteSection";
 import SkySwipe from "@/components/landing/SkySwipe";
 import UsesSplit from "@/components/landing/UsesSplit";
 
@@ -30,27 +22,16 @@ export default function Home() {
       <main className="home-flow">
         <CraneHero />
         <SkySwipe />
-        {/* Program → materijal prema radovima → poslovna nabavka → postupak nabavke. */}
+        {/* Šta prodajemo → za koje radove → prednosti → asortiman → stovarište → kontakt (podnožje). */}
         <Intro />
         <UsesSplit />
-        <Procurement />
-        <Bento />
         <BrandsSplit />
-        <StepBand as="div" tone="navy" profile="diag-rev" steps={11} className="!z-[47]">
-          <Featured />
-        </StepBand>
-        <Delivery />
-        <StepBand tone="navy" profile="valley" steps={11} aria-label="Vodiči" className="!z-[45]">
-          <PostsTeaser />
-        </StepBand>
         {/* Usputna sekcija pred podnožje: stovarište (foto → plava ilustracija na hover). */}
         <Yard />
-        <QuoteSection />
         <Footer />
       </main>
       <CartDrawer />
       <Panels />
-      <LoginModal />
     </>
   );
 }

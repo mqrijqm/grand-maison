@@ -7,7 +7,7 @@
 import * as THREE from '../vendor/three.module.min.js';
 import {createCraneRenderer, STAGES, stageAt} from './crane-print.js?v=33';
 import {craneQuality} from './crane-quality.js?v=21';
-import {createCraneScene, clamp, smooth} from './crane-scene.js?v=65';
+import {createCraneScene, clamp, smooth} from './crane-scene.js?v=67';
 
 const cover=document.querySelector('.construction-story');
 const viewport=cover?.querySelector('.crane-viewport');
@@ -232,7 +232,8 @@ async function init() {
     // Kucanje rečenice: počinje kad kamera izađe kroz prozor, a završi na dnu hero-a.
     // Pisanje: prvih ~72% outra piše rečenicu, ostatak je mirovanje na gotovom tekstu.
     outroP=Math.abs(targetOutro-outroP)<.0005?targetOutro:outroP+(targetOutro-outroP)*(1-Math.exp(-8*dt));
-    cover.style.setProperty('--type-p',(reduced.matches?1:clamp((outroP-.04)/.68)).toFixed(4));
+    // Brzina ispisivanja ne zavisi od dužine outra: počinje ~3svh u outro i traje ~54svh skrola.
+    cover.style.setProperty('--type-p',(reduced.matches?1:clamp((outroP*outroHeight-.032*window.innerHeight)/(.544*window.innerHeight))).toFixed(4));
     // Na samom kraju (izlaz kroz prozor u nebo) scena se rastvori u raster neba.
     pipeline.render(1,1-smooth(.95,.995,progress));
     cover.dataset.sceneChapter=String(state.chapter+1);

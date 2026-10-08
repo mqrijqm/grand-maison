@@ -5,6 +5,11 @@
 .title { font-size:clamp(30px,3.7vw,66px); line-height:.95; letter-spacing:-.025em; }
 .title > div { white-space:nowrap; }
 .lead { margin-top:28px; max-width:35ch; font-size:14px; line-height:1.7; opacity:.8; }
+.guide { margin-top:40px; border-top:1px solid rgb(244 241 236 / .35); }
+.guide > :global(.label) { padding:18px 0 12px; opacity:.7; }
+.guide > div { display:flex; gap:18px; border-top:1px solid rgb(244 241 236 / .35); padding:13px 0; font-size:13px; line-height:1.45; }
+.guide > div span { font-size:11px; opacity:.6; }
+.guideNote { max-width:36ch; padding-top:14px; font-size:12px; line-height:1.6; opacity:.75; }
 .contact { margin-top:48px; padding-top:20px; border-top:1px solid rgb(244 241 236 / .35); font-size:12px; line-height:1.8; }
 .contact a { display:block; text-decoration:underline; text-underline-offset:4px; overflow-wrap:anywhere; }
 .form { min-width:0; }

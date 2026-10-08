@@ -17,11 +17,11 @@ const COLS: { title: string; items: Item[] }[] = [
   {
     title: 'Navigacija',
     items: [
-      { label: 'Prodavnica', href: '/prodavnica' },
+      { label: 'Asortiman', href: '/prodavnica' },
+      { label: 'Dostava', href: '/dostava' },
+      { label: 'Zatraži ponudu', href: '/upit-za-izvodjace' },
       { label: 'Kalkulator W111', href: '/kalkulator' },
-      { label: 'Isporuka', href: '/dostava' },
       { label: 'Vodiči', href: '/vodici' },
-      { label: 'B2B portal', href: '/portal' },
     ],
   },
   {
@@ -45,7 +45,6 @@ const COLS: { title: string; items: Item[] }[] = [
   },
 ]
 
-const BLINK_URL = 'https://studioblink.ba'
 
 // Minimalan footer: ispod tamne podloge je jarki kobalt koji kursor trajno otkriva kao trag
 // (FooterDots), gore tri kolone linkova, pa veliki wordmark preko cijele širine, a dolje lijevo
@@ -91,6 +90,7 @@ export default function Footer() {
   )
 
   return (
+    <div className="relative z-[50]">
     <footer ref={root} id="kontakt" className="relative z-40 isolate overflow-x-clip bg-ink text-bg">
       <div aria-hidden className="pointer-events-none absolute inset-0 bg-cobalt" />
       <FooterDots />
@@ -135,22 +135,9 @@ export default function Footer() {
             {COMPANY.emailInfo} · {HOURS_SHORT}
           </p>
 
-          <a href={BLINK_URL} target="_blank" rel="noopener noreferrer" className="blink-field group" aria-label="Studio Blink — studioblink.ba">
-            <span className="blink-field__text">
-              <span className="blink-field__label">Kreirano od studija Blink kao demo · oktobar 2026</span>
-              <span className="blink-field__input">
-                studioblink.ba<i aria-hidden className="blink-field__caret" />
-              </span>
-            </span>
-            <span className="blink-field__btn">
-              Posjeti
-              <svg viewBox="0 0 24 12" fill="none" stroke="currentColor" strokeWidth={1.6} aria-hidden>
-                <path d="M0 6h22M17 1l5 5-5 5" />
-              </svg>
-            </span>
-          </a>
         </div>
       </div>
     </footer>
+    </div>
   )
 }

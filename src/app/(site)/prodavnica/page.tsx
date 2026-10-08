@@ -1,38 +1,30 @@
 import { Suspense } from 'react'
-import Assortment from '@/components/catalog/Assortment'
-import CatalogClient from '@/components/catalog/CatalogClient'
-import Groups from '@/components/catalog/Groups'
-import BrandStory from '@/components/shop/BrandStory'
+import CatalogBrowser from '@/components/catalog/CatalogBrowser'
+import CatalogProjectQuote from '@/components/catalog/CatalogProjectQuote'
 import Pw from '@/components/ui/Pw'
 
 export const metadata = {
   title: 'Katalog | Grand Company',
-  description: 'Građevinski materijal: suha gradnja, izolacija, veziva i oprema.',
+  description: 'Katalog građevinskog materijala: suha gradnja, izolacija i fasade, veziva, pribor, zidanje i krov, drvni program i sanitarna oprema. Pretraga, filteri i ponuda po upitu.',
 }
 
-// Prodavnica: naslov u sredini, četiri grupe kao okrugle fotografije, podijeljeni uvod,
-// "Najprodavanije" (mreža sa tankim linijama), kompletan asortiman (lista sa filterima), pa brend i "Sa gradilišta".
+// Kategorije pa jedna lepeza malih kartica sa pretragom i filterima. Opširan opis artikla je na njegovoj stranici.
 export default function CataloguePage() {
   return (
     <>
-      <header className="gutter pb-[10vh] pt-[16vh] text-center">
+      <header className="gutter pb-[8vh] pt-[16vh] text-center">
         <h1 className="display fade-up text-display"><Pw>
           Kata<em>log</em>
         </Pw></h1>
-        <p className="fade-up mx-auto mt-8 max-w-[42ch] text-[13px] leading-snug opacity-70" style={{ animationDelay: '0.12s' }}>
-          Materijal za zid, plafon, fasadu i pod. Cijene su orijentacione — dostupnost i tačnu ponudu potvrđujemo po upitu.
-        </p>
       </header>
 
       <Suspense fallback={<div className="min-h-screen" />}>
-        <CatalogClient />
+        <CatalogBrowser />
       </Suspense>
 
-      <Assortment />
+      <div aria-hidden className="h-[14vh]" />
+      <CatalogProjectQuote />
 
-      <Groups />
-
-      <BrandStory />
       <div aria-hidden className="h-[22vh]" />
     </>
   )

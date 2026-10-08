@@ -11,6 +11,8 @@ export default function ImageWarmup() {
     if (conn?.saveData || /2g/.test(conn?.effectiveType ?? '')) return
     let idle = 0
     const warm = () => {
+      // U katalogu zadržavamo lazy loading: kompletna lista ne treba da preuzme sve fotografije odjednom.
+      if (window.location.pathname !== '/') return
       document.querySelectorAll<HTMLImageElement>('img[loading="lazy"]').forEach((img) => {
         img.loading = 'eager'
       })

@@ -1,10 +1,9 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { cartCount, openCart, useShop } from '@/lib/cart'
-import { setMode, useB2B } from '@/lib/b2b'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { EASE, MQ } from '@/lib/motion'
 import { pw } from '@/components/ui/Pw'
@@ -20,44 +19,11 @@ import LogoMark from './LogoMark'
 // variant="inner": traka je na vrhu i logo se vidi odmah.
 
 const LINKS = [
-  ['Prodavnica', '/prodavnica'],
-  ['Kalkulator', '/kalkulator'],
-  ['Isporuka', '/dostava'],
-  ['Vodiči', '/vodici'],
+  ['Asortiman', '/prodavnica'],
+  ['Kontakt', '/kontakt'],
 ] as const
 
-const MENU = [['Početna', '/'], ...LINKS, ['Kontakt', '/#kontakt']] as const
-
-// Preklopnik načina: Maloprodaja (B2C) / B2B portal. Svaka strana uvijek nekud vodi:
-// Maloprodaja → asortiman artikala u prodavnici (/prodavnica#artikli), B2B portal → /portal
-// (bez prijave otvara prijavu, a ona posle vodi u portal — lib/b2b, LoginModal).
-// Aktivna strana prati stranicu: u portalu je B2B, u prodavnici Maloprodaja, inače izabrani način.
-function ModeSwitch({ mode, discount }: { mode: 'b2c' | 'b2b'; discount: number }) {
-  const pathname = usePathname()
-  const router = useRouter()
-  const { partner } = useB2B()
-  const active = pathname.startsWith('/portal') ? 'b2b' : pathname.startsWith('/prodavnica') ? 'b2c' : mode
-  const toShop = () => {
-    setMode('b2c')
-    const target = document.getElementById('artikli')
-    if (pathname.startsWith('/prodavnica') && target) window.__gcLenis?.scrollTo(target.getBoundingClientRect().top + window.scrollY - 90)
-    else router.push('/prodavnica#artikli')
-  }
-  const toPortal = () => {
-    setMode('b2b')
-    if (partner) router.push('/portal')
-  }
-  return (
-    <div className="mode" role="group" aria-label="Način kupovine">
-      <button type="button" aria-pressed={active === 'b2c'} onClick={toShop} className="mode__opt">
-        Maloprodaja
-      </button>
-      <button type="button" aria-pressed={active === 'b2b'} onClick={toPortal} className="mode__opt">
-        B2B portal{discount > 0 && <span className="mode__badge">−{Math.round(discount * 100)}%</span>}
-      </button>
-    </div>
-  )
-}
+const MENU = [['Početna', '/'], ...LINKS, ['Kalkulator', '/kalkulator'], ['Vodiči', '/vodici']] as const
 
 function CartIcon() {
   return (
@@ -76,7 +42,6 @@ export default function SiteHeader({ variant }: { variant: 'inner' | 'overlay' |
   const pathname = usePathname()
   const { cart } = useShop()
   const count = cartCount(cart)
-  const { mode, partner, discount } = useB2B()
 
   // Zaključaj skrol dok je meni otvoren
   useEffect(() => {
@@ -168,11 +133,8 @@ export default function SiteHeader({ variant }: { variant: 'inner' | 'overlay' |
 
           {/* desno: Kupuj + korpa */}
           <div className="nav__side nav__side--end">
-            <span className="nav__mode-desk">
-              <ModeSwitch mode={mode} discount={discount} />
-            </span>
-            <Link href="/prodavnica" className="nav__buy">
-              Kupuj
+            <Link href="/upit-za-izvodjace" className="nav__buy">
+              Zatraži ponudu
               <svg viewBox="0 0 24 12" className="nav__buy-arrow" fill="none" stroke="currentColor" strokeWidth={1.6} aria-hidden>
                 <path d="M0 6h22M17 1l5 5-5 5" />
               </svg>
@@ -189,10 +151,6 @@ export default function SiteHeader({ variant }: { variant: 'inner' | 'overlay' |
       {/* Meni preko cijelog ekrana (tri crte): sekcije centrirane, odvojene linijama */}
       <div ref={menu} id="site-menu" className={`menu ${open ? 'is-open' : ''}`} aria-hidden={!open}>
         <div data-panel className="menu__panel" style={{ clipPath: 'inset(0% 0% 100% 0%)' }}>
-          <div data-item className="menu__mode">
-            <ModeSwitch mode={mode} discount={discount} />
-            {partner && <p className="menu__partner">{partner.name}</p>}
-          </div>
           <nav className="menu__list" aria-label="Meni">
             {MENU.map(([label, href]) => (
               <Link key={href} data-item href={href} onClick={() => setOpen(false)} className="menu__item">
@@ -201,8 +159,8 @@ export default function SiteHeader({ variant }: { variant: 'inner' | 'overlay' |
             ))}
           </nav>
           <div data-item className="menu__foot">
-            <Link href="/prodavnica" onClick={() => setOpen(false)} className="nav__buy nav__buy--big">
-              Kupuj
+            <Link href="/upit-za-izvodjace" onClick={() => setOpen(false)} className="nav__buy nav__buy--big">
+              Zatraži ponudu
             </Link>
             <a href="tel:+38765516696" className="menu__tel">
               065 516-696

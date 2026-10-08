@@ -83,9 +83,9 @@ export function useB2B() {
     },
     () => EMPTY,
   )
-  const partner = s.partnerId ? (DEMO_PARTNERS.find((p) => p.id === s.partnerId) ?? null) : null
-  // Rabat važi samo u B2B načinu i samo za prijavljenog partnera
-  const discount = s.mode === 'b2b' && partner ? partner.discount : 0
+  // B2B portal je uklonjen: nema prijave, pa ni partnera ni rabata (čak ni ako je stari demo nalog ostao zapamćen u browseru).
+  const partner: FullPartner | null = null
+  const discount = 0
   return { ...s, partner, discount }
 }
 
