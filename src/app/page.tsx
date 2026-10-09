@@ -10,7 +10,7 @@ import Yard from "@/components/landing/Yard";
 import SkySwipe from "@/components/landing/SkySwipe";
 import UsesSplit from "@/components/landing/UsesSplit";
 import HowItWorks from "@/components/landing/HowItWorks";
-import CalcTeaser from "@/components/landing/CalcTeaser";
+import WallCalculator from "@/components/calc/WallCalculator";
 import ForBusiness from "@/components/landing/ForBusiness";
 import QuoteBand from "@/components/landing/QuoteBand";
 
@@ -31,7 +31,8 @@ export default function Home() {
         <Intro />
         <UsesSplit />
         <HowItWorks />
-        <CalcTeaser />
+        {/* Pravi kalkulator (ista tabla kao /kalkulator), ne statičan primjer. */}
+        <WallCalculator embedded />
         <ForBusiness />
         <BrandsSplit />
         {/* Stovarište (foto → plava ilustracija na hover). */}

@@ -72,7 +72,8 @@ function Stack({ show, className = '' }: { show: Ph; className?: string }) {
   )
 }
 
-export default function WallCalculator() {
+/** `embedded`: ista tabla kao sekcija početne (h2, sidro #kalkulator, ulaz na skrol). */
+export default function WallCalculator({ embedded = false }: { embedded?: boolean }) {
   const root = useRef<HTMLDivElement>(null)
   const [vals, setVals] = useState({ len: '4', height: '2,6' })
   const [good, setGood] = useState({ len: 4, height: 2.6 }) // zadnja ispravna vrijednost, za crtež dok se kuca
@@ -106,7 +107,15 @@ export default function WallCalculator() {
         const { reduce } = ctx.conditions as { reduce: boolean }
         revealChars(el.querySelector('[data-head]')!, reduce, 'top 95%')
         if (reduce) return
-        gsap.from(el.querySelectorAll('[data-cell]'), { autoAlpha: 0, y: 10, duration: 0.6, ease: 'power3.out', stagger: 0.025, delay: 0.15 })
+        gsap.from(el.querySelectorAll('[data-cell]'), {
+          autoAlpha: 0,
+          y: 10,
+          duration: 0.6,
+          ease: 'power3.out',
+          stagger: 0.025,
+          delay: embedded ? 0 : 0.15,
+          scrollTrigger: embedded ? { trigger: el, start: 'top 75%' } : undefined,
+        })
       })
     },
     { scope: root },
@@ -129,6 +138,9 @@ export default function WallCalculator() {
   const detail: Record<string, Ph> = { board: boardPh, cw: 'profili-cw', uw: 'profili-uw', wool: wool ? 'vuna' : 'bez-vune', filler: 'masa', screws: 'vijci' }
   const detailKey = focus ?? 'cw'
 
+  const Root = embedded ? 'section' : 'div'
+  const Heading = embedded ? 'h2' : 'h1'
+
   const thumbs: { k: string; title: string; value: string; ph: Ph; hot: boolean }[] = [
     { k: 'obloga', title: 'Obloga', value: cladding === 'double' ? '2 × 12,5 mm' : '1 × 12,5 mm', ph: boardPh, hot: focus === 'board' || focus === 'screws' },
     { k: 'ispuna', title: 'Ispuna', value: wool ? 'Kamena vuna' : 'Prazna šupljina', ph: wool ? 'vuna' : 'bez-vune', hot: focus === 'wool' },
@@ -137,14 +149,14 @@ export default function WallCalculator() {
   ]
 
   return (
-    <div ref={root} className={styles.page}>
+    <Root ref={root} id={embedded ? 'kalkulator' : undefined} aria-labelledby={embedded ? 'calc-title' : undefined} className={styles.page}>
       <div className={styles.panel}>
         {/* ——— Zaglavlje ——— */}
         <header className={`${styles.cell} ${styles.top}`}>
           <p className={`label ${styles.kicker}`}>Kalkulator · pregradni zid</p>
-          <h1 data-head className={`display invisible ${styles.title}`}>
+          <Heading id="calc-title" data-head className={`display invisible ${styles.title}`}>
             Koliko materijala vam treba?
-          </h1>
+          </Heading>
           <p className={`label ${styles.spec}`}>
             <span>W111</span>
             <span>CW {PROFILE_MM} · 625 mm</span>
@@ -344,6 +356,6 @@ export default function WallCalculator() {
           </figcaption>
         </figure>
       </div>
-    </div>
+    </Root>
   )
 }
