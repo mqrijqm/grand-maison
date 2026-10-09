@@ -1,21 +1,17 @@
 'use client'
 
-/* eslint-disable @next/next/no-img-element -- fotografija iz /public, već u WebP */
-
 import { useRef } from 'react'
 import Cta from '@/components/ui/Cta'
+import PortalStage from '@/components/portal/PortalStage'
 import { gsap, useGSAP } from '@/lib/gsap'
-import { useMediaMotion } from '@/lib/media'
 import { MQ } from '@/lib/motion'
 import { revealChars } from '@/lib/reveal'
-import { BUSINESS_FACTS, BUSINESS_OFFERS } from '@/lib/business'
-import styles from './Story.module.css'
+import s from '@/components/portal/Portal.module.css'
 
-// Ulaz za firme na početnoj: kome je namijenjeno, dva načina nabavke i javne nabavke iz researcha.
-// Sve vodi na /za-firme (detalji + brza narudžba po šifri) ili na upit.
+// Ulaz za firme na početnoj prati B2B portal: isti živi dashboard kao na /portal,
+// koji se sam "vozi" dok ga posjetilac ne preuzme mišem. Vodi na /portal i /za-firme.
 export default function ForBusiness() {
   const root = useRef<HTMLElement>(null)
-  useMediaMotion(root)
   useGSAP(
     () => {
       gsap.matchMedia().add(MQ, (ctx) => {
@@ -27,49 +23,26 @@ export default function ForBusiness() {
   )
 
   return (
-    <section ref={root} id="za-firme" aria-labelledby="biz-title" className={styles.section}>
-      <div className={`gutter ${styles.biz}`}>
-        <div data-curtain className={styles.bizPhoto}>
-          <img src="/editorial/firme/kran.webp" alt="Toranjski kran iznad zgrade u izgradnji" width={1200} height={1500} loading="lazy" decoding="async" />
-          <span className={styles.bizTag}>Za firme i izvođače</span>
-        </div>
-
-        <div>
-          <p className={`label ${styles.kicker}`}>Veleprodaja i maloprodaja</p>
-          <h2 id="biz-title" data-head className={`display invisible mt-5 ${styles.title}`}>
-            Nabavka za gradilište
-          </h2>
-          <p data-up className={`mt-6 ${styles.lead}`}>
-            Za građevinske firme, izvođače, majstore i javne ustanove. Jedan upit za cijeli projekat, a ponudu vam šalje prodaja.
-          </p>
-
-          <ol className={styles.bizList}>
-            {BUSINESS_OFFERS.map((o, i) => (
-              <li key={o.title} className={styles.bizRow}>
-                <span className={styles.bizNum}>{String(i + 1).padStart(2, '0')}</span>
-                <h3 className={`font-pretty ${styles.bizName}`}>{o.title}</h3>
-                <p className={styles.bizText}>{o.text}</p>
-              </li>
-            ))}
-          </ol>
-
-          <dl className={styles.facts}>
-            {BUSINESS_FACTS.map((f) => (
-              <div key={f.label} className={styles.fact}>
-                <dt className={styles.factLabel}>{f.label}</dt>
-                <dd className={`order-first ${styles.factNum}`}>{f.value}</dd>
-              </div>
-            ))}
-          </dl>
-
-          <div className={styles.actions}>
-            <Cta href="/za-firme" solid>
-              Za firme
+    <section ref={root} id="za-firme" aria-labelledby="biz-title">
+      <header className={`gutter ${s.intro}`}>
+        <p className={`label ${s.kicker}`}>
+          <i />
+          Za firme i izvođače
+        </p>
+        <h2 id="biz-title" data-head className={`display invisible ${s.title}`}>
+          B2B portal za nabavku
+        </h2>
+        <div className={s.introSide}>
+          <p className={s.lead}>Za građevinske firme, izvođače i javne ustanove: brza narudžba po šifri, ponude, narudžbe i isporuke po gradilištima, dokumenti i odobrenja u timu. Ispod je živi demo.</p>
+          <div className={s.actions}>
+            <Cta href="/portal" solid>
+              Otvorite portal
             </Cta>
-            <Cta href="/portal">B2B portal</Cta>
+            <Cta href="/za-firme">Za firme</Cta>
           </div>
         </div>
-      </div>
+      </header>
+      <PortalStage variant="preview" />
     </section>
   )
 }
