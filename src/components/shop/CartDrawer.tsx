@@ -11,7 +11,7 @@ import Cta from '@/components/ui/Cta'
 import Price from '@/components/b2b/Price'
 import { buildQuote } from '@/components/b2b/quote'
 import { METHOD_LABEL, setPrefs, useDeliveryPrefs } from '@/components/b2b/prefs'
-import { useB2B } from '@/lib/b2b'
+import { usePortalPartner } from '@/lib/portal'
 import { DELIVERY_ZONES, recommendCrane, tons, type DeliveryMethod } from '@/lib/logistics'
 
 const FOCUSABLE = 'button:not(:disabled), a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
@@ -29,7 +29,8 @@ export default function CartDrawer() {
   const panel = useRef<HTMLDivElement>(null)
   const lines = cartLines(cart)
   const count = cartCount(cart)
-  const { discount } = useB2B()
+  // Rabat prijavljenog partnera iz B2B portala (demo); gost nema rabat.
+  const discount = usePortalPartner()?.discount ?? 0
   const prefs = useDeliveryPrefs()
   const q = buildQuote(cart, discount, prefs)
 

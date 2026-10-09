@@ -66,7 +66,7 @@ export default function ForBusiness() {
             <Cta href="/za-firme" solid>
               Za firme
             </Cta>
-            <Cta href="/za-firme#brza-narudzba">Brza narudžba po šifri</Cta>
+            <Cta href="/portal">B2B portal</Cta>
           </div>
         </div>
       </div>

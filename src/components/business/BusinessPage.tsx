@@ -46,7 +46,7 @@ export default function BusinessPage() {
             <Cta href="/upit-za-izvodjace" solid>
               Opišite šta gradite
             </Cta>
-            <Cta href="#brza-narudzba">Brza narudžba</Cta>
+            <Cta href="/portal">B2B portal</Cta>
           </div>
         </div>
         <div className={styles.heroPhotos}>
@@ -164,6 +164,32 @@ export default function BusinessPage() {
                 </li>
               ))}
             </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* B2B portal: ulaz u partnerski nalog */}
+      <section className={`gutter ${styles.block}`} aria-labelledby="biz-portal">
+        <div className={styles.portal}>
+          <div className={styles.portalText}>
+            <p className={`label ${styles.portalKicker}`}>B2B portal · demo</p>
+            <h2 id="biz-portal" data-head className={`display invisible ${styles.portalTitle}`}>
+              Vaš nalog za naručivanje
+            </h2>
+            <p className={styles.portalLead}>Ugovorni partneri naručuju sami: svoje cijene i rabat, kreditni limit, odgođeno plaćanje, fakture i praćenje narudžbi.</p>
+            <ul className={styles.portalList}>
+              {['Partnerski nalog', 'Rabatna skala', 'Kreditni limit', 'Otvorene fakture', 'Praćenje narudžbi', 'Zalihe iz ERP-a'].map((t) => (
+                <li key={t}>{t}</li>
+              ))}
+            </ul>
+            <div className={styles.actions}>
+              <Cta href="/portal" className={styles.portalCta}>
+                Otvorite portal
+              </Cta>
+            </div>
+          </div>
+          <div data-curtain className={styles.portalPhoto}>
+            <img src="/editorial/portal/fakture.webp" alt="Fakture i dokumenti na stolu" width={1066} height={1333} loading="lazy" decoding="async" />
           </div>
         </div>
       </section>

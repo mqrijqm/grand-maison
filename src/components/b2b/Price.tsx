@@ -1,12 +1,13 @@
 'use client'
 
-import { useB2B, withDiscount } from '@/lib/b2b'
+import { withDiscount } from '@/lib/b2b'
+import { usePortalPartner } from '@/lib/portal'
 import { money } from '@/lib/shop'
 
 // Cijena artikla (sa PDV-om). U B2B načinu za prijavljenog partnera: cijena sa ugovorenim rabatom,
 // maloprodajna precrtana i mala oznaka rabata (npr. −18%). U maloprodaji: kataloška cijena.
 export default function Price({ value, qty = 1, unit, className = '' }: { value: number; qty?: number; unit?: string; className?: string }) {
-  const { discount } = useB2B()
+  const discount = usePortalPartner()?.discount ?? 0
   const retail = value * qty
   if (!discount)
     return (

@@ -362,5 +362,37 @@
   "license": "Pexels License (free for commercial use, no attribution required)",
   "file": "/editorial/firme/ekipa.webp",
   "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "portal/tablet": {
+  "id": 8961008,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/8961008/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/editorial/portal/tablet.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "portal/isporuka": {
+  "id": 15016531,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/15016531/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/editorial/portal/isporuka.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "portal/fakture": {
+  "id": 7680681,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/7680681/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/editorial/portal/fakture.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "portal/gradiliste": {
+  "id": 9964624,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/9964624/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/editorial/portal/gradiliste.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
  }
 }
