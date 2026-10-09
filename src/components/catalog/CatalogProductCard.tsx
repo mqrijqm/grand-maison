@@ -26,7 +26,7 @@ export default function CatalogProductCard({ product, priority = false, dense = 
         <p className={styles.pack}>{product.pack ? `${qtyLabel(product.pack.size, product.unit)} / ${product.pack.name}` : `Jedinica prodaje: ${product.unit}`}</p>
         <div className={styles.price}><span className={styles.priceLabel}>Orijentaciona cijena</span><Price value={product.price} unit={product.unit} /></div>
         <div className={styles.cardActions}>
-          <button type="button" aria-pressed={selected} aria-label={`${selected ? 'Ukloni iz upita' : 'Dodaj u upit'}: ${product.name}`} onClick={() => toggleInquiryItem(product)}>{selected ? 'U spisku ✓' : 'Dodaj u upit'}<span aria-hidden>{selected ? '−' : '+'}</span></button>
+          <button type="button" aria-pressed={selected} aria-label={`${selected ? 'Ukloni iz upita' : 'Dodaj u upit'}: ${product.name}`} onClick={() => toggleInquiryItem(product)}>{selected ? 'U upitu ✓' : 'Dodaj u upit'}<span aria-hidden>{selected ? '−' : '+'}</span></button>
           <button type="button" aria-label={`Dodaj u korpu: ${product.name}`} onClick={() => addToCart(product.id, defaultQty(product))}>Korpa <span aria-hidden>+</span></button>
         </div>
       </div>

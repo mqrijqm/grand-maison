@@ -7,7 +7,7 @@ import { PRODUCTS, PRODUCT_MAP, plural } from '@/lib/shop'
 import styles from './Business.module.css'
 
 // Brza narudžba po šifri (Quick Order iz researcha, tačka 12.9): tabela šifra / količina, provjera šifre
-// dok se kuca i "Dodaj sve u upit" — stavke idu u postojeću korpu/upit. Spisak iz Excela se može
+// dok se kuca i "Dodaj sve u upit" — stavke idu u postojeću korpu/upit. Šifre iz Excela se mogu
 // zalijepiti (šifra pa količina u redu, odvojeno tabom, ; ili razmakom). Šifre su iz demo kataloga.
 
 type Row = { id: number; sku: string; qty: string }

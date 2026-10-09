@@ -35,7 +35,7 @@ export default function ProductBuy({ product }: Props) {
           <button type="button" disabled={qty === null} onClick={() => { if (qty !== null) setInquiryQuantity(product.sku, qty) }}><span>{items[product.sku] ? 'Ažuriraj količinu u upitu' : 'Dodaj u upit za ponudu'}</span><span aria-hidden>+</span></button>
           <button type="button" disabled={qty === null} onClick={() => { if (qty !== null) addToCart(product.id, qty) }}><span>Dodaj u korpu</span><span aria-hidden>+</span></button>
         </div>
-        <p className={styles.purchaseStatus} aria-live="polite">{items[product.sku] && <><span>U spisku: {qtyLabel(items[product.sku], product.unit)} · </span><Link href="/prodavnica#katalog-spisak">Pregledajte cijeli upit ↗</Link></>}</p>
+        <p className={styles.purchaseStatus} aria-live="polite">{items[product.sku] && <><span>U upitu: {qtyLabel(items[product.sku], product.unit)} · </span><Link href="/prodavnica#katalog-upit">Pregledajte cijeli upit ↗</Link></>}</p>
       </div>
     </div>
   )

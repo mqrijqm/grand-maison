@@ -10,10 +10,11 @@ import { useMediaMotion } from '@/lib/media'
 import { MQ } from '@/lib/motion'
 import { revealChars } from '@/lib/reveal'
 import { WASTE_DEFAULT, calcW111Area } from '@/lib/w111'
+import MaterialList from '@/components/calc/MaterialList'
 import UseArt from './UseArt'
 import styles from './Story.module.css'
 
-// Kalkulator u jednoj slici: dimenzije zida → površina → spisak. Brojevi nisu upisani ručno, računa ih
+// Kalkulator u jednoj slici: dimenzije zida → površina → materijal. Brojevi nisu upisani ručno, računa ih
 // ista funkcija kao /kalkulator (W111, jednostruka obloga, vuna, 5 % rezerve), pa uvijek odgovaraju.
 const L = 4
 const H = 2.6
@@ -68,17 +69,7 @@ export default function CalcTeaser() {
             </span>
           </p>
 
-          <ul data-bom-list className={styles.bom}>
-            {LINES.map((l) => (
-              <li key={l.key} data-bom className={styles.bomRow}>
-                <span className={styles.bomQty}>{l.packs}</span>
-                <span className={styles.bomName}>
-                  {l.label}
-                  <span className={styles.bomPack}>{l.packName}</span>
-                </span>
-              </li>
-            ))}
-          </ul>
+          <MaterialList lines={LINES} className="mt-10" />
           <p className={styles.note}>
             Primjer za zid {nf(L)} × {nf(H)} m sa vunom i 5 % rezerve. Proračun je orijentacioni; količine potvrđuje prodaja uz ponudu.
           </p>

@@ -29,7 +29,7 @@ export default function ContactPage() {
           <h1 className={`display ${styles.title}`}>
             <Pw>Kontakt</Pw>
           </h1>
-          <p className={styles.lead}>Pošaljite spisak materijala ili projekat. Ponudu, uslove saradnje i isporuku dogovaramo direktno s vama.</p>
+          <p className={styles.lead}>Imate li plan šta gradite? Recite nam koji vam naši materijali i usluge trebaju. Ponudu i isporuku dogovaramo direktno s vama.</p>
         </div>
 
         <div className={styles.composition}>

@@ -23,17 +23,17 @@ const STEPS = [
   },
   {
     title: 'Izračunajte količine',
-    text: 'Upišite površinu zida, a kalkulator složi spisak ploča, profila i pribora.',
+    text: 'Upišite dužinu i visinu zida, a kalkulator izračuna ploče, profile i pribor.',
     image: '/stock/board-cut.webp',
     alt: 'Mjerenje i rezanje gips-kartonske ploče',
     href: '/kalkulator',
     cta: 'Kalkulator',
   },
   {
-    title: 'Pošaljite spisak',
-    text: 'Spisak sa količinama i lokacijom ide prodaji. Nalog vam nije potreban.',
+    title: 'Opišite šta gradite',
+    text: 'Recite nam šta gradite i koji vam materijal treba. Nalog vam nije potreban.',
     image: '/editorial/firme/spisak.webp',
-    alt: 'Ruka piše spisak materijala na podlozi sa planovima',
+    alt: 'Ruka piše bilješke na podlozi sa planovima',
     href: '/upit-za-izvodjace',
     cta: 'Zatražite ponudu',
   },
@@ -65,10 +65,10 @@ export default function HowItWorks() {
       <div className="gutter">
         <div className={styles.head}>
           <h2 id="how-title" data-head className={`display invisible ${styles.title}`}>
-            Od spiska do gradilišta
+            Od plana do gradilišta
           </h2>
           <p data-up className={styles.lead}>
-            Sajt radi ono što biste uradili na šalteru stovarišta: pronađete materijal, izračunate količine i pošaljete spisak za ponudu.
+            Sajt radi ono što biste uradili na šalteru stovarišta: pronađete materijal, izračunate količine i opišete šta gradite.
           </p>
         </div>
 

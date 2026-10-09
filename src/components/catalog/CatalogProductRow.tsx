@@ -19,7 +19,7 @@ export default function CatalogProductRow({ product }: { product: Product }) {
         <span className={styles.rowSpec}>{product.spec} · Jedinica: {product.unit}</span>
       </div>
       <div className={styles.rowPrice}><Price value={product.price} unit={product.unit} /></div>
-      <button className={styles.rowAction} type="button" aria-pressed={selected} aria-label={`${selected ? 'Ukloni iz upita' : 'Dodaj u upit'}: ${product.name}`} onClick={() => toggleInquiryItem(product)}>{selected ? 'U spisku ✓' : 'Dodaj u upit'}</button>
+      <button className={styles.rowAction} type="button" aria-pressed={selected} aria-label={`${selected ? 'Ukloni iz upita' : 'Dodaj u upit'}: ${product.name}`} onClick={() => toggleInquiryItem(product)}>{selected ? 'U upitu ✓' : 'Dodaj u upit'}</button>
     </li>
   )
 }

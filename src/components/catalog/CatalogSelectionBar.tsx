@@ -8,7 +8,7 @@ export default function CatalogSelectionBar() {
   const items = useCatalogInquiry()
   const count = inquiryLines(items).length
   return <div className={`${styles.selectionBar} bg-cobalt`}>
-    <p aria-live="polite">{count ? `Stavke u upitu: ${count}` : 'Sastavite spisak materijala za ponudu.'}</p>
-    <Link href="#katalog-spisak">{count ? 'Pregledajte spisak i količine' : 'Imate postojeći predmjer?'} ↗</Link>
+    <p aria-live="polite">{count ? `Stavke u upitu: ${count}` : 'Imate li plan šta gradite?'}</p>
+    <Link href="#katalog-upit">{count ? 'Pregledajte stavke i količine' : 'Opišite projekat'} ↗</Link>
   </div>
 }

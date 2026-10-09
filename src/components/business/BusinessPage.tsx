@@ -40,11 +40,11 @@ export default function BusinessPage() {
             Nabavka za gradilište
           </h1>
           <p data-up className={styles.lead}>
-            Građevinski materijal za projekte u Banjoj Luci. Pošaljite spisak, dobijte ponudu, a robu preuzmite na stovarištu ili uz dostavu.
+            Građevinski materijal za projekte u Banjoj Luci. Opišite šta gradite, dobijte ponudu, a robu preuzmite na stovarištu ili uz dostavu.
           </p>
           <div data-up data-delay="0.2" className={styles.actions}>
             <Cta href="/upit-za-izvodjace" solid>
-              Pošaljite spisak
+              Opišite šta gradite
             </Cta>
             <Cta href="#brza-narudzba">Brza narudžba</Cta>
           </div>
@@ -100,7 +100,7 @@ export default function BusinessPage() {
           <h2 id="biz-how" data-head className={`display invisible ${styles.title}`}>
             Kako nabavljate
           </h2>
-          <p className={styles.lead}>Isti tok za svaki upit: spisak, ponuda, potvrda, isporuka.</p>
+          <p className={styles.lead}>Isti tok za svaki upit: upit, ponuda, potvrda, isporuka.</p>
         </div>
         <div className={styles.offers}>
           {BUSINESS_OFFERS.map((o, i) => (
@@ -132,10 +132,10 @@ export default function BusinessPage() {
               Brza narudžba po šifri
             </h2>
             <p className={`mt-6 ${styles.lead}`}>
-              Znate šta vam treba? Upišite šifre i količine ili zalijepite spisak iz Excela. Stavke idu u upit, a ponudu potvrđuje prodaja.
+              Znate šta vam treba? Upišite šifre i količine ili ih zalijepite iz Excela. Stavke idu u upit, a ponudu potvrđuje prodaja.
             </p>
             <div data-curtain className={styles.quickPhoto}>
-              <img src="/editorial/firme/ekipa.webp" alt="Dvoje izvođača sa spiskom na gradilištu" width={1067} height={1334} loading="lazy" decoding="async" />
+              <img src="/editorial/firme/ekipa.webp" alt="Dvoje izvođača sa dokumentacijom na gradilištu" width={1067} height={1334} loading="lazy" decoding="async" />
             </div>
           </div>
           <QuickOrder />
@@ -172,11 +172,11 @@ export default function BusinessPage() {
       <section className={`gutter ${styles.block}`} aria-labelledby="biz-terms">
         <div className={styles.terms}>
           <h2 id="biz-terms" data-head className={`display invisible ${styles.termsTitle}`}>
-            Pošaljite spisak prodaji
+            Imate li plan šta gradite?
           </h2>
           <div className={styles.termsSide}>
             <p className={styles.lead}>
-              Prodaja provjerava program, količine i dostupnost i šalje vam ponudu.
+              Recite nam koji vam naši materijali i usluge trebaju. Prodaja provjerava dostupnost i šalje vam ponudu.
             </p>
             <div className={styles.contacts}>
               <a href={GC.phoneLandlineHref}>
@@ -190,7 +190,7 @@ export default function BusinessPage() {
             </div>
             <div className={styles.actions}>
               <Cta href="/upit-za-izvodjace" solid>
-                Pošaljite spisak
+                Opišite šta gradite
               </Cta>
               <Cta href="/kontakt">Kontakt</Cta>
             </div>

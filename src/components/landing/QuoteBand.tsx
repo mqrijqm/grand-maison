@@ -30,14 +30,14 @@ export default function QuoteBand() {
       <div className={`gutter ${styles.band}`}>
         <div>
           <h2 id="band-title" data-head className={`display invisible ${styles.bandTitle}`}>
-            Imate spisak materijala?
+            Imate li plan šta gradite?
           </h2>
           <p data-up className={`mt-8 ${styles.lead}`}>
-            Pošaljite ga sa količinama i lokacijom gradilišta. Prodaja vam šalje ponudu.
+            Recite nam koji vam naši materijali i usluge trebaju. Prodaja vam šalje ponudu.
           </p>
           <div className={styles.actions}>
             <Cta href="/upit-za-izvodjace" solid>
-              Pošaljite spisak
+              Opišite šta gradite
             </Cta>
             <Cta href="/kontakt">Kontakt</Cta>
           </div>

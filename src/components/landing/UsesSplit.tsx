@@ -52,7 +52,7 @@ export default function UsesSplit() {
       <h2 id="work-heading" data-head className={`display invisible ${styles.heading}`}>Šta<br />gradite?</h2>
       <div className={styles.foot}>
         <p className="text-[14px] leading-[1.7] opacity-75">Izaberite posao i pogledajte materijal za njega: četiri vrste radova, od zida do kupatila.</p>
-        <Cta href="/upit-za-izvodjace" solid>Pošaljite spisak</Cta>
+        <Cta href="/upit-za-izvodjace" solid>Opišite šta gradite</Cta>
       </div>
     </div>
     <BlueWipe from="right" className="text-bg [--art-fill:var(--navy)] [--signal:var(--accent)]">

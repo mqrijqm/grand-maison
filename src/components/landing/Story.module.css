@@ -19,18 +19,13 @@
 .stepLink { display:flex; justify-content:space-between; gap:12px; margin-top:18px; padding-top:14px; border-top:1px solid rgb(27 36 54 / .25); font-size:11px; letter-spacing:.14em; text-transform:uppercase; transition:color .3s; }
 .step:hover .stepLink { color:var(--cobalt); }
 
-/* ——— Kalkulator: ulaz → površina → spisak ——— */
+/* ——— Kalkulator: ulaz → površina → materijal ——— */
 .calc { display:grid; gap:56px; }
 .equation { display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 22px; margin-top:44px; font-family:var(--font-heavy),Arial,sans-serif; font-weight:800; letter-spacing:-.04em; font-variant-numeric:tabular-nums; }
 .eqIn { font-size:clamp(36px,4.4vw,80px); line-height:1; }
 .eqArrow { font-size:clamp(24px,2.6vw,44px); color:var(--cobalt); }
 .eqOut { font-size:clamp(36px,4.4vw,80px); line-height:1; color:var(--cobalt); }
 .eqUnit { font-size:.45em; letter-spacing:0; margin-left:.12em; }
-.bom { margin-top:40px; border-top:1px solid rgb(27 36 54 / .25); }
-.bomRow { display:grid; grid-template-columns:minmax(64px,auto) minmax(0,1fr); align-items:baseline; gap:4px 18px; padding:14px 0; border-bottom:1px solid rgb(27 36 54 / .14); }
-.bomQty { font-family:var(--font-heavy),Arial,sans-serif; font-weight:800; font-size:clamp(26px,2.4vw,40px); line-height:1; letter-spacing:-.03em; font-variant-numeric:tabular-nums; }
-.bomName { font-size:13px; line-height:1.35; text-transform:none; }
-.bomPack { display:block; margin-top:2px; font-size:10px; letter-spacing:.14em; text-transform:uppercase; opacity:.55; }
 .note { margin-top:18px; max-width:46ch; font-size:11px; line-height:1.6; opacity:.6; text-transform:none; }
 .calcArt { position:relative; display:grid; gap:14px; align-content:start; }
 .calcArtBox { display:flex; align-items:center; justify-content:center; aspect-ratio:1; padding:8%; background:var(--cobalt); color:var(--bg); --art-fill:var(--cobalt); --signal:var(--accent); }

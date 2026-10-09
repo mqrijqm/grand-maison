@@ -65,11 +65,11 @@ export function inquiryLines(items: Selection) {
 }
 export function inquiryHref(items: Selection) {
   const encoded = inquiryLines(items).map(({ product, qty }) => `${product.sku}:${qty}`).join(',')
-  return encoded ? `/upit-za-izvodjace?${new URLSearchParams({ spisak: encoded })}` : '/upit-za-izvodjace'
+  return encoded ? `/upit-za-izvodjace?${new URLSearchParams({ materijal: encoded })}` : '/upit-za-izvodjace'
 }
 export function inquiryTextFromQuery(query: URLSearchParams) {
   const entries: Selection = {}
-  const encoded = (query.get('spisak') || '').slice(0, 3000)
+  const encoded = (query.get('materijal') || query.get('spisak') || '').slice(0, 3000)
   encoded.split(',').forEach(entry => {
     const [sku, raw] = entry.split(':')
     const qty = inquiryQty(raw)

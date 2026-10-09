@@ -24,7 +24,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
             t: 'ol',
             items: [
               'Lično preuzimanje: Stovarište je u Banjoj Luci. Prije dolaska provjerite raspoloživost robe i dogovorite preuzimanje.',
-              'Dostava na adresu: Pošaljite adresu i spisak materijala. Prodaja provjerava mogućnost, termin i trošak isporuke.',
+              'Dostava na adresu: Pošaljite adresu i opis materijala. Prodaja provjerava mogućnost, termin i trošak isporuke.',
               'Pristup i istovar: Navedite kakav je prilaz lokaciji i gdje robu treba odložiti. Način istovara dogovara se prema robi i uslovima na terenu.',
             ],
           },
@@ -69,7 +69,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
         blocks: [
           {
             t: 'p',
-            text: 'Za dostavu u Banjoj Luci, okolini ili na drugoj lokaciji pošaljite adresu i spisak robe. Mogućnost isporuke prodaja provjerava pojedinačno prije potvrde narudžbe.',
+            text: 'Za dostavu u Banjoj Luci, okolini ili na drugoj lokaciji pošaljite adresu i opis robe. Mogućnost isporuke prodaja provjerava pojedinačno prije potvrde narudžbe.',
           },
           {
             t: 'p',

@@ -40,7 +40,7 @@ export default function ForBusiness() {
             Nabavka za gradilište
           </h2>
           <p data-up className={`mt-6 ${styles.lead}`}>
-            Za građevinske firme, izvođače, majstore i javne ustanove. Jedan spisak za cijeli projekat, a ponudu vam šalje prodaja.
+            Za građevinske firme, izvođače, majstore i javne ustanove. Jedan upit za cijeli projekat, a ponudu vam šalje prodaja.
           </p>
 
           <ol className={styles.bizList}>

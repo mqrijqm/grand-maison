@@ -4,8 +4,8 @@
 
 export const BUSINESS_OFFERS = [
   {
-    title: 'Ponuda po vašem spisku',
-    text: 'Pošaljite šifre ili opis materijala i količine. Prodaja provjerava program i dostupnost i šalje vam ponudu.',
+    title: 'Ponuda prema vašem projektu',
+    text: 'Opišite šta gradite ili navedite šifre i količine. Prodaja provjerava program i dostupnost i šalje vam ponudu.',
   },
   {
     title: 'Nabavka za projekat',
@@ -22,7 +22,7 @@ export const BUSINESS_FACTS = [
 export const AUDIENCES = [
   {
     title: 'Građevinske firme i izvođači',
-    text: 'Materijal za cijelo gradilište na jednom spisku, po fazama radova.',
+    text: 'Materijal za cijelo gradilište na jednom upitu, po fazama radova.',
     image: '/editorial/firme/skele.webp',
     alt: 'Radnici na skeli zgrade u izgradnji',
   },
@@ -47,7 +47,7 @@ export const AUDIENCES = [
 ] as const
 
 export const BUSINESS_STEPS = [
-  { title: 'Spisak', text: 'Šifre ili opis, količine, adresa gradilišta i rok.' },
+  { title: 'Upit', text: 'Šta gradite, šifre ili opis, količine, adresa i rok.' },
   { title: 'Ponuda', text: 'Prodaja provjerava program, količine i dostupnost.' },
   { title: 'Potvrda', text: 'Potvrdite ponudu; dogovaramo termin preuzimanja ili dostave.' },
   { title: 'Isporuka', text: 'Preuzimanje na stovarištu ili dostava na adresu u gradu.' },

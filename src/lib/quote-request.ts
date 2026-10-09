@@ -9,7 +9,7 @@ export function quoteText(data: QuoteRequest) {
   return [
     'UPIT ZA PONUDU', '',
     `Ime ili firma: ${data.name}`, `E-pošta: ${data.email || '—'}`, `Telefon: ${data.phone || '—'}`,
-    `Program: ${data.program || 'Prema spisku'}`, '', 'MATERIJAL I KOLIČINE', data.materials || 'Prema priloženom spisku', '',
+    `Program: ${data.program || 'Nije izabran'}`, '', 'MATERIJAL I KOLIČINE', data.materials || 'Prema priloženom planu', '',
     `Način: ${data.method === 'preuzimanje' ? 'Lično preuzimanje' : 'Dostava'}`,
     `Lokacija: ${data.location || '—'}`, `Željeni rok: ${data.deadline || 'Po dogovoru'}`,
     '', 'NAPOMENA', data.note || '—',
@@ -24,11 +24,11 @@ export function readQuote(form: FormData): QuoteRequest {
 export function validateQuote(data: QuoteRequest, files: File[]) {
   if (!data.name || (!data.email && !data.phone)) return 'Navedite ime ili firmu i barem jedan kontakt.'
   if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) return 'Provjerite adresu e-pošte.'
-  if (!data.materials && !files.length) return 'Unesite materijal i količine ili priložite spisak.'
+  if (!data.materials && !files.length) return 'Opišite šta gradite ili priložite plan.'
   if (!['preuzimanje', 'dostava'].includes(data.method)) return 'Odaberite način preuzimanja.'
   if (data.method === 'dostava' && !data.location) return 'Navedite mjesto isporuke.'
-  if (Object.values(data).some(value => value.length > 6000)) return 'Skratite tekst ili priložite spisak u dokumentu.'
+  if (Object.values(data).some(value => value.length > 6000)) return 'Skratite tekst ili ga priložite kao dokument.'
   if (files.length > QUOTE_MAX_FILES || files.reduce((sum, file) => sum + file.size, 0) > QUOTE_MAX_BYTES) return 'Dodajte do 3 priloga, ukupno do 3 MB.'
-  if (files.some(file => !QUOTE_FILE_TYPES.test(file.name))) return 'Priložite PDF, Excel ili fotografiju spiska.'
+  if (files.some(file => !QUOTE_FILE_TYPES.test(file.name))) return 'Priložite PDF, Excel ili fotografiju.'
   return null
 }

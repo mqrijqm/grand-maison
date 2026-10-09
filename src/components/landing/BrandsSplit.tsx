@@ -96,7 +96,7 @@ const USPS: { title: string; text: string }[] = [
   },
   {
     title: 'Cijena prilagođena vama',
-    text: 'Pošaljite spisak materijala i potrebne količine. Ponudu i uslove saradnje dogovorite s prodajom prema potrebama vaše firme i projekta.',
+    text: 'Opišite šta gradite i koji vam materijal treba. Prodaja vam šalje ponudu prema vašem projektu.',
   },
   {
     title: 'Stovarište',

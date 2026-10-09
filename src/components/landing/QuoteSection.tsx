@@ -70,7 +70,7 @@ export default function QuoteSection({ standalone = false }: { standalone?: bool
     if (!selected) return
     const next = [...files, ...Array.from(selected)].filter((file, i, list) => list.findIndex(other => other.name === file.name && other.size === file.size) === i)
     if (next.length > QUOTE_MAX_FILES || next.reduce((sum, file) => sum + file.size, 0) > QUOTE_MAX_BYTES) setMessage('Dodajte do 3 priloga, ukupno do 3 MB.')
-    else if (next.some(file => !QUOTE_FILE_TYPES.test(file.name) || !file.size)) setMessage('Dodajte PDF, Excel ili fotografiju spiska koja nije prazna.')
+    else if (next.some(file => !QUOTE_FILE_TYPES.test(file.name) || !file.size)) setMessage('Dodajte PDF, Excel ili fotografiju koja nije prazna.')
     else { setFiles(next); setMessage(''); setDraft(null) }
     if (upload.current) upload.current.value = ''
   }
@@ -88,7 +88,7 @@ export default function QuoteSection({ standalone = false }: { standalone?: bool
       const response = await fetch('/api/quote', { method: 'POST', body: payload })
       const result = await response.json()
       if (response.ok && result.sent) {
-        setMessage('Upit je poslan prodaji. Kopiju spiska sačuvajte za dalji dogovor.')
+        setMessage('Upit je poslan prodaji. Ponudu vam šalje prodaja.')
         form.current?.reset(); setFiles([]); setMethod('dostava')
       } else {
         setMessage(result.error || 'Upit nije poslan. Pošaljite ga e-poštom.')
@@ -104,14 +104,15 @@ export default function QuoteSection({ standalone = false }: { standalone?: bool
       <div className={`gutter ${styles.layout}`}>
         <div className={styles.pitch}>
           <p className="label mb-6 opacity-70">Upit za ponudu</p>
-          <Heading id="quote-title" className={`display ${styles.title}`}>Imate spisak materijala?</Heading>
-          <p className={styles.lead}>Pošaljite materijal, količine, lokaciju i željeni rok. Poslovni nalog nije potreban.</p>
-          {standalone && <div className={styles.guide} aria-label="Šta poslati u upitu">
-            <p className="label">Dovoljno je da navedete</p>
-            <div><span>01</span><p>Materijal, količinu i jedinicu mjere</p></div>
-            <div><span>02</span><p>Mjesto isporuke ili lično preuzimanje</p></div>
-            <div><span>03</span><p>Željeni rok i važnu napomenu za pristup</p></div>
-            <p className={styles.guideNote}>Imate predmjer? Dodajte PDF, Excel ili fotografiju spiska u obrazac.</p>
+          <Heading id="quote-title" className={`display ${styles.title}`}>Imate li plan šta gradite?</Heading>
+          <p className={styles.lead}>Opišite projekat i recite nam koji vam naši materijali i usluge trebaju. Ponudu vam šalje prodaja. Nalog nije potreban.</p>
+          {standalone && <div className={styles.guide} aria-label="Pitanja za upit">
+            <p className="label">Pomaže nam da znamo</p>
+            <div><span>01</span><p>Šta gradite: zid, plafon, izolaciju, krov ili kupatilo?</p></div>
+            <div><span>02</span><p>Koji materijal vam treba i koliko, ako već znate?</p></div>
+            <div><span>03</span><p>Preuzimate na stovarištu ili vam treba dostava?</p></div>
+            <div><span>04</span><p>Do kada vam je materijal potreban?</p></div>
+            <p className={styles.guideNote}>Imate plan, skicu ili predmjer? Priložite ga u obrascu.</p>
           </div>}
           <div className={styles.contact}><p className="label mb-3 opacity-70">Razgovarajte s prodajom</p><a href={COMPANY.phoneLandlineHref}>{COMPANY.phoneLandline}</a><a href={`mailto:${COMPANY.emailInfo}`}>{COMPANY.emailInfo}</a></div>
         </div>
@@ -125,16 +126,16 @@ export default function QuoteSection({ standalone = false }: { standalone?: bool
             </div><p className={styles.help}>Navedite e-poštu ili telefon za odgovor.</p>
           </fieldset>
           <fieldset className={styles.group} disabled={pending}>
-            <legend className={styles.legend}><span>02</span>Materijal i količine</legend>
-            <label className={styles.field}><span className={styles.label}>Oblast ponude</span><select className={styles.input} name="program" defaultValue=""><option value="">Prema vašem spisku</option>{OFFERINGS.map(item => <option key={item.id} value={item.name}>{item.name}</option>)}</select></label>
-            <label className={`${styles.field} mt-5`}><span className={styles.label}>Šta vam je potrebno?</span><textarea className={styles.input} name="materials" maxLength={6000} placeholder={'Materijal / specifikacija · količina · jedinica\nIli priložite postojeći spisak.'} /></label>
-            <input ref={upload} type="file" multiple accept=".pdf,.xls,.xlsx,.jpg,.jpeg,.png,.webp" className="sr-only" tabIndex={-1} aria-label="Priložite spisak materijala" onChange={event => addFiles(event.target.files)} />
-            <button type="button" className={styles.upload} onClick={() => upload.current?.click()}><span>Dodajte spisak</span><span aria-hidden>＋</span></button>
+            <legend className={styles.legend}><span>02</span>Šta gradite</legend>
+            <label className={styles.field}><span className={styles.label}>Koji materijal vam treba?</span><select className={styles.input} name="program" defaultValue=""><option value="">Još ne znam, savjetujte me</option>{OFFERINGS.map(item => <option key={item.id} value={item.name}>{item.name}</option>)}</select></label>
+            <label className={`${styles.field} mt-5`}><span className={styles.label}>Opišite šta gradite</span><textarea className={styles.input} name="materials" maxLength={6000} placeholder={'npr. pregradni zid u stanu, oko 25 m², sa izolacijom.\nAko znate materijal i količine, navedite ih.'} /></label>
+            <input ref={upload} type="file" multiple accept=".pdf,.xls,.xlsx,.jpg,.jpeg,.png,.webp" className="sr-only" tabIndex={-1} aria-label="Priložite plan ili predmjer" onChange={event => addFiles(event.target.files)} />
+            <button type="button" className={styles.upload} onClick={() => upload.current?.click()}><span>Dodajte plan, skicu ili predmjer</span><span aria-hidden>＋</span></button>
             <p className={styles.help}>PDF, Excel ili fotografija · do 3 priloga, ukupno 3 MB.</p>
             {files.length > 0 && <ul className={styles.files}>{files.map((file, i) => <li key={`${file.name}-${file.size}`}><span>{file.name}</span><button type="button" aria-label={`Uklonite ${file.name}`} onClick={() => { setFiles(files.filter((_, index) => index !== i)); setDraft(null) }}>×</button></li>)}</ul>}
           </fieldset>
           <fieldset className={styles.group} disabled={pending}>
-            <legend className={styles.legend}><span>03</span>Lokacija i rok</legend>
+            <legend className={styles.legend}><span>03</span>Preuzimanje ili dostava</legend>
             <div className={styles.radios}>{[['dostava', 'Dostava'], ['preuzimanje', 'Preuzimanje u stovarištu']].map(([value, label]) => <label className={styles.radio} key={value}><input type="radio" name="method" value={value} checked={method === value} onChange={() => setMethod(value)} />{label}</label>)}</div>
             <div className={styles.fields}>
               {method === 'dostava' && <label className={styles.field}><span className={styles.label}>Mjesto isporuke *</span><input className={styles.input} name="location" autoComplete="street-address" required maxLength={300} /></label>}

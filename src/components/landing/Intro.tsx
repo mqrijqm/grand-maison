@@ -86,7 +86,7 @@ export default function Intro() {
               <Cta href="/prodavnica" solid>
                 Asortiman
               </Cta>
-              <Cta href="/upit-za-izvodjace">Pošaljite spisak</Cta>
+              <Cta href="/upit-za-izvodjace">Opišite šta gradite</Cta>
             </div>
         </div>
       </div>
