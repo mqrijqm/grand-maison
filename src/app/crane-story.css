@@ -91,6 +91,14 @@ html[data-hero-dark]:not([data-past-hero]) [data-badge] {
 .crane-fallback {
   position: absolute;
   inset: 0;
+  /* Sićušna zamućena verzija iste slike (~0,5 KB, u samom CSS-u): prvi ekran nikad nije prazan dok
+     se prava slika skida na sporoj mreži — ona se samo "izoštri" preko ove. */
+  background: url("data:image/webp;base64,UklGRogAAABXRUJQVlA4IHwAAAAQBACdASoYAA8APtFUo0uoJKMhsAgBABoJZACw7CHgQt/Wp0mzoPVgAAD+3ohbl8otmW/1FE3QBVzAtQLuHa44v1+P6H8FHodFbvapav6FElVupGexdyGJWmnaVYYsrrbTZGtzbNpXYuc1+0Uw9ebXH1s0seYXnOYwQ1oA") center / cover no-repeat;
+}
+@media (max-width: 1023px) {
+  .crane-fallback {
+    background-image: url("data:image/webp;base64,UklGRkQBAABXRUJQVlA4IDgBAACQBwCdASoYADQAPsVMoUunpCMhsBv9+PAYiWQApLO8wXjULKlyx/vZVY77Y54CwQg+EpLk99ycPCJBcKri0OpMoPEay4AA/vHEmAzMc6RfwIICmKvzUH2YyFRRa0T4HaVnuybtDOlOcdj41Rh1yZSfqad7jExw0PpyEQvfbZmhuzIEUETd9I01VB5mkXbxc9Nldq+tx/lkGD3NDptkUAm7eNYqe5kpXEB2BO4UazMbw7bWZdYuwak0NLvPfeSaFL1jGHnqAoj6288HNCSM5Tvez1e+71KcW6692RY5KWGWr7X4jigf0cQqZW/r1chdB9z432OBEU1QCbUy73K1ImedAj8TlZJK2YOCp+CCrwfpfOdJ1Drn4DuNhsbPVR4egIIPSmXSQwvn455Ivs3eenoWQyFLZ9begAA=");
+  }
 }
 .crane-fallback img {
   object-fit: cover;
