@@ -1,9 +1,9 @@
 import BusinessPage from '@/components/business/BusinessPage'
 
 export const metadata = {
-  title: 'Za firme | Grand Company',
+  title: 'Za firme · B2B portal | Grand Company',
   description:
-    'Nabavka građevinskog materijala za firme, izvođače i javne ustanove u Banjoj Luci: ponuda prema vašem projektu, nabavka za projekat i brza narudžba po šifri.',
+    'B2B portal za firme (demo): brza narudžba po šifri, ponude, narudžbe i isporuke po gradilištima, dokumenti i odobrenja u timu.',
 }
 
 export default function Page() {

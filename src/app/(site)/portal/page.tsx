@@ -1,11 +1,6 @@
-import PortalPage from '@/components/portal/PortalPage'
+import { redirect } from 'next/navigation'
 
-export const metadata = {
-  title: 'B2B portal | Grand Company',
-  description:
-    'B2B portal za građevinske firme (demo): brza narudžba po šifri, ponude, narudžbe i isporuke po gradilištima, sačuvane liste, dokumenti i odobrenja u timu.',
-}
-
+// B2B portal živi na /za-firme (glavna B2B stranica); stari link vodi tamo.
 export default function Page() {
-  return <PortalPage />
+  redirect('/za-firme#demo')
 }

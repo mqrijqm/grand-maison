@@ -4,18 +4,20 @@
 
 import { useRef } from 'react'
 import Cta from '@/components/ui/Cta'
+import PortalStage from '@/components/portal/PortalStage'
 import { COMPANY as GC } from '@/gc/gc'
-import { AUDIENCES, BUSINESS_FACTS, BUSINESS_OFFERS, BUSINESS_STEPS, TENDERS } from '@/lib/business'
+import { ACCESS_STEPS, AUDIENCES, B2B_FEATURES, B2B_PROPOSED, PHASES } from '@/lib/business'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { useMediaMotion } from '@/lib/media'
 import { MQ } from '@/lib/motion'
 import { revealChars } from '@/lib/reveal'
-import QuickOrder from './QuickOrder'
+import PortalExplainer from './PortalExplainer'
 import styles from './Business.module.css'
 
-// /za-firme — nabavka za firme, izvođače i ustanove. Javni dio bez prijave: kome je namijenjeno,
-// kako ide nabavka, brza narudžba po šifri, javne nabavke kao dokaz i kontakt prodaje.
-// Samo tvrdnje iz verifikovanog researcha: bez rabata, cijena po dogovoru, kredita, ERP-a i krana.
+// /za-firme — glavna B2B stranica: B2B portal kao usluga za firme koje nabavljaju kod Grand Company-ja.
+// Živi demo dashboarda, pa isti dashboard korak po korak, funkcije za firmu, kome je namijenjeno,
+// kako se dobija nalog i faze razvoja. Demo podaci su izmišljeni; rabat, odgođeno plaćanje i ERP
+// stoje samo kao predložene funkcije (research nivo C).
 
 export default function BusinessPage() {
   const root = useRef<HTMLDivElement>(null)
@@ -32,21 +34,21 @@ export default function BusinessPage() {
 
   return (
     <div ref={root} className={styles.page}>
-      {/* Hero: naslov + dvije fotografije */}
+      {/* Uvod */}
       <header className={`gutter ${styles.hero}`}>
         <div className={styles.heroText}>
-          <p className={`label ${styles.kicker}`}>Za firme · izvođače · ustanove</p>
+          <p className={`label ${styles.kicker}`}>B2B portal · za firme</p>
           <h1 data-head className={`display invisible ${styles.heroTitle}`}>
-            Nabavka za gradilište
+            Nabavka cijele firme na jednom ekranu
           </h1>
           <p data-up className={styles.lead}>
-            Građevinski materijal za projekte u Banjoj Luci. Opišite šta gradite, dobijte ponudu, a robu preuzmite na stovarištu ili uz dostavu.
+            Nalog za vašu firmu kod Grand Company-ja: brza narudžba po šifri, ponude, narudžbe i isporuke po gradilištima, dokumenti i odobrenja u timu. Ispod je živi demo, probajte ga.
           </p>
           <div data-up data-delay="0.2" className={styles.actions}>
-            <Cta href="/upit-za-izvodjace" solid>
-              Opišite šta gradite
+            <Cta href="/upit-za-izvodjace?vrsta=saradnja" solid>
+              Zatražite nalog za firmu
             </Cta>
-            <Cta href="/portal">B2B portal</Cta>
+            <Cta href="#demo">Probajte demo</Cta>
           </div>
         </div>
         <div className={styles.heroPhotos}>
@@ -60,16 +62,50 @@ export default function BusinessPage() {
         </div>
       </header>
 
-      {/* Brojke */}
-      <section className="gutter" aria-label="Grand Company u brojkama">
-        <dl className={styles.facts}>
-          {BUSINESS_FACTS.map((f) => (
-            <div key={f.label} className={styles.fact}>
-              <dt className={styles.factLabel}>{f.label}</dt>
-              <dd className={`order-first ${styles.factNum}`}>{f.value}</dd>
-            </div>
+      {/* Živi demo */}
+      <section id="demo" aria-label="B2B portal, živi demo" className="scroll-mt-24">
+        <PortalStage />
+      </section>
+
+      {/* Dashboard korak po korak */}
+      <section className={`gutter ${styles.block}`} aria-labelledby="biz-explain">
+        <div className={styles.blockHead}>
+          <h2 id="biz-explain" data-head className={`display invisible ${styles.title}`}>
+            Portal, korak po korak
+          </h2>
+          <p className={styles.lead}>Deset ekrana koje firma koristi svaki dan. Skrolujte: portal desno se prebacuje na ekran o kome čitate.</p>
+        </div>
+        <PortalExplainer />
+      </section>
+
+      {/* Funkcije */}
+      <section className={`gutter ${styles.block}`} aria-labelledby="biz-features">
+        <div className={styles.blockHead}>
+          <h2 id="biz-features" data-head className={`display invisible ${styles.title}`}>
+            Šta dobija vaša firma
+          </h2>
+          <p className={styles.lead}>Sve što nabavka, poslovođe i računovodstvo rade sa nama, na jednom nalogu.</p>
+        </div>
+        <ul className={styles.features}>
+          {B2B_FEATURES.map((f, i) => (
+            <li key={f.title}>
+              <span className={styles.featNum}>{String(i + 1).padStart(2, '0')}</span>
+              <h3 className={styles.featTitle}>{f.title}</h3>
+              <p className={styles.small}>{f.text}</p>
+            </li>
           ))}
-        </dl>
+        </ul>
+        <div className={styles.proposed}>
+          <p className={`label ${styles.proposedLabel}`}>Predloženo · nakon dogovora sa prodajom</p>
+          <ul>
+            {B2B_PROPOSED.map((f) => (
+              <li key={f.title}>
+                <h3 className={styles.featTitle}>{f.title}</h3>
+                <p className={styles.small}>{f.text}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
       </section>
 
       {/* Za koga */}
@@ -78,7 +114,7 @@ export default function BusinessPage() {
           <h2 id="biz-who" data-head className={`display invisible ${styles.title}`}>
             Za koga
           </h2>
-          <p className={styles.lead}>Prodajemo na veliko i malo. Ova stranica je za one koji kupuju za posao.</p>
+          <p className={styles.lead}>Za firme koje kupuju za posao, redovno ili za jedan projekat.</p>
         </div>
         <ul className={styles.who}>
           {AUDIENCES.map((a, i) => (
@@ -94,25 +130,16 @@ export default function BusinessPage() {
         </ul>
       </section>
 
-      {/* Načini nabavke + koraci */}
-      <section className={`gutter ${styles.block}`} aria-labelledby="biz-how">
+      {/* Kako do naloga */}
+      <section className={`gutter ${styles.block}`} aria-labelledby="biz-access">
         <div className={styles.blockHead}>
-          <h2 id="biz-how" data-head className={`display invisible ${styles.title}`}>
-            Kako nabavljate
+          <h2 id="biz-access" data-head className={`display invisible ${styles.title}`}>
+            Kako do naloga
           </h2>
-          <p className={styles.lead}>Isti tok za svaki upit: upit, ponuda, potvrda, isporuka.</p>
-        </div>
-        <div className={styles.offers}>
-          {BUSINESS_OFFERS.map((o, i) => (
-            <article key={o.title} className={styles.offer}>
-              <p className={styles.offerNum}>{String(i + 1).padStart(2, '0')}</p>
-              <h3 className={`font-pretty ${styles.offerTitle}`}>{o.title}</h3>
-              <p className={styles.small}>{o.text}</p>
-            </article>
-          ))}
+          <p className={styles.lead}>Nalog otvara prodaja, poslije kratkog razgovora o tome šta firma nabavlja.</p>
         </div>
         <ol className={styles.flow}>
-          {BUSINESS_STEPS.map((s, i) => (
+          {ACCESS_STEPS.map((s, i) => (
             <li key={s.title} className={styles.flowStep}>
               <span className={styles.flowDot} aria-hidden>
                 {i + 1}
@@ -124,86 +151,36 @@ export default function BusinessPage() {
         </ol>
       </section>
 
-      {/* Brza narudžba */}
-      <section id="brza-narudzba" className={`gutter scroll-mt-28 ${styles.block}`} aria-labelledby="biz-quick">
-        <div className={styles.quick}>
-          <div>
-            <h2 id="biz-quick" data-head className={`display invisible ${styles.title}`}>
-              Brza narudžba po šifri
-            </h2>
-            <p className={`mt-6 ${styles.lead}`}>
-              Znate šta vam treba? Upišite šifre i količine ili ih zalijepite iz Excela. Stavke idu u upit, a ponudu potvrđuje prodaja.
-            </p>
-            <div data-curtain className={styles.quickPhoto}>
-              <img src="/editorial/firme/ekipa.webp" alt="Ruke skiciraju detalj na papiru, metar na radnom stolu" width={1067} height={1334} loading="lazy" decoding="async" />
-            </div>
-          </div>
-          <QuickOrder />
+      {/* Faze */}
+      <section className={`gutter ${styles.block}`} aria-labelledby="biz-phases">
+        <div className={styles.blockHead}>
+          <h2 id="biz-phases" data-head className={`display invisible ${styles.title}`}>
+            Razvoj u fazama
+          </h2>
+          <p className={styles.lead}>Portal se uvodi korak po korak, bez potrebe da se odmah kupi cijeli sistem.</p>
         </div>
-      </section>
-
-      {/* Javne nabavke */}
-      <section className={`gutter ${styles.block}`} aria-labelledby="biz-ref">
-        <div className={styles.refs}>
-          <div data-curtain className={styles.refPhoto}>
-            <img src="/photos/kran-utovar.webp" alt="Utovar materijala na stovarištu Grand Company, snimak iz vazduha" width={1600} height={1000} loading="lazy" decoding="async" />
-          </div>
-          <div>
-            <h2 id="biz-ref" data-head className={`display invisible ${styles.title}`}>
-              Javne nabavke
-            </h2>
-            <p className={`mt-6 ${styles.lead}`}>Grand Company snabdijeva i javne ustanove. Dodjele ugovora su javno objavljene.</p>
-            <ul className={styles.tenders}>
-              {TENDERS.map((t) => (
-                <li key={t.year} className={styles.tender}>
-                  <span className={styles.tenderYear}>{t.year}</span>
-                  <span>
-                    <span className={`font-pretty ${styles.tenderTitle}`}>{t.title}</span>
-                    <span className={styles.tenderDetail}>{t.detail}</span>
-                  </span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      {/* B2B portal: ulaz u partnerski nalog */}
-      <section className={`gutter ${styles.block}`} aria-labelledby="biz-portal">
-        <div className={styles.portal}>
-          <div className={styles.portalText}>
-            <p className={`label ${styles.portalKicker}`}>B2B portal · demo</p>
-            <h2 id="biz-portal" data-head className={`display invisible ${styles.portalTitle}`}>
-              Vaš nalog za naručivanje
-            </h2>
-            <p className={styles.portalLead}>Ugovorni partneri naručuju sami: svoje cijene i rabat, kreditni limit, odgođeno plaćanje, fakture i praćenje narudžbi.</p>
-            <ul className={styles.portalList}>
-              {['Partnerski nalog', 'Rabatna skala', 'Kreditni limit', 'Otvorene fakture', 'Praćenje narudžbi', 'Zalihe iz ERP-a'].map((t) => (
-                <li key={t}>{t}</li>
-              ))}
-            </ul>
-            <div className={styles.actions}>
-              <Cta href="/portal" className={styles.portalCta}>
-                Otvorite portal
-              </Cta>
-            </div>
-          </div>
-          <div data-curtain className={styles.portalPhoto}>
-            <img src="/editorial/portal/fakture.webp" alt="Fakture i dokumenti na stolu" width={1066} height={1333} loading="lazy" decoding="async" />
-          </div>
-        </div>
+        <ol className={styles.phases}>
+          {PHASES.map((p) => (
+            <li key={p.n} data-on={('on' in p && p.on) || undefined}>
+              <span className="label">{p.n}</span>
+              <h3 className={styles.featTitle}>{p.t}</h3>
+              <p className={styles.small}>{p.d}</p>
+            </li>
+          ))}
+        </ol>
+        <p className={styles.disclaimer}>
+          Demo firma, šifre, cijene, narudžbe i dokumenti su izmišljeni. Individualne cijene, rabat, odgođeno plaćanje i veza sa ERP-om su predložene funkcije, ne postojeći uslovi Grand Company-ja.
+        </p>
       </section>
 
       {/* Kontakt prodaje */}
       <section className={`gutter ${styles.block}`} aria-labelledby="biz-terms">
         <div className={styles.terms}>
           <h2 id="biz-terms" data-head className={`display invisible ${styles.termsTitle}`}>
-            Imate li plan šta gradite?
+            Otvorite nalog za firmu
           </h2>
           <div className={styles.termsSide}>
-            <p className={styles.lead}>
-              Recite nam koji vam naši materijali i usluge trebaju. Prodaja provjerava dostupnost i šalje vam ponudu.
-            </p>
+            <p className={styles.lead}>Recite nam šta vaša firma nabavlja i ko u timu naručuje. Prodaja vam se javlja i dogovara saradnju.</p>
             <div className={styles.contacts}>
               <a href={GC.phoneLandlineHref}>
                 <span className="label opacity-60">Prodaja</span>
@@ -215,8 +192,8 @@ export default function BusinessPage() {
               </a>
             </div>
             <div className={styles.actions}>
-              <Cta href="/upit-za-izvodjace" solid>
-                Opišite šta gradite
+              <Cta href="/upit-za-izvodjace?vrsta=saradnja" solid>
+                Zatražite nalog
               </Cta>
               <Cta href="/kontakt">Kontakt</Cta>
             </div>

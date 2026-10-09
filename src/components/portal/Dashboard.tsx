@@ -81,7 +81,15 @@ const TOUR: Step[] = [
 
 const TIMES = ['sad', '2 min', '6 min', '14 min', '31 min', '1 h', '2 h']
 
-export default function Dashboard({ variant = 'full' }: { variant?: 'full' | 'preview' }) {
+type Props = {
+  variant?: 'full' | 'preview' | 'compact'
+  /** false: bez automatske vožnje kursora (npr. kad dashboard vodi objašnjenje sa strane) */
+  tour?: boolean
+  /** Spolja zadat ekran i element na koji kamera zumira (objašnjenje na /za-firme). */
+  show?: { view: ViewId; focus?: string } | null
+}
+
+export default function Dashboard({ variant = 'full', tour = true, show = null }: Props) {
   const [view, setView] = useState<ViewId>('pregled')
   const [metric, setMetric] = useState<MetricId>('nabavka')
   const [zoom, setZoom] = useState<string | null>(null)
@@ -138,8 +146,14 @@ export default function Dashboard({ variant = 'full' }: { variant?: 'full' | 'pr
       const h = r.height / k0
       const W = vp.clientWidth
       const H = vp.clientHeight
-      const k = Math.min(1.75, (W * 0.86) / w, (H * 0.86) / h)
-      if (k < 1.08) return
+      const k = Math.min(1.4, (W * 0.86) / w, (H * 0.86) / h)
+      if (k < 1.08) {
+        // Dovoljno veliko za čitanje: bez zuma, samo skrol do njega i plavi okvir.
+        vp.scrollTo({ top: Math.max(0, y - 8), behavior: 'smooth' })
+        cv.querySelectorAll('[data-mark]').forEach((n) => n.removeAttribute('data-mark'))
+        el.setAttribute('data-mark', '')
+        return
+      }
       cv.querySelectorAll('[data-active]').forEach((n) => n.removeAttribute('data-active'))
       el.setAttribute('data-active', '')
       setZoom(key)
@@ -147,6 +161,11 @@ export default function Dashboard({ variant = 'full' }: { variant?: 'full' | 'pr
     },
     [cam.k],
   )
+
+  const focusRef = useRef(focus)
+  useEffect(() => {
+    focusRef.current = focus
+  }, [focus])
 
   const go = useCallback(
     (v: ViewId) => {
@@ -230,7 +249,7 @@ export default function Dashboard({ variant = 'full' }: { variant?: 'full' | 'pr
   // ——— Vožnja kursora ———
   useEffect(() => {
     const el = win.current!
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || window.matchMedia('(max-width: 899px)').matches) return
+    if (!tour || window.matchMedia('(prefers-reduced-motion: reduce)').matches || window.matchMedia('(max-width: 899px)').matches) return
     let alive = true
     let visible = false
     let started = false
@@ -321,7 +340,20 @@ export default function Dashboard({ variant = 'full' }: { variant?: 'full' | 'pr
       el.removeEventListener('wheel', take)
       el.removeEventListener('keydown', take)
     }
-  }, [])
+  }, [tour])
+
+  // ——— Spolja zadat ekran: prebaci pogled, pa (kad se iscrta) zumiraj na traženi element ———
+  const showKey = show ? `${show.view}|${show.focus ?? ''}` : ''
+  useEffect(() => {
+    if (!show) return
+    const a = window.setTimeout(() => go(show.view), 0)
+    const b = show.focus ? window.setTimeout(() => focusRef.current(show.focus!), 650) : 0
+    return () => {
+      window.clearTimeout(a)
+      window.clearTimeout(b)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- reaguje samo na promjenu ključa
+  }, [showKey])
 
   // ——— Pretraga u bočnoj traci: artikli, ponude i narudžbe ———
   const results = useMemo(() => {

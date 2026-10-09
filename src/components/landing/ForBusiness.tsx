@@ -9,7 +9,7 @@ import { revealChars } from '@/lib/reveal'
 import s from '@/components/portal/Portal.module.css'
 
 // Ulaz za firme na početnoj prati B2B portal: isti živi dashboard kao na /portal,
-// koji se sam "vozi" dok ga posjetilac ne preuzme mišem. Vodi na /portal i /za-firme.
+// koji se sam "vozi" dok ga posjetilac ne preuzme mišem. Vodi na /za-firme (glavna B2B stranica).
 export default function ForBusiness() {
   const root = useRef<HTMLElement>(null)
   useGSAP(
@@ -35,10 +35,10 @@ export default function ForBusiness() {
         <div className={s.introSide}>
           <p className={s.lead}>Za građevinske firme, izvođače i javne ustanove: brza narudžba po šifri, ponude, narudžbe i isporuke po gradilištima, dokumenti i odobrenja u timu. Ispod je živi demo.</p>
           <div className={s.actions}>
-            <Cta href="/portal" solid>
-              Otvorite portal
+            <Cta href="/za-firme" solid>
+              Saznajte više
             </Cta>
-            <Cta href="/za-firme">Za firme</Cta>
+            <Cta href="/upit-za-izvodjace?vrsta=saradnja">Zatražite nalog</Cta>
           </div>
         </div>
       </header>

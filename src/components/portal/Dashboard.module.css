@@ -12,6 +12,7 @@
   --rx: 0deg;
   --ry: 0deg;
   position: relative;
+  container-type: inline-size;
   height: 800px;
   background: var(--ink, #1b2436);
   color: var(--c);
@@ -35,6 +36,9 @@
 }
 .window[data-variant='preview'] {
   height: 700px;
+}
+.window[data-variant='compact'] {
+  height: min(660px, calc(100svh - 120px));
 }
 .window button {
   font: inherit;
@@ -330,7 +334,8 @@
 .canvas[data-zoom] [data-focus]:not([data-active]) {
   opacity: 0.22;
 }
-.canvas[data-zoom] [data-active] {
+.canvas[data-zoom] [data-active],
+.canvas [data-mark] {
   border-color: var(--blue);
 }
 
@@ -1470,6 +1475,54 @@
 .toast[data-on] {
   transform: translate(-50%, 0);
   opacity: 1;
+}
+
+/* ——— uzak prozor na širokom ekranu (npr. pored objašnjenja na /za-firme) ——— */
+@media (min-width: 900px) {
+  @container (max-width: 1080px) {
+    .body {
+      grid-template-columns: 58px minmax(0, 1fr);
+    }
+    .side {
+      padding: 14px 8px;
+      align-items: center;
+    }
+    .brand,
+    .sideSearch,
+    .navLabel,
+    .sideFoot,
+    .account > span:not(.avatar) {
+      display: none;
+    }
+    .account {
+      display: block;
+      padding: 0;
+      border: 0;
+      background: none;
+    }
+    .nav button {
+      grid-template-columns: 16px;
+      justify-content: center;
+      width: 40px;
+      padding: 0;
+    }
+    .nav button span,
+    .nav button em {
+      display: none;
+    }
+    .split,
+    .qo,
+    .row2,
+    .row3 {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .sites {
+      grid-template-columns: 1fr 1fr;
+    }
+    .kpiValue {
+      font-size: 21px;
+    }
+  }
 }
 
 /* ——— uži ekrani ——— */
