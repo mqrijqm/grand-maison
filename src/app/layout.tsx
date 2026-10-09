@@ -15,6 +15,8 @@ const serif = Bodoni_Moda({
   subsets: ["latin", "latin-ext"],
   style: ["normal", "italic"],
   axes: ["opsz"],
+  // Samo sitne cifre/oznake van prvog ekrana: ne predučitava se, da ne otima mrežu slici herosa.
+  preload: false,
 });
 
 // Tekstni sans: sve osim naslova (opisi, oznake, meni, cijene) — uvijek u verzalu (globals.css).
@@ -39,6 +41,7 @@ const condensed = Barlow_Condensed({
   variable: "--font-cond",
   subsets: ["latin", "latin-ext"],
   weight: ["600", "700"],
+  preload: false,
 });
 
 // Debeli grotesk za sitne oznake u verzalu (hero, bento kartice) — kontrast tankom Prettywise-u.
@@ -47,6 +50,7 @@ const grotesk = Inter_Tight({
   variable: "--font-grotesk",
   subsets: ["latin", "latin-ext"],
   weight: "variable",
+  preload: false,
 });
 
 // Display serif (italic) za kratke rečenice preko scene. Bodoni Moda je OFL —
@@ -65,6 +69,7 @@ const displaySerif = localFont({
   src: [{ path: "./fonts/BodoniModa-SemiBoldItalic.ttf", weight: "600", style: "italic" }],
   variable: "--font-display",
   display: "swap",
+  preload: false,
   adjustFontFallback: "Times New Roman",
 });
 
