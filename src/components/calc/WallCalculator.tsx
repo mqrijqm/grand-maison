@@ -1,21 +1,21 @@
 'use client'
 
-/* eslint-disable @next/next/no-img-element -- male fotografije iz /public/calc, već u WebP */
+/* eslint-disable @next/next/no-img-element -- fotografije artikala iz /public/shop, već u WebP */
 
 import { useMemo, useRef, useState } from 'react'
 import Cta from '@/components/ui/Cta'
 import { addToCart, notify, openCart } from '@/lib/cart'
-import { plural } from '@/lib/shop'
+import { PRODUCT_MAP, plural, shotOf } from '@/lib/shop'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { MQ } from '@/lib/motion'
 import { revealChars } from '@/lib/reveal'
-import { WASTE_DEFAULT, calcW111Area } from '@/lib/w111'
+import { NORMS, WASTE_DEFAULT, calcW111Area } from '@/lib/w111'
 import Num from './Num'
 import styles from './Calc.module.css'
 
-// Kalkulator pregradnog zida (research 12.5), napravljen za kupca, ne za inženjera:
-// 1) upišite dužinu i visinu, 2) dva izbora običnim riječima, 3) vidite šta da kupite i dodate u upit.
-// Normativi su isti kao ranije (lib/w111, orijentaciono, +5 % rezerve); prodaja potvrđuje količine.
+// Kalkulator pregradnog zida (research 12.5), za kupca: lijevo mjere zida, desno lista artikala
+// koje sam bira — uključi/isključi, izabere vrstu ploče i vune, i po želji promijeni količinu.
+// Preporučene količine računa lib/w111 (orijentaciono, +5 % rezerve); prodaja ih potvrđuje.
 
 const nf = (n: number, d = 2) => n.toLocaleString('de-DE', { maximumFractionDigits: d })
 const clampDim = (n: number, min: number) => Math.min(30, Math.max(min, Math.round(n * 10) / 10))
@@ -26,38 +26,86 @@ const DIMS: Dim[] = [
   { key: 'height', label: 'Visina zida', min: 1 },
 ]
 
-// Šta se kupuje, rečeno kao u prodavnici: [jedan, dva-četiri, pet+], kratko objašnjenje i fotografija.
-const ITEMS: Record<string, { names: [string, string, string]; hint: string; img: string }> = {
-  board: { names: ['gips-kartonska ploča', 'gips-kartonske ploče', 'gips-kartonskih ploča'], hint: '1,25 × 2 m, debljina 12,5 mm', img: 'obloga-1' },
-  cw: { names: ['metalni stub CW 75', 'metalna stuba CW 75', 'metalnih stubova CW 75'], hint: 'dužina 3 m, svakih 62,5 cm', img: 'profili-cw' },
-  uw: { names: ['vodilica UW 75', 'vodilice UW 75', 'vodilica UW 75'], hint: 'za pod i plafon, dužina 4 m', img: 'profili-uw' },
-  wool: { names: ['ploča kamene vune', 'ploče kamene vune', 'ploča kamene vune'], hint: 'ide u zid, debljina 50 mm', img: 'vuna' },
-  filler: { names: ['vreća mase za spojeve', 'vreće mase za spojeve', 'vreća mase za spojeve'], hint: 'vreća 5 kg', img: 'masa' },
-  screws: { names: ['kutija vijaka', 'kutije vijaka', 'kutija vijaka'], hint: '1.000 komada u kutiji', img: 'vijci' },
+type Variant = { sku: string; label: string }
+type Row = {
+  key: string
+  units: [string, string, string]
+  hint: string
+  variants?: Variant[]
+  /** uključeno na početku */
+  on: boolean
 }
+
+// Redovi u redoslijedu ugradnje. Vrste su artikli iz kataloga sajta (demo šifre).
+const ROWS: Row[] = [
+  { key: 'cw', units: ['stub', 'stuba', 'stubova'], hint: 'Dužina 3 m, ide svakih 62,5 cm', on: true },
+  { key: 'uw', units: ['vodilica', 'vodilice', 'vodilica'], hint: 'Za pod i plafon, dužina 4 m', on: true },
+  {
+    key: 'board',
+    units: ['ploča', 'ploče', 'ploča'],
+    hint: '1,25 × 2 m, debljina 12,5 mm',
+    on: true,
+    variants: [
+      { sku: 'GKP-001', label: 'Obična (GKB)' },
+      { sku: 'GKP-002', label: 'Za kupatilo (GKBI)' },
+      { sku: 'GKP-003', label: 'Vatrootporna (GKF)' },
+      { sku: 'GKP-004', label: 'Tvrda' },
+    ],
+  },
+  {
+    key: 'wool',
+    units: ['ploča', 'ploče', 'ploča'],
+    hint: 'Ide u zid, za zvučnu izolaciju',
+    on: true,
+    variants: [
+      { sku: 'ISO-001', label: 'Kamena vuna 50 mm' },
+      { sku: 'ISO-002', label: 'Kamena vuna 100 mm' },
+    ],
+  },
+  { key: 'filler', units: ['vreća', 'vreće', 'vreća'], hint: 'Vreća 5 kg', on: true },
+  { key: 'screws', units: ['kutija', 'kutije', 'kutija'], hint: '1.000 komada u kutiji', on: true },
+  { key: 'tape', units: ['rolna', 'rolne', 'rolni'], hint: 'Rolna 25 m, po potrebi', on: false },
+]
+
+const NORM = Object.fromEntries(NORMS.map((n) => [n.key, n]))
 
 /** `embedded`: ista tabla kao sekcija početne (h2, sidro #kalkulator, ulaz na skrol). */
 export default function WallCalculator({ embedded = false }: { embedded?: boolean }) {
   const root = useRef<HTMLElement>(null)
   const [dims, setDims] = useState({ len: 4, height: 2.6 })
   const [text, setText] = useState({ len: '4', height: '2,6' })
-  const [wool, setWool] = useState(true)
   const [double, setDouble] = useState(false)
+  const [on, setOn] = useState<Record<string, boolean>>(() => Object.fromEntries(ROWS.map((r) => [r.key, r.on])))
+  const [variant, setVariant] = useState<Record<string, string>>({ board: 'GKP-001', wool: 'ISO-001' })
+  // Ručno promijenjene količine; brišu se kad se promijeni zid, jer preporuka više ne važi.
+  const [over, setOver] = useState<Record<string, number>>({})
 
   const area = Math.round(dims.len * dims.height * 100) / 100
-  const lines = useMemo(() => calcW111Area(area, double ? 'double' : 'single', 'GKP-001', { wool, tape: false, waste: WASTE_DEFAULT }), [area, double, wool])
+  const rec = useMemo(() => {
+    const lines = calcW111Area(area, double ? 'double' : 'single', variant.board, { wool: true, tape: true, waste: WASTE_DEFAULT })
+    return Object.fromEntries(lines.map((l) => [l.key, l]))
+  }, [area, double, variant.board])
+
+  const qtyOf = (key: string) => over[key] ?? rec[key]?.packs ?? 0
+  const skuOf = (key: string) => variant[key] ?? rec[key]?.sku ?? NORM[key].sku
+  const chosen = ROWS.filter((r) => on[r.key] && qtyOf(r.key) > 0)
 
   const setDim = (key: Dim['key'], n: number) => {
     const d = DIMS.find((x) => x.key === key)!
     const v = clampDim(n, d.min)
     setDims((s) => ({ ...s, [key]: v }))
     setText((s) => ({ ...s, [key]: nf(v, 1) }))
+    setOver({})
   }
   const typeDim = (key: Dim['key'], s: string) => {
     setText((t) => ({ ...t, [key]: s }))
     const n = parseFloat(s.replace(',', '.'))
-    if (Number.isFinite(n) && n > 0) setDims((d) => ({ ...d, [key]: Math.min(30, n) }))
+    if (Number.isFinite(n) && n > 0) {
+      setDims((d) => ({ ...d, [key]: Math.min(30, n) }))
+      setOver({})
+    }
   }
+  const setQty = (key: string, n: number) => setOver((o) => ({ ...o, [key]: Math.max(0, Math.min(9999, Math.round(n))) }))
 
   useGSAP(
     () => {
@@ -71,8 +119,14 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
   )
 
   const addAll = () => {
-    lines.forEach((l) => addToCart(l.sku, l.cartQty))
-    notify(`Zid ${nf(area)} m²: materijal dodat u upit`, { label: 'Korpa', open: 'cart' })
+    if (!chosen.length) return
+    chosen.forEach((r) => {
+      const packs = qtyOf(r.key)
+      // Ploče i vuna se u katalogu prodaju po m² (cijela pakovanja), ostalo po komadu / kutiji / vreći.
+      const byArea = r.key === 'board' || r.key === 'wool'
+      addToCart(skuOf(r.key), byArea ? Math.round(packs * NORM[r.key].pack * 100) / 100 : packs)
+    })
+    notify(`Zid ${nf(area)} m²: ${chosen.length} ${plural(chosen.length, 'artikal', 'artikla', 'artikala')} dodato u upit`, { label: 'Korpa', open: 'cart' })
     openCart()
   }
 
@@ -90,7 +144,7 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
           <Heading id="calc-title" data-head className={`display invisible ${styles.title}`}>
             Koliko materijala vam treba?
           </Heading>
-          <p className={styles.sub}>Upišite dužinu i visinu zida. Mi izračunamo šta da kupite.</p>
+          <p className={styles.sub}>Upišite mjere zida, pa izaberite materijal. Količine računamo mi, a vi ih možete promijeniti.</p>
         </header>
 
         <div className={styles.body}>
@@ -110,13 +164,7 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
                       −
                     </button>
                     <span className={styles.field}>
-                      <input
-                        id={`calc-${d.key}`}
-                        value={text[d.key]}
-                        onChange={(e) => typeDim(d.key, e.target.value)}
-                        onBlur={() => setDim(d.key, dims[d.key])}
-                        inputMode="decimal"
-                      />
+                      <input id={`calc-${d.key}`} value={text[d.key]} onChange={(e) => typeDim(d.key, e.target.value)} onBlur={() => setDim(d.key, dims[d.key])} inputMode="decimal" />
                       <i>m</i>
                     </span>
                     <button type="button" onClick={() => setDim(d.key, dims[d.key] + 0.1)} aria-label={`${d.label}: više`}>
@@ -127,30 +175,27 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
               ))}
             </div>
 
-            <div className={styles.toggles}>
-              <label className={styles.toggle}>
-                <input type="checkbox" checked={wool} onChange={(e) => setWool(e.target.checked)} />
-                <span className={styles.switch} aria-hidden />
-                <span>
-                  <b>Kamena vuna u zidu</b>
-                  <i>Bolja zvučna izolacija</i>
-                </span>
-              </label>
-              <label className={styles.toggle}>
-                <input type="checkbox" checked={double} onChange={(e) => setDouble(e.target.checked)} />
-                <span className={styles.switch} aria-hidden />
-                <span>
-                  <b>Dvije ploče sa svake strane</b>
-                  <i>Jači i tiši zid</i>
-                </span>
-              </label>
-            </div>
+            <label className={styles.toggle}>
+              <input
+                type="checkbox"
+                checked={double}
+                onChange={(e) => {
+                  setDouble(e.target.checked)
+                  setOver({})
+                }}
+              />
+              <span className={styles.switch} aria-hidden />
+              <span>
+                <b>Dvije ploče sa svake strane</b>
+                <i>Jači i tiši zid</i>
+              </span>
+            </label>
 
             <figure className={styles.blue}>
               <div className={styles.wallBox}>
                 <div
                   className={styles.wall}
-                  data-wool={wool || undefined}
+                  data-wool={on.wool || undefined}
                   data-double={double || undefined}
                   style={{ width: `${wPct}%`, height: `${hPct}%`, '--stud': `${(0.625 / dims.len) * 100}%` } as React.CSSProperties}
                 >
@@ -167,24 +212,54 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
             </figure>
           </div>
 
-          {/* ——— 2. Šta da kupite ——— */}
+          {/* ——— 2. Izaberite materijal ——— */}
           <div className={styles.result}>
             <p className={styles.step}>
-              <b>2</b> Trebate kupiti
+              <b>2</b> Izaberite materijal
             </p>
-            <ul className={styles.list} aria-live="polite">
-              {lines.map((l) => {
-                const it = ITEMS[l.key]
-                const img = l.key === 'board' && double ? 'obloga-2' : it.img
+            <ul className={styles.list}>
+              {ROWS.map((r) => {
+                const sku = skuOf(r.key)
+                const p = PRODUCT_MAP[sku]
+                const q = qtyOf(r.key)
+                const recQ = rec[r.key]?.packs ?? 0
+                const edited = over[r.key] !== undefined && over[r.key] !== recQ
+                const active = on[r.key]
                 return (
-                  <li key={l.key} className={styles.item}>
-                    <img src={`/calc/${img}.webp`} alt="" width={600} height={750} loading="lazy" decoding="async" />
-                    <span className={styles.qty}>
-                      <Num value={l.packs} />
-                    </span>
+                  <li key={r.key} className={styles.item} data-off={!active || undefined}>
+                    <label className={styles.check}>
+                      <input type="checkbox" checked={active} onChange={(e) => setOn((s) => ({ ...s, [r.key]: e.target.checked }))} aria-label={`Uključi: ${p?.name ?? r.hint}`} />
+                      <span aria-hidden />
+                    </label>
+                    <img src={shotOf(sku)} alt="" width={600} height={600} loading="lazy" decoding="async" />
                     <span className={styles.what}>
-                      <b>{plural(l.packs, ...it.names)}</b>
-                      <i>{it.hint}</i>
+                      {r.variants ? (
+                        <select value={sku} onChange={(e) => setVariant((v) => ({ ...v, [r.key]: e.target.value }))} disabled={!active} aria-label="Vrsta">
+                          {r.variants.map((v) => (
+                            <option key={v.sku} value={v.sku}>
+                              {r.key === 'board' ? `Gips-kartonska ploča · ${v.label}` : v.label}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <b>{p?.name ?? NORM[r.key].label}</b>
+                      )}
+                      <i>
+                        {r.hint}
+                        {edited ? ` · preporuka ${recQ}` : ''}
+                      </i>
+                    </span>
+                    <span className={styles.qtyBox}>
+                      <button type="button" onClick={() => setQty(r.key, q - 1)} disabled={!active} aria-label="Manje">
+                        −
+                      </button>
+                      <span className={styles.qty}>
+                        <Num value={q} />
+                        <em>{plural(q, ...r.units)}</em>
+                      </span>
+                      <button type="button" onClick={() => setQty(r.key, q + 1)} disabled={!active} aria-label="Više">
+                        +
+                      </button>
                     </span>
                   </li>
                 )
@@ -192,9 +267,9 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
             </ul>
             <div className={styles.cta}>
               <Cta onClick={addAll} solid>
-                Dodaj sve u upit
+                {`Dodaj izabrano u upit (${chosen.length})`}
               </Cta>
-              <p className={styles.note}>Okvirna količina, sa {Math.round(WASTE_DEFAULT * 100)} % viška za rezanje. Tačnu količinu i cijenu potvrđuje prodaja.</p>
+              <p className={styles.note}>Preporučena količina je okvirna, sa {Math.round(WASTE_DEFAULT * 100)} % viška za rezanje. Tačnu količinu i cijenu potvrđuje prodaja.</p>
             </div>
           </div>
         </div>

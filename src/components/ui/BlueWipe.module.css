@@ -1,10 +1,7 @@
 /* position (relative/sticky) dolazi iz Tailwind klasa: nenaslojen CSS iz modula bi uvijek pobijedio md:sticky */
 .wrap { overflow: hidden; }
-.fill { position: absolute; inset: 0; will-change: transform; }
+.fill { position: absolute; inset: 0; }
+/* mozaik kvadratića dok se plavo sklapa; kad je puno, vidi se .fill */
+.canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0; }
 .content { position: relative; z-index: 1; height: 100%; }
-/* zrnasta prednja ivica: maska je pikselizovana i drži se uz plavi sloj, pa putuje s njim */
-.edge { position: absolute; top: 0; bottom: 0; width: var(--wipe-grain, 140px); background: inherit; -webkit-mask-repeat: repeat-y; mask-repeat: repeat-y; -webkit-mask-size: var(--wipe-grain, 140px) 1024px; mask-size: var(--wipe-grain, 140px) 1024px; image-rendering: pixelated; pointer-events: none; }
-.edgeLeft { right: 100%; -webkit-mask-image: url('/textures/step-dither-left.png'); mask-image: url('/textures/step-dither-left.png'); }
-.edgeRight { left: 100%; -webkit-mask-image: url('/textures/step-dither-right.png'); mask-image: url('/textures/step-dither-right.png'); }
-@media (max-width: 767px) { .wrap { --wipe-grain: 70px; } }
-@media (prefers-reduced-motion: reduce) { .fill { transform: none !important; } .content { opacity: 1 !important; transform: none !important; } }
+@media (prefers-reduced-motion: reduce) { .fill { opacity: 1 !important; } .content { opacity: 1 !important; transform: none !important; } }

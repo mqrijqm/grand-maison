@@ -5,11 +5,11 @@ import { gsap, ScrollTrigger, useGSAP } from '@/lib/gsap'
 import { MQ } from '@/lib/motion'
 import css from './BlueWipe.module.css'
 
-// Prelaz za plave površine: plavi sloj uklizi sa strane, a prednja ivica mu je zrnasta (dither maska,
-// isti jezik kao stepeničaste trake). Skrol vodi pokret; sadržaj (bijeli tekst) se pojavi tek kad
-// plavo prekrije pozadinu, inače bi bio nevidljiv na krem boji. Okidač je roditeljska sekcija.
-//   from="right": plavo dolazi sa desne strane (kolona uz desnu ivicu)
-//   from="left":  plavo dolazi sa lijeve strane (panel uz lijevu ivicu)
+// Prelaz za plave površine: plavo se sklapa od malih kvadratića (isti mozaik kao iza dashboarda
+// portala). Kvadratići niču od jedne strane prema drugoj, rastu i na kraju se spoje u punu plavu
+// pozadinu. Skrol vodi pokret; sadržaj (bijeli tekst) se pojavi tek kad je plavo puno.
+//   from="right": kvadratići kreću od desne ivice
+//   from="left":  kvadratići kreću od lijeve ivice
 
 type Props = {
   children: React.ReactNode
@@ -19,6 +19,9 @@ type Props = {
   contentClassName?: string
 }
 
+const CELL = 18
+const GAP = 3
+
 export default function BlueWipe({ children, from, className = '', fillClassName = 'bg-navy', contentClassName = '' }: Props) {
   const root = useRef<HTMLDivElement>(null)
 
@@ -26,20 +29,69 @@ export default function BlueWipe({ children, from, className = '', fillClassName
     () => {
       const el = root.current!
       const fill = el.querySelector<HTMLElement>('[data-wipe-fill]')!
+      const canvas = el.querySelector<HTMLCanvasElement>('[data-wipe-canvas]')!
       const content = el.querySelector<HTMLElement>('[data-wipe-content]')!
       const trigger = el.parentElement ?? el
       const mm = gsap.matchMedia()
       mm.add(MQ, (ctx) => {
         const { reduce } = ctx.conditions as { reduce: boolean }
         if (reduce) return
-        const start = from === 'right' ? 100 : -100
-        gsap.set(fill, { xPercent: start })
-        gsap.set(content, { autoAlpha: 0, y: 28 })
-        const tl = gsap.timeline({ scrollTrigger: { trigger, start: 'top 92%', end: 'top 8%', scrub: 0.7 } })
-        tl.to(fill, { xPercent: 0, ease: 'power2.inOut', duration: 1 }, 0)
-        tl.to(content, { autoAlpha: 1, y: 0, ease: 'power1.out', duration: 0.45 }, 0.55)
+        const ctx2d = canvas.getContext('2d')!
+        const color = getComputedStyle(fill).backgroundColor
+        let cells: { x: number; y: number; th: number }[] = []
+        let built = ''
+        const state = { p: 0 }
+        const draw = () => {
+          const w = el.clientWidth
+          const h = el.clientHeight
+          const dpr = Math.min(2, window.devicePixelRatio || 1)
+          const key = `${w}x${h}`
+          if (key !== built) {
+            built = key
+            canvas.width = Math.round(w * dpr)
+            canvas.height = Math.round(h * dpr)
+            const cols = Math.ceil(w / (CELL + GAP))
+            const rows = Math.ceil(h / (CELL + GAP))
+            let seed = 7
+            const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647)
+            cells = []
+            for (let c = 0; c < cols; c++)
+              for (let r = 0; r < rows; r++) {
+                const side = from === 'right' ? 1 - c / cols : c / cols
+                cells.push({ x: c * (CELL + GAP), y: r * (CELL + GAP), th: side * 0.68 + rnd() * 0.3 })
+              }
+          }
+          const p = state.p
+          // Puno: kvadratići su spojeni — pravi pun sloj (oštre ivice, bez šavova).
+          fill.style.opacity = p >= 1 ? '1' : '0'
+          canvas.style.opacity = p >= 1 ? '0' : '1'
+          ctx2d.setTransform(dpr, 0, 0, dpr, 0, 0)
+          ctx2d.clearRect(0, 0, w, h)
+          if (p <= 0 || p >= 1) return
+          ctx2d.fillStyle = color
+          // Razmaci između kvadratića se zatvaraju tek na kraju, svi odjednom: da se ranije spoje,
+          // oko onih koji još rastu ostao bi krem okvir (izgledalo bi kao šuplji kvadrati).
+          const merge = Math.min(1, Math.max(0, (p - 0.86) / 0.14))
+          for (const k of cells) {
+            const e = Math.min(1, Math.max(0, (p * 1.18 - k.th) / 0.2))
+            if (e <= 0) continue
+            const size = CELL * e + (GAP + 1) * merge
+            const off = (CELL - size) / 2
+            ctx2d.fillRect(k.x + off, k.y + off, size, size)
+          }
+        }
+        gsap.set(content, { autoAlpha: 0, y: 24 })
+        draw()
+        const tl = gsap.timeline({ scrollTrigger: { trigger, start: 'top 92%', end: 'top 12%', scrub: 0.6, onRefresh: draw } })
+        tl.to(state, { p: 1, ease: 'none', duration: 1, onUpdate: draw }, 0)
+        tl.to(content, { autoAlpha: 1, y: 0, ease: 'power1.out', duration: 0.14 }, 0.96)
+        const ro = new ResizeObserver(draw)
+        ro.observe(el)
         return () => {
-          gsap.set([fill, content], { clearProps: 'all' })
+          ro.disconnect()
+          fill.style.opacity = ''
+          canvas.style.opacity = '0'
+          gsap.set(content, { clearProps: 'all' })
         }
       })
     },
@@ -47,7 +99,7 @@ export default function BlueWipe({ children, from, className = '', fillClassName
   )
 
   // Kad se visina stranice promijeni (scena herosa se učita ili padne na statičnu sliku), pozicije
-  // okidača su zastarjele: bez ponovnog mjerenja plava traka ostane na početku.
+  // okidača su zastarjele: bez ponovnog mjerenja plavo ostane na početku.
   useEffect(() => {
     let timer = 0
     const observer = new ResizeObserver(() => {
@@ -63,9 +115,8 @@ export default function BlueWipe({ children, from, className = '', fillClassName
 
   return (
     <div ref={root} className={`${css.wrap} relative ${className}`}>
-      <div data-wipe-fill aria-hidden className={`${css.fill} ${fillClassName}`}>
-        <i className={`${css.edge} ${from === 'right' ? css.edgeLeft : css.edgeRight}`} />
-      </div>
+      <div data-wipe-fill aria-hidden className={`${css.fill} ${fillClassName}`} />
+      <canvas data-wipe-canvas aria-hidden className={css.canvas} />
       <div data-wipe-content className={`${css.content} ${contentClassName}`}>
         {children}
       </div>
