@@ -33,7 +33,9 @@ export default function SiteChrome() {
         // Slova u maskama: svako slovo izranja odozdo. Razdvaja se PRIJE mjerenja širine.
         // U dev-u se efekat montira dvaput, pa se drugo razdvajanje preskače (ono na već
         // razdvojenom wordmarku ne nađe tekst).
-        if (!wm.querySelector('.ch')) SplitText.create(wm, { type: 'chars', mask: 'chars', charsClass: 'ch' })
+        // Na telefonu (i uz reduced motion) slova se ne animiraju, pa se tekst i ne razdvaja: novi
+        // elementi bi browseru izgledali kao kasno iscrtan sadržaj (loš LCP), bez ikakve vidljive koristi.
+        if (!reduce && !wm.querySelector('.ch')) SplitText.create(wm, { type: 'chars', mask: 'chars', charsClass: 'ch' })
         const fit = () =>
           document.documentElement.style.setProperty(
             '--wm-fs',

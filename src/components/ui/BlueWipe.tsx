@@ -42,9 +42,12 @@ export default function BlueWipe({ children, from, className = '', fillClassName
         let built = ''
         const state = { p: 0 }
         const draw = () => {
+          // Prelaz se dešava dok je vrh sekcije u ekranu, pa platno pokriva samo prvu visinu ekrana
+          // (duge plave kolone bi inače dale ogroman canvas i trzanje na telefonu).
           const w = el.clientWidth
-          const h = el.clientHeight
-          const dpr = Math.min(2, window.devicePixelRatio || 1)
+          const h = Math.min(el.clientHeight, window.innerHeight)
+          const dpr = Math.min(1.5, window.devicePixelRatio || 1)
+          canvas.style.height = `${h}px`
           const key = `${w}x${h}`
           if (key !== built) {
             built = key

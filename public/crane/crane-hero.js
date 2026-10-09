@@ -7,7 +7,7 @@
 import * as THREE from '../vendor/three.module.min.js';
 import {createCraneRenderer, STAGES, stageAt} from './crane-print.js?v=33';
 import {craneQuality} from './crane-quality.js?v=21';
-import {createCraneScene, clamp, smooth} from './crane-scene.js?v=76';
+import {createCraneScene, clamp, smooth} from './crane-scene.js?v=77';
 
 const cover=document.querySelector('.construction-story');
 const viewport=cover?.querySelector('.crane-viewport');

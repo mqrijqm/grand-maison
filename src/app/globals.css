@@ -2453,3 +2453,16 @@ html:not([data-hydrated]) :is([data-client-state], .nav__mode-desk, .nav__cart-c
   text-transform: none;
   letter-spacing: 0;
 }
+
+/* Telefon (i reduced motion): wordmark i navbar se ne animiraju, pa se prikazuju odmah iz CSS-a,
+   bez čekanja da se JavaScript učita — prvi ekran je kompletan čim stigne HTML. */
+@media (max-width: 1023px), (prefers-reduced-motion: reduce) {
+  [data-wordmark] {
+    visibility: visible !important;
+  }
+  html:not([data-intro-done]) .nav--home .nav__bar {
+    opacity: 1;
+    translate: none;
+    pointer-events: auto;
+  }
+}

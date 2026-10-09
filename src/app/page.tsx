@@ -11,6 +11,7 @@ import SkySwipe from "@/components/landing/SkySwipe";
 import UsesSplit from "@/components/landing/UsesSplit";
 import HowItWorks from "@/components/landing/HowItWorks";
 import WallCalculator from "@/components/calc/WallCalculator";
+import Bento from "@/components/landing/Bento";
 import ForBusiness from "@/components/landing/ForBusiness";
 import QuoteBand from "@/components/landing/QuoteBand";
 
@@ -33,6 +34,8 @@ export default function Home() {
         <HowItWorks />
         {/* Pravi kalkulator (ista tabla kao /kalkulator), ne statičan primjer. */}
         <WallCalculator embedded />
+        {/* B2B portal: plava, tamna i foto kartica (vraćeno iz ranije verzije), pa živi dashboard. */}
+        <Bento />
         <ForBusiness />
         <BrandsSplit />
         {/* Stovarište (foto → plava ilustracija na hover). */}

@@ -9,7 +9,6 @@ import {architectureKit} from './crane-architecture.js?v=14';
 import {createSiteActivity} from './crane-activity.js?v=11';
 import {buildTowerBath} from './crane-interior.js?v=4';
 import {buildFinish,ENTRY} from './crane-finish.js?v=4';
-import {swayTable} from './crane-life.js?v=9';
 
 export const clamp = (n, a = 0, b = 1) => Math.min(b, Math.max(a, n));
 export const smooth = (a, b, p) => { const t = clamp((p-a)/(b-a)); return t*t*(3-2*t); };
@@ -687,16 +686,11 @@ export function createCraneScene() {
   site.visible=false;district.visible=false;activityRoot.visible=false;
   finishRoot.visible=true;
   const focus=new THREE.Vector3();
-  // Kolica idu ka kraju strijele dok se kamera penje; posle otkačinjanja se vraćaju.
-  const trolleyAt=(p)=>13+3*smooth(.08,.28,p)-3*smooth(.66,.78,p);
-  // Klatno: teret se zanjiše kad strijela krene i stane, pa se smiri prije spuštanja.
-  const swayAt=swayTable(slewAt,trolleyAt);
-  const sway={t:0,r:0};
-  load.rotation.order=hook.rotation.order='YXZ';
   function update(p,aspect=1) {
     const th=slewAt(p);
     slew.rotation.y=th;
-    const tx=trolleyAt(p);
+    // Kolica idu ka kraju strijele dok se kamera penje; posle otkačinjanja se vraćaju.
+    const tx=13+3*smooth(.08,.28,p)-3*smooth(.66,.78,p);
     trolley.position.x=tx;
     trolley.position.y=trolleyY(tx);
     // Teret na sajli malo kasni za strijelom dok se kran okreće (inercija), a smiri se pri spuštanju.
@@ -705,35 +699,27 @@ export function createCraneScene() {
     const thLoad=landed?0:th-.0032*rate*(1-smooth(T.drop0,T.drop1,p));
     const loadR=landed?16:tx;
     const loadY=mix(15.2,ROOF_Y,smooth(T.drop0,T.drop1,p));
-    // Otklon klatna: tačka na visini y ispod kolica pomjeri se za (pivot-y)·sin(ugao).
-    swayAt(p,sway);
-    const calm=landed?0:1-smooth(T.drop0+.02,T.drop1-.02,p);
-    const sT=sway.t*calm,sR=sway.r*calm,pivot=trolleyTop(tx);
-    const offR=(y)=>(pivot-y)*Math.sin(sR),offT=(y)=>(pivot-y)*Math.sin(sT);
-    onJib(loadR+offR(loadY),loadY,offT(loadY),thLoad,load.position);
-    load.rotation.y=thLoad;load.rotation.x=-sT;load.rotation.z=sR;
+    onJib(loadR,loadY,0,thLoad,load.position);
+    load.rotation.y=thLoad;
     // Kuka: dok nosi, sjedi iznad kaveza; kad se sajle otkače, diže se ka kolicima i ide sa kranom.
     const release=smooth(T.release0,T.release1,p);
     const lift=smooth(T.lift0,T.lift1,p);
     const hookTh=p<T.release0?thLoad:th;
     const hookR=p<T.release0?loadR:tx;
     const hookY=loadY+2.6*LOAD_SCALE+lift*4.8;
-    const hs=p<T.release0?1:0; // posle otkačinjanja kuka ide sa kolicima, bez klatna
-    onJib(hookR+offR(hookY)*hs,hookY,offT(hookY)*hs,hookTh,hook.position);
-    hook.rotation.y=hookTh;hook.rotation.x=-sT*hs;hook.rotation.z=sR*hs;
+    onJib(hookR,hookY,0,hookTh,hook.position);
+    hook.rotation.y=hookTh;
     for(let i=0;i<hoists.length;i++) {
       const dx=hoists[i].userData.dx,dz=hoists[i].userData.dz;
-      const by=hookY+.75*LOAD_SCALE;
-      setCable(hoists[i],onJib(tx+dx,trolleyTop(tx),dz,th,_a),onJib(hookR+dx+offR(by)*hs,by,dz+offT(by)*hs,hookTh,_b));
+      setCable(hoists[i],onJib(tx+dx,trolleyTop(tx),dz,th,_a),onJib(hookR+dx,hookY+.75*LOAD_SCALE,dz,hookTh,_b));
     }
     // Sajle: od kuke do svežnja. Pri otkačinjanju donji kraj napušta svežanj, sajla se
     // ulegne i ostane da visi ispod kuke koja odlazi.
     const hang=(.35+1.2*lift)*LOAD_SCALE;
     for(const sling of slings) {
-      const ay=hookY-.5*LOAD_SCALE,ey=loadY+BUNDLE_TOP*LOAD_SCALE,fy=hookY-hang;
-      const anchor=onJib(hookR+offR(ay)*hs,ay,offT(ay)*hs,hookTh,_a);
-      const eye=onJib(loadR+sling.x*LOAD_SCALE+offR(ey),ey,sling.z*LOAD_SCALE+offT(ey),thLoad,_end);
-      const free=onJib(hookR+sling.x*.28*LOAD_SCALE,fy,sling.z*.28*LOAD_SCALE,hookTh,_b);
+      const anchor=onJib(hookR,hookY-.5*LOAD_SCALE,0,hookTh,_a);
+      const eye=onJib(loadR+sling.x*LOAD_SCALE,loadY+BUNDLE_TOP*LOAD_SCALE,sling.z*LOAD_SCALE,thLoad,_end);
+      const free=onJib(hookR+sling.x*.28*LOAD_SCALE,hookY-hang,sling.z*.28*LOAD_SCALE,hookTh,_b);
       eye.lerp(free,release);
       _mid.copy(eye).lerp(anchor,.5);
       _mid.y-=Math.sin(release*Math.PI)*.55;
