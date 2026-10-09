@@ -4,7 +4,6 @@
 
 import { useRef } from 'react'
 import Cta from '@/components/ui/Cta'
-import { COMPANY as GC } from '@/gc/gc'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { useMediaMotion } from '@/lib/media'
 import { MQ } from '@/lib/motion'
@@ -12,7 +11,7 @@ import { revealChars } from '@/lib/reveal'
 import { BUSINESS_FACTS, BUSINESS_OFFERS } from '@/lib/business'
 import styles from './Story.module.css'
 
-// Ulaz za firme na početnoj: kome je namijenjeno, tri načina nabavke i tri provjerljive brojke.
+// Ulaz za firme na početnoj: kome je namijenjeno, dva načina nabavke i javne nabavke iz researcha.
 // Sve vodi na /za-firme (detalji + brza narudžba po šifri) ili na upit.
 export default function ForBusiness() {
   const root = useRef<HTMLElement>(null)
@@ -36,12 +35,12 @@ export default function ForBusiness() {
         </div>
 
         <div>
-          <p className={`label ${styles.kicker}`}>Veleprodaja · od {GC.founded}.</p>
+          <p className={`label ${styles.kicker}`}>Veleprodaja i maloprodaja</p>
           <h2 id="biz-title" data-head className={`display invisible mt-5 ${styles.title}`}>
             Nabavka za gradilište
           </h2>
           <p data-up className={`mt-6 ${styles.lead}`}>
-            Za građevinske firme, izvođače, majstore i javne ustanove. Jedan spisak za cijeli projekat, a ponudu i uslove dogovarate s prodajom.
+            Za građevinske firme, izvođače, majstore i javne ustanove. Jedan spisak za cijeli projekat, a ponudu vam šalje prodaja.
           </p>
 
           <ol className={styles.bizList}>

@@ -15,7 +15,7 @@ import styles from './Story.module.css'
 const STEPS = [
   {
     title: 'Izaberite materijal',
-    text: 'Šest programa: suha gradnja, izolacija, zid i krov, veziva, drvo i sanitarna oprema.',
+    text: 'Katalog po kategorijama: suha gradnja, kamena vuna, građevinska hemija, drvo i sanitarna oprema.',
     image: '/stock/warehouse-profiles.webp',
     alt: 'Regali sa profilima i pločama u skladištu građevinskog materijala',
     href: '/prodavnica',

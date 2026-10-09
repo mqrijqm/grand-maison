@@ -14,8 +14,8 @@ import QuickOrder from './QuickOrder'
 import styles from './Business.module.css'
 
 // /za-firme — nabavka za firme, izvođače i ustanove. Javni dio bez prijave: kome je namijenjeno,
-// kako ide nabavka, brza narudžba po šifri, javne nabavke kao dokaz i uslovi (po dogovoru).
-// Ne obećava rabate, kreditne limite ni ERP — research ih ne potvrđuje.
+// kako ide nabavka, brza narudžba po šifri, javne nabavke kao dokaz i kontakt prodaje.
+// Samo tvrdnje iz verifikovanog researcha: bez rabata, cijena po dogovoru, kredita, ERP-a i krana.
 
 export default function BusinessPage() {
   const root = useRef<HTMLDivElement>(null)
@@ -40,7 +40,7 @@ export default function BusinessPage() {
             Nabavka za gradilište
           </h1>
           <p data-up className={styles.lead}>
-            Građevinski materijal za projekte u Banjoj Luci i okolini. Pošaljite spisak, dobijte ponudu, a robu preuzmite na stovarištu ili uz dostavu.
+            Građevinski materijal za projekte u Banjoj Luci. Pošaljite spisak, dobijte ponudu, a robu preuzmite na stovarištu ili uz dostavu.
           </p>
           <div data-up data-delay="0.2" className={styles.actions}>
             <Cta href="/upit-za-izvodjace" solid>
@@ -94,13 +94,13 @@ export default function BusinessPage() {
         </ul>
       </section>
 
-      {/* Tri načina nabavke + koraci */}
+      {/* Načini nabavke + koraci */}
       <section className={`gutter ${styles.block}`} aria-labelledby="biz-how">
         <div className={styles.blockHead}>
           <h2 id="biz-how" data-head className={`display invisible ${styles.title}`}>
             Kako nabavljate
           </h2>
-          <p className={styles.lead}>Tri načina, isti tok: spisak, ponuda, potvrda, isporuka.</p>
+          <p className={styles.lead}>Isti tok za svaki upit: spisak, ponuda, potvrda, isporuka.</p>
         </div>
         <div className={styles.offers}>
           {BUSINESS_OFFERS.map((o, i) => (
@@ -168,15 +168,15 @@ export default function BusinessPage() {
         </div>
       </section>
 
-      {/* Uslovi */}
+      {/* Kontakt prodaje */}
       <section className={`gutter ${styles.block}`} aria-labelledby="biz-terms">
         <div className={styles.terms}>
           <h2 id="biz-terms" data-head className={`display invisible ${styles.termsTitle}`}>
-            Uslovi saradnje dogovaramo direktno
+            Pošaljite spisak prodaji
           </h2>
           <div className={styles.termsSide}>
             <p className={styles.lead}>
-              Cijene za veće količine, način plaćanja i dostavu dogovarate s prodajom, prema programu, količinama i lokaciji gradilišta.
+              Prodaja provjerava program, količine i dostupnost i šalje vam ponudu.
             </p>
             <div className={styles.contacts}>
               <a href={GC.phoneLandlineHref}>
