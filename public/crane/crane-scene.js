@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.min.js';
-import {craneTowerKit, MAST_TOP, trolleyY, BUNDLE_TOP, JIB_ROOT, JIB_TIP} from './crane-tower.js?v=4';
+import {craneTowerKit, MAST_TOP, trolleyY, BUNDLE_TOP} from './crane-tower.js?v=4';
 import {applyConstructionSurfaces} from './crane-surfaces.js?v=18';
 import {RoundedBoxGeometry} from '../vendor/three-addons/geometries/RoundedBoxGeometry.js';
 import {createDeliveryEffects} from './crane-effects.js?v=7';
@@ -9,7 +9,7 @@ import {architectureKit} from './crane-architecture.js?v=14';
 import {createSiteActivity} from './crane-activity.js?v=11';
 import {buildTowerBath} from './crane-interior.js?v=4';
 import {buildFinish,ENTRY} from './crane-finish.js?v=4';
-import {swayTable,createCraneShadow,createBirds} from './crane-life.js?v=8';
+import {swayTable} from './crane-life.js?v=9';
 
 export const clamp = (n, a = 0, b = 1) => Math.min(b, Math.max(a, n));
 export const smooth = (a, b, p) => { const t = clamp((p-a)/(b-a)); return t*t*(3-2*t); };
@@ -692,9 +692,6 @@ export function createCraneScene() {
   // Klatno: teret se zanjiše kad strijela krene i stane, pa se smiri prije spuštanja.
   const swayAt=swayTable(slewAt,trolleyAt);
   const sway={t:0,r:0};
-  const craneShadow=createCraneShadow(scene);
-  const birds=createBirds(scene);
-  const _s1=new THREE.Vector3(),_s2=new THREE.Vector3(),_s3=new THREE.Vector3(),_s4=new THREE.Vector3(),_s5=new THREE.Vector3();
   load.rotation.order=hook.rotation.order='YXZ';
   function update(p,aspect=1) {
     const th=slewAt(p);
@@ -747,9 +744,6 @@ export function createCraneScene() {
       // Kad kran otkači teret, sajle nestanu (ne vise sa kuke).
       sling.parts[0].visible=sling.parts[1].visible=release<.05;
     }
-    // Sjenka krana na tlu (okreće se sa strijelom) i ptice koje prhnu sa strijele.
-    craneShadow.update(_s1.set(MAST_X,0,0),_s2.set(MAST_X,MAST_TOP+2.6,0),onJib(JIB_ROOT,MAST_TOP+2,0,th,_s3),onJib(JIB_TIP,MAST_TOP+2.4,0,th,_s4),onJib(tx,trolleyTop(tx),0,th,_s5),load.position,!landed);
-    birds.update(p);
     // Zgrada niče sprat po sprat dok se kran okreće; krov je gotov prije nego teret krene dolje.
     finish.update(p,.06,.07,.09);
     updateSkyline(p);
@@ -772,8 +766,6 @@ export function createCraneScene() {
     camera.aspect=aspect;camera.lookAt(target);camera.updateProjectionMatrix();
     return {chapter:p<.17?0:p<.36?1:p<.58?2:p<.925?3:4};
   }
-  update(0);
-  birds.place(camera);
   update(0);
   // Oslobađa geometrije, materijale i teksture scene (pri ponovnoj montaži stranice).
   function dispose() {
