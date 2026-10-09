@@ -1,5 +1,5 @@
 import * as THREE from '../vendor/three.module.min.js';
-import {craneTowerKit, MAST_TOP, trolleyY, BUNDLE_TOP} from './crane-tower.js?v=4';
+import {craneTowerKit, MAST_TOP, trolleyY, BUNDLE_TOP, JIB_ROOT, JIB_TIP} from './crane-tower.js?v=4';
 import {applyConstructionSurfaces} from './crane-surfaces.js?v=18';
 import {RoundedBoxGeometry} from '../vendor/three-addons/geometries/RoundedBoxGeometry.js';
 import {createDeliveryEffects} from './crane-effects.js?v=7';
@@ -9,6 +9,7 @@ import {architectureKit} from './crane-architecture.js?v=14';
 import {createSiteActivity} from './crane-activity.js?v=11';
 import {buildTowerBath} from './crane-interior.js?v=4';
 import {buildFinish,ENTRY} from './crane-finish.js?v=4';
+import {swayTable,createCraneShadow,createBirds} from './crane-life.js?v=8';
 
 export const clamp = (n, a = 0, b = 1) => Math.min(b, Math.max(a, n));
 export const smooth = (a, b, p) => { const t = clamp((p-a)/(b-a)); return t*t*(3-2*t); };
@@ -686,11 +687,19 @@ export function createCraneScene() {
   site.visible=false;district.visible=false;activityRoot.visible=false;
   finishRoot.visible=true;
   const focus=new THREE.Vector3();
+  // Kolica idu ka kraju strijele dok se kamera penje; posle otkačinjanja se vraćaju.
+  const trolleyAt=(p)=>13+3*smooth(.08,.28,p)-3*smooth(.66,.78,p);
+  // Klatno: teret se zanjiše kad strijela krene i stane, pa se smiri prije spuštanja.
+  const swayAt=swayTable(slewAt,trolleyAt);
+  const sway={t:0,r:0};
+  const craneShadow=createCraneShadow(scene);
+  const birds=createBirds(scene);
+  const _s1=new THREE.Vector3(),_s2=new THREE.Vector3(),_s3=new THREE.Vector3(),_s4=new THREE.Vector3(),_s5=new THREE.Vector3();
+  load.rotation.order=hook.rotation.order='YXZ';
   function update(p,aspect=1) {
     const th=slewAt(p);
     slew.rotation.y=th;
-    // Kolica idu ka kraju strijele dok se kamera penje; posle otkačinjanja se vraćaju.
-    const tx=13+3*smooth(.08,.28,p)-3*smooth(.66,.78,p);
+    const tx=trolleyAt(p);
     trolley.position.x=tx;
     trolley.position.y=trolleyY(tx);
     // Teret na sajli malo kasni za strijelom dok se kran okreće (inercija), a smiri se pri spuštanju.
@@ -699,27 +708,35 @@ export function createCraneScene() {
     const thLoad=landed?0:th-.0032*rate*(1-smooth(T.drop0,T.drop1,p));
     const loadR=landed?16:tx;
     const loadY=mix(15.2,ROOF_Y,smooth(T.drop0,T.drop1,p));
-    onJib(loadR,loadY,0,thLoad,load.position);
-    load.rotation.y=thLoad;
+    // Otklon klatna: tačka na visini y ispod kolica pomjeri se za (pivot-y)·sin(ugao).
+    swayAt(p,sway);
+    const calm=landed?0:1-smooth(T.drop0+.02,T.drop1-.02,p);
+    const sT=sway.t*calm,sR=sway.r*calm,pivot=trolleyTop(tx);
+    const offR=(y)=>(pivot-y)*Math.sin(sR),offT=(y)=>(pivot-y)*Math.sin(sT);
+    onJib(loadR+offR(loadY),loadY,offT(loadY),thLoad,load.position);
+    load.rotation.y=thLoad;load.rotation.x=-sT;load.rotation.z=sR;
     // Kuka: dok nosi, sjedi iznad kaveza; kad se sajle otkače, diže se ka kolicima i ide sa kranom.
     const release=smooth(T.release0,T.release1,p);
     const lift=smooth(T.lift0,T.lift1,p);
     const hookTh=p<T.release0?thLoad:th;
     const hookR=p<T.release0?loadR:tx;
     const hookY=loadY+2.6*LOAD_SCALE+lift*4.8;
-    onJib(hookR,hookY,0,hookTh,hook.position);
-    hook.rotation.y=hookTh;
+    const hs=p<T.release0?1:0; // posle otkačinjanja kuka ide sa kolicima, bez klatna
+    onJib(hookR+offR(hookY)*hs,hookY,offT(hookY)*hs,hookTh,hook.position);
+    hook.rotation.y=hookTh;hook.rotation.x=-sT*hs;hook.rotation.z=sR*hs;
     for(let i=0;i<hoists.length;i++) {
       const dx=hoists[i].userData.dx,dz=hoists[i].userData.dz;
-      setCable(hoists[i],onJib(tx+dx,trolleyTop(tx),dz,th,_a),onJib(hookR+dx,hookY+.75*LOAD_SCALE,dz,hookTh,_b));
+      const by=hookY+.75*LOAD_SCALE;
+      setCable(hoists[i],onJib(tx+dx,trolleyTop(tx),dz,th,_a),onJib(hookR+dx+offR(by)*hs,by,dz+offT(by)*hs,hookTh,_b));
     }
     // Sajle: od kuke do svežnja. Pri otkačinjanju donji kraj napušta svežanj, sajla se
     // ulegne i ostane da visi ispod kuke koja odlazi.
     const hang=(.35+1.2*lift)*LOAD_SCALE;
     for(const sling of slings) {
-      const anchor=onJib(hookR,hookY-.5*LOAD_SCALE,0,hookTh,_a);
-      const eye=onJib(loadR+sling.x*LOAD_SCALE,loadY+BUNDLE_TOP*LOAD_SCALE,sling.z*LOAD_SCALE,thLoad,_end);
-      const free=onJib(hookR+sling.x*.28*LOAD_SCALE,hookY-hang,sling.z*.28*LOAD_SCALE,hookTh,_b);
+      const ay=hookY-.5*LOAD_SCALE,ey=loadY+BUNDLE_TOP*LOAD_SCALE,fy=hookY-hang;
+      const anchor=onJib(hookR+offR(ay)*hs,ay,offT(ay)*hs,hookTh,_a);
+      const eye=onJib(loadR+sling.x*LOAD_SCALE+offR(ey),ey,sling.z*LOAD_SCALE+offT(ey),thLoad,_end);
+      const free=onJib(hookR+sling.x*.28*LOAD_SCALE,fy,sling.z*.28*LOAD_SCALE,hookTh,_b);
       eye.lerp(free,release);
       _mid.copy(eye).lerp(anchor,.5);
       _mid.y-=Math.sin(release*Math.PI)*.55;
@@ -730,6 +747,9 @@ export function createCraneScene() {
       // Kad kran otkači teret, sajle nestanu (ne vise sa kuke).
       sling.parts[0].visible=sling.parts[1].visible=release<.05;
     }
+    // Sjenka krana na tlu (okreće se sa strijelom) i ptice koje prhnu sa strijele.
+    craneShadow.update(_s1.set(MAST_X,0,0),_s2.set(MAST_X,MAST_TOP+2.6,0),onJib(JIB_ROOT,MAST_TOP+2,0,th,_s3),onJib(JIB_TIP,MAST_TOP+2.4,0,th,_s4),onJib(tx,trolleyTop(tx),0,th,_s5),load.position,!landed);
+    birds.update(p);
     // Zgrada niče sprat po sprat dok se kran okreće; krov je gotov prije nego teret krene dolje.
     finish.update(p,.06,.07,.09);
     updateSkyline(p);
@@ -752,6 +772,8 @@ export function createCraneScene() {
     camera.aspect=aspect;camera.lookAt(target);camera.updateProjectionMatrix();
     return {chapter:p<.17?0:p<.36?1:p<.58?2:p<.925?3:4};
   }
+  update(0);
+  birds.place(camera);
   update(0);
   // Oslobađa geometrije, materijale i teksture scene (pri ponovnoj montaži stranice).
   function dispose() {
