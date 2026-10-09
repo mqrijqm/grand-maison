@@ -5,99 +5,58 @@
 import { useMemo, useRef, useState } from 'react'
 import Cta from '@/components/ui/Cta'
 import { addToCart, notify, openCart } from '@/lib/cart'
+import { plural } from '@/lib/shop'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { MQ } from '@/lib/motion'
 import { revealChars } from '@/lib/reveal'
-import { NORMS, PROFILE_MM, WASTE_DEFAULT, calcW111Area, wallThickness, type Cladding } from '@/lib/w111'
+import { WASTE_DEFAULT, calcW111Area } from '@/lib/w111'
 import Num from './Num'
-import WallDrawing, { studPositions, type Focus } from './WallDrawing'
 import styles from './Calc.module.css'
 
-// /kalkulator prema researchu (tačka 12.5): neutralni kalkulator pregradnog zida, bez vezivanja za
-// proizvođača i bez cijena. Kompaktna "instrument tabla" na jednom ekranu: unos (dužina, visina, obloga,
-// vuna) → izvedene mjere → materijal zaokružen na cijela pakovanja → "Dodaj cijeli projekat u upit".
-// Crtež i fotografije se mijenjaju sa unosom. Normative potvrđuje prodaja.
+// Kalkulator pregradnog zida (research 12.5), napravljen za kupca, ne za inženjera:
+// 1) upišite dužinu i visinu, 2) dva izbora običnim riječima, 3) vidite šta da kupite i dodate u upit.
+// Normativi su isti kao ranije (lib/w111, orijentaciono, +5 % rezerve); prodaja potvrđuje količine.
 
 const nf = (n: number, d = 2) => n.toLocaleString('de-DE', { maximumFractionDigits: d })
-const parse = (s: string) => {
-  const n = parseFloat(s.replace(',', '.'))
-  return Number.isFinite(n) && n > 0 ? Math.min(n, 99) : 0
-}
+const clampDim = (n: number, min: number) => Math.min(30, Math.max(min, Math.round(n * 10) / 10))
 
-const HOW = [
-  'Površina = dužina × visina.',
-  `+${Math.round(WASTE_DEFAULT * 100)} % rezerve za rezanje.`,
-  'Zaokruženo na cijela pakovanja.',
-  'Normative potvrđuje prodaja uz ponudu.',
-]
-
-type Dim = { key: 'len' | 'height'; label: string; min: number; max: number; step: number }
+type Dim = { key: 'len' | 'height'; label: string; min: number }
 const DIMS: Dim[] = [
-  { key: 'len', label: 'Dužina', min: 0.5, max: 20, step: 0.1 },
-  { key: 'height', label: 'Visina', min: 1, max: 6, step: 0.1 },
+  { key: 'len', label: 'Dužina zida', min: 0.5 },
+  { key: 'height', label: 'Visina zida', min: 1 },
 ]
 
-// Fotografije (Pexels, vidi public/stock/credits.json). Svaki "slot" ima više kadrova koji se pretapaju.
-const PH = {
-  'obloga-1': 'Rezanje gips-kartonske ploče',
-  'obloga-2': 'Složene gips-kartonske ploče, slojevi',
-  vuna: 'Kamena vuna izbliza',
-  'bez-vune': 'Metalni CW profil prije ispune',
-  'zid-nizak': 'Pregradni zidovi sa otvorima vrata',
-  'zid-visok': 'Visok prostor sa skelom ispod plafona',
-  'profili-cw': 'Složeni metalni profili',
-  'profili-uw': 'Paketi metalnih profila',
-  masa: 'Nanošenje mase za spojeve',
-  vijci: 'Samourezni vijci',
-} as const
-type Ph = keyof typeof PH
-const ALL = Object.keys(PH) as Ph[]
-
-const ROW_LABEL: Record<string, string> = {
-  board: 'Ploča',
-  cw: 'CW profil',
-  uw: 'UW profil',
-  wool: 'Kamena vuna',
-  filler: 'Masa',
-  screws: 'Vijci',
-}
-
-function Stack({ show, className = '' }: { show: Ph; className?: string }) {
-  return (
-    <span className={`${styles.stack} ${className}`}>
-      {ALL.map((k) => (
-        <img key={k} src={`/calc/${k}.webp`} alt={k === show ? PH[k] : ''} aria-hidden={k !== show} data-on={k === show} width={600} height={750} loading="lazy" decoding="async" />
-      ))}
-    </span>
-  )
+// Šta se kupuje, rečeno kao u prodavnici: [jedan, dva-četiri, pet+], kratko objašnjenje i fotografija.
+const ITEMS: Record<string, { names: [string, string, string]; hint: string; img: string }> = {
+  board: { names: ['gips-kartonska ploča', 'gips-kartonske ploče', 'gips-kartonskih ploča'], hint: '1,25 × 2 m, debljina 12,5 mm', img: 'obloga-1' },
+  cw: { names: ['metalni stub CW 75', 'metalna stuba CW 75', 'metalnih stubova CW 75'], hint: 'dužina 3 m, svakih 62,5 cm', img: 'profili-cw' },
+  uw: { names: ['vodilica UW 75', 'vodilice UW 75', 'vodilica UW 75'], hint: 'za pod i plafon, dužina 4 m', img: 'profili-uw' },
+  wool: { names: ['ploča kamene vune', 'ploče kamene vune', 'ploča kamene vune'], hint: 'ide u zid, debljina 50 mm', img: 'vuna' },
+  filler: { names: ['vreća mase za spojeve', 'vreće mase za spojeve', 'vreća mase za spojeve'], hint: 'vreća 5 kg', img: 'masa' },
+  screws: { names: ['kutija vijaka', 'kutije vijaka', 'kutija vijaka'], hint: '1.000 komada u kutiji', img: 'vijci' },
 }
 
 /** `embedded`: ista tabla kao sekcija početne (h2, sidro #kalkulator, ulaz na skrol). */
 export default function WallCalculator({ embedded = false }: { embedded?: boolean }) {
-  const root = useRef<HTMLDivElement>(null)
-  const [vals, setVals] = useState({ len: '4', height: '2,6' })
-  const [good, setGood] = useState({ len: 4, height: 2.6 }) // zadnja ispravna vrijednost, za crtež dok se kuca
-  const [cladding, setCladding] = useState<Cladding>('single')
+  const root = useRef<HTMLElement>(null)
+  const [dims, setDims] = useState({ len: 4, height: 2.6 })
+  const [text, setText] = useState({ len: '4', height: '2,6' })
   const [wool, setWool] = useState(true)
-  const [focus, setFocus] = useState<Focus>(null)
+  const [double, setDouble] = useState(false)
 
-  const L = parse(vals.len)
-  const H = parse(vals.height)
-  const area = Math.round(L * H * 100) / 100
-  const lines = useMemo(
-    () => (area > 0 ? calcW111Area(area, cladding, 'GKP-001', { wool, tape: false, waste: WASTE_DEFAULT }) : []),
-    [area, cladding, wool],
-  )
+  const area = Math.round(dims.len * dims.height * 100) / 100
+  const lines = useMemo(() => calcW111Area(area, double ? 'double' : 'single', 'GKP-001', { wool, tape: false, waste: WASTE_DEFAULT }), [area, double, wool])
 
-  const set = (key: Dim['key'], v: string) => {
-    setVals((s) => ({ ...s, [key]: v }))
-    const n = parse(v)
-    if (n > 0) setGood((s) => ({ ...s, [key]: n }))
+  const setDim = (key: Dim['key'], n: number) => {
+    const d = DIMS.find((x) => x.key === key)!
+    const v = clampDim(n, d.min)
+    setDims((s) => ({ ...s, [key]: v }))
+    setText((s) => ({ ...s, [key]: nf(v, 1) }))
   }
-  const nudge = (d: Dim, dir: 1 | -1) => {
-    const cur = parse(vals[d.key]) || good[d.key]
-    const n = Math.min(99, Math.max(d.min, Math.round((cur + dir * d.step) * 100) / 100))
-    set(d.key, nf(n))
+  const typeDim = (key: Dim['key'], s: string) => {
+    setText((t) => ({ ...t, [key]: s }))
+    const n = parseFloat(s.replace(',', '.'))
+    if (Number.isFinite(n) && n > 0) setDims((d) => ({ ...d, [key]: Math.min(30, n) }))
   }
 
   useGSAP(
@@ -105,257 +64,141 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
       const el = root.current!
       gsap.matchMedia().add(MQ, (ctx) => {
         const { reduce } = ctx.conditions as { reduce: boolean }
-        revealChars(el.querySelector('[data-head]')!, reduce, 'top 95%')
-        if (reduce) return
-        gsap.from(el.querySelectorAll('[data-cell]'), {
-          autoAlpha: 0,
-          y: 10,
-          duration: 0.6,
-          ease: 'power3.out',
-          stagger: 0.025,
-          delay: embedded ? 0 : 0.15,
-          scrollTrigger: embedded ? { trigger: el, start: 'top 75%' } : undefined,
-        })
+        revealChars(el.querySelector('[data-head]')!, reduce, embedded ? 'top 80%' : 'top 95%')
       })
     },
     { scope: root },
   )
 
   const addAll = () => {
-    if (!lines.length) return
     lines.forEach((l) => addToCart(l.sku, l.cartQty))
     notify(`Zid ${nf(area)} m²: materijal dodat u upit`, { label: 'Korpa', open: 'cart' })
     openCart()
   }
 
-  // Izvedene mjere (iz istih normativa i geometrije W111: CW na 625 mm)
-  const studs = L > 0 ? studPositions(L).length : 0
-  const profM = lines.filter((l) => l.key === 'cw' || l.key === 'uw').reduce((a, l) => a + l.need, 0)
-  const rows = NORMS.filter((n) => n.optional !== 'tape').map((n) => ({ norm: n, line: lines.find((l) => l.key === n.key) }))
-
-  const tall = good.height > 3
-  const boardPh: Ph = cladding === 'double' ? 'obloga-2' : 'obloga-1'
-  const detail: Record<string, Ph> = { board: boardPh, cw: 'profili-cw', uw: 'profili-uw', wool: wool ? 'vuna' : 'bez-vune', filler: 'masa', screws: 'vijci' }
-  const detailKey = focus ?? 'cw'
-
-  const Root = embedded ? 'section' : 'div'
   const Heading = embedded ? 'h2' : 'h1'
-
-  const thumbs: { k: string; title: string; value: string; ph: Ph; hot: boolean }[] = [
-    { k: 'obloga', title: 'Obloga', value: cladding === 'double' ? '2 × 12,5 mm' : '1 × 12,5 mm', ph: boardPh, hot: focus === 'board' || focus === 'screws' },
-    { k: 'ispuna', title: 'Ispuna', value: wool ? 'Kamena vuna' : 'Prazna šupljina', ph: wool ? 'vuna' : 'bez-vune', hot: focus === 'wool' },
-    { k: 'visina', title: 'Visina', value: tall ? 'Visok zid > 3 m' : 'Do 3 m', ph: tall ? 'zid-visok' : 'zid-nizak', hot: false },
-    { k: 'detalj', title: 'Detalj', value: ROW_LABEL[detailKey], ph: detail[detailKey], hot: !!focus },
-  ]
+  // Crtež: zid u razmjeri, upisan u plavi okvir (najveća strana zauzima ~84 %).
+  const ratio = dims.len / dims.height
+  const wPct = ratio >= 1.6 ? 84 : (84 * ratio) / 1.6
+  const hPct = ratio >= 1.6 ? (84 * 1.6) / ratio : 84
 
   return (
-    <Root ref={root} id={embedded ? 'kalkulator' : undefined} aria-labelledby={embedded ? 'calc-title' : undefined} className={styles.page}>
-      <div className={styles.panel}>
-        {/* ——— Zaglavlje ——— */}
-        <header className={`${styles.cell} ${styles.top}`}>
+    <section ref={root} id={embedded ? 'kalkulator' : undefined} aria-labelledby="calc-title" className={styles.page}>
+      <div className={styles.card}>
+        <header className={styles.head}>
           <p className={`label ${styles.kicker}`}>Kalkulator · pregradni zid</p>
           <Heading id="calc-title" data-head className={`display invisible ${styles.title}`}>
             Koliko materijala vam treba?
           </Heading>
-          <p className={`label ${styles.spec}`}>
-            <span>W111</span>
-            <span>CW {PROFILE_MM} · 625 mm</span>
-            <span>+{Math.round(WASTE_DEFAULT * 100)} % rezerve</span>
-          </p>
+          <p className={styles.sub}>Upišite dužinu i visinu zida. Mi izračunamo šta da kupite.</p>
         </header>
 
-        {/* ——— Unos ——— */}
-        <section className={styles.controls} aria-label="Unos">
-          {DIMS.map((d) => {
-            const v = parse(vals[d.key])
-            return (
-              <div key={d.key} data-cell className={`${styles.cell} ${styles.input}`}>
-                <label className={styles.cellHead} htmlFor={`calc-${d.key}`}>
-                  <span className="label">{d.label}</span>
-                  <span className="label opacity-50">m</span>
-                </label>
-                <div className={styles.inputRow}>
-                  <button type="button" className={styles.step} onClick={() => nudge(d, -1)} aria-label={`${d.label} manje`}>
-                    −
-                  </button>
-                  <input
-                    id={`calc-${d.key}`}
-                    className={styles.dimInput}
-                    value={vals[d.key]}
-                    onChange={(e) => set(d.key, e.target.value)}
-                    inputMode="decimal"
-                    aria-label={`${d.label} zida u metrima`}
-                  />
-                  <button type="button" className={styles.step} onClick={() => nudge(d, 1)} aria-label={`${d.label} više`}>
-                    +
-                  </button>
-                </div>
-                <input
-                  type="range"
-                  className={styles.range}
-                  min={d.min}
-                  max={d.max}
-                  step={0.05}
-                  value={Math.min(d.max, Math.max(d.min, v || good[d.key]))}
-                  onChange={(e) => set(d.key, nf(Number(e.target.value)))}
-                  aria-label={`${d.label} klizač`}
-                  style={{ '--p': `${((Math.min(d.max, Math.max(d.min, v || good[d.key])) - d.min) / (d.max - d.min)) * 100}%` } as React.CSSProperties}
-                />
-                <span className={styles.rangeScale} aria-hidden>
-                  <span>{nf(d.min)}</span>
-                  <span>{nf(d.max)}</span>
-                </span>
-              </div>
-            )
-          })}
-
-          <fieldset data-cell className={`${styles.cell} ${styles.option}`}>
-            <legend className={`label ${styles.legend}`}>Obloga</legend>
-            <div className={styles.seg}>
-              <button type="button" aria-pressed={cladding === 'single'} onClick={() => setCladding('single')}>
-                Jednostruka
-              </button>
-              <button type="button" aria-pressed={cladding === 'double'} onClick={() => setCladding('double')}>
-                Dvostruka
-              </button>
-            </div>
-          </fieldset>
-          <fieldset data-cell className={`${styles.cell} ${styles.option}`}>
-            <legend className={`label ${styles.legend}`}>Kamena vuna</legend>
-            <div className={styles.seg}>
-              <button type="button" aria-pressed={wool} onClick={() => setWool(true)}>
-                Sa vunom
-              </button>
-              <button type="button" aria-pressed={!wool} onClick={() => setWool(false)}>
-                Bez vune
-              </button>
-            </div>
-          </fieldset>
-
-          <div data-cell className={`${styles.cell} ${styles.actions}`}>
-            <ol className={styles.how} aria-label="Kako računamo">
-              {HOW.map((t, i) => (
-                <li key={t}>
-                  <span className={styles.howNum}>{String(i + 1).padStart(2, '0')}</span>
-                  {t}
-                </li>
-              ))}
-            </ol>
-            <Cta onClick={addAll} solid>
-              Dodaj cijeli projekat u upit
-            </Cta>
-            <Cta href="/upit-za-izvodjace">Opišite šta gradite</Cta>
-          </div>
-        </section>
-
-        {/* ——— Očitavanje ——— */}
-        <section className={styles.readout} aria-label="Rezultat">
-          <div className={styles.derived}>
-            <div data-cell className={`${styles.cell} ${styles.metric} ${styles.metricMain}`}>
-              <span className="label">Površina</span>
-              <output aria-live="polite" className={styles.metricVal}>
-                {area > 0 ? <Num value={area} decimals={2} /> : '—'}
-                <span className={styles.metricUnit}>m²</span>
-              </output>
-            </div>
-            <div data-cell className={`${styles.cell} ${styles.metric}`}>
-              <span className="label">Debljina</span>
-              <span className={styles.metricVal}>
-                <Num value={wallThickness(cladding)} />
-                <span className={styles.metricUnit}>mm</span>
-              </span>
-            </div>
-            <div data-cell className={`${styles.cell} ${styles.metric}`} onMouseEnter={() => setFocus('cw')} onMouseLeave={() => setFocus(null)}>
-              <span className="label">CW stupova</span>
-              <span className={styles.metricVal}>
-                <Num value={studs} />
-                <span className={styles.metricUnit}>kom</span>
-              </span>
-            </div>
-            <div data-cell className={`${styles.cell} ${styles.metric}`}>
-              <span className="label">Profili</span>
-              <span className={styles.metricVal}>
-                <Num value={profM} decimals={1} />
-                <span className={styles.metricUnit}>m</span>
-              </span>
-            </div>
-          </div>
-
-          <div className={`${styles.cell} ${styles.tableHead}`}>
-            <span className="label">Kol.</span>
-            <span className="label">Materijal</span>
-            <span className={`label ${styles.hideSm}`}>Potrebno / kupljeno</span>
-          </div>
-          <ul className={styles.table} onMouseLeave={() => setFocus(null)}>
-            {rows.map(({ norm, line }) => {
-              const packs = line?.packs ?? 0
-              const cap = packs * norm.pack
-              const fill = line && cap ? line.need / cap : 0
-              const active = focus === norm.key
-              return (
-                <li
-                  key={norm.key}
-                  data-cell
-                  data-off={!line || undefined}
-                  data-active={active || undefined}
-                  className={`${styles.cell} ${styles.mRow}`}
-                  tabIndex={0}
-                  onMouseEnter={() => setFocus(norm.key as Focus)}
-                  onFocus={() => setFocus(norm.key as Focus)}
-                  onBlur={() => setFocus(null)}
-                >
-                  <span className={styles.mQty}>
-                    <Num value={packs} />
-                  </span>
-                  <span className={styles.mName}>
-                    <span className={styles.mLabel}>{norm.label}</span>
-                    <span className={styles.mPack}>{line ? norm.packName : 'isključeno'}</span>
-                  </span>
-                  <span className={styles.mBar}>
-                    <span className={styles.mBarText}>
-                      {line ? `${nf(line.need, 1)} / ${nf(cap, 1)} ${norm.unit}` : '—'}
-                    </span>
-                    <span className={styles.mTrack} aria-hidden>
-                      <span className={styles.mFill} style={{ transform: `scaleX(${fill})` }} />
-                    </span>
-                  </span>
-                </li>
-              )
-            })}
-          </ul>
-
-          <div className={`${styles.cell} ${styles.foot}`}>
-            <p className={styles.note}>
-              Orijentacioni proračun sa {Math.round(WASTE_DEFAULT * 100)} % rezerve. Količine i kompatibilnost proizvoda potvrđuje prodaja uz ponudu.
+        <div className={styles.body}>
+          {/* ——— 1. Vaš zid ——— */}
+          <div className={styles.input}>
+            <p className={styles.step}>
+              <b>1</b> Vaš zid
             </p>
-          </div>
-        </section>
+            <div className={styles.dims}>
+              {DIMS.map((d) => (
+                <div key={d.key} className={styles.dim}>
+                  <label htmlFor={`calc-${d.key}`} className={styles.dimLabel}>
+                    {d.label}
+                  </label>
+                  <div className={styles.stepper}>
+                    <button type="button" onClick={() => setDim(d.key, dims[d.key] - 0.1)} aria-label={`${d.label}: manje`}>
+                      −
+                    </button>
+                    <span className={styles.field}>
+                      <input
+                        id={`calc-${d.key}`}
+                        value={text[d.key]}
+                        onChange={(e) => typeDim(d.key, e.target.value)}
+                        onBlur={() => setDim(d.key, dims[d.key])}
+                        inputMode="decimal"
+                      />
+                      <i>m</i>
+                    </span>
+                    <button type="button" onClick={() => setDim(d.key, dims[d.key] + 0.1)} aria-label={`${d.label}: više`}>
+                      +
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
 
-        {/* ——— Crtež i fotografije ——— */}
-        <figure className={`m-0 ${styles.visual}`}>
-          <div data-cell className={styles.blue}>
-            <span className={`label ${styles.blueTag}`}>Pogled · u razmjeri</span>
-            <span className={`label ${styles.blueTagR}`}>
-              {nf(good.len)} × {nf(good.height)} m
-            </span>
-            <WallDrawing L={good.len} H={good.height} double={cladding === 'double'} wool={wool} focus={focus} />
-          </div>
-          <div className={styles.thumbs}>
-            {thumbs.map((t) => (
-              <div key={t.k} data-cell data-hot={t.hot || undefined} className={styles.thumb}>
-                <Stack show={t.ph} />
-                <span className={styles.thumbCap}>
-                  <span className="label opacity-60">{t.title}</span>
-                  <span className={styles.thumbVal}>{t.value}</span>
+            <div className={styles.toggles}>
+              <label className={styles.toggle}>
+                <input type="checkbox" checked={wool} onChange={(e) => setWool(e.target.checked)} />
+                <span className={styles.switch} aria-hidden />
+                <span>
+                  <b>Kamena vuna u zidu</b>
+                  <i>Bolja zvučna izolacija</i>
                 </span>
+              </label>
+              <label className={styles.toggle}>
+                <input type="checkbox" checked={double} onChange={(e) => setDouble(e.target.checked)} />
+                <span className={styles.switch} aria-hidden />
+                <span>
+                  <b>Dvije ploče sa svake strane</b>
+                  <i>Jači i tiši zid</i>
+                </span>
+              </label>
+            </div>
+
+            <figure className={styles.blue}>
+              <div className={styles.wallBox}>
+                <div
+                  className={styles.wall}
+                  data-wool={wool || undefined}
+                  data-double={double || undefined}
+                  style={{ width: `${wPct}%`, height: `${hPct}%`, '--stud': `${(0.625 / dims.len) * 100}%` } as React.CSSProperties}
+                >
+                  <span className={styles.wallW}>{nf(dims.len, 1)} m</span>
+                  <span className={styles.wallH}>{nf(dims.height, 1)} m</span>
+                </div>
               </div>
-            ))}
+              <figcaption className={styles.area}>
+                <span className="label">Površina zida</span>
+                <b>
+                  <Num value={area} decimals={2} /> m²
+                </b>
+              </figcaption>
+            </figure>
           </div>
-          <figcaption className="sr-only">
-            Crtež zida {nf(good.len)} × {nf(good.height)} m sa {studs} CW stupova, {cladding === 'double' ? 'dvostrukom' : 'jednostrukom'} oblogom {wool ? 'i kamenom vunom' : 'bez vune'}.
-          </figcaption>
-        </figure>
+
+          {/* ——— 2. Šta da kupite ——— */}
+          <div className={styles.result}>
+            <p className={styles.step}>
+              <b>2</b> Trebate kupiti
+            </p>
+            <ul className={styles.list} aria-live="polite">
+              {lines.map((l) => {
+                const it = ITEMS[l.key]
+                const img = l.key === 'board' && double ? 'obloga-2' : it.img
+                return (
+                  <li key={l.key} className={styles.item}>
+                    <img src={`/calc/${img}.webp`} alt="" width={600} height={750} loading="lazy" decoding="async" />
+                    <span className={styles.qty}>
+                      <Num value={l.packs} />
+                    </span>
+                    <span className={styles.what}>
+                      <b>{plural(l.packs, ...it.names)}</b>
+                      <i>{it.hint}</i>
+                    </span>
+                  </li>
+                )
+              })}
+            </ul>
+            <div className={styles.cta}>
+              <Cta onClick={addAll} solid>
+                Dodaj sve u upit
+              </Cta>
+              <p className={styles.note}>Okvirna količina, sa {Math.round(WASTE_DEFAULT * 100)} % viška za rezanje. Tačnu količinu i cijenu potvrđuje prodaja.</p>
+            </div>
+          </div>
+        </div>
       </div>
-    </Root>
+    </section>
   )
 }

@@ -419,14 +419,6 @@
   "file": "/calc/vuna.webp",
   "edit": "crop + tone only (Codex CLI, ImageMagick)"
  },
- "calc/bez-vune": {
-  "id": 5493677,
-  "source": "Pexels",
-  "url": "https://www.pexels.com/photo/5493677/",
-  "license": "Pexels License (free for commercial use, no attribution required)",
-  "file": "/calc/bez-vune.webp",
-  "edit": "crop + tone only (Codex CLI, ImageMagick)"
- },
  "calc/profili-cw": {
   "id": 29301863,
   "source": "Pexels",
@@ -441,22 +433,6 @@
   "url": "https://www.pexels.com/photo/36003986/",
   "license": "Pexels License (free for commercial use, no attribution required)",
   "file": "/calc/profili-uw.webp",
-  "edit": "crop + tone only (Codex CLI, ImageMagick)"
- },
- "calc/zid-nizak": {
-  "id": 7937304,
-  "source": "Pexels",
-  "url": "https://www.pexels.com/photo/7937304/",
-  "license": "Pexels License (free for commercial use, no attribution required)",
-  "file": "/calc/zid-nizak.webp",
-  "edit": "crop + tone only (Codex CLI, ImageMagick)"
- },
- "calc/zid-visok": {
-  "id": 6474313,
-  "source": "Pexels",
-  "url": "https://www.pexels.com/photo/6474313/",
-  "license": "Pexels License (free for commercial use, no attribution required)",
-  "file": "/calc/zid-visok.webp",
   "edit": "crop + tone only (Codex CLI, ImageMagick)"
  },
  "calc/masa": {
