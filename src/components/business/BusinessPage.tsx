@@ -135,7 +135,7 @@ export default function BusinessPage() {
               Znate šta vam treba? Upišite šifre i količine ili ih zalijepite iz Excela. Stavke idu u upit, a ponudu potvrđuje prodaja.
             </p>
             <div data-curtain className={styles.quickPhoto}>
-              <img src="/editorial/firme/ekipa.webp" alt="Dvoje izvođača sa dokumentacijom na gradilištu" width={1067} height={1334} loading="lazy" decoding="async" />
+              <img src="/editorial/firme/ekipa.webp" alt="Ruke skiciraju detalj na papiru, metar na radnom stolu" width={1067} height={1334} loading="lazy" decoding="async" />
             </div>
           </div>
           <QuickOrder />

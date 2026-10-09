@@ -16,7 +16,7 @@ export const OFFERINGS = [
     description: 'Materijali za toplotnu i zvučnu izolaciju, prema mjestu ugradnje.',
     image: '/editorial/programs/izolacija.webp',
     detail: '/editorial/programs/izolacija-detail.webp',
-    alt: 'Mineralna vuna u konstrukciji zida — izolacioni materijali',
+    alt: 'Složene ploče kamene vune u otvorenom pakovanju — izolacija',
     href: '/prodavnica?kategorija=izolacija#artikli', cta: 'Pogledajte izolaciju', mode: 'Katalog',
   },
   {
@@ -25,7 +25,7 @@ export const OFFERINGS = [
     description: 'Pošaljite specifikaciju za provjeru programa i dostupnosti.',
     image: '/editorial/programs/zidni-krovni.webp',
     detail: '/editorial/programs/zidni-krovni-detail.webp',
-    alt: 'Šuplji blokovi od gline — zidni i krovni program',
+    alt: 'Paleta glinenog crijepa — zidni i krovni program',
     href: '/upit-za-izvodjace?program=zidni-krovni', cta: 'Pošaljite specifikaciju', mode: 'Po upitu',
   },
   {
@@ -52,7 +52,7 @@ export const OFFERINGS = [
     description: 'Pregled sanitarnog programa i ponuda prema potrebama prostora.',
     image: '/editorial/programs/sanitarna-oprema.webp',
     detail: '/editorial/programs/sanitarna-oprema-detail.webp',
-    alt: 'Bijeli sanitarni umivaonik s hromiranom slavinom — sanitarni program',
+    alt: 'Bijela keramička WC šolja i bide u kupatilu — sanitarni program',
     href: '/prodavnica?kategorija=sanitarna-oprema#artikli', cta: 'Pogledajte sanitarni program', mode: 'Po upitu',
   },
 ] as const

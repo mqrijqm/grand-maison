@@ -20,8 +20,8 @@ const TILES: Tile[] = [
   ...CATEGORIES.map((category) => ({
     id: category.id,
     name: category.name,
-    image: category.id === 'oprema' ? offering('suha-gradnja').detail : offering(category.id as Offering['id']).image,
-    alt: category.id === 'oprema' ? 'Pribor za suhu gradnju' : offering(category.id as Offering['id']).alt,
+    image: category.id === 'oprema' ? '/editorial/programs/pribor.webp' : offering(category.id as Offering['id']).image,
+    alt: category.id === 'oprema' ? 'Samourezni vijci za gips-kartonske ploče — pribor za suhu gradnju' : offering(category.id as Offering['id']).alt,
     count: PRODUCTS.filter((product) => product.category === category.id).length,
     po: false,
   })),

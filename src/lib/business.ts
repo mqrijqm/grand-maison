@@ -24,13 +24,13 @@ export const AUDIENCES = [
     title: 'Građevinske firme i izvođači',
     text: 'Materijal za cijelo gradilište na jednom upitu, po fazama radova.',
     image: '/editorial/firme/skele.webp',
-    alt: 'Radnici na skeli zgrade u izgradnji',
+    alt: 'Fasadna skela uz stambenu zgradu u izgradnji',
   },
   {
     title: 'Majstori i zanatske radnje',
     text: 'Suha gradnja, kamena vuna i građevinska hemija za unutrašnje radove.',
-    image: '/photos/taping.webp',
-    alt: 'Majstor obrađuje spojeve gips-kartonskih ploča na plafonu',
+    image: '/editorial/firme/majstor.webp',
+    alt: 'Majstor, okrenut leđima, oblaže zid od gips-kartonskih ploča',
   },
   {
     title: 'Investitori i stambena gradnja',

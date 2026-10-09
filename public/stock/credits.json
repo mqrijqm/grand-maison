@@ -348,17 +348,17 @@
   "edit": "crop + tone only (Codex CLI, ImageMagick)"
  },
  "firme/skele": {
-  "id": 13890649,
+  "id": 37520402,
   "source": "Pexels",
-  "url": "https://www.pexels.com/photo/13890649/",
+  "url": "https://www.pexels.com/photo/37520402/",
   "license": "Pexels License (free for commercial use, no attribution required)",
   "file": "/editorial/firme/skele.webp",
   "edit": "crop + tone only (Codex CLI, ImageMagick)"
  },
  "firme/ekipa": {
-  "id": 8961064,
+  "id": 5973881,
   "source": "Pexels",
-  "url": "https://www.pexels.com/photo/8961064/",
+  "url": "https://www.pexels.com/photo/5973881/",
   "license": "Pexels License (free for commercial use, no attribution required)",
   "file": "/editorial/firme/ekipa.webp",
   "edit": "crop + tone only (Codex CLI, ImageMagick)"
@@ -393,6 +393,182 @@
   "url": "https://www.pexels.com/photo/9964624/",
   "license": "Pexels License (free for commercial use, no attribution required)",
   "file": "/editorial/portal/gradiliste.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "calc/obloga-1": {
+  "id": 11427094,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/11427094/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/calc/obloga-1.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "calc/obloga-2": {
+  "id": 27728636,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/27728636/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/calc/obloga-2.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "calc/vuna": {
+  "id": 9893816,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/9893816/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/calc/vuna.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "calc/bez-vune": {
+  "id": 5493677,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/5493677/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/calc/bez-vune.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "calc/profili-cw": {
+  "id": 29301863,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/29301863/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/calc/profili-cw.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "calc/profili-uw": {
+  "id": 36003986,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/36003986/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/calc/profili-uw.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "calc/zid-nizak": {
+  "id": 7937304,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/7937304/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/calc/zid-nizak.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "calc/zid-visok": {
+  "id": 6474313,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/6474313/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/calc/zid-visok.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "calc/masa": {
+  "id": 5691596,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/5691596/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/calc/masa.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "calc/vijci": {
+  "id": 5583083,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/5583083/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/calc/vijci.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "programs/izolacija": {
+  "id": "File:Steinwolle vor Verarbeitung.JPG",
+  "source": "Wikimedia Commons",
+  "url": "https://commons.wikimedia.org/wiki/File:Steinwolle_vor_Verarbeitung.JPG",
+  "license": "CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0), author: 4028mdk09 — attribution required",
+  "edit": "crop + tone only (Codex CLI, ImageMagick); cropped to exclude brand print",
+  "file": "/editorial/programs/izolacija.webp"
+ },
+ "programs/zidni-krovni": {
+  "id": 31763543,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/31763543/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/editorial/programs/zidni-krovni.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "programs/sanitarna-oprema": {
+  "id": 6956845,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/6956845/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/editorial/programs/sanitarna-oprema.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "programs/pribor": {
+  "id": 5583083,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/5583083/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/editorial/programs/pribor.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "firme/majstor": {
+  "id": 5493673,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/5493673/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/editorial/firme/majstor.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "shop/ISO-001": {
+  "id": "File:Steinwolle vor Verarbeitung.JPG",
+  "source": "Wikimedia Commons",
+  "url": "https://commons.wikimedia.org/wiki/File:Steinwolle_vor_Verarbeitung.JPG",
+  "license": "CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0), author: 4028mdk09 — attribution required",
+  "edit": "crop + tone only (Codex CLI, ImageMagick); cropped to exclude brand print",
+  "file": "/shop/ISO-001.webp"
+ },
+ "shop/ISO-002": {
+  "id": "File:Steinwolle vor Verarbeitung.JPG",
+  "source": "Wikimedia Commons",
+  "url": "https://commons.wikimedia.org/wiki/File:Steinwolle_vor_Verarbeitung.JPG",
+  "license": "CC BY-SA 3.0 (https://creativecommons.org/licenses/by-sa/3.0), author: 4028mdk09 — attribution required",
+  "edit": "crop + tone only (Codex CLI, ImageMagick); cropped to exclude brand print",
+  "file": "/shop/ISO-002.webp"
+ },
+ "shop/ISO-004": {
+  "id": 10531898,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/10531898/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/shop/ISO-004.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "shop/ISO-006": {
+  "id": "File:EPS insulation board.jpg",
+  "source": "Wikimedia Commons",
+  "url": "https://commons.wikimedia.org/wiki/File:EPS_insulation_board.jpg",
+  "license": "CC0 1.0 (public domain dedication, no attribution required); author: Energieeffiziente Dämmstoffe",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)",
+  "file": "/shop/ISO-006.webp"
+ },
+ "shop/PRF-UW75": {
+  "id": 36003986,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/36003986/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/shop/PRF-UW75.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "shop/CHM-003": {
+  "id": 38561969,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/38561969/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/shop/CHM-003.webp",
+  "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "shop/CHM-004": {
+  "id": 5767932,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/5767932/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "file": "/shop/CHM-004.webp",
   "edit": "crop + tone only (Codex CLI, ImageMagick)"
  }
 }
