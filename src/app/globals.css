@@ -2466,3 +2466,26 @@ html:not([data-hydrated]) :is([data-client-state], .nav__mode-desk, .nav__cart-c
     pointer-events: auto;
   }
 }
+
+/* B2B prijava: ćelija između "Zatraži ponudu" i korpe, ista visina i linija kao korpa */
+.nav__login {
+  align-self: stretch;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding-inline: 16px;
+  border-left: 1.5px solid var(--ink);
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: background-color 0.3s, color 0.3s;
+}
+.nav__login svg { width: 15px; height: 15px; }
+.nav__login:hover,
+.nav__login:focus-visible { background: var(--cobalt); color: #fff; }
+@media (max-width: 1023px) {
+  .nav__login { display: none; }
+}

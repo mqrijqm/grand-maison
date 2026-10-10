@@ -2,11 +2,12 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { cartCount, openCart, useShop } from '@/lib/cart'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { EASE, MQ } from '@/lib/motion'
 import { pw } from '@/components/ui/Pw'
+import LoginModal from './LoginModal'
 import LogoMark from './LogoMark'
 
 // Navbar cijelog sajta: linkovi lijevo, logo (znak + GRAND COMPANY) u sredini, desno crveni
@@ -40,6 +41,8 @@ export default function SiteHeader({ variant }: { variant: 'inner' | 'overlay' |
   const header = useRef<HTMLElement>(null)
   const menu = useRef<HTMLDivElement>(null)
   const [open, setOpen] = useState(false)
+  const [login, setLogin] = useState(false)
+  const closeLogin = useCallback(() => setLogin(false), [])
   const pathname = usePathname()
   const { cart } = useShop()
   const count = cartCount(cart)
@@ -140,6 +143,13 @@ export default function SiteHeader({ variant }: { variant: 'inner' | 'overlay' |
                 <path d="M0 6h22M17 1l5 5-5 5" />
               </svg>
             </Link>
+            <button type="button" onClick={() => setLogin(true)} className="nav__login" aria-haspopup="dialog">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.4} aria-hidden>
+                <rect x="3" y="7" width="10" height="7" />
+                <path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" />
+              </svg>
+              <span>B2B prijava</span>
+            </button>
             <button type="button" onClick={openCart} className="nav__cart" aria-label={`Korpa, ${count} artikala`}>
               <span className="nav__cart-bg" aria-hidden />
               <CartIcon />
@@ -163,12 +173,23 @@ export default function SiteHeader({ variant }: { variant: 'inner' | 'overlay' |
             <Link href="/upit-za-izvodjace" onClick={() => setOpen(false)} className="nav__buy nav__buy--big">
               Zatraži ponudu
             </Link>
+            <button
+              type="button"
+              className="menu__tel"
+              onClick={() => {
+                setOpen(false)
+                setLogin(true)
+              }}
+            >
+              B2B prijava
+            </button>
             <a href="tel:+38765516696" className="menu__tel">
               065 516-696
             </a>
           </div>
         </div>
       </div>
+      <LoginModal open={login} onClose={closeLogin} />
     </>
   )
 }

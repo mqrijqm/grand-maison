@@ -5,7 +5,6 @@
 import { useRef } from 'react'
 import Cta from '@/components/ui/Cta'
 import { COMPANY as GC } from '@/gc/gc'
-import { CAPABILITIES, SECONDARY } from '@/lib/business'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { useMediaMotion } from '@/lib/media'
 import { MQ } from '@/lib/motion'
@@ -14,7 +13,7 @@ import PartnerSteps from './PartnerSteps'
 import PortalTour from './PortalTour'
 import Showcase from './portal/Showcase'
 import WhoSplit from './WhoSplit'
-import { HeroPreview, Snippet } from './Snippets'
+import { HeroPreview } from './Snippets'
 import styles from './Business.module.css'
 
 // /za-firme: predloženi B2B portal Grand Company-ja, kao jednostavniji način da firma naruči materijal.
@@ -88,42 +87,6 @@ export default function BusinessPage() {
       <section id="biz-explain" className={`gutter ${styles.explainBlock}`} aria-label="Portal, ekran po ekran">
         <p className={`label ${styles.kicker}`}>Portal, ekran po ekran</p>
         <PortalTour />
-      </section>
-
-      {/* 03 — Mogućnosti */}
-      <section className={`gutter ${styles.block}`} aria-labelledby="biz-caps">
-        <div className={styles.blockHead}>
-          <div>
-            <p className={`label ${styles.kicker}`}>03 / Šta portal radi</p>
-            <h2 id="biz-caps" data-head className={`display invisible ${styles.title}`}>
-              Pet stvari koje firma radi svaki dan
-            </h2>
-          </div>
-        </div>
-        <ul className={styles.caps}>
-          {CAPABILITIES.map((c) => (
-            <li key={c.no} className={styles.cap} data-k={c.snippet}>
-              <div className={styles.capText}>
-                <p className={styles.capNo}>{c.no} /</p>
-                <h3 className={styles.capTitle}>{c.title}</h3>
-                <p className={styles.small}>{c.text}</p>
-              </div>
-              {(c.snippet === 'lines' || c.snippet === 'offer') && (
-                <div className={styles.capSnippet}>
-                  <Snippet kind={c.snippet} />
-                </div>
-              )}
-            </li>
-          ))}
-        </ul>
-        <ul className={styles.secondary}>
-          {SECONDARY.map((x) => (
-            <li key={x.title}>
-              <b>{x.title}</b>
-              <span>{x.text}</span>
-            </li>
-          ))}
-        </ul>
       </section>
 
       {/* Za koga: raspored kao "Šta gradite?" na početnoj */}

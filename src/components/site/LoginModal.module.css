@@ -1,0 +1,31 @@
+/* Prijava u B2B portal: isti jezik kao scena prijave na /za-firme (bijela ploha, tanke linije,
+   kobalt dugme), samo prava polja i više podataka za firmu. */
+.backdrop { position: fixed; inset: 0; z-index: 1000; display: grid; place-items: center; padding: 20px; background: rgb(27 36 54 / 0.55); backdrop-filter: blur(3px); animation: fade 0.25s ease-out; }
+@keyframes fade { from { opacity: 0; } }
+.dialog { position: relative; width: min(100%, 440px); max-height: calc(100dvh - 40px); overflow: auto; padding: clamp(24px, 4vw, 40px); background: #fff; color: var(--ink); font-family: var(--font-text), Arial, sans-serif; text-transform: none; letter-spacing: 0; box-shadow: 0 40px 80px -30px rgb(0 0 0 / 0.45); animation: rise 0.35s cubic-bezier(0.2, 0.75, 0.15, 1); }
+@keyframes rise { from { opacity: 0; transform: translateY(14px); } }
+.close { position: absolute; top: 10px; right: 12px; display: grid; place-items: center; width: 36px; height: 36px; font-size: 24px; line-height: 1; color: rgb(27 36 54 / 0.6); }
+.close:hover { color: var(--ink); }
+.brand { font-family: var(--font-heavy), Arial, sans-serif; font-weight: 800; font-size: 14px; }
+.brand span { margin-left: 4px; font-family: var(--font-text), Arial, sans-serif; font-weight: 400; opacity: 0.55; }
+.form { display: grid; gap: 14px; margin-top: 14px; }
+.title { font-family: var(--font-heavy), Arial, sans-serif; font-weight: 800; font-size: 20px; line-height: 1.15; text-transform: none; }
+.field { display: grid; gap: 6px; }
+.field > span:first-child { font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: rgb(27 36 54 / 0.65); }
+.field input { width: 100%; min-height: 44px; padding: 0 14px; border: 1px solid rgb(27 36 54 / 0.25); background: #fff; font: inherit; font-size: 14px; color: var(--ink); transition: border-color 0.2s, box-shadow 0.2s; }
+.field input::placeholder { color: rgb(27 36 54 / 0.45); }
+.field input:focus { outline: none; border-color: var(--cobalt); box-shadow: 0 0 0 3px rgb(49 86 234 / 0.15); }
+.pass { position: relative; display: block; }
+.pass input { padding-right: 84px; }
+.pass button { position: absolute; top: 50%; right: 10px; transform: translateY(-50%); padding: 4px 8px; font-size: 11.5px; font-weight: 600; color: var(--cobalt); }
+.row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; font-size: 12.5px; }
+.check { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; }
+.check input { width: 16px; height: 16px; accent-color: var(--cobalt); }
+.link { color: var(--cobalt); font-size: 12.5px; text-decoration: underline; text-underline-offset: 3px; }
+.error { padding: 10px 12px; background: rgb(194 65 45 / 0.08); color: #a3321f; font-size: 12.5px; }
+.submit { min-height: 48px; background: var(--cobalt); color: #fff; font-size: 14px; font-weight: 600; transition: background 0.25s; }
+.submit:hover { background: var(--ink); }
+.foot { font-size: 12.5px; color: rgb(27 36 54 / 0.75); text-align: center; }
+.note { font-size: 13.5px; line-height: 1.6; color: rgb(27 36 54 / 0.8); }
+@media (prefers-reduced-motion: reduce) { .backdrop, .dialog { animation: none; } }
+.dialog *, .dialog input::placeholder { text-transform: none; letter-spacing: 0; } .field > span:first-child { text-transform: uppercase !important; letter-spacing: 0.1em !important; }

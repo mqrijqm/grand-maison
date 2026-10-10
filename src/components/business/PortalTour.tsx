@@ -1,11 +1,11 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import Showcase, { type TourStep } from './portal/Showcase'
+import TourWindow, { type TourStep } from './TourWindow'
 import styles from './Business.module.css'
 
-// Portal, ekran po ekran: lijevo kratki koraci, desno zalijepljen pravi portal. Dok se čita korak,
-// kursor u portalu sam pokaže radnju (kuca šifru, bira, klikne). Na telefonu nema zalijepljenog
+// Portal, ekran po ekran: lijevo kratki koraci, desno jedan svedeni prozor portala (TourWindow) u kome
+// je pravi samo element o kome je riječ; kursor ga pokaže (kuca šifru, bira, klikne). Na telefonu nema zalijepljenog
 // prozora: koraci su kratke kartice, a interaktivni portal je iznad.
 const STEPS: { tour: TourStep; title: string; text: string }[] = [
   { tour: 'pregled', title: 'Pregled', text: 'Prvo što vidite: ponuda koja čeka odluku i njene stavke.' },
@@ -53,7 +53,7 @@ export default function PortalTour() {
             <i />
             {String(active + 1).padStart(2, '0')} · {STEPS[active].title}
           </p>
-          <Showcase tour={STEPS[active].tour} />
+          <TourWindow step={STEPS[active].tour} />
         </div>
       </div>
     </div>
