@@ -135,13 +135,14 @@ function Bar({ url }: { url: string }) {
       <i />
       <i />
       <i />
-      <span>{url}</span>
+      <span data-url>{url}</span>
     </div>
   )
 }
 
 // 01 — prijava: kursor klikne mejl, otkuca ga, pa lozinku, pa "Prijava".
 const buildLogin: Build = (q, tl, cursorTo) => {
+  q('[data-url]').textContent = 'portal.grandcompany.ba/prijava'
   cursorTo('[data-f="email"]')
   tl.call(() => on(q('[data-f="email"]')))
   type(tl, q('[data-t="email"]'), EMAIL, '+=0.1')
@@ -156,7 +157,8 @@ const buildLogin: Build = (q, tl, cursorTo) => {
   click(tl, q('[data-b="login"]'))
   tl.to(q('[data-s="ok"]'), { autoAlpha: 1, y: 0, duration: 0.45, ease: 'power3.out' }, '+=0.2')
   // Bez reklama i opšte početne: odmah dashboard firme.
-  tl.to(q('[data-s="dash"]'), { autoAlpha: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '+=0.9')
+  tl.call(() => void (q('[data-url]').textContent = 'portal.grandcompany.ba/pregled'), undefined, '+=0.9')
+  tl.to(q('[data-s="dash"]'), { autoAlpha: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '<')
   tl.fromTo(q('[data-bar]'), { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: 'power3.out' }, '<0.2')
 }
 const finalLogin = (q: (sel: string) => HTMLElement) => {
