@@ -7,28 +7,27 @@ import type { ViewId } from '@/components/portal/views'
 // Dashboard korak po korak: svaki korak prebaci dashboard na svoj ekran i zumira na bitan dio.
 export type PortalStep = { view: ViewId; focus?: string; title: string; text: string; points: string[] }
 
-// Uvodni koraci: kako firma postaje partner i prvi put ulazi na portal (isti tok kao ACCESS_STEPS).
-// Prikazuju se horizontalno na plavoj podlozi, bez dashboarda, pa nemaju view.
-export const PORTAL_INTRO_STEPS: Omit<PortalStep, 'view' | 'focus'>[] = [
+// Uvodni koraci: kako firma koristi usluge preko portala, tri koraka. Svaki ima animiranu UI scenu
+// (PartnerSteps / StepDemos): prijava, narudžba po šifri, ponuda i isporuka. Isti tok kao ACCESS_STEPS.
+export type IntroDemo = 'login' | 'order' | 'track'
+export const PORTAL_INTRO_STEPS: { demo: IntroDemo; title: string; text: string; points: string[] }[] = [
   {
-    title: 'Pošaljite zahtjev za nalog',
-    text: 'Naziv firme, kontakt osoba i šta najčešće nabavljate. Zahtjev ide direktno prodaji Grand Company-ja.',
-    points: ['Bez obaveze kupovine', 'Prodaja se javlja sa prijedlogom saradnje'],
-  },
-  {
-    title: 'Dogovorite saradnju',
-    text: 'Prodaja provjerava program, količine i način saradnje, i dogovara sa vama šta firma dobija na nalogu.',
-    points: ['Jedan kontakt u prodaji', 'Uslovi po dogovoru'],
-  },
-  {
+    demo: 'login',
     title: 'Prijavite se na nalog firme',
-    text: 'Kad prodaja otvori nalog, prijavljujete se svojim mejlom. Prvi ekran je pregled nabavke vaše firme.',
+    text: 'Nalog firme otvara prodaja Grand Company-ja. Prijavljujete se poslovnim mejlom, a kolege dobijaju svoje pristupe.',
     points: ['Jedan nalog za cijelu firmu', 'Pristup sa računara i telefona'],
   },
   {
-    title: 'Dodajte tim i gradilišta',
-    text: 'Pozovite kolege iz nabavke, poslovođe i računovodstvo, i upišite gradilišta za koja naručujete.',
-    points: ['Svaki korisnik ima svoja prava', 'Narudžbe se vode po gradilištu'],
+    demo: 'order',
+    title: 'Naručite po šifri',
+    text: 'Upišite šifru i količinu, red po red, ili zalijepite tabelu iz Excela. Upit ide pravo prodaji.',
+    points: ['Šifra se provjerava odmah', 'Sačuvane liste na jedan klik'],
+  },
+  {
+    demo: 'track',
+    title: 'Pratite ponudu i isporuku',
+    text: 'Prodaja šalje ponudu, vi je prihvatate, a narudžbu pratite kroz status do termina dostave ili preuzimanja.',
+    points: ['Termin isporuke na gradilište', 'Dokumenti na jednom mjestu'],
   },
 ]
 
