@@ -466,6 +466,7 @@ export default function Dashboard({ variant = 'full', tour = true, show = null }
               ref={canvas}
               key={view}
               className={s.canvas}
+              data-view={view}
               data-zoom={zoom || undefined}
               style={{ transform: `translate(${cam.x}px, ${cam.y}px) scale(${cam.k})` }}
               onClickCapture={(e) => {
