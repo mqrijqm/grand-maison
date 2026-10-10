@@ -333,3 +333,6 @@
 .window[data-tour] .stage { grid-template-columns: minmax(0, 1fr); gap: 14px; }
 .window[data-tour] .next, .window[data-tour] .sites { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
 .window[data-tour] .request, .window[data-tour] .request * { min-width: 0; } .window[data-tour] .request select { width: 100%; }
+/* Iznad portala ostaju samo koraci scenarija, bez okvira, naslova i napomena. */
+.scenario { display: block; padding: 0; border: 0; }
+.scenarioSteps { flex-wrap: wrap; }

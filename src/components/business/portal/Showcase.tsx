@@ -192,20 +192,7 @@ export default function Showcase({ tour }: { tour?: TourStep } = {}) {
     }
   }, [tour])
 
-  const restart = () => {
-    timers.current.forEach(clearTimeout)
-    setOffers(OFFERS)
-    setOrders(ORDERS)
-    setDraft([
-      { sku: 'GKP-001', qty: 120 },
-      { sku: 'PRF-075', qty: 40 },
-    ])
-    setDraftSite('a')
-    setMode('Dostava')
-    setDone({ added: false, sent: false, confirmed: false, tracked: false })
-    setView('materijali')
-    say('Scenarij je vraćen na početak')
-  }
+
 
   const say = (text: string) => {
     setToast(text)
@@ -286,10 +273,6 @@ export default function Showcase({ tour }: { tour?: TourStep } = {}) {
   return (
     <div className={s.wrap}>
       {!tour && <div className={s.scenario}>
-        <div className={s.scenarioHead}>
-          <span className={s.kicker}>Scenarij za probu</span>
-          <b>Materijal za pregradni zid, Lamela A</b>
-        </div>
         <ol className={s.scenarioSteps}>
           {steps.map((x, i) => (
             <li key={x.k}>
@@ -300,18 +283,6 @@ export default function Showcase({ tour }: { tour?: TourStep } = {}) {
             </li>
           ))}
         </ol>
-        <p className={s.scenarioHint} aria-live="polite">
-          {nextStep ? (
-            <>
-              Sljedeće: <b>{nextStep.label.toLowerCase()}</b>
-            </>
-          ) : (
-            <b>Cijeli tok narudžbe prošao je bez ijednog poziva.</b>
-          )}
-        </p>
-        <button type="button" className={s.reset} onClick={restart}>
-          <Icon name="repeat" /> Ispočetka
-        </button>
       </div>}
 
       <div ref={winRef} className={s.window} data-view={view} data-tour={tour ? '' : undefined}>

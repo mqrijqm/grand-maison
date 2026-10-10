@@ -63,18 +63,7 @@ export default function BusinessPage() {
       </header>
 
       {/* 02 — Interaktivni prikaz portala */}
-      <section id="portal" className={`gutter scroll-mt-24 ${styles.stage}`} aria-labelledby="biz-portal">
-        <div className={styles.blockHead}>
-          <div>
-            <p className={`label ${styles.kickerLight}`}>02 / Portal uživo</p>
-            <h2 id="biz-portal" data-head className={`display invisible ${styles.title}`}>
-              Probajte kako se naručuje
-            </h2>
-          </div>
-          <p className={styles.lead}>
-            Primjer naloga izmišljene građevinske firme. Prođite jednu kompletnu narudžbu: materijal za pregradni zid, od izbora artikala do dostave na gradilište.
-          </p>
-        </div>
+      <section id="portal" className={`gutter scroll-mt-24 ${styles.stage}`} aria-label="B2B portal, interaktivni prikaz">
         <div className={styles.showcase}>
           <Showcase />
         </div>

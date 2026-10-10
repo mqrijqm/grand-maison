@@ -98,7 +98,7 @@
 .stage { margin-top: clamp(100px, 18vh, 220px); padding-top: clamp(64px, 11vh, 120px); padding-bottom: clamp(56px, 9vh, 100px); background: var(--ink); color: var(--bg); }
 .stage .lead { opacity: 0.85; }
 .kickerLight { color: #8fa6ff; }
-.stage .showcase { margin-top: 40px; }
+.stage .showcase { margin-top: 0; }
 
 /* 04 Koraci: tekst + skok u odgovarajući ekran portala (bez ponavljanja isječaka) */
 .jTry { justify-self: start; display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; padding: 0 0 4px; border-bottom: 1.4px solid var(--cobalt); color: var(--cobalt); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; transition: gap 0.25s; }
