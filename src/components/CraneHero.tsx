@@ -69,7 +69,9 @@ export default function CraneHero() {
       // Nova montaža mora ponovo izvršiti modul poslije klijentske navigacije.
       script.src = `${SCRIPT}?m=${Date.now()}`
       document.body.appendChild(script)
-      safety = window.setTimeout(fallback, 9000)
+      // Sporiji laptopi na mreži znaju trebati više od 9 s (three.js + šejderi); prerano odustajanje
+      // je ostavljalo hero kao statičnu sliku.
+      safety = window.setTimeout(fallback, 25000)
     }
     const updateMode = () => {
       if (staticMedia.matches) {
