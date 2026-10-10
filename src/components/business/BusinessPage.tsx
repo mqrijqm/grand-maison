@@ -73,8 +73,7 @@ export default function BusinessPage() {
       <PartnerSteps />
 
       {/* Portal, ekran po ekran: pravi portal sa kursorom koji pokazuje radnje */}
-      <section id="biz-explain" className={`gutter ${styles.explainBlock}`} aria-label="Portal, ekran po ekran">
-        <p className={`label ${styles.kicker}`}>Portal, ekran po ekran</p>
+      <section id="biz-explain" className={styles.explainBlock} aria-label="Portal, ekran po ekran">
         <PortalTour />
       </section>
 

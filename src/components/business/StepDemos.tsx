@@ -141,84 +141,103 @@ function Bar({ url }: { url: string }) {
 }
 
 // 01 — prijava: kursor klikne mejl, otkuca ga, pa lozinku, pa "Prijava".
+const FIRM = 'DEMO GRADNJA d.o.o.'
 const buildLogin: Build = (q, tl, cursorTo) => {
-  q('[data-url]').textContent = 'portal.grandcompany.ba/prijava'
-  cursorTo('[data-f="email"]')
-  tl.call(() => on(q('[data-f="email"]')))
-  type(tl, q('[data-t="email"]'), EMAIL, '+=0.1')
-  cursorTo('[data-f="pass"]', '+=0.2')
-  tl.call(() => {
-    q('[data-f="email"]').removeAttribute('data-on')
-    on(q('[data-f="pass"]'))
-  })
-  type(tl, q('[data-t="pass"]'), PASS, '+=0.1')
+  const field = (k: string, text: string, first = false) => {
+    cursorTo(`[data-f="${k}"]`, first ? undefined : '+=0.2')
+    tl.call(() => {
+      el.forEach((f) => q(`[data-f="${f}"]`).removeAttribute('data-on'))
+      on(q(`[data-f="${k}"]`))
+    })
+    type(tl, q(`[data-t="${k}"]`), text, '+=0.1')
+  }
+  const el = ['firm', 'email', 'pass']
+  field('firm', FIRM, true)
+  field('email', EMAIL)
+  field('pass', PASS)
   cursorTo('[data-b="login"]', '+=0.2')
   tl.call(() => q('[data-f="pass"]').removeAttribute('data-on'))
   click(tl, q('[data-b="login"]'))
   tl.to(q('[data-s="ok"]'), { autoAlpha: 1, y: 0, duration: 0.45, ease: 'power3.out' }, '+=0.2')
   // Bez reklama i opšte početne: odmah dashboard firme.
-  tl.call(() => void (q('[data-url]').textContent = 'portal.grandcompany.ba/pregled'), undefined, '+=0.9')
-  tl.to(q('[data-s="dash"]'), { autoAlpha: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '<')
+  tl.to(q('[data-s="dash"]'), { autoAlpha: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '+=0.9')
   tl.fromTo(q('[data-bar]'), { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: 'power3.out' }, '<0.2')
 }
 const finalLogin = (q: (sel: string) => HTMLElement) => {
+  q('[data-t="firm"]').textContent = FIRM
   q('[data-t="email"]').textContent = EMAIL
   q('[data-t="pass"]').textContent = PASS
 }
 
+// Isti prozor za prijavu kao "B2B prijava" u navbaru (LoginModal), sa istim poljima.
 function LoginDemo() {
   const root = useDemo(buildLogin, finalLogin)
   return (
     <div ref={root} className={styles.demo}>
-      <div className={styles.win}>
-        <Bar url="portal.grandcompany.ba/prijava" />
-        <div className={styles.loginBody}>
-          <div className={styles.login}>
-            <p className={styles.brand}>
-              Grand Company <span>Portal</span>
+      <div className={styles.modal}>
+        <span className={styles.close}>×</span>
+        <p className={styles.mBrand}>
+          Grand Company <span>Portal</span>
+        </p>
+        <p className={styles.mTitle}>Prijava na nalog firme</p>
+        <span className={styles.mField} data-f="firm">
+          <span>Firma ili JIB</span>
+          <b>
+            <em data-type data-t="firm" />
+            <i className={styles.caret} />
+            <u className={styles.ph}>npr. DEMO GRADNJA d.o.o.</u>
+          </b>
+        </span>
+        <span className={styles.mField} data-f="email">
+          <span>E-mail</span>
+          <b>
+            <em data-type data-t="email" />
+            <i className={styles.caret} />
+            <u className={styles.ph}>nabavka@firma.ba</u>
+          </b>
+        </span>
+        <span className={styles.mField} data-f="pass">
+          <span>Lozinka</span>
+          <b>
+            <em data-type data-t="pass" />
+            <i className={styles.caret} />
+            <s className={styles.show}>Prikaži</s>
+          </b>
+        </span>
+        <span className={styles.mRow}>
+          <span className={styles.mCheck}>
+            <i>✓</i>Zapamti me na ovom uređaju
+          </span>
+          <span className={styles.mLink}>Zaboravljena lozinka?</span>
+        </span>
+        <span className={styles.mSubmit} data-b="login">
+          Prijava
+        </span>
+        <span className={styles.mFoot}>
+          Nemate nalog? <span className={styles.mLink}>Zatražite poslovni nalog</span>
+        </span>
+        <div className={styles.ok} data-show data-s="ok">
+          <span className={styles.check}>✓</span>
+          <p className={styles.h}>Dobro došli</p>
+          <p className={styles.muted}>DEMO GRADNJA d.o.o.</p>
+        </div>
+        <div className={styles.dash} data-show data-s="dash">
+          <div className={styles.tileDark}>
+            <span className={styles.muted}>Ponuda P-26-0142 čeka potvrdu</span>
+            <b>5 stavki</b>
+            <i className={styles.meter}>
+              <em data-bar />
+            </i>
+          </div>
+          <div className={styles.tile}>
+            <span className={styles.muted}>Narudžbe u toku</span>
+            <p>
+              GC-26-04477 <span className={styles.chip}>Na putu ka gradilištu</span>
             </p>
-            <p className={styles.h}>Prijava na nalog firme</p>
-            <label className={styles.field} data-f="email">
-              <span>E-mail</span>
-              <b>
-                <em data-type data-t="email" />
-                <i className={styles.caret} />
-              </b>
-            </label>
-            <label className={styles.field} data-f="pass">
-              <span>Lozinka</span>
-              <b>
-                <em data-type data-t="pass" />
-                <i className={styles.caret} />
-              </b>
-            </label>
-            <span className={styles.btn} data-b="login">
-              Prijava
-            </span>
           </div>
-          <div className={styles.ok} data-show data-s="ok">
-            <span className={styles.check}>✓</span>
-            <p className={styles.h}>Dobro došli</p>
-            <p className={styles.muted}>DEMO GRADNJA d.o.o.</p>
-          </div>
-          <div className={styles.dash} data-show data-s="dash">
-            <div className={styles.tileDark}>
-              <span className={styles.muted}>Kreditni okvir · dostupno</span>
-              <b>14.241 KM</b>
-              <i className={styles.meter}>
-                <em data-bar />
-              </i>
-            </div>
-            <div className={styles.tile}>
-              <span className={styles.muted}>Narudžbe u toku</span>
-              <p>
-                GC-26-04477 <span className={styles.chip}>Na putu ka gradilištu</span>
-              </p>
-            </div>
-            <div className={styles.tile}>
-              <span className={styles.muted}>Brzi unos</span>
-              <span className={styles.fakeInput}>Šifra, npr. GKP-001</span>
-            </div>
+          <div className={styles.tile}>
+            <span className={styles.muted}>Brzi unos</span>
+            <span className={styles.fakeInput}>Šifra, npr. GKP-001</span>
           </div>
         </div>
       </div>

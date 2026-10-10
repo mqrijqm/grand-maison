@@ -8,7 +8,7 @@
 .dots i:first-child { background: var(--cobalt); }
 .url { flex: 1; text-align: center; font-family: ui-monospace, monospace; font-size: 11px; }
 .demo { padding: 2px 9px; border: 1px solid rgb(255 255 255 / 0.4); border-radius: 99px; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
-.body { display: grid; grid-template-columns: 168px minmax(0, 1fr); height: min(560px, 64vh); }
+.body { display: grid; grid-template-columns: 168px minmax(0, 1fr); height: clamp(340px, calc(100dvh - 330px), 540px); }
 .side { display: grid; align-content: start; gap: 4px; padding: 8px 10px 16px; color: rgb(255 255 255 / 0.85); }
 .brand { padding: 4px 10px 12px; font-weight: 700; color: #fff; }
 .nav { display: grid; grid-template-columns: 18px 1fr auto; align-items: center; gap: 10px; min-height: 38px; padding: 0 10px; border-radius: 9px; transition: background 0.35s, color 0.35s; }
@@ -79,4 +79,11 @@
 @media (prefers-reduced-motion: reduce) {
   .focus, .caret { animation: none; }
   .cursor { transition: opacity 0.2s; }
+}
+@media (max-width: 760px) {
+  .body { grid-template-columns: minmax(0, 1fr); height: 440px; }
+  .side { display: none; }
+  .main { margin: 0 6px 6px; padding: 14px; }
+  .sites { grid-template-columns: minmax(0, 1fr); }
+  .skelRow { display: none; }
 }

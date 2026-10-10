@@ -171,3 +171,30 @@
   .explainSticky { position:sticky; top:calc(var(--nav-h) + var(--nav-inset, 12px) + 20px); }
 }
 .explainBlock { margin-top: clamp(80px, 14vh, 180px); }
+
+/* Portal, ekran po ekran: zakačena sekcija, koraci vodoravno iznad centriranog prozora */
+.tour { display: flex; flex-direction: column; gap: 22px; padding: 28px 0 32px; }
+.tourHead { display: flex; justify-content: space-between; align-items: baseline; padding-inline: 20px; }
+.tourCount { font-size: 11px; letter-spacing: 0.14em; color: var(--cobalt); font-variant-numeric: tabular-nums; }
+.tourStrip { overflow-x: auto; scrollbar-width: none; }
+.tourStrip::-webkit-scrollbar { display: none; }
+.tourTrack { display: flex; gap: 10px; width: max-content; padding-inline: 20px; }
+.tourStep { display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px 20px 10px 10px; border: 1px solid rgb(27 36 54 / 0.18); border-radius: 99px; text-align: left; text-transform: none; letter-spacing: 0; opacity: 0.45; transition: opacity 0.35s, background 0.35s, color 0.35s, border-color 0.35s; }
+.tourStep:hover { opacity: 0.8; }
+.tourStep[data-on] { opacity: 1; background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.tourNum { display: grid; place-items: center; flex: none; width: 42px; height: 42px; border-radius: 50%; background: rgb(49 86 234 / 0.1); color: var(--cobalt); font-size: 12px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.tourStep[data-on] .tourNum { background: var(--cobalt); color: #fff; }
+.tourStep b { display: block; font-family: var(--font-heavy), Arial, sans-serif; font-weight: 800; font-size: 14px; text-transform: uppercase; white-space: nowrap; }
+.tourStep i { display: block; font-style: normal; font-size: 12px; opacity: 0.75; white-space: nowrap; }
+.tourStage { width: min(100% - 40px, 1040px); margin-inline: auto; }
+@media (min-width: 768px) {
+  .tourHead { padding-inline: 8.33vw; }
+  .tourTrack { padding-inline: 8.33vw; }
+}
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  /* Zakačeno: traka se ne prevlači, nju vodi skrol (transform), a prozor staje u ekran. */
+  .tour { height: 100dvh; justify-content: center; gap: 18px; padding: calc(var(--nav-h, 64px) + 2vh) 0 3vh; }
+  .tourStrip { overflow: visible; }
+  .tourTrack { padding-inline: 0; }
+  .tourStage { width: min(100% - 16.6vw, 1040px); }
+}

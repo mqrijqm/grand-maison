@@ -94,3 +94,25 @@
 .key kbd { display: inline-grid; place-items: center; min-width: 46px; height: 26px; padding: 0 9px; border: 1.4px solid rgb(27 36 54 / 0.35); border-bottom-width: 3px; background: #fff; color: var(--ink); font-family: var(--font-text), Arial, sans-serif; font-size: 11px; font-weight: 600; white-space: nowrap; }
 .key { margin-right: auto; }
 .drop { padding: 8px 10px; border: 1px dashed rgb(27 36 54 / 0.3); font-size: 11px; text-align: center; opacity: 0.7; }
+
+/* 01 prijava: ista forma kao "B2B prijava" u navbaru (LoginModal) */
+.modal { position: relative; display: grid; gap: 12px; width: 400px; padding: 32px 34px 28px; background: #fff; box-shadow: 0 30px 70px -30px rgb(27 36 54 / 0.45); text-align: left; }
+.close { position: absolute; top: 12px; right: 16px; font-size: 22px; line-height: 1; color: rgb(27 36 54 / 0.55); }
+.mBrand { font-family: var(--font-heavy), Arial, sans-serif; font-weight: 800; font-size: 13px; }
+.mBrand span { margin-left: 4px; font-family: var(--font-text), Arial, sans-serif; font-weight: 400; opacity: 0.55; }
+.mTitle { font-family: var(--font-heavy), Arial, sans-serif; font-weight: 800; font-size: 19px; line-height: 1.15; }
+.mField { display: grid; gap: 6px; }
+.mField > span { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: rgb(27 36 54 / 0.65); }
+.mField > b { position: relative; display: flex; align-items: center; height: 40px; padding: 0 12px; border: 1px solid rgb(27 36 54 / 0.25); font-size: 13px; font-weight: 400; transition: border-color 0.2s, box-shadow 0.2s; }
+.mField[data-on] > b { border-color: var(--cobalt); box-shadow: 0 0 0 3px rgb(49 86 234 / 0.15); }
+.mField em { font-style: normal; white-space: nowrap; }
+.ph { text-decoration: none; color: rgb(27 36 54 / 0.45); white-space: nowrap; }
+.mField em:not(:empty) ~ .ph { display: none; }
+.show { position: absolute; right: 12px; text-decoration: none; font-size: 11px; font-weight: 600; color: var(--cobalt); }
+.mRow { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 11.5px; }
+.mCheck { display: inline-flex; align-items: center; gap: 7px; }
+.mCheck i { display: grid; place-items: center; width: 15px; height: 15px; border-radius: 3px; background: var(--cobalt); color: #fff; font-size: 10px; font-style: normal; }
+.mLink { color: var(--cobalt); text-decoration: underline; text-underline-offset: 3px; }
+.mSubmit { display: grid; place-items: center; min-height: 44px; background: var(--cobalt); color: #fff; font-size: 13px; font-weight: 600; }
+.mFoot { font-size: 11.5px; color: rgb(27 36 54 / 0.75); text-align: center; }
+.modal .ok, .modal .dash { inset: 0; }
