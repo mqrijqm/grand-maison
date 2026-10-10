@@ -142,13 +142,17 @@
 .partnerEnd { display:flex; flex-direction:column; justify-content:flex-end; gap:20px; width:min(80vw,340px); min-height:400px; padding:28px 0 28px 12px; }
 .partnerEnd p { max-width:24ch; font-size:14px; line-height:1.6; text-transform:none; opacity:.85; }
 @media (min-width:1024px) and (prefers-reduced-motion:no-preference) {
-  .partner { min-height:100dvh; justify-content:center; padding-top:calc(var(--nav-h, 64px) + 6vh); background:transparent; color:inherit; }
-  .partnerTrack { gap:1.4vw; padding-inline:8.33vw; }
-  .partnerTitle { font-size:clamp(40px,4.4vw,84px); max-width:20ch; }
-  .partnerTrack { margin-top:clamp(32px,6vh,64px); }
-  .partnerTrack { --w:clamp(320px,27vw,440px); }
-  .partnerCard, .partnerEnd { width:var(--w); min-height:clamp(340px,50dvh,480px); padding:clamp(28px,2.2vw,36px); }
-  .partnerDemo { width:calc(var(--w) * 2 + 1.4vw); min-height:clamp(340px,50dvh,480px); }
+  /* Zakačena sekcija je tačno visine ekrana: naslov se smanjuje po visini, a kartice dobijaju
+     ostatak prostora, pa se dno vidi i na niskim ekranima (laptop sa skaliranjem 125-150%). */
+  .partner { height:100dvh; padding:calc(var(--nav-h, 64px) + 3vh) 0 4vh; background:transparent; color:inherit; }
+  .partnerTitle { font-size:clamp(32px,min(4.4vw,7dvh),84px); max-width:20ch; }
+  .partnerTrack { --w:clamp(300px,min(27vw,48dvh),440px); gap:1.4vw; height:100%; margin-top:0; padding-inline:8.33vw; }
+  .partner > :global(.hs-viewport) { flex:1; min-height:0; margin-top:clamp(20px,4vh,56px); }
+  .partnerPair { height:100%; }
+  .partnerCard, .partnerEnd { width:var(--w); height:100%; min-height:0; padding:clamp(20px,min(2.2vw,3.6dvh),36px); }
+  .partnerDemo { width:calc(var(--w) * 2 + 1.4vw); height:100%; min-height:0; }
+  .partnerNum { font-size:clamp(140px,min(17vw,30dvh),300px); }
+  .partnerCardTitle { font-size:clamp(20px,min(2vw,3.6dvh),32px); }
   .partnerEnd { padding-left:0; }
 }
 @media (min-width:768px) { .partnerTrack { padding-inline:8.33vw; } }

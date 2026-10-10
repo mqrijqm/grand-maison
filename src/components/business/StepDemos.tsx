@@ -35,6 +35,20 @@ function useDemo(build: Build, final: (q: (sel: string) => HTMLElement) => void)
     const q = (sel: string) => el.querySelector<HTMLElement>(sel)!
     const cursor = q('[data-cursor]')
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    // Prozor scene se umanji ako ne stane u karticu (nizak ekran). offsetWidth/Height ne računaju
+    // transform, pa je to uvijek prirodna veličina.
+    const win = el.firstElementChild as HTMLElement
+    const fit = () => {
+      const cs = getComputedStyle(el)
+      const h = el.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom)
+      const w = el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)
+      win.style.transform = `scale(${Math.min(1, h / win.offsetHeight, w / win.offsetWidth)})`
+    }
+    fit()
+    const ro = new ResizeObserver(fit)
+    ro.observe(el)
+
     let tl: gsap.core.Timeline | null = null
     let again: gsap.core.Tween | null = null
 
@@ -49,7 +63,7 @@ function useDemo(build: Build, final: (q: (sel: string) => HTMLElement) => void)
       final(q)
       gsap.set(el.querySelectorAll('[data-show]'), { autoAlpha: 1, y: 0 })
       gsap.set(cursor, { autoAlpha: 0 })
-      return
+      return () => ro.disconnect()
     }
 
     const cursorTo = (sel: string, at?: gsap.Position) => {
@@ -95,6 +109,7 @@ function useDemo(build: Build, final: (q: (sel: string) => HTMLElement) => void)
     io.observe(el)
     return () => {
       io.disconnect()
+      ro.disconnect()
       stop()
     }
   }, [build, final])
