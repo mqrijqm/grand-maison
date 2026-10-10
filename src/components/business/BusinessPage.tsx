@@ -11,6 +11,7 @@ import { gsap, useGSAP } from '@/lib/gsap'
 import { useMediaMotion } from '@/lib/media'
 import { MQ } from '@/lib/motion'
 import { revealChars } from '@/lib/reveal'
+import PartnerSteps from './PartnerSteps'
 import PortalExplainer from './PortalExplainer'
 import styles from './Business.module.css'
 
@@ -67,14 +68,12 @@ export default function BusinessPage() {
         <PortalStage />
       </section>
 
+      {/* Postanite partner: koraci do naloga, horizontalno na plavoj stranici */}
+      <PartnerSteps />
+
       {/* Dashboard korak po korak */}
-      <section className={`gutter ${styles.block}`} aria-labelledby="biz-explain">
-        <div className={styles.blockHead}>
-          <h2 id="biz-explain" data-head className={`display invisible ${styles.title}`}>
-            Portal, korak po korak
-          </h2>
-          <p className={styles.lead}>Prvo kako firma postaje partner i ulazi na portal, pa deset ekrana koje koristi svaki dan. Skrolujte: portal desno se prebacuje na ekran o kome čitate.</p>
-        </div>
+      <section id="biz-explain" className={`gutter ${styles.explainBlock}`} aria-label="Portal, ekran po ekran">
+        <p className={`label ${styles.kicker}`}>Svaki dan na portalu · deset ekrana</p>
         <PortalExplainer />
       </section>
 

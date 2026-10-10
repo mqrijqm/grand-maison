@@ -8,21 +8,24 @@ import type { ViewId } from '@/components/portal/views'
 export type PortalStep = { view: ViewId; focus?: string; title: string; text: string; points: string[] }
 
 // Uvodni koraci: kako firma postaje partner i prvi put ulazi na portal (isti tok kao ACCESS_STEPS).
-export const PORTAL_INTRO_STEPS: PortalStep[] = [
+// Prikazuju se horizontalno na plavoj podlozi, bez dashboarda, pa nemaju view.
+export const PORTAL_INTRO_STEPS: Omit<PortalStep, 'view' | 'focus'>[] = [
   {
-    view: 'pregled',
     title: 'Pošaljite zahtjev za nalog',
     text: 'Naziv firme, kontakt osoba i šta najčešće nabavljate. Zahtjev ide direktno prodaji Grand Company-ja.',
     points: ['Bez obaveze kupovine', 'Prodaja se javlja sa prijedlogom saradnje'],
   },
   {
-    view: 'pregled',
+    title: 'Dogovorite saradnju',
+    text: 'Prodaja provjerava program, količine i način saradnje, i dogovara sa vama šta firma dobija na nalogu.',
+    points: ['Jedan kontakt u prodaji', 'Uslovi po dogovoru'],
+  },
+  {
     title: 'Prijavite se na nalog firme',
     text: 'Kad prodaja otvori nalog, prijavljujete se svojim mejlom. Prvi ekran je pregled nabavke vaše firme.',
     points: ['Jedan nalog za cijelu firmu', 'Pristup sa računara i telefona'],
   },
   {
-    view: 'tim',
     title: 'Dodajte tim i gradilišta',
     text: 'Pozovite kolege iz nabavke, poslovođe i računovodstvo, i upišite gradilišta za koja naručujete.',
     points: ['Svaki korisnik ima svoja prava', 'Narudžbe se vode po gradilištu'],
@@ -97,11 +100,6 @@ export const PORTAL_STEPS: PortalStep[] = [
     text: 'Više korisnika na nalogu firme, svako sa svojim pravima. Poslovođe šalju zahtjeve za materijal, nabavka ih odobrava.',
     points: ['Uloge: nabavka, poslovođa, računovodstvo', 'Odobren zahtjev ide pravo u upit'],
   },
-]
-
-export const PORTAL_GROUPS = [
-  { kicker: 'Početak saradnje', title: 'Vi ste firma i želite Grand Company kao partnera?', steps: PORTAL_INTRO_STEPS },
-  { kicker: 'Svaki dan na portalu', title: 'Deset ekrana za nabavku', steps: PORTAL_STEPS },
 ]
 
 // Šta dobija firma s nalogom.
