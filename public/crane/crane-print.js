@@ -334,6 +334,11 @@ const POST_FRAG = /* glsl */ `
     float y = odd ? uv.y : 1.0 - uv.y;
     return y < h;
   }
+  // Geometrijska linija (zgrada, krov, skela) u datoj tački G-buffera, 0 ili 1.
+  float geoAt(vec2 uv) {
+    float a = texture2D(tG, uv).a;
+    return max(step(.965, a) * step(a, .985), step(.875, a) * step(a, .905));
+  }
   void sampleG(vec2 uv, out vec3 n, out float d, out float a, out float tone) {
     vec4 g = texture2D(tG, uv);
     tone = g.b;
@@ -358,6 +363,10 @@ const POST_FRAG = /* glsl */ `
     // Geometrijske linije (glatke ivice krana i zgrade, LINE_FRAG) i površine linijskih objekata.
     float geoLine = max(step(.965, g0.a) * step(g0.a, .985), step(.875, g0.a) * step(g0.a, .905));
     float lineSurf = step(.9, g0.a) * step(g0.a, .97);
+    // Meka pokrivenost linije: centar + 4 susjeda. Ivica linije prelazi u papir postepeno,
+    // pa linije zgrade i prozora nisu stepenaste (G-buffer je bez filtriranja, 1 uzorak po pikselu).
+    vec2 px1 = 1.0 / resolution;
+    float geoSoft = (geoLine * 2.0 + geoAt(vUv + vec2(px1.x, 0.0)) + geoAt(vUv - vec2(px1.x, 0.0)) + geoAt(vUv + vec2(0.0, px1.y)) + geoAt(vUv - vec2(0.0, px1.y))) / 6.0;
     float navyF = step(.745, g0.a) * step(g0.a, .775);
     // Puni kran (kran, teret, sajle): pokrivenost .99. Na početku priče se ne vidi — "razvija" se
     // dok kamera odmiče od table (lineFade), kao i linijski crtež prije njega.
@@ -440,8 +449,8 @@ const POST_FRAG = /* glsl */ `
     float dist = length(f);
     // zrno štampe: tačke nisu savršeno iste (blago "razliveno" mastilo)
     float grain = vnoise(frag / (1.6 * dpr));
-    float rad = sqrt(clamp(t, 0.0, 1.0)) * .72 * (.9 + .2 * vnoise(floor(r) * .37 + 3.1));
-    float aa = .9 / cell;
+    float rad = sqrt(clamp(t, 0.0, 1.0)) * .72 * (.97 + .06 * vnoise(floor(r) * .37 + 3.1));
+    float aa = 1.15 / cell;
     float dotInk = 1.0 - smoothstep(rad - aa, rad + aa, dist);
     dotInk *= step(.012, t);
     dotInk = max(dotInk, step(.985, t));
@@ -456,12 +465,12 @@ const POST_FRAG = /* glsl */ `
     float amount = max(max(dotInk, inkLine), solidN * edgeF);
     amount = mix(amount, 0.0, knock * .92);
     // Puni kran ne treba prisilno mastilo: njegov ton je 1, pa dotInk pokrije cijelu plohu.
-    amount = max(amount, geoLine * fill * (1.0 - outside) * lineFade);
+    amount = max(amount, smoothstep(.12, .8, geoSoft) * fill * (1.0 - outside) * lineFade);
     if (navyF > .5) amount = smoothstep(.45, .55, objTone);
     // istrošena štampa: sitne mrlje papira — ali samo u rasteru (tačke, svijetli tonovi i nebo).
     // Pune plohe mastila (kran, kontrateg, tabla, okna) ostaju čiste, bez bijelih zrna.
     float fleck = smoothstep(.84, .9, grain * vnoise(frag / (5.0 * dpr) + 7.0) * 1.7);
-    amount *= 1.0 - fleck * .3 * (1.0 - geoLine) * (1.0 - navyF) * (1.0 - solid);
+    amount *= 1.0 - fleck * .1 * (1.0 - geoLine) * (1.0 - navyF) * (1.0 - solid);
     vec3 col = mix(paper, ink, clamp(amount, 0.0, 1.0));
     gl_FragColor = vec4(col, 1.0);
   }

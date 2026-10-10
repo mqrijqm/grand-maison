@@ -142,6 +142,8 @@ export function createCraneScene() {
   // se na ovoj udaljenosti ne razlikuju sa 8 ili 20 strana, a koštaju 2.5x manje trouglova.
   // Debele šipke i sve u enterijeru (vidi se izbliza) ostaju glatke.
   const rodGeo = new THREE.CylinderGeometry(1,1,1,20);
+  // Veliki okrugli predmeti (ogledalo, posuda umivaonika): više segmenata, da obris bude krug, a ne mnogougao.
+  const rodGeoRound = new THREE.CylinderGeometry(1,1,1,64);
   const rodGeoMid = new THREE.CylinderGeometry(1,1,1,12);
   const rodGeoThin = new THREE.CylinderGeometry(1,1,1,8);
   const unitY = new THREE.Vector3(0,1,0);
@@ -152,7 +154,7 @@ export function createCraneScene() {
   const box=(g,material,x,y,z,w,h,d)=>mesh(g,[m.pale,m.yellow,m.white].includes(material)?roundedBoxGeo:boxGeo,material,x,y,z,w,h,d);
   function rod(g,material,a,b,r=.045,fine=false) {
     const av=new THREE.Vector3(...a),bv=new THREE.Vector3(...b),delta=bv.clone().sub(av);
-    const geo=fine||r>=.12?rodGeo:r>=.035?rodGeoMid:rodGeoThin;
+    const geo=r>=.2?rodGeoRound:fine||r>=.12?rodGeo:r>=.035?rodGeoMid:rodGeoThin;
     const o=mesh(g,geo,material,...av.add(bv).multiplyScalar(.5).toArray(),r,delta.length(),r);
     o.quaternion.setFromUnitVectors(unitY,delta.normalize());return o;
   }
