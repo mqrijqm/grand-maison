@@ -1,9 +1,8 @@
 'use client'
 
-/* eslint-disable @next/next/no-img-element -- fotografije iz /public, već u WebP */
-
 import { useRef } from 'react'
 import Cta from '@/components/ui/Cta'
+import SquareDissolve from '@/components/ui/SquareDissolve'
 import { COMPANY as GC } from '@/gc/gc'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { useMediaMotion } from '@/lib/media'
@@ -13,7 +12,6 @@ import PartnerSteps from './PartnerSteps'
 import PortalTour from './PortalTour'
 import Showcase from './portal/Showcase'
 import WhoSplit from './WhoSplit'
-import { HeroPreview } from './Snippets'
 import styles from './Business.module.css'
 
 // /za-firme: predloženi B2B portal Grand Company-ja, kao jednostavniji način da firma naruči materijal.
@@ -35,39 +33,36 @@ export default function BusinessPage() {
 
   return (
     <div ref={root} className={styles.page}>
-      {/* 01 — Heroj */}
-      <header className={`gutter ${styles.hero}`}>
-        <div className={styles.heroText}>
-          <p className={`label ${styles.kicker}`}>Grand Company / Za firme</p>
+      {/* 01–02 — Plavi početak: kratak centriran naslov, jedan mali UI element, pa portal na istoj plavoj.
+          Ispod donje polovine portala plavo se kvadratićima raspe u krem stranicu. */}
+      <div className={styles.blue}>
+        <header className={`gutter ${styles.hero}`}>
+          <p className={`label ${styles.heroKicker}`}>Grand Company / Za firme</p>
           <h1 data-head className={`display invisible ${styles.heroTitle}`}>
-            Nabavka materijala, jednostavnija za vaše poslovanje.
+            Nabavka za vašu firmu
           </h1>
-          <p data-up className={styles.lead}>
-            Od izbora materijala i slanja upita do ponuda i pregleda narudžbi. Sve na jednom mjestu, kroz nalog vaše firme.
+          <p data-up className={styles.heroLead}>
+            Materijal, upiti, ponude i narudžbe, na jednom nalogu.
           </p>
-          <div data-up data-delay="0.2" className={styles.actions}>
+          <div data-up data-delay="0.15" className={styles.heroPill} aria-hidden>
+            <span className={styles.pillSku}>GKP-001</span>
+            <span className={styles.pillName}>Gips-kartonska ploča GKB 12,5 mm</span>
+            <span className={styles.pillQty}>120 m²</span>
+            <span className={styles.pillBtn}>U upit</span>
+          </div>
+          <div data-up data-delay="0.25" className={styles.heroActions}>
             <Cta href="#portal" solid>
               Istražite B2B portal
             </Cta>
             <Cta href="/upit-za-izvodjace?vrsta=saradnja">Zatražite poslovni nalog</Cta>
           </div>
-        </div>
-        <div className={styles.heroVisual}>
-          <div data-curtain className={styles.heroPhoto}>
-            <img src="/editorial/firme/kran.webp" alt="Toranjski kran iznad zgrade u izgradnji" width={1200} height={1500} loading="eager" decoding="async" />
-          </div>
-          <div data-up data-delay="0.35" className={styles.heroCard}>
-            <HeroPreview />
-          </div>
-        </div>
-      </header>
+        </header>
 
-      {/* 02 — Interaktivni prikaz portala */}
-      <section id="portal" className={`gutter scroll-mt-24 ${styles.stage}`} aria-label="B2B portal, interaktivni prikaz">
-        <div className={styles.showcase}>
+        <section id="portal" className={`gutter scroll-mt-24 ${styles.portalBlock}`} aria-label="B2B portal, interaktivni prikaz">
           <Showcase />
-        </div>
-      </section>
+        </section>
+        <SquareDissolve className={styles.dissolve} />
+      </div>
 
       {/* Koraci do naloga: prijava, narudžba po šifri, praćenje (kao u V1) */}
       <PartnerSteps />

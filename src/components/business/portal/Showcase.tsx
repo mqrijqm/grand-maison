@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import ProductGlyph from '@/components/art/ProductGlyph'
 import Icon from '@/components/portal/Icon'
+import LogoMark from '@/components/site/LogoMark'
 import { PRODUCT_MAP } from '@/lib/shop'
 import {
   DOCS,
@@ -298,6 +299,7 @@ export default function Showcase({ tour }: { tour?: TourStep } = {}) {
         <div className={s.body}>
           <aside className={s.side}>
             <p className={s.brand}>
+              <LogoMark className={s.brandMark} />
               Grand Company <span>Portal</span>
             </p>
             <div className={s.account}>

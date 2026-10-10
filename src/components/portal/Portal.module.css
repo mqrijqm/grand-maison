@@ -113,3 +113,4 @@
     height: 300px;
   }
 }
+.showcaseBand { margin-top: clamp(32px, 6vh, 64px); padding-top: clamp(40px, 7vh, 80px); padding-bottom: clamp(40px, 7vh, 80px); background: var(--cobalt); }

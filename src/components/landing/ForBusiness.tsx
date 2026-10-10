@@ -2,14 +2,14 @@
 
 import { useRef } from 'react'
 import Cta from '@/components/ui/Cta'
-import PortalStage from '@/components/portal/PortalStage'
+import Showcase from '@/components/business/portal/Showcase'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { MQ } from '@/lib/motion'
 import { revealChars } from '@/lib/reveal'
 import s from '@/components/portal/Portal.module.css'
 
-// Ulaz za firme na početnoj prati B2B portal: isti živi dashboard kao na /portal,
-// koji se sam "vozi" dok ga posjetilac ne preuzme mišem. Vodi na /za-firme (glavna B2B stranica).
+// Ulaz za firme na početnoj: isti interaktivni B2B portal (Showcase) kao na /za-firme, sa scenarijem
+// narudžbe u četiri koraka. Vodi na /za-firme (glavna B2B stranica).
 export default function ForBusiness() {
   const root = useRef<HTMLElement>(null)
   useGSAP(
@@ -33,7 +33,7 @@ export default function ForBusiness() {
           B2B portal za nabavku
         </h2>
         <div className={s.introSide}>
-          <p className={s.lead}>Za građevinske firme, izvođače i javne ustanove: brza narudžba po šifri, ponude, narudžbe i isporuke po gradilištima, dokumenti i odobrenja u timu. Ispod je živi demo.</p>
+          <p className={s.lead}>Za građevinske firme, izvođače i javne ustanove: brza narudžba po šifri, ponude, narudžbe i isporuke po gradilištima, dokumenti i odobrenja u timu. Ispod je interaktivni prikaz portala.</p>
           <div className={s.actions}>
             <Cta href="/za-firme" solid>
               Saznajte više
@@ -42,7 +42,10 @@ export default function ForBusiness() {
           </div>
         </div>
       </header>
-      <PortalStage variant="preview" />
+      {/* Isti interaktivni portal kao na /za-firme, na plavoj traci preko cijele širine */}
+      <div className={`gutter ${s.showcaseBand}`}>
+        <Showcase />
+      </div>
     </section>
   )
 }

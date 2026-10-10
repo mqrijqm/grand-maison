@@ -336,3 +336,8 @@
 /* Iznad portala ostaju samo koraci scenarija, bez okvira, naslova i napomena. */
 .scenario { display: block; padding: 0; border: 0; }
 .scenarioSteps { flex-wrap: wrap; }
+/* Znak u bočnoj traci: tri tona, tamni dio postaje bijel na tamnoplavom */
+.brand { justify-content: flex-start; gap: 10px; align-items: center; }
+.brand span { margin-left: 2px; }
+.brandMark { flex: none; width: auto; height: 26px; color: #fff; }
+.brand { white-space: nowrap; font-size: 14px; } .brand span { font-size: 13px; }
