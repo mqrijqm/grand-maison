@@ -123,3 +123,4 @@
 .forBiz { padding-top: 0 !important; background: var(--bg) !important; }
 .forBizInner { padding-inline: 12px; }
 @media (min-width: 768px) { .forBizInner { padding-inline: 16px; } }
+.forBiz { z-index: 21; }
