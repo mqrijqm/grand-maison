@@ -14,20 +14,20 @@ export const PORTAL_INTRO_STEPS: { demo: IntroDemo; title: string; text: string;
   {
     demo: 'login',
     title: 'Prijavite se na nalog firme',
-    text: 'Nalog firme otvara prodaja Grand Company-ja. Prijavljujete se poslovnim mejlom, a kolege dobijaju svoje pristupe.',
-    points: ['Jedan nalog za cijelu firmu', 'Pristup sa računara i telefona'],
+    text: 'Nalog firme otvara prodaja Grand Company-ja. Poslije prijave odmah vidite svoj dashboard: kreditni okvir, narudžbe u toku i brzi unos šifre.',
+    points: ['Bez reklama, samo vaša nabavka', 'Pristup sa računara i telefona'],
   },
   {
     demo: 'order',
     title: 'Naručite po šifri',
-    text: 'Upišite šifru i količinu, red po red, ili zalijepite tabelu iz Excela. Upit ide pravo prodaji.',
-    points: ['Šifra se provjerava odmah', 'Sačuvane liste na jedan klik'],
+    text: 'Šifra, Tab, količina, Enter, i već ste u novom redu. Predmjer radova iz Excela ili CSV prevucite u tabelu. Upit ide pravo prodaji.',
+    points: ['Šifra se provjerava odmah', 'Nepoznate šifre označene crveno'],
   },
   {
     demo: 'track',
     title: 'Pratite ponudu i isporuku',
-    text: 'Prodaja šalje ponudu, vi je prihvatate, a narudžbu pratite kroz status do termina dostave ili preuzimanja.',
-    points: ['Termin isporuke na gradilište', 'Dokumenti na jednom mjestu'],
+    text: 'Prodaja šalje ponudu, vi je prihvatate, a narudžbu pratite do statusa „Na putu ka gradilištu“ ili „Spremno za preuzimanje“.',
+    points: ['Termin isporuke na gradilište', 'Fakture i otpremnice na jednom mjestu'],
   },
 ]
 
