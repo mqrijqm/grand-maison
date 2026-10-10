@@ -2490,23 +2490,23 @@ html:not([data-hydrated]) :is([data-client-state], .nav__mode-desk, .nav__cart-c
   .nav__login { display: none; }
 }
 
-/* CTA dugmad u boji brenda: bakarna iz znaka (#B46C44, isti ton kao u /brand/logo.svg).
-   Zamjenjuje sivo-bež i tamnoplavu podlogu; na hover se dugme napuni tamnoplavom. */
+/* CTA dugmad u boji brenda: oker iz znaka (#BD9446, isti ton kao u /brand/logo.svg).
+   Tekst je tamnoplav (bijeli bi na okeru bio slabo čitljiv); na hover se dugme napuni tamnoplavom. */
 :root {
-  --orange: #b46c44;
-  --btn: var(--orange);
-  --btn-ink: #fff;
+  --ochre: #bd9446;
+  --btn: var(--ochre);
+  --btn-ink: var(--ink);
 }
 .cta,
 .cta--solid {
-  background: var(--orange);
-  color: #fff;
+  background: var(--ochre);
+  color: var(--ink);
   --cta-fill: var(--ink);
   --cta-ink: #fff;
 }
 .nav__buy {
-  background: var(--orange) !important;
-  color: #fff !important;
+  background: var(--ochre) !important;
+  color: var(--ink) !important;
 }
 .nav__buy:hover {
   background: var(--ink) !important;
