@@ -3,7 +3,7 @@ import BusinessPage from '@/components/business/BusinessPage'
 export const metadata = {
   title: 'Za firme · B2B portal | Grand Company',
   description:
-    'B2B portal za firme (demo): brza narudžba po šifri, ponude, narudžbe i isporuke po gradilištima, dokumenti i odobrenja u timu.',
+    'Nabavka materijala, jednostavnija za vaše poslovanje: izbor materijala, upiti, ponude i pregled narudžbi kroz nalog vaše firme. Interaktivni prikaz predloženog B2B portala.',
 }
 
 export default function Page() {
