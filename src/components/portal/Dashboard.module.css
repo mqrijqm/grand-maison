@@ -1881,3 +1881,8 @@
 @media (prefers-reduced-motion: reduce) {
  .window button, .window a, .window input, .window textarea, .panel, .kpi, .tr, .feed button, .nav button { transition: none; }
 }
+/* Grafikon na kobalt kartici: "zadnjih 7 dana" bijelo, inače nestane u pozadini. */
+.panel:has(.chart) .bar[data-hot], .panel:has(.chart) .lgHot { fill: #fff !important; background: #fff !important; }
+.panel:has(.chart) .bar:not([data-hot]) { fill: rgb(255 255 255 / 0.28) !important; }
+/* Druga KPI kartica je tamna kao prozor: malo svjetlija i sa okvirom, da se vidi kao kartica. */
+.kpi:nth-child(2) { background: #273250 !important; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.12); }
