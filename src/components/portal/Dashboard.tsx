@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { addToCart, notify, openCart } from '@/lib/cart'
 import { PRODUCT_MAP, PRODUCTS } from '@/lib/shop'
 import { FEED_POOL, FEED_START, FIRM, LISTS, ORDERS, QUOTES, WEEK, type FeedItem, type Line, type MetricId, type QuoteStatus } from '@/lib/portal-demo'
+import LogoMark from '@/components/site/LogoMark'
 import Icon from './Icon'
 import { Deliveries, Documents, Lists, Orders, Overview, QuickOrder, Quotes, Sites, Team, type Api, type Row, type ViewId } from './views'
 import s from './Dashboard.module.css'
@@ -386,9 +387,7 @@ export default function Dashboard({ variant = 'full', tour = true, show = null }
       <div className={s.body}>
         <aside className={s.side}>
           <div className={s.brand}>
-            <svg viewBox="0 0 20 20" aria-hidden>
-              <path d="M2 2h16v16H2z M2 10h8 M10 10v8" fill="none" stroke="currentColor" strokeWidth="1.5" />
-            </svg>
+            <LogoMark className={s.brandMark} />
             Grand Company <em>Portal</em>
           </div>
           <div className={s.account}>

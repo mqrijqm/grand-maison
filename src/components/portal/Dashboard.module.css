@@ -1663,3 +1663,6 @@
     animation: none;
   }
 }
+
+/* Znak brenda u bočnoj traci: pravi odnos stranica, tamni dio uzima boju teksta trake. */
+.brand .brandMark { width: auto; height: 22px; color: inherit; flex: none; }

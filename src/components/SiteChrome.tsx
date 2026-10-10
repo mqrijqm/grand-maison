@@ -3,7 +3,7 @@
 import { useRef } from 'react'
 import { gsap, ScrollTrigger, SplitText, useGSAP } from '@/lib/gsap'
 import { EASE, INTRO, SIDE, fitFontSize } from '@/lib/motion'
-import BadgeMark from './BadgeMark'
+import LogoMark from './site/LogoMark'
 
 export const BRAND = 'GRAND COMPANY'
 
@@ -277,7 +277,7 @@ export default function SiteChrome() {
         className="fixed bottom-4 right-4 z-[500] block w-[22px] transition-transform duration-300 hover:scale-110 md:bottom-6 md:right-6 md:w-[28px]"
         style={{ color: '#fff' }}
       >
-        <BadgeMark />
+        <LogoMark className="block h-auto w-full" />
       </a>
     </div>
   )

@@ -116,8 +116,8 @@ export default function Splash() {
 
         <div className="splash-mark-mask">
           <div data-mark className="splash-mark">
-            {/* Znak brenda u svijetloj verziji (za tamnu podlogu uvoda). */}
-            <img src="/brand/mark-light.webp" alt="" decoding="async" className="block h-auto w-full" />
+            {/* Znak brenda u bijeloj verziji (za tamnu podlogu uvoda). */}
+            <img src="/brand/mark-white.svg" alt="" decoding="async" className="block h-auto w-full" />
           </div>
         </div>
       </div>

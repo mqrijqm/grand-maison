@@ -230,10 +230,9 @@ export function createCraneScene() {
     const paint=(mark)=>{
       const g=c.getContext('2d');g.clearRect(0,0,c.width,c.height);
       if(mark){
-        // Kompaktniji znak ostavlja dovoljno čistog plavog prostora oko cijelog potpisa.
-        const w=270,h=w*345.38/310.29,t=document.createElement('canvas');t.width=w;t.height=h;const tc=t.getContext('2d');
-        tc.drawImage(mark,0,0,w,h);tc.globalCompositeOperation='source-in';tc.fillStyle='#ffffff';tc.fillRect(0,0,w,h);
-        g.drawImage(t,(c.width-w)/2,58);
+        // Znak za kran (bakar, bijela, zlato) crta se u svojim bojama, bez prebojavanja.
+        const w=250,h=w*414/359;
+        g.drawImage(mark,(c.width-w)/2,58,w,h);
       }
       const fam=getComputedStyle(document.documentElement).getPropertyValue('--font-heavy').trim()||'sans-serif';
       g.fillStyle='#ffffff';g.textAlign='center';g.textBaseline='alphabetic';g.font=`900 70px ${fam}`;
@@ -241,7 +240,7 @@ export function createCraneScene() {
       tex.needsUpdate=true;
     };
     paint(null);
-    const img=new Image();img.onload=()=>{document.fonts.ready.then(()=>paint(img));};img.src='/brand/mark.svg';
+    const img=new Image();img.onload=()=>{document.fonts.ready.then(()=>paint(img));};img.src='/brand/mark-crane.svg';
     document.fonts.ready.then(()=>paint(img.complete&&img.naturalWidth?img:null));
     // Jedna čista oplata tačno preko spoljne strane kontratega skriva samo fuge/tehničke linije
     // na strani sa logom. Suprotna strana i ostatak krana zadržavaju postojeći line-art.
