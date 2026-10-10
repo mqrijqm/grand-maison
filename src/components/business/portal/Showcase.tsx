@@ -60,7 +60,10 @@ const CAPTION: Record<View, [string, string]> = {
 const statusKind = (o: Order) => (o.step >= 4 ? 'done' : o.step === 3 ? 'ready' : 'prep')
 const orderStatus = (o: Order) => (o.step === 3 ? (o.mode === 'Preuzimanje' ? 'Spremno za preuzimanje' : 'Na putu ka gradilištu') : o.step === 4 ? (o.mode === 'Preuzimanje' ? 'Preuzeto' : 'Isporučeno') : STEPS[o.step])
 
-export default function Showcase() {
+/** Korak vođenog objašnjenja (sekcija ispod portala): koji ekran i šta kursor radi. */
+export type TourStep = 'pregled' | 'materijali' | 'upit' | 'ponude' | 'narudzbe' | 'gradilista'
+
+export default function Showcase({ tour }: { tour?: TourStep } = {}) {
   const [view, setView] = useState<View>('pregled')
   const [draft, setDraft] = useState<Line[]>([
     { sku: 'GKP-001', qty: 120 },
@@ -99,6 +102,96 @@ export default function Showcase() {
     window.addEventListener('gc-portal', on)
     return () => window.removeEventListener('gc-portal', on)
   }, [])
+  // ——— Vođenje: lažni kursor ide do elementa (data-t), kuca i klikće, sve na pravom interfejsu ———
+  const winRef = useRef<HTMLDivElement>(null)
+  const cur = useRef<HTMLSpanElement>(null)
+  const [press, setPress] = useState(false)
+  useEffect(() => {
+    if (!tour) return
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    let alive = true
+    const wait = (ms: number) => new Promise((r) => setTimeout(r, ms))
+    const el = (t: string) => winRef.current?.querySelector<HTMLElement>(`[data-t="${t}"]`) ?? null
+    const moveTo = async (t: string) => {
+      const n = el(t), w = winRef.current, c = cur.current
+      if (!n || !w || !c) return
+      const a = w.getBoundingClientRect(), b = n.getBoundingClientRect()
+      c.style.opacity = '1'
+      c.style.transform = `translate(${b.left - a.left + Math.min(b.width * 0.5, 70)}px, ${b.top - a.top + b.height * 0.6}px)`
+      await wait(reduce ? 0 : 650)
+    }
+    const click = async (t: string) => {
+      await moveTo(t)
+      if (!alive) return
+      setPress(true)
+      await wait(140)
+      setPress(false)
+      el(t)?.click()
+      await wait(500)
+    }
+    const typeQuery = async (text: string) => {
+      for (let i = 1; i <= text.length && alive; i++) {
+        setQuery(text.slice(0, i))
+        await wait(reduce ? 0 : 110)
+      }
+    }
+    const run = async () => {
+      if (cur.current) cur.current.style.opacity = '0'
+      await wait(300)
+      if (tour === 'pregled') {
+        setView('pregled')
+        await wait(500)
+        for (let i = 1; i <= 3 && alive; i++) {
+          await moveTo(`stage-${i}`)
+          setStageSel(i)
+          await wait(700)
+        }
+        await moveTo('stage-cta')
+      } else if (tour === 'materijali') {
+        setView('materijali')
+        setQuery('')
+        setGroup('sve')
+        await wait(500)
+        await moveTo('search')
+        await typeQuery('CW 75')
+        await wait(500)
+        await click('add-PRF-075')
+      } else if (tour === 'upit') {
+        setView('materijali')
+        await wait(500)
+        await moveTo('site')
+        await wait(500)
+        await click('mode-Dostava')
+        await moveTo('send')
+      } else if (tour === 'ponude') {
+        setView('ponude')
+        setOfferSel(OFFERS[0].no)
+        await wait(500)
+        await moveTo('offer-lines')
+        await wait(500)
+        await moveTo('confirm')
+      } else if (tour === 'narudzbe') {
+        setView('narudzbe')
+        setOrderSel(ORDERS[0].no)
+        await wait(500)
+        await moveTo('track')
+        await wait(400)
+        await click('advance')
+        await moveTo('reorder')
+      } else if (tour === 'gradilista') {
+        setView('gradilista')
+        await wait(500)
+        await moveTo('site-a')
+        await wait(500)
+        await moveTo('site-b')
+      }
+    }
+    run()
+    return () => {
+      alive = false
+    }
+  }, [tour])
+
   const restart = () => {
     timers.current.forEach(clearTimeout)
     setOffers(OFFERS)
@@ -192,7 +285,7 @@ export default function Showcase() {
 
   return (
     <div className={s.wrap}>
-      <div className={s.scenario}>
+      {!tour && <div className={s.scenario}>
         <div className={s.scenarioHead}>
           <span className={s.kicker}>Scenarij za probu</span>
           <b>Materijal za pregradni zid, Lamela A</b>
@@ -219,9 +312,9 @@ export default function Showcase() {
         <button type="button" className={s.reset} onClick={restart}>
           <Icon name="repeat" /> Ispočetka
         </button>
-      </div>
+      </div>}
 
-      <div className={s.window} data-view={view}>
+      <div ref={winRef} className={s.window} data-view={view} data-tour={tour ? '' : undefined}>
         <div className={s.chrome} aria-hidden>
           <span className={s.dots}>
             <i />
@@ -300,6 +393,7 @@ export default function Showcase() {
                       </button>
                       <button
                         type="button"
+                        data-t="stage-cta"
                         className={s.stageCta}
                         onClick={() => {
                           setOfferSel(stageOffer.no)
@@ -314,7 +408,7 @@ export default function Showcase() {
                 <ul className={s.stageList}>
                   {stageOffer.lines.map((l, i) => (
                     <li key={l.sku}>
-                      <button type="button" data-on={i === stageIdx || undefined} onClick={() => setStageSel(i)} onMouseEnter={() => setStageSel(i)}>
+                      <button type="button" data-t={`stage-${i}`} data-on={i === stageIdx || undefined} onClick={() => setStageSel(i)} onMouseEnter={() => setStageSel(i)}>
                         <span className={s.mono}>{l.sku}</span>
                         <span>{name(l.sku)}</span>
                         <b>
@@ -490,7 +584,7 @@ export default function Showcase() {
                     <div className={s.tools}>
                       <label className={s.search}>
                         <Icon name="search" />
-                        <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Šifra ili naziv" aria-label="Traži materijal" />
+                        <input data-t="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Šifra ili naziv" aria-label="Traži materijal" />
                       </label>
                       <div className={s.chips} role="tablist" aria-label="Grupe materijala">
                         <button type="button" role="tab" aria-selected={group === 'sve'} onClick={() => setGroup('sve')}>
@@ -515,7 +609,7 @@ export default function Showcase() {
                     <h4>Vaš upit</h4>
                     <label className={s.field}>
                       <span>Gradilište</span>
-                      <select value={draftSite} onChange={(e) => setDraftSite(e.target.value)}>
+                      <select data-t="site" value={draftSite} onChange={(e) => setDraftSite(e.target.value)}>
                         {SITES.map((x) => (
                           <option key={x.id} value={x.id}>
                             {x.name}
@@ -525,7 +619,7 @@ export default function Showcase() {
                     </label>
                     <div className={s.seg} role="radiogroup" aria-label="Način preuzimanja">
                       {(['Dostava', 'Preuzimanje'] as const).map((m) => (
-                        <button key={m} type="button" role="radio" aria-checked={mode === m} onClick={() => setMode(m)}>
+                        <button key={m} type="button" data-t={`mode-${m}`} role="radio" aria-checked={mode === m} onClick={() => setMode(m)}>
                           {m === 'Dostava' ? 'Dostava na gradilište' : 'Preuzimanje na stovarištu'}
                         </button>
                       ))}
@@ -582,7 +676,7 @@ export default function Showcase() {
                         <b>{(weight(draft) / 1000).toLocaleString('de-DE', { maximumFractionDigits: 1 })} t</b>
                       </p>
                     )}
-                    <button type="button" className={`${s.primary} ${s.wide}`} disabled={!draft.length} onClick={send}>
+                    <button type="button" data-t="send" className={`${s.primary} ${s.wide}`} disabled={!draft.length} onClick={send}>
                       Pošalji upit (demo) <Icon name="arrow" />
                     </button>
                     <p className={s.fine}>Cijene i rok dobijate u ponudi prodaje. U demu se upit ne šalje.</p>
@@ -631,7 +725,7 @@ export default function Showcase() {
                       </p>
                     ) : (
                       <>
-                        <table className={s.table}>
+                        <table data-t="offer-lines" className={s.table}>
                           <thead>
                             <tr>
                               <th>Artikal</th>
@@ -662,7 +756,7 @@ export default function Showcase() {
                         </table>
                         <div className={s.actions}>
                           {offer.status === 'Čeka potvrdu' ? (
-                            <button type="button" className={s.primary} onClick={() => confirm(offer)}>
+                            <button type="button" data-t="confirm" className={s.primary} onClick={() => confirm(offer)}>
                               Potvrdi ponudu (demo) <Icon name="check" />
                             </button>
                           ) : (
@@ -711,7 +805,7 @@ export default function Showcase() {
                       </span>
                       <Status o={order} />
                     </div>
-                    <ol className={s.track}>
+                    <ol data-t="track" className={s.track}>
                       {STEPS.map((st, i) => (
                         <li key={st} data-done={i <= order.step || undefined} data-now={i === order.step || undefined}>
                           <i />
@@ -735,11 +829,11 @@ export default function Showcase() {
                     </dl>
                     <div className={s.actions}>
                       {order.step < 4 && (
-                        <button type="button" className={s.ghost} onClick={() => advance(order)}>
+                        <button type="button" data-t="advance" className={s.ghost} onClick={() => advance(order)}>
                           Prikaži sljedeći status (demo)
                         </button>
                       )}
-                      <button type="button" className={s.primary} onClick={() => loadLines(order.lines, `Narudžba ${order.no}`)}>
+                      <button type="button" data-t="reorder" className={s.primary} onClick={() => loadLines(order.lines, `Narudžba ${order.no}`)}>
                         <Icon name="repeat" /> Ponovi narudžbu
                       </button>
                     </div>
@@ -753,7 +847,7 @@ export default function Showcase() {
                     const o = offers.filter((y) => y.site === x.id && y.status !== 'Potvrđena').length
                     const a = orders.filter((y) => y.site === x.id && y.step < 4)
                     return (
-                      <section key={x.id} className={s.card}>
+                      <section key={x.id} data-t={`site-${x.id}`} className={s.card}>
                         <span className={s.kicker}>{x.phase}</span>
                         <h4>{x.name}</h4>
                         <p className={s.muted}>
@@ -827,12 +921,19 @@ export default function Showcase() {
             </div>
           </main>
         </div>
+        {tour && (
+          <span ref={cur} className={s.cursor} data-press={press || undefined} aria-hidden>
+            <svg viewBox="0 0 20 22">
+              <path d="M2 1.5v16.2l4.3-4.1 2.8 6.6 3-1.3-2.8-6.5H15z" />
+            </svg>
+          </span>
+        )}
         <div className={s.toast} data-on={toast ? true : undefined} role="status" aria-live="polite">
           <Icon name="check" />
           {toast}
         </div>
       </div>
-      <p className={s.note}>Interaktivni prikaz predloženog B2B portala. Podaci i procesi su demonstracioni.</p>
+      {!tour && <p className={s.note}>Interaktivni prikaz predloženog B2B portala. Podaci i procesi su demonstracioni.</p>}
     </div>
   )
 }
@@ -876,7 +977,7 @@ function Material({ m, inDraft, onAdd }: { m: (typeof MATERIALS)[number]; inDraf
         {packs({ sku: m.sku, qty: q }) && <em className={s.pack}>{packs({ sku: m.sku, qty: q })}</em>}
       </span>
       <Qty value={q} unit={m.unit} onChange={(n) => setQ(Math.max(0, n))} />
-      <button type="button" className={inDraft ? s.added : s.ghost} disabled={q <= 0} onClick={() => onAdd(q)} aria-label={inDraft ? `Dodaj još, u upitu je ${inDraft} ${m.unit}` : `Dodaj ${m.name} u upit`}>
+      <button type="button" data-t={`add-${m.sku}`} className={inDraft ? s.added : s.ghost} disabled={q <= 0} onClick={() => onAdd(q)} aria-label={inDraft ? `Dodaj još, u upitu je ${inDraft} ${m.unit}` : `Dodaj ${m.name} u upit`}>
         {inDraft ? `✓ ${inDraft.toLocaleString('de-DE')} ${m.unit}` : 'Dodaj'}
       </button>
     </li>

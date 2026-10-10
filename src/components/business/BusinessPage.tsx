@@ -5,12 +5,15 @@
 import { useRef } from 'react'
 import Cta from '@/components/ui/Cta'
 import { COMPANY as GC } from '@/gc/gc'
-import { AUDIENCES, BENEFITS, CAPABILITIES, JOURNEY, SECONDARY } from '@/lib/business'
+import { CAPABILITIES, SECONDARY } from '@/lib/business'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { useMediaMotion } from '@/lib/media'
 import { MQ } from '@/lib/motion'
 import { revealChars } from '@/lib/reveal'
+import PartnerSteps from './PartnerSteps'
+import PortalTour from './PortalTour'
 import Showcase from './portal/Showcase'
+import WhoSplit from './WhoSplit'
 import { HeroPreview, Snippet } from './Snippets'
 import styles from './Business.module.css'
 
@@ -30,15 +33,6 @@ export default function BusinessPage() {
     },
     { scope: root },
   )
-
-  // Korak iz "Kako funkcioniše" otvara isti ekran u interaktivnom portalu iznad.
-  const tryStep = (view: string) => {
-    window.dispatchEvent(new CustomEvent('gc-portal', { detail: view }))
-    const el = document.getElementById('portal')
-    if (!el) return
-    if (window.__gcLenis) window.__gcLenis.scrollTo(el.getBoundingClientRect().top + window.scrollY - 20)
-    else el.scrollIntoView({ behavior: 'smooth' })
-  }
 
   return (
     <div ref={root} className={styles.page}>
@@ -87,6 +81,15 @@ export default function BusinessPage() {
         </div>
       </section>
 
+      {/* Koraci do naloga: prijava, narudžba po šifri, praćenje (kao u V1) */}
+      <PartnerSteps />
+
+      {/* Portal, ekran po ekran: pravi portal sa kursorom koji pokazuje radnje */}
+      <section id="biz-explain" className={`gutter ${styles.explainBlock}`} aria-label="Portal, ekran po ekran">
+        <p className={`label ${styles.kicker}`}>Portal, ekran po ekran</p>
+        <PortalTour />
+      </section>
+
       {/* 03 — Mogućnosti */}
       <section className={`gutter ${styles.block}`} aria-labelledby="biz-caps">
         <div className={styles.blockHead}>
@@ -123,70 +126,8 @@ export default function BusinessPage() {
         </ul>
       </section>
 
-      {/* 04 — Kako funkcioniše */}
-      <section className={`gutter ${styles.block}`} aria-labelledby="biz-how">
-        <div className={styles.blockHead}>
-          <div>
-            <p className={`label ${styles.kicker}`}>04 / Kako funkcioniše</p>
-            <h2 id="biz-how" data-head className={`display invisible ${styles.title}`}>
-              Od materijala do isporuke
-            </h2>
-          </div>
-          <p className={styles.lead}>Četiri koraka, isti kao kad zovete prodaju, samo bez čekanja na telefonu.</p>
-        </div>
-        <ol className={styles.journey}>
-          {JOURNEY.map((j) => (
-            <li key={j.no} className={styles.jStep}>
-              <span className={styles.jDot} aria-hidden>
-                {j.no}
-              </span>
-              <h3 className={styles.jTitle}>{j.title}</h3>
-              <p className={styles.small}>{j.text}</p>
-              <button type="button" className={styles.jTry} onClick={() => tryStep(j.view)}>
-                Isprobajte u portalu <span aria-hidden>→</span>
-              </button>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      {/* 05 — Za građevinske firme */}
-      <section className={`gutter ${styles.block}`} aria-labelledby="biz-who">
-        <div className={styles.blockHead}>
-          <div>
-            <p className={`label ${styles.kicker}`}>05 / Za koga</p>
-            <h2 id="biz-who" data-head className={`display invisible ${styles.title}`}>
-              Napravljeno za građevinu
-            </h2>
-          </div>
-          <p className={styles.lead}>Za firme koje kupuju za posao, redovno ili za jedan projekat.</p>
-        </div>
-        <ul className={styles.who}>
-          {AUDIENCES.map((a) => (
-            <li key={a.title} className={styles.whoCard}>
-              <div data-curtain className={styles.whoPhoto}>
-                <img src={a.image} alt={a.alt} width={1200} height={1500} loading="lazy" decoding="async" />
-              </div>
-              <h3 className={styles.whoTitle}>{a.title}</h3>
-              <p className={styles.small}>{a.text}</p>
-              <ul className={styles.points}>
-                {a.points.map((p) => (
-                  <li key={p}>{p}</li>
-                ))}
-              </ul>
-            </li>
-          ))}
-        </ul>
-        <ul className={styles.benefits}>
-          {BENEFITS.map((b, i) => (
-            <li key={b.title}>
-              <span className={styles.capNo}>{String(i + 1).padStart(2, '0')}</span>
-              <b>{b.title}</b>
-              <span>{b.text}</span>
-            </li>
-          ))}
-        </ul>
-      </section>
+      {/* Za koga: raspored kao "Šta gradite?" na početnoj */}
+      <WhoSplit />
 
       {/* 06 — Završni poziv */}
       <section className={`gutter ${styles.block}`} aria-labelledby="biz-cta">

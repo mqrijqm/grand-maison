@@ -103,3 +103,71 @@
 /* 04 Koraci: tekst + skok u odgovarajući ekran portala (bez ponavljanja isječaka) */
 .jTry { justify-self: start; display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; padding: 0 0 4px; border-bottom: 1.4px solid var(--cobalt); color: var(--cobalt); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; transition: gap 0.25s; }
 .jTry:hover { gap: 12px; }
+/* Postanite partner: jedan naslov, koraci se listaju horizontalno. Podloga je plava;
+   na desktopu je sekcija prozirna, a plavi postaje cijela stranica dok se skroluje (PartnerSteps). */
+.partner { position:relative; display:flex; flex-direction:column; margin-top:clamp(110px,20vh,260px); padding:clamp(72px,12vh,120px) 0 clamp(56px,9vh,96px); background:var(--cobalt); color:#fff; overflow-x:clip; }
+.partnerHead { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:end; gap:20px 40px; }
+.partnerTitle { max-width:16ch; font-size:clamp(36px,5.4vw,104px); line-height:.92; letter-spacing:-.03em; text-wrap:balance; }
+.partnerHint { font-size:11px; letter-spacing:.14em; text-transform:uppercase; opacity:.7; font-variant-numeric:tabular-nums; }
+.partnerTrack { --w:min(80vw,340px); display:flex; align-items:stretch; width:max-content; gap:12px; margin-top:clamp(40px,8vh,88px); padding-inline:var(--gutter, 20px); }
+.partnerPair { display:flex; gap:inherit; scroll-snap-align:start; }
+.partnerDemo { width:min(88vw,560px); min-height:400px; }
+.partnerCard { position:relative; isolation:isolate; overflow:hidden; display:flex; flex-direction:column; gap:12px; width:var(--w); min-height:400px; padding:28px 24px; border:1px solid rgb(255 255 255 / .28); scroll-snap-align:start; }
+.partnerNum { position:absolute; z-index:-1; right:-.06em; bottom:-.14em; font-family:var(--font-heavy),Arial,sans-serif; font-weight:800; font-size:clamp(170px,17vw,300px); line-height:.8; letter-spacing:-.06em; color:rgb(255 255 255 / .12); font-variant-numeric:tabular-nums; pointer-events:none; user-select:none; }
+.partnerLabel { opacity:.75; }
+.partnerCardTitle { max-width:14ch; font-family:var(--font-heavy),Arial,sans-serif; font-weight:800; font-size:clamp(22px,2vw,32px); line-height:1.02; letter-spacing:-.01em; text-transform:uppercase; }
+.partnerText { max-width:34ch; font-size:14px; line-height:1.6; opacity:.85; text-transform:none; }
+.partnerPoints { display:flex; flex-direction:column; gap:6px; margin-top:auto; }
+.partnerPoints li { position:relative; padding-left:16px; font-size:13px; line-height:1.5; text-transform:none; }
+.partnerPoints li::before { content:''; position:absolute; left:0; top:.55em; width:7px; height:7px; background:#fff; }
+.partnerEnd { display:flex; flex-direction:column; justify-content:flex-end; gap:20px; width:min(80vw,340px); min-height:400px; padding:28px 0 28px 12px; }
+.partnerEnd p { max-width:24ch; font-size:14px; line-height:1.6; text-transform:none; opacity:.85; }
+@media (min-width:1024px) and (prefers-reduced-motion:no-preference) {
+  /* Zakačena sekcija je tačno visine ekrana: naslov se smanjuje po visini, a kartice dobijaju
+     ostatak prostora, pa se dno vidi i na niskim ekranima (laptop sa skaliranjem 125-150%). */
+  .partner { height:100dvh; padding:calc(var(--nav-h, 64px) + 3vh) 0 4vh; background:transparent; color:inherit; }
+  .partnerTitle { font-size:clamp(32px,min(4.4vw,7dvh),84px); max-width:20ch; }
+  .partnerTrack { --w:clamp(300px,min(27vw,48dvh),440px); gap:1.4vw; height:100%; margin-top:0; padding-inline:8.33vw; }
+  .partner > :global(.hs-viewport) { flex:1; min-height:0; margin-top:clamp(20px,4vh,56px); }
+  .partnerPair { height:100%; }
+  .partnerCard, .partnerEnd { width:var(--w); height:100%; min-height:0; padding:clamp(20px,min(2.2vw,3.6dvh),36px); }
+  .partnerDemo { width:calc(var(--w) * 2 + 1.4vw); height:100%; min-height:0; }
+  .partnerNum { font-size:clamp(140px,min(17vw,30dvh),300px); }
+  .partnerCardTitle { font-size:clamp(20px,min(2vw,3.6dvh),32px); }
+  .partnerEnd { padding-left:0; }
+}
+@media (min-width:768px) { .partnerTrack { padding-inline:8.33vw; } }
+.partnerEnd { --btn:#fff; --btn-ink:var(--cobalt); --cta-fill:var(--ink); --cta-ink:#fff; }
+.partnerEnd .cta { align-self:flex-start; }
+.partnerCount { display:none; }
+@media (min-width:1024px) and (prefers-reduced-motion:no-preference) {
+  .partnerCount { display:inline; }
+  .partnerSwipe { display:none; }
+}
+
+/* Portal korak po korak: lijevo koraci, desno zalijepljen dashboard */
+.explain { display:grid; gap:40px; margin-top:28px; }
+.explainSteps { display:flex; flex-direction:column; }
+.explainStep { position:relative; isolation:isolate; display:flex; flex-direction:column; gap:10px; padding:40px 0 36px; border-top:1px solid rgb(27 36 54 / .2); transition:opacity .35s; }
+/* Veliki svijetli broj iza teksta */
+.explainNum { position:absolute; z-index:-1; right:-.04em; top:50%; transform:translateY(-50%); font-family:var(--font-heavy),Arial,sans-serif; font-weight:800; font-size:clamp(110px,10vw,190px); line-height:.8; letter-spacing:-.06em; color:rgb(49 86 234 / .045); font-variant-numeric:tabular-nums; pointer-events:none; user-select:none; transition:color .5s; }
+.explainStep[data-on] .explainNum { color:rgb(49 86 234 / .085); }
+.explainLabel { color:var(--cobalt); }
+.explainTitle { font-family:var(--font-heavy),Arial,sans-serif; font-weight:800; font-size:clamp(20px,1.7vw,28px); line-height:1.05; letter-spacing:-.01em; text-transform:uppercase; }
+.explainText { max-width:44ch; font-size:14px; line-height:1.6; opacity:.78; text-transform:none; }
+.explainPoints { display:flex; flex-direction:column; gap:6px; margin-top:8px; }
+.explainPoints li { position:relative; padding-left:16px; font-size:13px; line-height:1.5; text-transform:none; opacity:.8; }
+.explainPoints li::before { content:''; position:absolute; left:0; top:.55em; width:7px; height:7px; background:var(--cobalt); }
+.explainStage { display:none; }
+.explainNow { display:flex; align-items:center; gap:8px; margin-bottom:12px; color:var(--cobalt); }
+.explainNow i { width:7px; height:7px; background:var(--cobalt); }
+
+
+@media (min-width:1024px) {
+  .explain { grid-template-columns:minmax(0,.62fr) minmax(0,1.38fr); gap:3vw; align-items:start; }
+  .explainStep { min-height:62vh; justify-content:center; opacity:.3; }
+  .explainStep[data-on] { opacity:1; }
+  .explainStage { display:block; height:100%; }
+  .explainSticky { position:sticky; top:calc(var(--nav-h) + var(--nav-inset, 12px) + 20px); }
+}
+.explainBlock { margin-top: clamp(80px, 14vh, 180px); }

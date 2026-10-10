@@ -24,9 +24,11 @@ export const JOURNEY = [
   { no: '04', title: 'Pratite narudžbu', text: 'Status i dogovorena dostava ili preuzimanje na stovarištu.', detail: 'track', view: 'narudzbe' },
 ] as const
 
-// Ko kupuje. Fotografije su ilustrativne, sa gradilišta i radova (vidi /stock/credits.json).
-export const AUDIENCES = [
+// Ko kupuje. Prikaz kao "Šta gradite?" na početnoj: linijski crtež posla umjesto fotografije.
+export const AUDIENCES: { label: string; art: 'zidanje-krov' | 'suha-gradnja' | 'izolacija'; title: string; text: string; points: readonly string[]; image: string; alt: string }[] = [
   {
+    label: 'Izvođači',
+    art: 'zidanje-krov',
     title: 'Građevinske firme i izvođači',
     text: 'Materijal za više gradilišta na jednom nalogu, po fazama radova.',
     points: ['Narudžbe po gradilištu', 'Planirana isporuka na adresu objekta'],
@@ -34,6 +36,8 @@ export const AUDIENCES = [
     alt: 'Fasadna skela uz stambenu zgradu u izgradnji',
   },
   {
+    label: 'Majstori',
+    art: 'suha-gradnja',
     title: 'Majstori i specijalizovani podizvođači',
     text: 'Suha gradnja, izolacija i građevinska hemija za radove koji se ponavljaju.',
     points: ['Sačuvane liste za tipske radove', 'Preuzimanje na stovarištu'],
@@ -41,13 +45,15 @@ export const AUDIENCES = [
     alt: 'Majstor, okrenut leđima, oblaže zid od gips-kartonskih ploča',
   },
   {
+    label: 'Investitori',
+    art: 'izolacija',
     title: 'Investitori i nosioci projekata',
     text: 'Objedinjena ponuda za objekat i uvid u to šta je naručeno i isporučeno.',
     points: ['Objedinjene ponude', 'Dokumenti uz svaku narudžbu'],
     image: '/stock/house-scaffold.webp',
     alt: 'Kuća u izgradnji sa skelom',
   },
-] as const
+]
 
 export const BENEFITS = [
   { title: 'Ponavljanje nabavke', text: 'Prošla narudžba ili lista postaje novi upit.' },
@@ -55,3 +61,28 @@ export const BENEFITS = [
   { title: 'Objedinjene ponude', text: 'Više artikala, jedna ponuda prodaje.' },
   { title: 'Planirana isporuka', text: 'Dostava ili preuzimanje po dogovoru.' },
 ] as const
+// Uvodni koraci: kako firma koristi usluge preko portala, tri koraka. Svaki ima animiranu UI scenu
+// (PartnerSteps / StepDemos): prijava, narudžba po šifri, ponuda i isporuka. Isti tok kao ACCESS_STEPS.
+export type IntroDemo = 'login' | 'order' | 'track'
+export const PORTAL_INTRO_STEPS: { demo: IntroDemo; title: string; text: string; points: string[] }[] = [
+  {
+    demo: 'login',
+    title: 'Prijavite se na nalog firme',
+    text: 'Nalog firme otvara prodaja Grand Company-ja. Poslije prijave odmah vidite svoj dashboard: kreditni okvir, narudžbe u toku i brzi unos šifre.',
+    points: ['Bez reklama, samo vaša nabavka', 'Pristup sa računara i telefona'],
+  },
+  {
+    demo: 'order',
+    title: 'Naručite po šifri',
+    text: 'Šifra, Tab, količina, Enter, i već ste u novom redu. Predmjer radova iz Excela ili CSV prevucite u tabelu. Upit ide pravo prodaji.',
+    points: ['Šifra se provjerava odmah', 'Nepoznate šifre označene crveno'],
+  },
+  {
+    demo: 'track',
+    title: 'Pratite ponudu i isporuku',
+    text: 'Prodaja šalje ponudu, vi je prihvatate, a narudžbu pratite do statusa „Na putu ka gradilištu“ ili „Spremno za preuzimanje“.',
+    points: ['Termin isporuke na gradilište', 'Fakture i otpremnice na jednom mjestu'],
+  },
+]
+
+
