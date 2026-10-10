@@ -4,12 +4,14 @@ import { useRef } from 'react'
 import Cta from '@/components/ui/Cta'
 import { PORTAL_INTRO_STEPS } from '@/lib/business'
 import { gsap, useGSAP } from '@/lib/gsap'
+import StepDemo from './StepDemos'
 import styles from './Business.module.css'
 
 const pad = (n: number) => String(n).padStart(2, '0')
 const TOTAL = PORTAL_INTRO_STEPS.length
 
-// "Vi ste firma i želite Grand Company kao partnera?": koraci do naloga, horizontalno.
+// "Vi ste firma i želite da koristite usluge Grand Company-ja?": tri koraka, horizontalno.
+// Svaki korak je par: info kartica + širok pravougaonik sa animiranom UI scenom (StepDemos).
 // Desktop: sekcija se pina, skrol pomjera kartice ulijevo, a cijela stranica prelazi
 // (`.page`) iz krem u plavu i nazad kad se stigne do dashboard koraka ispod. Telefon i reduced motion:
 // sekcija je sama plava, a kartice se prevlače prstom (hs-viewport).
@@ -68,7 +70,7 @@ export default function PartnerSteps() {
     <section ref={root} className={styles.partner} aria-labelledby="biz-partner">
       <div className={`gutter ${styles.partnerHead}`}>
         <h2 id="biz-partner" data-head className={`display invisible ${styles.partnerTitle}`}>
-          Vi ste firma i želite Grand Company kao partnera?
+          Vi ste firma i želite da koristite usluge Grand Company-ja?
         </h2>
         {/* Brojač prati skrol samo na desktopu; na telefonu se kartice prevlače. */}
         <p className={styles.partnerHint}>
@@ -81,20 +83,25 @@ export default function PartnerSteps() {
       <div className="hs-viewport">
         <ol data-track className={styles.partnerTrack}>
           {PORTAL_INTRO_STEPS.map((s, i) => (
-            <li key={s.title} className={styles.partnerCard}>
-              <span aria-hidden className={styles.partnerNum}>{pad(i + 1)}</span>
-              <p className={`label ${styles.partnerLabel}`}>Korak {pad(i + 1)}</p>
-              <h3 className={styles.partnerCardTitle}>{s.title}</h3>
-              <p className={styles.partnerText}>{s.text}</p>
-              <ul className={styles.partnerPoints}>
-                {s.points.map((p) => (
-                  <li key={p}>{p}</li>
-                ))}
-              </ul>
+            <li key={s.title} className={styles.partnerPair}>
+              <div className={styles.partnerCard}>
+                <span aria-hidden className={styles.partnerNum}>{pad(i + 1)}</span>
+                <p className={`label ${styles.partnerLabel}`}>Korak {pad(i + 1)}</p>
+                <h3 className={styles.partnerCardTitle}>{s.title}</h3>
+                <p className={styles.partnerText}>{s.text}</p>
+                <ul className={styles.partnerPoints}>
+                  {s.points.map((p) => (
+                    <li key={p}>{p}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className={styles.partnerDemo} aria-hidden>
+                <StepDemo demo={s.demo} />
+              </div>
             </li>
           ))}
           <li className={styles.partnerEnd}>
-            <p>Nalog je spreman. Ispod je ono što vaša firma dalje radi na portalu, ekran po ekran.</p>
+            <p>Firma još nema nalog? Pošaljite zahtjev, a prodaja otvara nalog i javlja vam se.</p>
             <Cta href="/upit-za-izvodjace?vrsta=saradnja">Zatražite nalog za firmu</Cta>
           </li>
         </ol>

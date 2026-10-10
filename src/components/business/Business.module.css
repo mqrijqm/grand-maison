@@ -128,8 +128,10 @@
 .partnerHead { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:end; gap:20px 40px; }
 .partnerTitle { max-width:16ch; font-size:clamp(36px,5.4vw,104px); line-height:.92; letter-spacing:-.03em; text-wrap:balance; }
 .partnerHint { font-size:11px; letter-spacing:.14em; text-transform:uppercase; opacity:.7; font-variant-numeric:tabular-nums; }
-.partnerTrack { display:flex; width:max-content; gap:12px; margin-top:clamp(40px,8vh,88px); padding-inline:var(--gutter, 20px); }
-.partnerCard { position:relative; isolation:isolate; overflow:hidden; display:flex; flex-direction:column; gap:12px; width:min(80vw,340px); min-height:400px; padding:28px 24px; border:1px solid rgb(255 255 255 / .28); scroll-snap-align:start; }
+.partnerTrack { --w:min(80vw,340px); display:flex; align-items:stretch; width:max-content; gap:12px; margin-top:clamp(40px,8vh,88px); padding-inline:var(--gutter, 20px); }
+.partnerPair { display:flex; gap:inherit; scroll-snap-align:start; }
+.partnerDemo { width:min(88vw,560px); min-height:400px; }
+.partnerCard { position:relative; isolation:isolate; overflow:hidden; display:flex; flex-direction:column; gap:12px; width:var(--w); min-height:400px; padding:28px 24px; border:1px solid rgb(255 255 255 / .28); scroll-snap-align:start; }
 .partnerNum { position:absolute; z-index:-1; right:-.06em; bottom:-.14em; font-family:var(--font-heavy),Arial,sans-serif; font-weight:800; font-size:clamp(170px,17vw,300px); line-height:.8; letter-spacing:-.06em; color:rgb(255 255 255 / .12); font-variant-numeric:tabular-nums; pointer-events:none; user-select:none; }
 .partnerLabel { opacity:.75; }
 .partnerCardTitle { max-width:14ch; font-family:var(--font-heavy),Arial,sans-serif; font-weight:800; font-size:clamp(22px,2vw,32px); line-height:1.02; letter-spacing:-.01em; text-transform:uppercase; }
@@ -144,7 +146,9 @@
   .partnerTrack { gap:1.4vw; padding-inline:8.33vw; }
   .partnerTitle { font-size:clamp(40px,4.4vw,84px); max-width:20ch; }
   .partnerTrack { margin-top:clamp(32px,6vh,64px); }
-  .partnerCard, .partnerEnd { width:clamp(340px,29vw,480px); min-height:clamp(320px,44dvh,460px); padding:clamp(28px,2.2vw,36px); }
+  .partnerTrack { --w:clamp(320px,27vw,440px); }
+  .partnerCard, .partnerEnd { width:var(--w); min-height:clamp(340px,50dvh,480px); padding:clamp(28px,2.2vw,36px); }
+  .partnerDemo { width:calc(var(--w) * 2 + 1.4vw); min-height:clamp(340px,50dvh,480px); }
   .partnerEnd { padding-left:0; }
 }
 @media (min-width:768px) { .partnerTrack { padding-inline:8.33vw; } }
