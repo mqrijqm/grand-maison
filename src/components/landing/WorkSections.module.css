@@ -11,3 +11,4 @@
 .button { background:var(--bg); color:var(--ink); --cta-fill:var(--ink); --cta-ink:var(--bg); }
 @media(min-width:768px) { .panel { position:sticky; top:0; height:100dvh; align-self:start; padding-inline:2.4vw; } .foot { margin-left:20%; } .row { min-height:100dvh; padding:calc(var(--nav-h) + 4vh) 4vw 7vh; } }
 @media(max-width:767px) { .panel { padding-top:72px; padding-bottom:56px; } .illustration svg { max-height:330px; } .row { gap:36px; } .button { min-height:48px; font-size:11px; gap:1.5em; } }
+.button { background: var(--bg) !important; color: var(--ink) !important; }

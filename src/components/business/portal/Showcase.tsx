@@ -78,6 +78,7 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
   const [orderSel, setOrderSel] = useState(ORDERS[0].no)
   const [query, setQuery] = useState('')
   const [group, setGroup] = useState<string>('sve')
+  const [finderOpen, setFinderOpen] = useState(false)
   const [toast, setToast] = useState<string | null>(null)
   const [activity, setActivity] = useState<Feed[]>([
     { t: 'juče', kind: 'ponude', text: 'Ponuda P-26-0142 je spremna', meta: 'Lamela A · 5 stavki · prodaja' },
@@ -442,28 +443,58 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
               {view === 'materijali' && (
                 <div className={s.split}>
                   <section className={s.card}>
-                    <div className={s.tools}>
+                    <h4>Dodajte materijal</h4>
+                    {/* E-shop pretraga: grupa iz padajuće liste + polje; rezultati se otvaraju ispod polja. */}
+                    <div className={s.finder}>
+                      <select className={s.groupSelect} value={group} onChange={(e) => { setGroup(e.target.value); setFinderOpen(true) }} aria-label="Grupa materijala">
+                        <option value="sve">Sve grupe</option>
+                        {GROUPS.map((g) => (
+                          <option key={g.id} value={g.id}>
+                            {g.label}
+                          </option>
+                        ))}
+                      </select>
                       <label className={s.search}>
                         <Icon name="search" />
-                        <input data-t="search" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Šifra ili naziv" aria-label="Traži materijal" />
+                        <input
+                          data-t="search"
+                          value={query}
+                          onChange={(e) => { setQuery(e.target.value); setFinderOpen(true) }}
+                          onFocus={() => setFinderOpen(true)}
+                          onBlur={() => setTimeout(() => setFinderOpen(false), 180)}
+                          onKeyDown={(e) => { if (e.key === 'Escape') setFinderOpen(false) }}
+                          placeholder="Šifra ili naziv, npr. CW 75"
+                          aria-label="Traži materijal"
+                          role="combobox"
+                          aria-expanded={finderOpen}
+                          aria-controls="mat-results"
+                        />
                       </label>
-                      <div className={s.chips} role="tablist" aria-label="Grupe materijala">
-                        <button type="button" role="tab" aria-selected={group === 'sve'} onClick={() => setGroup('sve')}>
-                          Sve
-                        </button>
-                        {GROUPS.map((g) => (
-                          <button key={g.id} type="button" role="tab" aria-selected={group === g.id} onClick={() => setGroup(g.id)}>
-                            {g.label}
-                          </button>
-                        ))}
-                      </div>
+                      {finderOpen && (
+                        <ul id="mat-results" role="listbox" className={s.results}>
+                          {list.slice(0, 6).map((m) => {
+                            const has = draft.find((l) => l.sku === m.sku)?.qty
+                            return (
+                              <li key={m.sku} role="option" aria-selected={!!has}>
+                                <button type="button" data-t={`add-${m.sku}`} onClick={() => { addLine(m.sku, m.pack ? Math.round(m.pack.size * 10 * 10) / 10 : 10); setFinderOpen(false); setQuery('') }}>
+                                  <span className={s.glyph} aria-hidden>
+                                    {PRODUCT_MAP[m.sku] && <ProductGlyph product={PRODUCT_MAP[m.sku]} kind={m.sku.startsWith('GKP-') ? 'board' : undefined} />}
+                                  </span>
+                                  <span className={s.resName}>
+                                    <b>{m.name}</b>
+                                    <i>{m.sku}</i>
+                                  </span>
+                                  <em>{has ? `✓ ${has.toLocaleString('de-DE')} ${m.unit}` : '+ Dodaj'}</em>
+                                </button>
+                              </li>
+                            )
+                          })}
+                          {list.length === 0 && <li className={s.empty}>Nema materijala za ovu pretragu.</li>}
+                          {list.length > 6 && <li className={s.more}>Još {list.length - 6}, suzite pretragu</li>}
+                        </ul>
+                      )}
                     </div>
-                    <ul className={s.materials}>
-                      {list.map((m) => (
-                        <Material key={m.sku} m={m} inDraft={draft.find((l) => l.sku === m.sku)?.qty} onAdd={(q) => addLine(m.sku, q)} />
-                      ))}
-                      {list.length === 0 && <li className={s.empty}>Nema materijala za ovu pretragu.</li>}
-                    </ul>
+                    <p className={s.fine}>Količinu mijenjate u upitu desno.</p>
                   </section>
 
                   <aside className={`${s.card} ${s.request}`}>
@@ -818,28 +849,5 @@ function Qty({ value, unit, onChange }: { value: number; unit: string; onChange:
         +
       </button>
     </span>
-  )
-}
-
-function Material({ m, inDraft, onAdd }: { m: (typeof MATERIALS)[number]; inDraft?: number; onAdd: (q: number) => void }) {
-  // Početna količina: deset pakovanja (ploča, rolna) ili deset komada.
-  const [q, setQ] = useState(m.pack ? Math.round(m.pack.size * 10 * 10) / 10 : 10)
-  return (
-    <li className={s.material}>
-      <span className={s.glyph} aria-hidden>
-        {PRODUCT_MAP[m.sku] && <ProductGlyph product={PRODUCT_MAP[m.sku]} kind={m.sku.startsWith('GKP-') ? 'board' : undefined} />}
-      </span>
-      <span className={s.matName}>
-        <b>{m.name}</b>
-        <i>
-          {m.sku} · {m.spec}
-        </i>
-        {packs({ sku: m.sku, qty: q }) && <em className={s.pack}>{packs({ sku: m.sku, qty: q })}</em>}
-      </span>
-      <Qty value={q} unit={m.unit} onChange={(n) => setQ(Math.max(0, n))} />
-      <button type="button" data-t={`add-${m.sku}`} className={inDraft ? s.added : s.ghost} disabled={q <= 0} onClick={() => onAdd(q)} aria-label={inDraft ? `Dodaj još, u upitu je ${inDraft} ${m.unit}` : `Dodaj ${m.name} u upit`}>
-        {inDraft ? `✓ ${inDraft.toLocaleString('de-DE')} ${m.unit}` : 'Dodaj'}
-      </button>
-    </li>
   )
 }

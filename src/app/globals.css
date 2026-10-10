@@ -2490,44 +2490,25 @@ html:not([data-hydrated]) :is([data-client-state], .nav__mode-desk, .nav__cart-c
   .nav__login { display: none; }
 }
 
-/* CTA dugmad u boji brenda: oker iz znaka (#BD9446, isti ton kao u /brand/logo.svg).
-   Tekst je tamnoplav (bijeli bi na okeru bio slabo čitljiv); na hover se dugme napuni tamnoplavom. */
+/* CTA dugmad: kobalt sa bijelim tekstom, na hover se napune okerom iz znaka (#BD9446).
+   Jedini izuzetak je "Zatraži ponudu" u navbaru: oker sa bijelim tekstom. */
 :root {
   --ochre: #bd9446;
-  --btn: var(--ochre);
-  --btn-ink: var(--ink);
+  --btn: var(--cobalt);
+  --btn-ink: #fff;
 }
 .cta,
 .cta--solid {
-  background: var(--ochre);
-  color: var(--ink);
-  --cta-fill: var(--ink);
-  --cta-ink: #fff;
+  background: var(--cobalt);
+  color: #fff;
+  --cta-fill: var(--ochre);
+  --cta-ink: var(--ink);
 }
 .nav__buy {
   background: var(--ochre) !important;
-  color: var(--ink) !important;
+  color: #fff !important;
 }
 .nav__buy:hover {
   background: var(--ink) !important;
   color: #fff !important;
 }
-/* Portal na početnoj se nastavlja direktno u plavi prelaz sekcije ispod (bez velikog razmaka) */
-.home-flow > #za-firme + * { margin-top: 0 !important; }
-
-/* Tri prednosti: naslov i tekst zajedno; na kraju sekcije lijevo stižu fotografije stovarišta */
-.split-panel--together { justify-content: flex-start; }
-.split-panel__intro { display: grid; gap: 32px; justify-items: start; }
-.split-panel__intro .split-panel__lead { max-width: 40ch; }
-.split-panel__yard { display: none; }
-@media (min-width: 768px) {
-  .split-panel__yard { position: absolute; inset: 0; z-index: 2; display: grid; grid-template-rows: 1fr 1fr; gap: 0; overflow: hidden; pointer-events: none; }
-  .split-panel__photo { position: relative; margin: 0; overflow: hidden; }
-  .split-panel__photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
-  .split-panel__photo figcaption { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); padding: 6px 12px; background: var(--bg); color: var(--ink); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; }
-}
-.split-panel__yard { pointer-events: auto !important; }
-.split-panel__photo img { position: absolute; inset: 0; }
-.split-panel__photo .split-panel__blue { opacity: 0; transition: opacity .35s ease; }
-.split-panel__photo:hover .split-panel__blue { opacity: 1; }
-.split-panel__photo figcaption { z-index: 1; }
