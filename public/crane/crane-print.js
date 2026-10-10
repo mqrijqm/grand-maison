@@ -467,6 +467,38 @@ const POST_FRAG = /* glsl */ `
   }
 `;
 
+// FXAA (po Lottesu, kratka varijanta): mjeri svjetlinu 4 dijagonalna susjeda, nađe pravac ivice
+// i uzorkuje duž nje. Ivice bez kontrasta (ravna ploha mastila) ostaju netaknute.
+const FXAA_FRAG = /* glsl */ `
+  uniform sampler2D tInput;
+  uniform sampler2D tG;
+  uniform vec2 inv;
+  varying vec2 vUv;
+  float luma(vec3 c) { return dot(c, vec3(.299, .587, .114)); }
+  void main() {
+    vec4 cM = texture2D(tInput, vUv);
+    // Tabla sa logom (pokrivenost .76 u G-bufferu) ostaje oštra: sitan natpis se ne zaglađuje.
+    float board = texture2D(tG, vUv).a;
+    if (board > .745 && board < .775) { gl_FragColor = cM; return; }
+    float lM = luma(cM.rgb);
+    float lNW = luma(texture2D(tInput, vUv + vec2(-1.0, -1.0) * inv).rgb);
+    float lNE = luma(texture2D(tInput, vUv + vec2(1.0, -1.0) * inv).rgb);
+    float lSW = luma(texture2D(tInput, vUv + vec2(-1.0, 1.0) * inv).rgb);
+    float lSE = luma(texture2D(tInput, vUv + vec2(1.0, 1.0) * inv).rgb);
+    float lMin = min(lM, min(min(lNW, lNE), min(lSW, lSE)));
+    float lMax = max(lM, max(max(lNW, lNE), max(lSW, lSE)));
+    if (lMax - lMin < max(.0312, lMax * .125)) { gl_FragColor = cM; return; }
+    vec2 dir = vec2(-((lNW + lNE) - (lSW + lSE)), (lNW + lSW) - (lNE + lSE));
+    float reduce = max((lNW + lNE + lSW + lSE) * .03125, 1.0 / 128.0);
+    float rcp = 1.0 / (min(abs(dir.x), abs(dir.y)) + reduce);
+    dir = clamp(dir * rcp, vec2(-8.0), vec2(8.0)) * inv;
+    vec4 rA = .5 * (texture2D(tInput, vUv + dir * (1.0 / 3.0 - .5)) + texture2D(tInput, vUv + dir * (2.0 / 3.0 - .5)));
+    vec4 rB = rA * .5 + .25 * (texture2D(tInput, vUv - dir * .5) + texture2D(tInput, vUv + dir * .5));
+    float lB = luma(rB.rgb);
+    gl_FragColor = (lB < lMin || lB > lMax) ? rA : rB;
+  }
+`;
+
 export function createCraneRenderer(renderer, world) {
   const lightDir = { value: new THREE.Vector3(-.5, .74, .46).normalize() };
   const fog = { value: new THREE.Vector2(80, 160) };
@@ -599,6 +631,23 @@ export function createCraneRenderer(renderer, world) {
   );
   const post = new THREE.Scene();
   post.add(quad);
+  // Završno zaglađivanje (FXAA): izbijene linije krana se računaju piksel po piksel i bez ovoga
+  // imaju stepenice. Štampa se prvo nacrta u međusliku, pa ovaj prolaz omekša samo kontrastne
+  // ivice (pravac ivice iz 4 susjeda), a ravne plohe i raster ostaju isti.
+  const aaUniforms = { tInput: { value: null }, tG: { value: null }, inv: { value: new THREE.Vector2(1, 1) } };
+  const aaQuad = new THREE.Mesh(
+    new THREE.PlaneGeometry(2, 2),
+    new THREE.ShaderMaterial({
+      depthTest: false,
+      depthWrite: false,
+      uniforms: aaUniforms,
+      vertexShader: 'varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }',
+      fragmentShader: FXAA_FRAG,
+    }),
+  );
+  const aaScene = new THREE.Scene();
+  aaScene.add(aaQuad);
+  let outT = null;
   // Glatke linije za kran, zgradu i teret (vidi buildLineOverlays).
   const lineUniforms = { resolution: { value: new THREE.Vector2(1, 1) }, linewidth: { value: 2 } };
   const disposeLines = buildLineOverlays(world.scene, lineUniforms);
@@ -619,6 +668,11 @@ export function createCraneRenderer(renderer, world) {
     uniforms.dpr.value = Math.max(1, ratio);
     lineUniforms.resolution.value.set(w, h);
     lineUniforms.linewidth.value = 1.35 * Math.max(1, ratio);
+    outT?.dispose();
+    outT = new THREE.WebGLRenderTarget(w, h, { type: THREE.UnsignedByteType, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, depthBuffer: false });
+    aaUniforms.tInput.value = outT.texture;
+    aaUniforms.tG.value = target.texture;
+    aaUniforms.inv.value.set(1 / w, 1 / h);
   }
 
   return {
@@ -628,6 +682,7 @@ export function createCraneRenderer(renderer, world) {
       renderer.setRenderTarget(target);
       try { await renderer.compileAsync(world.scene, world.camera); } finally { renderer.setRenderTarget(null); swapOut(); }
       await renderer.compileAsync(post, postCam);
+      await renderer.compileAsync(aaScene, postCam);
     },
     setSamples() {},
     setSize(w, h) { width = w; height = h; ensureTarget(); },
@@ -669,12 +724,18 @@ export function createCraneRenderer(renderer, world) {
         try { renderer.render(world.scene, cam); } finally { swapOut(); }
       }
       world.scene.background = bg;
-      renderer.setRenderTarget(null);
+      renderer.setRenderTarget(outT);
+      renderer.clear(true, false, false);
       renderer.render(post, postCam);
+      renderer.setRenderTarget(null);
+      renderer.render(aaScene, postCam);
     },
     dispose() {
       disposed = true;
       target?.dispose();
+      outT?.dispose();
+      aaQuad.geometry.dispose();
+      aaQuad.material.dispose();
       for (const pm of cache.values()) pm.dispose();
       for (const pm of lineCache.values()) pm.dispose();
       for (const pm of rodCache.values()) pm.dispose();
