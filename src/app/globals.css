@@ -2514,3 +2514,16 @@ html:not([data-hydrated]) :is([data-client-state], .nav__mode-desk, .nav__cart-c
 }
 /* Portal na početnoj se nastavlja direktno u plavi prelaz sekcije ispod (bez velikog razmaka) */
 .home-flow > #za-firme + * { margin-top: 0 !important; }
+
+/* Tri prednosti: naslov i tekst zajedno; na kraju sekcije lijevo stižu fotografije stovarišta */
+.split-panel--together { justify-content: flex-start; }
+.split-panel__intro { display: grid; gap: 32px; justify-items: start; }
+.split-panel__intro .split-panel__lead { max-width: 40ch; }
+.split-panel__yard { display: none; }
+@media (min-width: 768px) {
+  .split-panel__yard { position: absolute; inset: 0; z-index: 2; display: grid; grid-template-rows: 1fr 1fr; gap: 0; overflow: hidden; pointer-events: none; }
+  .split-panel__photo { position: relative; margin: 0; overflow: hidden; transform: translateY(105%); }
+  .split-panel__photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .split-panel__photo figcaption { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); padding: 6px 12px; background: var(--bg); color: var(--ink); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; }
+}
+@media (prefers-reduced-motion: reduce) { .split-panel__photo { transform: none; } }

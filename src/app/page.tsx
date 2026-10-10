@@ -6,7 +6,6 @@ import CartDrawer from "@/components/shop/CartDrawer";
 import Panels from "@/components/shop/Panels";
 import BrandsSplit from "@/components/landing/BrandsSplit";
 import Intro from "@/components/landing/Intro";
-import Yard from "@/components/landing/Yard";
 import SkySwipe from "@/components/landing/SkySwipe";
 import UsesSplit from "@/components/landing/UsesSplit";
 import HowItWorks from "@/components/landing/HowItWorks";
@@ -38,8 +37,7 @@ export default function Home() {
         <Bento />
         <ForBusiness />
         <BrandsSplit />
-        {/* Stovarište (foto → plava ilustracija na hover). */}
-        <Yard />
+        {/* Stovarište je sada kraj sekcije "Tri prednosti" (fotografije stižu u lijevi blok). */}
         <QuoteBand />
         <Footer />
       </main>

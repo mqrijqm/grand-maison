@@ -1,5 +1,7 @@
 ﻿'use client'
 
+/* eslint-disable @next/next/no-img-element -- postojeće WebP fotografije stovarišta */
+
 import BlueWipe from '@/components/ui/BlueWipe'
 import { useRef } from 'react'
 import { gsap, ScrollTrigger, useGSAP } from '@/lib/gsap'
@@ -89,6 +91,11 @@ const globe: Art = {
 
 const ARTS = [rays, torus, globe]
 
+const YARD = [
+  { src: '/stovariste/yard.webp', alt: 'Pregled stovarišta Grand Company u Banjoj Luci', label: 'Stovarište' },
+  { src: '/stovariste/shop.webp', alt: 'Prodajni objekat Grand Company na lokaciji stovarišta', label: 'Prodaja' },
+]
+
 const USPS: { title: string; text: string }[] = [
   {
     title: 'Dostava i istovar',
@@ -115,6 +122,19 @@ export default function BrandsSplit() {
         const { reduce } = ctx.conditions as { reduce: boolean }
         revealChars(el.querySelector('[data-head]')!, reduce, 'top 75%')
 
+        // Zadnja prednost (Stovarište) dolazi: naslov i tekst lijevo izlaze, fotografije stovarišta ulaze odozdo.
+        const intro = el.querySelector<HTMLElement>('[data-intro]')!
+        const yard = el.querySelector<HTMLElement>('[data-yard]')!
+        const last = el.querySelector<HTMLElement>('[data-brand]:last-of-type')!
+        if (reduce) {
+          gsap.set(yard, { autoAlpha: 0 })
+        } else if (window.matchMedia('(min-width: 768px)').matches) {
+          gsap
+            .timeline({ scrollTrigger: { trigger: last, start: 'top 75%', end: 'top 15%', scrub: 0.6 } })
+            .to(intro, { autoAlpha: 0, y: -40, ease: 'none', duration: 0.4 }, 0)
+            .fromTo(yard.children, { yPercent: 105 }, { yPercent: 0, ease: 'power2.out', duration: 0.7, stagger: 0.15 }, 0.15)
+        }
+
         gsap.utils.toArray<HTMLElement>('[data-brand]', el).forEach((row, i) => {
           revealChars(row.querySelector('[data-title]')!, reduce, 'top 80%', row)
           const g = row.querySelector<SVGGElement>('[data-gen]')!
@@ -140,17 +160,28 @@ export default function BrandsSplit() {
   return (
     <section ref={root} id="prednosti" className="relative z-20 md:grid md:grid-cols-2" aria-label="Zašto Grand Company">
       {/* Plavi panel lijevo; originalni animirani crteži na svijetloj pozadini desno. */}
-      <BlueWipe from="left" className="text-bg md:sticky md:top-0 md:h-dvh md:self-start" contentClassName="split-panel">
-        <h2 data-head className="split-panel__head display invisible">
-          <span className="block">Tri</span>
-          <span className="block">prednosti</span>
-          <span className="block">saradnje</span>
-        </h2>
-        <div className="split-panel__foot">
+      <BlueWipe from="left" className="text-bg md:sticky md:top-0 md:h-dvh md:self-start" contentClassName="split-panel split-panel--together relative h-full">
+        {/* Naslov i tekst su jedan blok: uvijek zajedno u kadru dok je panel zalijepljen. */}
+        <div data-intro className="split-panel__intro">
+          <h2 data-head className="split-panel__head display invisible">
+            <span className="block">Tri</span>
+            <span className="block">prednosti</span>
+            <span className="block">saradnje</span>
+          </h2>
           <p data-lead className="split-panel__lead">
             Grand Company snabdijeva gradilišta građevinskim materijalom: dostava i istovar po dogovoru i stovarište u
             Banjoj Luci.
           </p>
+        </div>
+        {/* Kraj sekcije: kad desno stigne "Stovarište", lijevo naslov izađe, a stižu dvije fotografije
+            stovarišta, jedna ispod druge, preko cijelog lijevog bloka. */}
+        <div data-yard className="split-panel__yard" aria-label="Stovarište i prodaja u Banjoj Luci">
+          {YARD.map((y) => (
+            <figure key={y.src} className="split-panel__photo">
+              <img src={y.src} alt={y.alt} width={1360} height={765} loading="lazy" decoding="async" />
+              <figcaption>{y.label}</figcaption>
+            </figure>
+          ))}
         </div>
       </BlueWipe>
 
