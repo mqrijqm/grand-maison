@@ -115,7 +115,7 @@
 }
 .showcaseBand { margin-top: clamp(32px, 6vh, 64px); padding-top: clamp(40px, 7vh, 80px); padding-bottom: clamp(40px, 7vh, 80px); background: var(--cobalt); }
 /* Početna: portal odmah ispod B2B blokova, bijela podloga, plavi kvadratići na dnu */
-.forBiz { position: relative; margin-top: 12px !important; padding-top: clamp(40px, 7vh, 80px); background: #fff; }
+.forBiz { position: relative; margin-top: 0 !important; padding-top: clamp(16px, 3vh, 32px); background: #fff; }
 .forBizInner { position: relative; z-index: 2; }
 .forBizFrame { transform-origin: 50% 0; will-change: transform; }
 .forBizDissolve { z-index: 1; height: clamp(320px, 50vh, 560px); margin-top: calc(-1 * clamp(140px, 18vh, 240px)); }
