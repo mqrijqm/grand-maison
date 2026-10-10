@@ -205,17 +205,11 @@
 .heroKicker { color: rgb(255 255 255 / 0.75); }
 .blue .heroTitle { max-width: 14ch; margin-top: 20px; font-size: clamp(44px, 6vw, 112px); line-height: 0.92; }
 .heroLead { margin-top: 22px; font-size: 15px; line-height: 1.6; opacity: 0.85; text-transform: none; }
-.heroPill { display: flex; align-items: center; gap: 14px; max-width: 100%; margin-top: 34px; padding: 8px 8px 8px 20px; border-radius: 99px; background: #fff; color: var(--ink); font-size: 13.5px; text-transform: none; letter-spacing: 0; box-shadow: 0 24px 50px -24px rgb(0 0 0 / 0.4); }
-.pillSku { font-family: ui-monospace, monospace; font-size: 12px; opacity: 0.6; }
-.pillName { overflow: hidden; font-weight: 600; white-space: nowrap; text-overflow: ellipsis; }
-.pillQty { flex: none; padding: 4px 12px; border: 1px solid rgb(27 36 54 / 0.15); border-radius: 99px; font-variant-numeric: tabular-nums; }
-.pillBtn { flex: none; padding: 9px 18px; border-radius: 99px; background: var(--cobalt); color: #fff; font-weight: 600; }
 .heroActions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 30px; }
 .portalBlock { position: relative; z-index: 2; padding-bottom: 0; }
 .dissolve { z-index: 1; height: clamp(420px, 75vh, 820px); margin-top: calc(-1 * clamp(200px, 26vh, 340px)); }
 .blue .note { color: rgb(255 255 255 / 0.8); }
 @media (max-width: 640px) {
-  .pillSku, .pillQty { display: none; }
 }
 
 /* Brojevi koraka nikad nisu ogromni: mali krug sa blijedom pozadinom, gore desno u kartici. */
@@ -228,7 +222,6 @@
 .blue { background: #fff !important; color: var(--ink) !important; }
 .blue .heroKicker { color: var(--cobalt); }
 .blue :global(.cta) { background: var(--cobalt); color: #fff; }
-.blue .heroPill { box-shadow: 0 0 0 1px rgb(27 36 54 / 0.12), 0 24px 50px -24px rgb(27 36 54 / 0.3); }
 .portalBlock { padding-bottom: clamp(60px, 10vh, 120px); }
 
 /* Završni poziv: tekst lijevo, uska vertikalna fotografija desno */

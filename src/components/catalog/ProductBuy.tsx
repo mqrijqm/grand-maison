@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { addToCart } from '@/lib/cart'
 import { defaultQty, qtyLabel, type Product } from '@/lib/shop'
-import { inquiryQty, setInquiryQuantity, useCatalogInquiry } from '@/lib/catalog-inquiry'
+import { inquiryHref, inquiryQty, setInquiryQuantity, useCatalogInquiry } from '@/lib/catalog-inquiry'
 import Price from '@/components/b2b/Price'
 import styles from './CatalogSupport.module.css'
 
@@ -35,7 +35,7 @@ export default function ProductBuy({ product }: Props) {
           <button type="button" disabled={qty === null} onClick={() => { if (qty !== null) setInquiryQuantity(product.sku, qty) }}><span>{items[product.sku] ? 'Ažuriraj količinu u upitu' : 'Dodaj u upit za ponudu'}</span><span aria-hidden>+</span></button>
           <button type="button" disabled={qty === null} onClick={() => { if (qty !== null) addToCart(product.id, qty) }}><span>Dodaj u korpu</span><span aria-hidden>+</span></button>
         </div>
-        <p className={styles.purchaseStatus} aria-live="polite">{items[product.sku] && <><span>U upitu: {qtyLabel(items[product.sku], product.unit)} · </span><Link href="/prodavnica#katalog-upit">Pregledajte cijeli upit ↗</Link></>}</p>
+        <p className={styles.purchaseStatus} aria-live="polite">{items[product.sku] && <><span>U upitu: {qtyLabel(items[product.sku], product.unit)} · </span><Link href={inquiryHref(items)}>Pošaljite upit ↗</Link></>}</p>
       </div>
     </div>
   )

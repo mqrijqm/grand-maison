@@ -1,0 +1,43 @@
+/* B2B poziv na kraju kataloga: svijetlosiva ploča, tri kolone, oštri uglovi. */
+.wrap { padding-bottom: clamp(80px, 14vh, 160px); background: #fff; }
+.box { display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px; padding: clamp(24px, 3vw, 44px); background: #eef0f4; }
+.copy { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 16px; }
+.copy :global(.label) { color: var(--cobalt); }
+.title { font-size: clamp(32px, 3.6vw, 58px); line-height: 0.95; color: var(--ink); }
+.lead { max-width: 34ch; font-size: 15px; line-height: 1.5; text-transform: none; letter-spacing: 0; color: rgb(27 36 54 / 0.72); }
+
+/* Prozor portala */
+.win { align-self: center; background: var(--ink); color: var(--ink); font-family: var(--font-text), Arial, sans-serif; font-size: 13px; text-transform: none; letter-spacing: 0; outline: 1px solid var(--ink); outline-offset: 6px; user-select: none; }
+.chrome { display: flex; align-items: center; gap: 12px; height: 34px; padding: 0 14px; font-size: 11px; color: rgb(255 255 255 / 0.8); }
+.chrome em { margin-left: auto; padding: 1px 8px; border: 1px solid rgb(255 255 255 / 0.4); font-style: normal; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; }
+.dots { display: flex; gap: 5px; }
+.dots i { width: 7px; height: 7px; background: rgb(255 255 255 / 0.25); }
+.dots i:first-child { background: var(--cobalt); }
+.panel { display: grid; gap: 12px; margin: 0 6px 6px; padding: 18px; background: #fff; }
+.panelHead { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.panelHead b { display: block; font-size: 15px; font-weight: 600; }
+.panelHead i { font-style: normal; font-size: 12px; color: rgb(27 36 54 / 0.6); }
+.chip { flex: none; padding: 4px 10px; background: var(--cobalt); color: #fff; font-size: 11px; font-weight: 600; }
+.lines li { display: grid; grid-template-columns: 68px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 9px 0; border-bottom: 1px solid rgb(27 36 54 / 0.1); font-variant-numeric: tabular-nums; }
+.sku { font-family: ui-monospace, monospace; font-size: 11px; color: rgb(27 36 54 / 0.6); }
+.lineName { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.total { display: flex; justify-content: space-between; font-size: 12px; color: rgb(27 36 54 / 0.6); }
+.total b { font-size: 15px; color: var(--ink); font-variant-numeric: tabular-nums; }
+.confirm { position: relative; overflow: hidden; justify-self: start; display: inline-flex; align-items: center; min-height: 36px; padding: 0 16px; background: var(--cobalt); color: #fff; font-size: 12.5px; font-weight: 600; }
+/* blagi plavi sjaj preko dugmeta */
+.confirm::after { content: ''; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgb(255 255 255 / 0.45) 50%, transparent 70%); transform: translateX(-120%); animation: sheen 3.2s ease-in-out infinite; }
+@keyframes sheen { 60%, 100% { transform: translateX(120%); } }
+
+/* Uska kolona fotografija koja klizi naviše */
+.strip { display: none; position: relative; overflow: hidden; height: 100%; min-height: 360px; mask-image: linear-gradient(transparent, #000 14%, #000 86%, transparent); }
+.reel { position: absolute; inset: 0 0 auto; display: grid; gap: 8px; animation: reel 32s linear infinite; }
+.reel img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
+@keyframes reel { to { transform: translateY(calc(-50% - 4px)); } }
+
+@media (min-width: 900px) {
+  .box { grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr) 120px; gap: clamp(28px, 3vw, 48px); }
+  .strip { display: block; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .reel, .confirm::after { animation: none; }
+}

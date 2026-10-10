@@ -44,12 +44,6 @@ export default function BusinessPage() {
           <p data-up className={styles.heroLead}>
             Materijal, upiti, ponude i narudžbe, na jednom nalogu.
           </p>
-          <div data-up data-delay="0.15" className={styles.heroPill} aria-hidden>
-            <span className={styles.pillSku}>GKP-001</span>
-            <span className={styles.pillName}>Gips-kartonska ploča GKB 12,5 mm</span>
-            <span className={styles.pillQty}>120 m²</span>
-            <span className={styles.pillBtn}>U upit</span>
-          </div>
           <div data-up data-delay="0.25" className={styles.heroActions}>
             <Cta href="#portal" solid>
               Istražite B2B portal

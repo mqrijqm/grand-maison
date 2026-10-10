@@ -69,13 +69,35 @@ const ROWS: Row[] = [
 
 const NORM = Object.fromEntries(NORMS.map((n) => [n.key, n]))
 
+// Izbor materijala kao u web-prodavnici: kategorija, filter i pretraga, pa padajuća lista artikala.
+type Cat = 'profili' | 'ploce' | 'izolacija' | 'pribor'
+const CATS: { id: Cat; label: string }[] = [
+  { id: 'profili', label: 'Profili' },
+  { id: 'ploce', label: 'Ploče' },
+  { id: 'izolacija', label: 'Izolacija' },
+  { id: 'pribor', label: 'Spojevi i pribor' },
+]
+const CAT_OF: Record<string, Cat> = { cw: 'profili', uw: 'profili', board: 'ploce', wool: 'izolacija', filler: 'pribor', screws: 'pribor', tape: 'pribor' }
+/** Bez ovih zid ne može; ostalo je po želji. */
+const NEEDED = new Set(['cw', 'uw', 'board', 'filler', 'screws'])
+type Need = 'sve' | 'potrebno' | 'dodatno'
+const NEEDS: { id: Need; label: string }[] = [
+  { id: 'sve', label: 'Svi artikli' },
+  { id: 'potrebno', label: 'Potrebno za zid' },
+  { id: 'dodatno', label: 'Dodatno' },
+]
+// Svaka vrsta (npr. četiri ploče) je zaseban artikal u listi; u spisku može biti jedna po redu.
+const CHOICES = ROWS.flatMap((r) => (r.variants ?? [{ sku: NORM[r.key].sku, label: '' }]).map((v) => ({ key: r.key, sku: v.sku, cat: CAT_OF[r.key] })))
+const nameOf = (sku: string, key: string) => PRODUCT_MAP[sku]?.name ?? NORM[key].label
+const norm = (t: string) => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'dj')
+
 /** `embedded`: ista tabla kao sekcija početne (h2, sidro #kalkulator, ulaz na skrol). */
 export default function WallCalculator({ embedded = false }: { embedded?: boolean }) {
   const root = useRef<HTMLElement>(null)
   const [dims, setDims] = useState({ len: 4, height: 2.6 })
   const [text, setText] = useState({ len: '4', height: '2,6' })
   const [double, setDouble] = useState(false)
-  const [on, setOn] = useState<Record<string, boolean>>(() => Object.fromEntries(ROWS.map((r) => [r.key, r.on])))
+  const [on, setOn] = useState<Record<string, boolean>>({})
   const [variant, setVariant] = useState<Record<string, string>>({ board: 'GKP-001', wool: 'ISO-001' })
   // Ručno promijenjene količine; brišu se kad se promijeni zid, jer preporuka više ne važi.
   const [over, setOver] = useState<Record<string, number>>({})
@@ -88,7 +110,8 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
 
   const qtyOf = (key: string) => over[key] ?? rec[key]?.packs ?? 0
   const skuOf = (key: string) => variant[key] ?? rec[key]?.sku ?? NORM[key].sku
-  const chosen = ROWS.filter((r) => on[r.key] && qtyOf(r.key) > 0)
+  const chosenRows = ROWS.filter((r) => on[r.key])
+  const chosen = chosenRows.filter((r) => qtyOf(r.key) > 0)
 
   const setDim = (key: Dim['key'], n: number) => {
     const d = DIMS.find((x) => x.key === key)!
@@ -105,8 +128,10 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
       setOver({})
     }
   }
-  // Izbor materijala: pretraga sa padajućom listom (dodaj), izabrani artikli ispod (ukloni ×).
+  // Izbor materijala: kategorija + filter + pretraga otvaraju padajuću listu artikala.
   const [query, setQuery] = useState('')
+  const [cat, setCat] = useState<Cat | 'sve'>('sve')
+  const [need, setNeed] = useState<Need>('sve')
   const [openList, setOpenList] = useState(false)
   const picker = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -114,13 +139,20 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
     document.addEventListener('mousedown', close)
     return () => document.removeEventListener('mousedown', close)
   }, [])
-  const label = (r: Row) => PRODUCT_MAP[skuOf(r.key)]?.name ?? NORM[r.key].label
-  const options = ROWS.filter((r) => !on[r.key] && label(r).toLowerCase().includes(query.trim().toLowerCase()))
-  const pick = (key: string) => {
-    setOn((st) => ({ ...st, [key]: true }))
+  const words = norm(query).split(/\s+/).filter(Boolean)
+  const options = CHOICES.filter(
+    (c) =>
+      (cat === 'sve' || c.cat === cat) &&
+      (need === 'sve' || (need === 'potrebno') === NEEDED.has(c.key)) &&
+      words.every((w) => norm(`${c.sku} ${nameOf(c.sku, c.key)} ${PRODUCT_MAP[c.sku]?.spec ?? ''}`).includes(w)),
+  )
+  const inList = (c: (typeof CHOICES)[number]) => !!on[c.key] && skuOf(c.key) === c.sku
+  const pick = (c: (typeof CHOICES)[number]) => {
+    if (ROWS.find((r) => r.key === c.key)?.variants) setVariant((v) => ({ ...v, [c.key]: c.sku }))
+    setOn((st) => ({ ...st, [c.key]: true }))
     setQuery('')
-    setOpenList(false)
   }
+  const addNeeded = () => setOn((st) => ({ ...st, ...Object.fromEntries([...NEEDED].map((k) => [k, true])) }))
   const setQty = (key: string, n: number) => setOver((o) => ({ ...o, [key]: Math.max(0, Math.min(9999, Math.round(n))) }))
 
   useGSAP(
@@ -226,99 +258,145 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
             </figure>
           </div>
 
-          {/* ——— 2. Izaberite materijal ——— */}
+          {/* ——— 2. Materijal ——— */}
           <div className={styles.result}>
             <p className={styles.step}>Materijal</p>
             <div ref={picker} className={styles.picker}>
-              <label className={styles.search}>
-                <svg viewBox="0 0 16 16" aria-hidden>
-                  <path d="M7 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM10.6 10.6l3.9 3.9" fill="none" stroke="currentColor" strokeWidth="1.4" />
-                </svg>
-                <input
-                  value={query}
-                  onChange={(e) => {
-                    setQuery(e.target.value)
-                    setOpenList(true)
-                  }}
-                  onFocus={() => setOpenList(true)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && options[0]) {
-                      e.preventDefault()
-                      pick(options[0].key)
-                    }
-                    if (e.key === 'Escape') setOpenList(false)
-                  }}
-                  placeholder="Dodajte materijal, npr. traka"
-                  aria-label="Dodajte materijal"
-                  aria-expanded={openList}
-                  role="combobox"
-                  aria-controls="calc-options"
-                />
-              </label>
-              {openList && (
-                <ul id="calc-options" role="listbox" className={styles.options}>
-                  {options.length === 0 && <li className={styles.optEmpty}>Svi materijali za zid su već izabrani.</li>}
-                  {options.map((r) => (
-                    <li key={r.key} role="option" aria-selected={false}>
-                      <button type="button" onClick={() => pick(r.key)}>
-                        <img src={shotOf(skuOf(r.key))} alt="" width={600} height={600} loading="lazy" decoding="async" />
-                        <span>
-                          <b>{label(r)}</b>
-                          <i>{r.hint}</i>
-                        </span>
-                        <em>+ Dodaj</em>
-                      </button>
-                    </li>
+              <div className={styles.cats} role="group" aria-label="Kategorija">
+                {[{ id: 'sve' as const, label: 'Sve' }, ...CATS].map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    aria-pressed={cat === c.id}
+                    onClick={() => {
+                      setCat(c.id)
+                      setOpenList(true)
+                    }}
+                  >
+                    {c.label}
+                  </button>
+                ))}
+              </div>
+              <div className={styles.bar}>
+                <label className={styles.search}>
+                  <svg viewBox="0 0 16 16" aria-hidden>
+                    <path d="M7 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM10.6 10.6l3.9 3.9" fill="none" stroke="currentColor" strokeWidth="1.4" />
+                  </svg>
+                  <input
+                    value={query}
+                    onChange={(e) => {
+                      setQuery(e.target.value)
+                      setOpenList(true)
+                    }}
+                    onFocus={() => setOpenList(true)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && options[0]) {
+                        e.preventDefault()
+                        pick(options[0])
+                      }
+                      if (e.key === 'Escape') setOpenList(false)
+                    }}
+                    placeholder="Traži po nazivu ili šifri"
+                    aria-label="Traži materijal"
+                    aria-expanded={openList}
+                    role="combobox"
+                    aria-controls="calc-options"
+                  />
+                </label>
+                <select className={styles.filter} value={need} onChange={(e) => (setNeed(e.target.value as Need), setOpenList(true))} aria-label="Filter">
+                  {NEEDS.map((n) => (
+                    <option key={n.id} value={n.id}>
+                      {n.label}
+                    </option>
                   ))}
-                </ul>
+                </select>
+              </div>
+              {openList && (
+                <div className={styles.drop}>
+                  <p className={styles.dropHead}>
+                    <span>
+                      {options.length} {plural(options.length, 'artikal', 'artikla', 'artikala')}
+                    </span>
+                    <button type="button" onClick={() => setOpenList(false)}>
+                      Zatvori
+                    </button>
+                  </p>
+                  <ul id="calc-options" role="listbox" className={styles.options}>
+                    {options.length === 0 && <li className={styles.optEmpty}>Nema artikala za ovaj izbor.</li>}
+                    {options.map((c) => {
+                      const added = inList(c)
+                      const swap = !added && !!on[c.key]
+                      return (
+                        <li key={c.sku} role="option" aria-selected={added}>
+                          <button type="button" disabled={added} onClick={() => pick(c)}>
+                            <img src={shotOf(c.sku)} alt="" width={600} height={600} loading="lazy" decoding="async" />
+                            <span>
+                              <b>{nameOf(c.sku, c.key)}</b>
+                              <i>
+                                {c.sku} · {CATS.find((x) => x.id === c.cat)!.label}
+                              </i>
+                            </span>
+                            <em>{added ? 'U spisku' : swap ? 'Zamijeni' : 'Dodaj'}</em>
+                          </button>
+                        </li>
+                      )
+                    })}
+                  </ul>
+                </div>
               )}
             </div>
-            <ul className={styles.list}>
-              {ROWS.filter((r) => on[r.key]).map((r) => {
-                const sku = skuOf(r.key)
-                const p = PRODUCT_MAP[sku]
-                const q = qtyOf(r.key)
-                const recQ = rec[r.key]?.packs ?? 0
-                const edited = over[r.key] !== undefined && over[r.key] !== recQ
-                return (
-                  <li key={r.key} className={styles.item}>
-                    <img src={shotOf(sku)} alt="" width={600} height={600} loading="lazy" decoding="async" />
-                    <span className={styles.what}>
-                      {r.variants ? (
-                        <select value={sku} onChange={(e) => setVariant((v) => ({ ...v, [r.key]: e.target.value }))} aria-label="Vrsta">
-                          {r.variants.map((v) => (
-                            <option key={v.sku} value={v.sku}>
-                              {r.key === 'board' ? `Gips-kartonska ploča · ${v.label}` : v.label}
-                            </option>
-                          ))}
-                        </select>
-                      ) : (
-                        <b>{p?.name ?? NORM[r.key].label}</b>
-                      )}
-                      <i>
-                        {r.hint}
-                        {edited ? ` · preporuka ${recQ}` : ''}
-                      </i>
-                    </span>
-                    <span className={styles.qtyBox}>
-                      <button type="button" onClick={() => setQty(r.key, q - 1)} aria-label="Manje">
-                        −
-                      </button>
-                      <span className={styles.qty}>
-                        <Num value={q} />
-                        <em>{plural(q, ...r.units)}</em>
-                      </span>
-                      <button type="button" onClick={() => setQty(r.key, q + 1)} aria-label="Više">
-                        +
-                      </button>
-                    </span>
-                    <button type="button" className={styles.remove} onClick={() => setOn((st) => ({ ...st, [r.key]: false }))} aria-label={`Ukloni: ${p?.name ?? NORM[r.key].label}`}>
-                      ×
-                    </button>
-                  </li>
-                )
-              })}
-            </ul>
+
+            <div className={styles.sheet}>
+              <p className={styles.sheetHead}>
+                <span>Vaš spisak</span>
+                <span>Količina</span>
+              </p>
+              {chosenRows.length === 0 ? (
+                <div className={styles.sheetEmpty}>
+                  <p>Izaberite artikle iz liste iznad.</p>
+                  <button type="button" onClick={addNeeded}>
+                    Dodaj sve potrebno za zid
+                  </button>
+                </div>
+              ) : (
+                CATS.filter((c) => chosenRows.some((r) => CAT_OF[r.key] === c.id)).map((c) => (
+                  <div key={c.id} className={styles.group}>
+                    <p className={styles.groupName}>{c.label}</p>
+                    {chosenRows
+                      .filter((r) => CAT_OF[r.key] === c.id)
+                      .map((r) => {
+                        const sku = skuOf(r.key)
+                        const q = qtyOf(r.key)
+                        const name = nameOf(sku, r.key)
+                        return (
+                          <div key={r.key} className={styles.line}>
+                            <span className={styles.what}>
+                              <b>{name}</b>
+                              <i>
+                                {sku} · {r.hint}
+                              </i>
+                            </span>
+                            <span className={styles.qtyBox}>
+                              <button type="button" onClick={() => setQty(r.key, q - 1)} aria-label={`${name}: manje`}>
+                                −
+                              </button>
+                              <span className={styles.qty}>
+                                {q} {plural(q, ...r.units)}
+                              </span>
+                              <button type="button" onClick={() => setQty(r.key, q + 1)} aria-label={`${name}: više`}>
+                                +
+                              </button>
+                            </span>
+                            <button type="button" className={styles.remove} onClick={() => setOn((st) => ({ ...st, [r.key]: false }))} aria-label={`Ukloni: ${name}`}>
+                              ×
+                            </button>
+                          </div>
+                        )
+                      })}
+                  </div>
+                ))
+              )}
+            </div>
             <div className={styles.cta}>
               <Cta onClick={addAll} solid>
                 {`Dodaj izabrano u upit (${chosen.length})`}

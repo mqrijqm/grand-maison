@@ -149,3 +149,46 @@
   .remove { grid-column: 3; grid-row: 1; }
 }
 .page, .page *:not(svg):not(svg *) { border-radius: 0 !important; }
+
+/* ——— Materijal kao web-prodavnica: kategorije, pretraga + filter, padajuća lista, spisak ——— */
+.cats { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+.cats button { min-height: 32px; padding: 0 14px; border: 1px solid rgb(27 36 54 / 0.25); background: #fff; font-size: 13px; text-transform: none; letter-spacing: 0; color: var(--ink); transition: background .2s, color .2s, border-color .2s; }
+.cats button:hover { border-color: var(--ink); }
+.cats button[aria-pressed='true'] { background: var(--ink); border-color: var(--ink); color: #fff; }
+.bar { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
+.bar .search { border-right: 0; }
+.filter { min-height: 44px; padding: 0 34px 0 14px; border: 1.4px solid rgb(27 36 54 / 0.3); background: #fff; font: inherit; font-size: 13.5px; text-transform: none; letter-spacing: 0; color: var(--ink); cursor: pointer; appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%), linear-gradient(135deg, var(--ink) 50%, transparent 50%); background-size: 5px 5px; background-position: calc(100% - 18px) 52%, calc(100% - 13px) 52%; background-repeat: no-repeat; }
+.filter:focus-visible { outline: 2px solid var(--cobalt); outline-offset: -2px; }
+.drop { position: absolute; z-index: 10; top: calc(100% + 4px); left: 0; right: 0; background: #fff; box-shadow: 0 0 0 1px rgb(27 36 54 / 0.15), 0 24px 40px -20px rgb(27 36 54 / 0.4); }
+.dropHead { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px solid rgb(27 36 54 / 0.1); font-size: 12px; text-transform: none; letter-spacing: 0; color: rgb(27 36 54 / 0.6); }
+.dropHead button { font-size: 12px; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.drop .options { position: static; max-height: 300px; padding: 4px; box-shadow: none; }
+.options button:disabled { cursor: default; }
+.options button:disabled em { color: rgb(27 36 54 / 0.45); font-weight: 400; }
+.options em { padding: 5px 10px; border: 1px solid currentColor; font-weight: 500; }
+.options button:disabled em { border-color: transparent; }
+
+/* Spisak: tabela bez slika i bez velikih brojeva, grupisana po kategoriji */
+.sheet { border-top: 1px solid var(--ink); }
+.sheetHead { display: grid; grid-template-columns: minmax(0, 1fr) 150px 28px; gap: 12px; padding: 8px 0; border-bottom: 1px solid rgb(27 36 54 / 0.15); font-size: 11.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: rgb(27 36 54 / 0.6); }
+.sheetEmpty { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 0; border-bottom: 1px solid rgb(27 36 54 / 0.15); font-size: 14px; text-transform: none; letter-spacing: 0; color: rgb(27 36 54 / 0.7); }
+.sheetEmpty button { min-height: 36px; padding: 0 14px; border: 1px solid var(--ink); font-size: 13px; color: var(--ink); text-transform: none; letter-spacing: 0; transition: background .2s, color .2s; }
+.sheetEmpty button:hover { background: var(--ink); color: #fff; }
+.group { border-bottom: 1px solid rgb(27 36 54 / 0.15); }
+.groupName { padding: 10px 0 2px; font-size: 11.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--cobalt); }
+.line { display: grid; grid-template-columns: minmax(0, 1fr) 150px 28px; align-items: center; gap: 12px; padding: 8px 0; }
+.line + .line { border-top: 1px dashed rgb(27 36 54 / 0.12); }
+.line .what b { font-size: 14px; font-weight: 500; }
+.line .what i { font-size: 12px; }
+.line .qtyBox { grid-template-columns: 30px minmax(0, 1fr) 30px; height: 34px; border: 1px solid rgb(27 36 54 / 0.25); }
+.line .qtyBox button { font-size: 16px; }
+.line .qty { display: block; text-align: center; font-family: var(--font-text), Arial, sans-serif; font-weight: 400; font-size: 13.5px; letter-spacing: 0; text-transform: none; color: var(--ink); white-space: nowrap; }
+.line .remove { width: 28px; height: 28px; font-size: 16px; }
+@media (max-width: 520px) {
+  .bar { grid-template-columns: 1fr; }
+  .bar .search { border-right: 1.4px solid rgb(27 36 54 / 0.3); border-bottom: 0; }
+  .sheetHead span:last-child { display: none; }
+  .sheetHead, .line { grid-template-columns: minmax(0, 1fr) 28px; }
+  .line .qtyBox { grid-column: 1; grid-row: 2; justify-self: start; width: 150px; }
+  .line .remove { grid-column: 2; grid-row: 1; }
+}
