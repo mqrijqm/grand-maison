@@ -59,7 +59,7 @@ export default function BusinessPage() {
         </header>
 
         <section id="portal" className={`gutter scroll-mt-24 ${styles.portalBlock}`} aria-label="B2B portal, interaktivni prikaz">
-          <Showcase />
+          <Showcase light />
         </section>
       </div>
 
