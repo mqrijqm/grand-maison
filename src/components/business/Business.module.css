@@ -80,9 +80,10 @@
   .hero { grid-template-columns: 1fr 1fr; gap: 6vw; align-items: center; }
   .blockHead { grid-template-columns: 1.4fr 1fr; gap: 8vw; }
   .caps { grid-template-columns: repeat(12, minmax(0, 1fr)); }
-  .cap[data-k='account'] { grid-column: span 5; }
-  .cap[data-k='lines'] { grid-column: span 7; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr); align-items: start; }
-  .cap[data-k='offer'], .cap[data-k='track'], .cap[data-k='repeat'] { grid-column: span 4; }
+  .cap[data-k='account'] { grid-column: span 4; }
+  .cap[data-k='lines'] { grid-column: span 8; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1fr); align-items: start; }
+  .cap[data-k='offer'] { grid-column: span 6; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr); align-items: start; }
+  .cap[data-k='track'], .cap[data-k='repeat'] { grid-column: span 3; }
   .journey { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2vw; }
   .jStep { padding: 54px 0 0; }
   .jStep::before { left: 36px; right: -2vw; top: 18px; bottom: auto; width: auto; height: 1px; }
@@ -92,3 +93,13 @@
   .heroPhoto { margin-left: 10%; }
   .heroCard { width: 92%; }
 }
+
+/* 02 Portal: tamna traka preko cijele širine, demo je zvijezda stranice */
+.stage { margin-top: clamp(100px, 18vh, 220px); padding-top: clamp(64px, 11vh, 120px); padding-bottom: clamp(56px, 9vh, 100px); background: var(--ink); color: var(--bg); }
+.stage .lead { opacity: 0.85; }
+.kickerLight { color: #8fa6ff; }
+.stage .showcase { margin-top: 40px; }
+
+/* 04 Koraci: tekst + skok u odgovarajući ekran portala (bez ponavljanja isječaka) */
+.jTry { justify-self: start; display: inline-flex; align-items: center; gap: 8px; margin-top: 10px; padding: 0 0 4px; border-bottom: 1.4px solid var(--cobalt); color: var(--cobalt); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; transition: gap 0.25s; }
+.jTry:hover { gap: 12px; }

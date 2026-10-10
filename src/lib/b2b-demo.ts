@@ -95,3 +95,15 @@ export const USERS = [
 ]
 
 export const dateAgo = (days: number) => new Date(2026, 9, 10 - days).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })
+
+/** Okvirna težina upita u kg (iz kataloga), za planiranje dostave. */
+export const weight = (lines: Line[]) => Math.round(lines.reduce((s, l) => s + (PRODUCT_MAP[l.sku]?.weight ?? 0) * l.qty, 0))
+/** Količina u pakovanjima, npr. "48 ploča" za 120 m² ploča od 2,5 m². */
+export const packs = (l: Line) => {
+  const p = PRODUCT_MAP[l.sku]?.pack
+  if (!p) return ''
+  const n = Math.ceil(l.qty / p.size - 1e-9)
+  return `${n} ${p.name === 'ploča' ? (n % 10 === 1 && n % 100 !== 11 ? 'ploča' : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 'ploče' : 'ploča') : p.name === 'rolna' ? (n === 1 ? 'rolna' : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 'rolne' : 'rolni') : p.name}`
+}
+/** Termini dostave koje kupac predlaže; potvrđuje ih prodaja (demo). */
+export const SLOTS = ['Sutra, 07–09h', 'Sutra, 10–12h', 'Prekosutra, 07–09h', 'Prekosutra, 12–14h']

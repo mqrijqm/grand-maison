@@ -18,10 +18,10 @@ export const SECONDARY = [
 ] as const
 
 export const JOURNEY = [
-  { no: '01', title: 'Odaberite materijal', text: 'Pretražite po šifri ili nazivu, ili krenite od grupe materijala.', detail: 'pick' },
-  { no: '02', title: 'Pošaljite upit', text: 'Više artikala u jednom upitu, za izabrano gradilište.', detail: 'send' },
-  { no: '03', title: 'Pregledajte i potvrdite ponudu', text: 'Prodaja priprema ponudu sa stavkama i rokom važenja.', detail: 'offer' },
-  { no: '04', title: 'Pratite narudžbu', text: 'Status i dogovorena dostava ili preuzimanje na stovarištu.', detail: 'track' },
+  { no: '01', title: 'Odaberite materijal', text: 'Pretražite po šifri ili nazivu, ili krenite od grupe materijala.', detail: 'pick', view: 'materijali' },
+  { no: '02', title: 'Pošaljite upit', text: 'Više artikala u jednom upitu, za izabrano gradilište.', detail: 'send', view: 'materijali' },
+  { no: '03', title: 'Pregledajte i potvrdite ponudu', text: 'Prodaja priprema ponudu sa stavkama i rokom važenja.', detail: 'offer', view: 'ponude' },
+  { no: '04', title: 'Pratite narudžbu', text: 'Status i dogovorena dostava ili preuzimanje na stovarištu.', detail: 'track', view: 'narudzbe' },
 ] as const
 
 // Ko kupuje. Fotografije su ilustrativne, sa gradilišta i radova (vidi /stock/credits.json).

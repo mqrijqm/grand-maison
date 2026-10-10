@@ -1,7 +1,9 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import ProductGlyph from '@/components/art/ProductGlyph'
 import Icon from '@/components/portal/Icon'
+import { PRODUCT_MAP } from '@/lib/shop'
 import {
   DOCS,
   FIRM,
@@ -19,6 +21,9 @@ import {
   name,
   site,
   unit,
+  weight,
+  packs,
+  SLOTS,
   type Line,
   type Offer,
   type Order,
@@ -69,9 +74,36 @@ export default function Showcase() {
     { t: 'Juče', text: 'GC-26-04498 je spremna za preuzimanje na stovarištu' },
     { t: '27.09.', text: 'GC-26-04402 isporučena na Lamelu A' },
   ])
+  const [slot, setSlot] = useState(SLOTS[0])
+  // Vođeni scenarij: četiri koraka jedne narudžbe, štikliraju se dok ih kupac prolazi.
+  const [done, setDone] = useState({ added: false, sent: false, confirmed: false, tracked: false })
+  const mark = (k: keyof typeof done) => setDone((d) => (d[k] ? d : { ...d, [k]: true }))
   const timers = useRef<ReturnType<typeof setTimeout>[]>([])
   const seq = useRef(150)
   useEffect(() => () => timers.current.forEach(clearTimeout), [])
+  // Koraci "Kako funkcioniše" na stranici otvaraju odgovarajući ekran portala.
+  useEffect(() => {
+    const on = (e: Event) => {
+      const v = (e as CustomEvent<View>).detail
+      if (NAV.some((n) => n.id === v)) setView(v)
+    }
+    window.addEventListener('gc-portal', on)
+    return () => window.removeEventListener('gc-portal', on)
+  }, [])
+  const restart = () => {
+    timers.current.forEach(clearTimeout)
+    setOffers(OFFERS)
+    setOrders(ORDERS)
+    setDraft([
+      { sku: 'GKP-001', qty: 120 },
+      { sku: 'PRF-075', qty: 40 },
+    ])
+    setDraftSite('a')
+    setMode('Dostava')
+    setDone({ added: false, sent: false, confirmed: false, tracked: false })
+    setView('materijali')
+    say('Scenarij je vraćen na početak')
+  }
 
   const say = (text: string) => {
     setToast(text)
@@ -80,8 +112,10 @@ export default function Showcase() {
   const log = (text: string) => setActivity((a) => [{ t: 'Sada', text }, ...a].slice(0, 6))
   const go = (v: View) => setView(v)
 
-  const addLine = (sku: string, qty: number) =>
+  const addLine = (sku: string, qty: number) => {
     setDraft((d) => (d.some((l) => l.sku === sku) ? d.map((l) => (l.sku === sku ? { ...l, qty: l.qty + qty } : l)) : [...d, { sku, qty }]))
+    mark('added')
+  }
   const loadLines = (lines: Line[], label: string) => {
     setDraft(lines.map((l) => ({ ...l })))
     go('materijali')
@@ -95,6 +129,7 @@ export default function Showcase() {
     setOffers((o) => [{ no, site: draftSite, title: `Upit, ${lines.length} stavki`, lines, status: 'Kod prodaje', validDays: 14, days: 0, demo: true }, ...o])
     setOfferSel(no)
     setDraft([])
+    mark('sent')
     log(`Upit za ${site(draftSite).name} poslat prodaji (simulacija)`)
     say('Simulacija: upit je kod prodaje. U demu se ništa ne šalje.')
     go('ponude')
@@ -110,14 +145,16 @@ export default function Showcase() {
   const confirm = (o: Offer) => {
     setOffers((all) => all.map((x) => (x.no === o.no ? { ...x, status: 'Potvrđena' } : x)))
     const no = `GC-26-0${4520 + seq.current++}`
-    setOrders((all) => [{ no, site: o.site, step: 1, mode, slot: 'Termin dogovara prodaja', lines: o.lines, days: 0, from: o.no }, ...all])
+    setOrders((all) => [{ no, site: o.site, step: 1, mode, slot: mode === 'Dostava' ? `${slot} (prijedlog, potvrđuje prodaja)` : 'Termin preuzimanja dogovara prodaja', lines: o.lines, days: 0, from: o.no }, ...all])
     setOrderSel(no)
+    mark('confirmed')
     log(`Ponuda ${o.no} potvrđena, otvorena narudžba ${no} (simulacija)`)
     say(`Simulacija: ponuda potvrđena, narudžba ${no} je otvorena`)
   }
   const advance = (o: Order) => {
     const step = Math.min(4, o.step + 1)
     setOrders((all) => all.map((x) => (x.no === o.no ? { ...x, step, slot: step === 3 ? (x.mode === 'Dostava' ? 'Danas, 08–10h' : 'Danas, 13–15h') : step === 4 ? 'Završeno danas' : x.slot } : x)))
+    mark('tracked')
     log(`${o.no}: ${orderStatus({ ...o, step })} (simulacija)`)
   }
 
@@ -132,8 +169,45 @@ export default function Showcase() {
   }, [query, group])
   const [title, sub] = CAPTION[view]
 
+  const steps: { k: keyof typeof done; label: string; view: View }[] = [
+    { k: 'added', label: 'Dodajte materijal', view: 'materijali' },
+    { k: 'sent', label: 'Pošaljite upit', view: 'materijali' },
+    { k: 'confirmed', label: 'Potvrdite ponudu', view: 'ponude' },
+    { k: 'tracked', label: 'Pratite narudžbu', view: 'narudzbe' },
+  ]
+  const nextStep = steps.find((x) => !done[x.k])
+
   return (
     <div className={s.wrap}>
+      <div className={s.scenario}>
+        <div className={s.scenarioHead}>
+          <span className={s.kicker}>Scenarij za probu</span>
+          <b>Materijal za pregradni zid, Lamela A</b>
+        </div>
+        <ol className={s.scenarioSteps}>
+          {steps.map((x, i) => (
+            <li key={x.k}>
+              <button type="button" data-done={done[x.k] || undefined} data-next={nextStep?.k === x.k || undefined} onClick={() => setView(x.view)}>
+                <i>{done[x.k] ? '✓' : i + 1}</i>
+                {x.label}
+              </button>
+            </li>
+          ))}
+        </ol>
+        <p className={s.scenarioHint} aria-live="polite">
+          {nextStep ? (
+            <>
+              Sljedeće: <b>{nextStep.label.toLowerCase()}</b>
+            </>
+          ) : (
+            <b>Cijeli tok narudžbe prošao je bez ijednog poziva.</b>
+          )}
+        </p>
+        <button type="button" className={s.reset} onClick={restart}>
+          <Icon name="repeat" /> Ispočetka
+        </button>
+      </div>
+
       <div className={s.window} data-view={view}>
         <div className={s.chrome} aria-hidden>
           <span className={s.dots}>
@@ -355,6 +429,23 @@ export default function Showcase() {
                         </button>
                       ))}
                     </div>
+                    {mode === 'Dostava' ? (
+                      <div className={s.delivery}>
+                        <label className={s.field}>
+                          <span>Željeni termin</span>
+                          <select value={slot} onChange={(e) => setSlot(e.target.value)}>
+                            {SLOTS.map((x) => (
+                              <option key={x}>{x}</option>
+                            ))}
+                          </select>
+                        </label>
+                        <p className={s.fine}>
+                          {site(draftSite).address} · kontakt na gradilištu: {site(draftSite).lead}
+                        </p>
+                      </div>
+                    ) : (
+                      <p className={`${s.fine} ${s.delivery}`}>Stovarište, Ul. Nenada Kostića 151, Banja Luka · pon–pet 07–16, sub 07–15</p>
+                    )}
                     {draft.length === 0 ? (
                       <p className={s.empty}>Upit je prazan. Dodajte materijal iz liste ili učitajte sačuvanu listu.</p>
                     ) : (
@@ -363,7 +454,10 @@ export default function Showcase() {
                           <li key={l.sku}>
                             <span>
                               <b>{name(l.sku)}</b>
-                              <i>{l.sku}</i>
+                              <i>
+                                {l.sku}
+                                {packs(l) ? ` · ${packs(l)}` : ''}
+                              </i>
                             </span>
                             <Qty value={l.qty} unit={unit(l.sku)} onChange={(q) => setDraft((d) => (q <= 0 ? d.filter((x) => x.sku !== l.sku) : d.map((x) => (x.sku === l.sku ? { ...x, qty: q } : x))))} />
                           </li>
@@ -381,6 +475,12 @@ export default function Showcase() {
                         ))}
                       </select>
                     </label>
+                    {draft.length > 0 && (
+                      <p className={s.weight}>
+                        <span>Ukupna težina (okvirno)</span>
+                        <b>{(weight(draft) / 1000).toLocaleString('de-DE', { maximumFractionDigits: 1 })} t</b>
+                      </p>
+                    )}
                     <button type="button" className={`${s.primary} ${s.wide}`} disabled={!draft.length} onClick={send}>
                       Pošalji upit (demo) <Icon name="arrow" />
                     </button>
@@ -466,7 +566,7 @@ export default function Showcase() {
                             </button>
                           ) : (
                             <button type="button" className={s.primary} onClick={() => go('narudzbe')}>
-                              Pogledaj narudžbu <Icon name="arrow" />
+                              Pratite narudžbu <Icon name="arrow" />
                             </button>
                           )}
                           <button type="button" className={s.ghost} onClick={() => loadLines(offer.lines, `Ponuda ${offer.no}`)}>
@@ -664,11 +764,15 @@ function Material({ m, inDraft, onAdd }: { m: (typeof MATERIALS)[number]; inDraf
   const [q, setQ] = useState(m.pack ? Math.round(m.pack.size * 10 * 10) / 10 : 10)
   return (
     <li className={s.material}>
+      <span className={s.glyph} aria-hidden>
+        {PRODUCT_MAP[m.sku] && <ProductGlyph product={PRODUCT_MAP[m.sku]} kind={m.sku.startsWith('GKP-') ? 'board' : undefined} />}
+      </span>
       <span className={s.matName}>
         <b>{m.name}</b>
         <i>
           {m.sku} · {m.spec}
         </i>
+        {packs({ sku: m.sku, qty: q }) && <em className={s.pack}>{packs({ sku: m.sku, qty: q })}</em>}
       </span>
       <Qty value={q} unit={m.unit} onChange={(n) => setQ(Math.max(0, n))} />
       <button type="button" className={inDraft ? s.added : s.ghost} disabled={q <= 0} onClick={() => onAdd(q)} aria-label={inDraft ? `Dodaj još, u upitu je ${inDraft} ${m.unit}` : `Dodaj ${m.name} u upit`}>

@@ -31,6 +31,15 @@ export default function BusinessPage() {
     { scope: root },
   )
 
+  // Korak iz "Kako funkcioniše" otvara isti ekran u interaktivnom portalu iznad.
+  const tryStep = (view: string) => {
+    window.dispatchEvent(new CustomEvent('gc-portal', { detail: view }))
+    const el = document.getElementById('portal')
+    if (!el) return
+    if (window.__gcLenis) window.__gcLenis.scrollTo(el.getBoundingClientRect().top + window.scrollY - 20)
+    else el.scrollIntoView({ behavior: 'smooth' })
+  }
+
   return (
     <div ref={root} className={styles.page}>
       {/* 01 — Heroj */}
@@ -61,16 +70,16 @@ export default function BusinessPage() {
       </header>
 
       {/* 02 — Interaktivni prikaz portala */}
-      <section id="portal" className={`gutter scroll-mt-24 ${styles.block}`} aria-labelledby="biz-portal">
+      <section id="portal" className={`gutter scroll-mt-24 ${styles.stage}`} aria-labelledby="biz-portal">
         <div className={styles.blockHead}>
           <div>
-            <p className={`label ${styles.kicker}`}>02 / Portal uživo</p>
+            <p className={`label ${styles.kickerLight}`}>02 / Portal uživo</p>
             <h2 id="biz-portal" data-head className={`display invisible ${styles.title}`}>
               Probajte kako se naručuje
             </h2>
           </div>
           <p className={styles.lead}>
-            Primjer naloga izmišljene građevinske firme. Dodajte materijal, pošaljite upit, potvrdite ponudu i pratite narudžbu.
+            Primjer naloga izmišljene građevinske firme. Prođite jednu kompletnu narudžbu: materijal za pregradni zid, od izbora artikala do dostave na gradilište.
           </p>
         </div>
         <div className={styles.showcase}>
@@ -96,9 +105,11 @@ export default function BusinessPage() {
                 <h3 className={styles.capTitle}>{c.title}</h3>
                 <p className={styles.small}>{c.text}</p>
               </div>
-              <div className={styles.capSnippet}>
-                <Snippet kind={c.snippet} />
-              </div>
+              {(c.snippet === 'lines' || c.snippet === 'offer') && (
+                <div className={styles.capSnippet}>
+                  <Snippet kind={c.snippet} />
+                </div>
+              )}
             </li>
           ))}
         </ul>
@@ -131,9 +142,9 @@ export default function BusinessPage() {
               </span>
               <h3 className={styles.jTitle}>{j.title}</h3>
               <p className={styles.small}>{j.text}</p>
-              <div className={styles.jDetail}>
-                <Snippet kind={j.detail} />
-              </div>
+              <button type="button" className={styles.jTry} onClick={() => tryStep(j.view)}>
+                Isprobajte u portalu <span aria-hidden>→</span>
+              </button>
             </li>
           ))}
         </ol>
