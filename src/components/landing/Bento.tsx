@@ -55,7 +55,7 @@ export default function Bento() {
   )
 
   return (
-    <section ref={root} id="b2b" className="relative z-20 bg-bg px-3 pb-3 pt-[10vh] md:px-4 md:pb-4" aria-label="B2B Partner Portal">
+    <section ref={root} id="b2b" className="relative z-20 bg-bg px-3 pb-4 pt-[10vh] md:px-4 md:pb-5" aria-label="B2B Partner Portal">
       {/* Gornje polje: ogromna riječ + kratak tekst desno */}
       <div className="flex flex-col gap-8 border-[1.5px] border-ink/80 px-6 py-8 md:flex-row md:items-end md:justify-between md:px-8 md:pb-[3.2vw] md:pt-[6vw]">
         <h2 className="overflow-hidden pb-[0.06em]">

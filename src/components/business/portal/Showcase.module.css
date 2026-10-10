@@ -347,3 +347,6 @@
 .wrap[data-light] .scenarioSteps i { background: rgb(27 36 54 / 0.08); }
 .wrap[data-light] .scenarioSteps button[data-next] { background: var(--navy); border-color: var(--navy); color: #fff; }
 .wrap[data-light] .note { color: rgb(27 36 54 / 0.65); }
+/* Oštre ivice i tanak tamnoplavi okvir par milimetara od prozora */
+.window { border-radius: 0 !important; outline: 1px solid var(--navy); outline-offset: 6px; }
+.main { border-radius: 0; }

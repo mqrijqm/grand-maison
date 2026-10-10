@@ -87,3 +87,4 @@
   .sites { grid-template-columns: minmax(0, 1fr); }
   .skelRow { display: none; }
 }
+.win { border-radius: 0; outline: 1px solid var(--navy); outline-offset: 6px; overflow: visible; } .win > .body { overflow: hidden; } .main { border-radius: 0; }

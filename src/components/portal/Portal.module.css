@@ -119,3 +119,7 @@
 .forBizInner { position: relative; z-index: 2; }
 .forBizFrame { transform-origin: 50% 0; will-change: transform; }
 .forBizDissolve { z-index: 1; height: clamp(320px, 50vh, 560px); margin-top: calc(-1 * clamp(140px, 18vh, 240px)); }
+/* Iste širine kao B2B blokovi iznad (ista margina), tik ispod njih, na istoj krem podlozi */
+.forBiz { padding-top: 0 !important; background: var(--bg) !important; }
+.forBizInner { padding-inline: 12px; }
+@media (min-width: 768px) { .forBizInner { padding-inline: 16px; } }
