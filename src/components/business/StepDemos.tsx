@@ -19,7 +19,7 @@ const ORDER: [string, string][] = [
   ['GKP-001', '260'],
   ['PRF-075', '90'],
 ]
-const TRACK = ['Primljena', 'Potvrđena', 'U pripremi', 'Spremna', 'Isporučena']
+const TRACK = ['Primljena', 'Potvrđena', 'U pripremi', 'Na putu', 'Isporučena']
 
 // Kucanje teksta znak po znak.
 function type(tl: gsap.core.Timeline, el: HTMLElement, text: string, at?: gsap.Position) {
@@ -155,6 +155,9 @@ const buildLogin: Build = (q, tl, cursorTo) => {
   tl.call(() => q('[data-f="pass"]').removeAttribute('data-on'))
   click(tl, q('[data-b="login"]'))
   tl.to(q('[data-s="ok"]'), { autoAlpha: 1, y: 0, duration: 0.45, ease: 'power3.out' }, '+=0.2')
+  // Bez reklama i opšte početne: odmah dashboard firme.
+  tl.to(q('[data-s="dash"]'), { autoAlpha: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '+=0.9')
+  tl.fromTo(q('[data-bar]'), { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: 'power3.out' }, '<0.2')
 }
 const finalLogin = (q: (sel: string) => HTMLElement) => {
   q('[data-t="email"]').textContent = EMAIL
@@ -196,6 +199,25 @@ function LoginDemo() {
             <p className={styles.h}>Dobro došli</p>
             <p className={styles.muted}>DEMO GRADNJA d.o.o.</p>
           </div>
+          <div className={styles.dash} data-show data-s="dash">
+            <div className={styles.tileDark}>
+              <span className={styles.muted}>Kreditni okvir · dostupno</span>
+              <b>14.241 KM</b>
+              <i className={styles.meter}>
+                <em data-bar />
+              </i>
+            </div>
+            <div className={styles.tile}>
+              <span className={styles.muted}>Narudžbe u toku</span>
+              <p>
+                GC-26-04477 <span className={styles.chip}>Na putu ka gradilištu</span>
+              </p>
+            </div>
+            <div className={styles.tile}>
+              <span className={styles.muted}>Brzi unos</span>
+              <span className={styles.fakeInput}>Šifra, npr. GKP-001</span>
+            </div>
+          </div>
         </div>
       </div>
       <Cursor />
@@ -205,24 +227,32 @@ function LoginDemo() {
 
 // 02 — brza narudžba: šifra, artikal se sam popuni, količina, "Pošalji upit".
 const buildOrder: Build = (q, tl, cursorTo) => {
+  const key = (label: string, at?: gsap.Position) => {
+    tl.call(() => void (q('[data-t="key"]').textContent = label), undefined, at)
+    tl.fromTo(q('[data-s="key"]'), { autoAlpha: 0, y: 6 }, { autoAlpha: 1, y: 0, duration: 0.2 }, '<')
+    tl.to(q('[data-s="key"]'), { autoAlpha: 0, duration: 0.25 }, '+=0.55')
+  }
   ORDER.forEach(([sku, qty], i) => {
-    cursorTo(`[data-f="sku${i}"]`, i ? '+=0.2' : undefined)
+    if (i) tl.to(q(`[data-s="row${i}"]`), { autoAlpha: 1, y: 0, duration: 0.3 }, '<')
+    else cursorTo(`[data-f="sku${i}"]`)
     tl.call(() => on(q(`[data-f="sku${i}"]`)))
     type(tl, q(`[data-t="sku${i}"]`), sku, '+=0.1')
     tl.to(q(`[data-s="name${i}"]`), { autoAlpha: 1, y: 0, duration: 0.3 }, '+=0.15')
-    cursorTo(`[data-f="qty${i}"]`, '+=0.1')
+    key('Tab ⇥', '+=0.1')
     tl.call(() => {
       q(`[data-f="sku${i}"]`).removeAttribute('data-on')
       on(q(`[data-f="qty${i}"]`))
-    })
+    }, undefined, '<0.3')
     type(tl, q(`[data-t="qty${i}"]`), qty, '+=0.1')
-    tl.call(() => q(`[data-f="qty${i}"]`).removeAttribute('data-on'), undefined, '+=0.15')
+    if (i < ORDER.length - 1) key('Enter ↵ novi red', '+=0.15')
+    tl.call(() => q(`[data-f="qty${i}"]`).removeAttribute('data-on'), undefined, '+=0.1')
   })
   cursorTo('[data-b="send"]', '+=0.2')
   click(tl, q('[data-b="send"]'))
   tl.to(q('[data-s="sent"]'), { autoAlpha: 1, y: 0, duration: 0.4, ease: 'power3.out' }, '+=0.15')
 }
 const finalOrder = (q: (sel: string) => HTMLElement) => {
+  q('[data-t="key"]').textContent = 'Tab ⇥ · Enter ↵'
   ORDER.forEach(([sku, qty], i) => {
     q(`[data-t="sku${i}"]`).textContent = sku
     q(`[data-t="qty${i}"]`).textContent = qty
@@ -244,7 +274,7 @@ function OrderDemo() {
               <span>Količina</span>
             </div>
             {ORDER.map(([sku], i) => (
-              <div key={sku} className={styles.row}>
+              <div key={sku} className={styles.row} {...(i ? { 'data-show': '', 'data-s': `row${i}` } : {})}>
                 <span className={styles.cell} data-f={`sku${i}`}>
                   <em data-type data-t={`sku${i}`} />
                   <i className={styles.caret} />
@@ -261,7 +291,11 @@ function OrderDemo() {
               </div>
             ))}
           </div>
+          <p className={styles.drop}>CSV iz predmjera radova prevucite ovdje</p>
           <div className={styles.foot}>
+            <span className={styles.key} data-show data-s="key">
+              <kbd data-type data-t="key" />
+            </span>
             <span className={styles.toast} data-show data-s="sent">
               ✓ Upit je poslat prodaji
             </span>
@@ -316,8 +350,8 @@ function TrackDemo() {
             ))}
           </ol>
           <div className={styles.slot} data-show data-s="slot">
-            <span>Dostava na gradilište</span>
-            <b>Sutra 08–10h</b>
+            <span>Na putu ka gradilištu · Lamela A</span>
+            <b>Stiže 08–10h</b>
           </div>
         </div>
       </div>

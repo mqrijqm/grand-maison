@@ -77,3 +77,20 @@
   .thead, .row { grid-template-columns: 76px minmax(0, 1fr) 70px; gap: 6px; }
   .track span { font-size: 9px; }
 }
+
+/* 01 poslije prijave: vlastiti dashboard firme */
+.dash { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto 1fr; gap: 8px; padding: 14px; background: #f3f5fa; }
+.tile, .tileDark { display: grid; align-content: start; gap: 6px; padding: 12px; background: #fff; border: 1px solid rgb(27 36 54 / 0.1); font-size: 12px; }
+.tileDark { grid-column: 1 / -1; background: var(--ink); color: #fff; border-color: var(--ink); }
+.tileDark .muted { opacity: 0.75; }
+.tileDark b { font-size: 26px; font-weight: 300; letter-spacing: -0.04em; line-height: 1; }
+.meter { display: block; height: 6px; background: rgb(255 255 255 / 0.18); }
+.meter em { display: block; width: 52%; height: 100%; background: #fff; transform-origin: left; }
+.tile p { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-family: ui-monospace, monospace; font-size: 11px; }
+.chip { padding: 3px 8px; background: var(--cobalt); color: #fff; font-family: var(--font-text), Arial, sans-serif; font-size: 10px; font-weight: 600; white-space: nowrap; }
+.fakeInput { display: flex; align-items: center; height: 30px; padding: 0 10px; border: 1px solid rgb(27 36 54 / 0.2); font-family: ui-monospace, monospace; font-size: 11px; opacity: 0.6; }
+
+/* 02 tasteri i zona za CSV */
+.key kbd { display: inline-grid; place-items: center; min-width: 46px; height: 26px; padding: 0 9px; border: 1.4px solid rgb(27 36 54 / 0.35); border-bottom-width: 3px; background: #fff; color: var(--ink); font-family: var(--font-text), Arial, sans-serif; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.key { margin-right: auto; }
+.drop { padding: 8px 10px; border: 1px dashed rgb(27 36 54 / 0.3); font-size: 11px; text-align: center; opacity: 0.7; }
