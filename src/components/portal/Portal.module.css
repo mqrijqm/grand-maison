@@ -124,3 +124,4 @@
 .forBizInner { padding-inline: 12px; }
 @media (min-width: 768px) { .forBizInner { padding-inline: 16px; } }
 .forBiz { z-index: 21; }
+.forBiz { padding-bottom: clamp(40px, 8vh, 100px); }

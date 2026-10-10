@@ -86,7 +86,6 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
     { t: '27.09.', kind: 'dokumenti', text: 'Otpremnica uz GC-26-04402', meta: 'Lamela A · isporučeno' },
   ])
   const [stageSel, setStageSel] = useState(0)
-  const [side, setSide] = useState('')
   const [slot, setSlot] = useState(SLOTS[0])
   // Vođeni scenarij: četiri koraka jedne narudžbe, štikliraju se dok ih kupac prolazi.
   const [done, setDone] = useState({ added: false, sent: false, confirmed: false, tracked: false })
@@ -256,7 +255,6 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
   const order = orders.find((o) => o.no === orderSel) ?? orders[0]
   const pending = offers.filter((o) => o.status === 'Čeka potvrdu')
   const active = orders.filter((o) => o.step < 4)
-  const lastDone = orders.find((o) => o.step === 4)
   const list = useMemo(() => {
     const q = query.trim().toLowerCase()
     return MATERIALS.filter((m) => (group === 'sve' || m.group === group) && (!q || m.name.toLowerCase().includes(q) || m.sku.toLowerCase().includes(q)))
@@ -310,18 +308,6 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
               </span>
               <em className={s.demoTag}>Demo</em>
             </div>
-            <form
-              className={s.sideSearch}
-              onSubmit={(e) => {
-                e.preventDefault()
-                setQuery(side)
-                setGroup('sve')
-                go('materijali')
-              }}
-            >
-              <Icon name="search" />
-              <input value={side} onChange={(e) => setSide(e.target.value)} placeholder="Šifra, ponuda, narudžba" aria-label="Pretraga portala" />
-            </form>
             <nav className={s.nav} aria-label="Portal (demo)">
               {GROUPS_NAV.map((g) => (
                 <div key={g.label} className={s.navGroup}>
@@ -407,148 +393,50 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
 
             <div className={s.canvas} key={view}>
               {view === 'pregled' && (
-                <>
-                  <ul className={s.next} aria-label="Sljedeći koraci">
-                    {/* Ponuda koja čeka potvrdu je već u plavoj sceni iznad; ovdje samo ako scene nema. */}
-                    {(stageOffer ? [] : pending.slice(0, 1)).map((o) => (
-                      <li key={o.no} data-k="offer">
-                        <span className={s.kicker}>Ponuda čeka potvrdu</span>
-                        <b>
-                          {o.no} · {site(o.site).name}
-                        </b>
-                        <i>
-                          {o.lines.length} stavki · važi {o.validDays} dana
-                        </i>
-                        <button
-                          type="button"
-                          className={s.primary}
-                          onClick={() => {
-                            setOfferSel(o.no)
-                            go('ponude')
-                          }}
-                        >
-                          Pregledaj ponudu
-                        </button>
-                      </li>
-                    ))}
-                    {active.slice(0, 2).map((o) => (
-                      <li key={o.no}>
-                        <span className={s.kicker}>{o.mode === 'Dostava' ? 'Dostava' : 'Preuzimanje'}</span>
-                        <b>
-                          {o.slot} · {o.mode === 'Dostava' ? site(o.site).name : 'Stovarište'}
-                        </b>
-                        <i>
-                          {o.no} · <Status o={o} />
-                        </i>
-                        <button
-                          type="button"
-                          className={s.ghost}
-                          onClick={() => {
-                            setOrderSel(o.no)
-                            go('narudzbe')
-                          }}
-                        >
-                          Detalji
-                        </button>
-                      </li>
-                    ))}
-                    {draft.length > 0 && (
-                      <li>
-                        <span className={s.kicker}>Upit u pripremi</span>
-                        <b>{draft.length} stavki, nije poslat</b>
-                        <i>{site(draftSite).name}</i>
-                        <button type="button" className={s.ghost} onClick={() => go('materijali')}>
-                          Nastavi upit
-                        </button>
-                      </li>
-                    )}
-                  </ul>
-
-                  <div className={s.cols}>
-                    <section className={s.card}>
-                      <h4>Brzo do materijala</h4>
-                      <label className={s.search}>
-                        <Icon name="search" />
-                        <input
-                          placeholder="Šifra ili naziv, npr. CW 75"
-                          aria-label="Traži materijal"
-                          onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                              setQuery(e.currentTarget.value)
-                              go('materijali')
-                            }
-                          }}
-                        />
-                      </label>
-                      <div className={s.chips}>
-                        {GROUPS.map((g) => (
+                // Pregled: samo ono što čeka odluku. Plava scena (ponuda) je iznad; ispod narudžbe u toku i tok.
+                <div className={s.cols}>
+                  <section className={s.card}>
+                    <h4>Narudžbe u toku</h4>
+                    <ul className={s.rows}>
+                      {active.slice(0, 3).map((o) => (
+                        <li key={o.no}>
                           <button
-                            key={g.id}
                             type="button"
+                            className={s.rowBtn}
                             onClick={() => {
-                              setGroup(g.id)
-                              go('materijali')
+                              setOrderSel(o.no)
+                              go('narudzbe')
                             }}
                           >
-                            {g.label}
-                          </button>
-                        ))}
-                      </div>
-                      <h4 className={s.sub}>Ponovite nabavku</h4>
-                      <ul className={s.rows}>
-                        {lastDone && (
-                          <li>
                             <span>
-                              <b>Narudžba {lastDone.no}</b>
+                              <b>{o.no}</b>
                               <i>
-                                {site(lastDone.site).name} · {lastDone.lines.length} stavki
+                                {o.mode === 'Dostava' ? site(o.site).name : 'Stovarište'} · {o.slot}
                               </i>
                             </span>
-                            <button type="button" className={s.ghost} onClick={() => loadLines(lastDone.lines, `Narudžba ${lastDone.no}`)}>
-                              <Icon name="repeat" /> Ponovi
-                            </button>
-                          </li>
-                        )}
-                        {LISTS.slice(0, 2).map((l) => (
-                          <li key={l.id}>
+                            <Status o={o} />
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                  <section className={s.card}>
+                    <h4>Uživo</h4>
+                    <ul className={s.rows}>
+                      {activity.slice(0, 3).map((a, i) => (
+                        <li key={`${a.text}-${i}`} data-new={(i === 0 && a.t === 'sad') || undefined}>
+                          <button type="button" className={s.rowBtn} onClick={() => go(a.kind === 'ponude' ? 'ponude' : a.kind === 'dokumenti' ? 'dokumenti' : 'narudzbe')}>
                             <span>
-                              <b>{l.name}</b>
-                              <i>Sačuvana lista · {l.lines.length} stavki</i>
+                              <b>{a.text}</b>
+                              <i>{a.meta}</i>
                             </span>
-                            <button type="button" className={s.ghost} onClick={() => loadLines(l.lines, l.name)}>
-                              U upit
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
-                    </section>
-                    <section className={s.card}>
-                      <div className={s.liveHead}>
-                        <h4>Uživo</h4>
-                        <span className={s.liveTag}>
-                          <i />
-                          Uživo
-                        </span>
-                      </div>
-                      <ul className={s.live}>
-                        {activity.map((a, i) => (
-                          <li key={`${a.text}-${i}`} data-new={(i === 0 && a.t === 'sad') || undefined}>
-                            <button type="button" onClick={() => go(a.kind === 'ponude' ? 'ponude' : a.kind === 'dokumenti' ? 'dokumenti' : 'narudzbe')}>
-                              <span className={s.liveIcon}>
-                                <Icon name={a.kind} />
-                              </span>
-                              <span className={s.liveText}>
-                                <b>{a.text}</b>
-                                <i>{a.meta}</i>
-                              </span>
-                              <time>{a.t}</time>
-                            </button>
-                          </li>
-                        ))}
-                      </ul>
-                    </section>
-                  </div>
-                </>
+                            <time className={s.time}>{a.t}</time>
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+                </div>
               )}
 
               {view === 'materijali' && (
@@ -906,7 +794,6 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
           {toast}
         </div>
       </div>
-      {!tour && <p className={s.note}>Interaktivni prikaz predloženog B2B portala. Podaci i procesi su demonstracioni.</p>}
     </div>
   )
 }
