@@ -223,3 +223,17 @@
 .page *:not(svg):not(svg *) { border-radius: 0 !important; }
 /* Na plavoj podlozi CTA je bijel sa kobalt tekstom; hover i dalje oker */
 .blue :global(.cta), .partnerEnd :global(.cta) { background: #fff; color: var(--cobalt); }
+
+/* Vrh /za-firme na bijeloj podlozi (plavo počinje tek u koracima "Vi ste firma...") */
+.blue { background: #fff !important; color: var(--ink) !important; }
+.blue .heroKicker { color: var(--cobalt); }
+.blue :global(.cta) { background: var(--cobalt); color: #fff; }
+.blue .heroPill { box-shadow: 0 0 0 1px rgb(27 36 54 / 0.12), 0 24px 50px -24px rgb(27 36 54 / 0.3); }
+.portalBlock { padding-bottom: clamp(60px, 10vh, 120px); }
+
+/* Završni poziv: tekst lijevo, uska vertikalna fotografija desno */
+.final { grid-template-columns: minmax(0, 1fr) !important; align-items: center; }
+.final .lead { margin-top: 20px; }
+.finalPhoto { width: min(260px, 60vw); aspect-ratio: 3 / 4; overflow: hidden; background: var(--plate); }
+.finalPhoto img { display: block; width: 100%; height: 100%; object-fit: cover; }
+@media (min-width: 1024px) { .final { grid-template-columns: minmax(0, 1fr) auto !important; } }

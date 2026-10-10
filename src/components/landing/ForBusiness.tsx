@@ -2,13 +2,14 @@
 
 import { useRef } from 'react'
 import Showcase from '@/components/business/portal/Showcase'
+import SquareDissolve from '@/components/ui/SquareDissolve'
 import { gsap, useGSAP } from '@/lib/gsap'
 import s from '@/components/portal/Portal.module.css'
 
 // Odmah ispod B2B blokova (Bento): isti interaktivni portal kao na /za-firme, bez teksta i koraka.
 // Na ulazu je iste širine kao blokovi iznad; sekcija se zakači, a portal se centriran u ekranu
 // smanji i odmakne od ivica.
-// Pozadina je mirna krem, bez animiranih kvadratića.
+// Iza donje polovine portala blago niču plavi kvadratići (kratko, prozirno).
 export default function ForBusiness() {
   const root = useRef<HTMLElement>(null)
   useGSAP(
@@ -23,6 +24,8 @@ export default function ForBusiness() {
   )
   return (
     <section ref={root} id="za-firme" aria-label="B2B portal, interaktivni prikaz" className={s.forBiz}>
+      {/* Blagi plavi kvadratići samo iza donje polovine portala */}
+      <SquareDissolve className={s.forBizSquares} color="var(--cobalt)" tint solid={false} />
       <div className={s.forBizInner}>
         <div data-zoom className={s.forBizFrame}>
           <Showcase light steps={false} />

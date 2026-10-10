@@ -32,9 +32,9 @@ export default function WhoSplit() {
     <section ref={root} aria-labelledby="biz-who" className="relative z-20 mt-[clamp(100px,18vh,220px)] bg-bg md:grid md:grid-cols-2">
       <div className={styles.panel}>
         <h2 id="biz-who" data-head className={`display invisible ${styles.heading}`}>
-          Za
+          Za koga je
           <br />
-          koga?
+          B2B portal?
         </h2>
         <div className={styles.foot}>
           <p className="text-[14px] leading-[1.7] opacity-75">Za firme koje kupuju za posao, redovno ili za jedan projekat.</p>
@@ -45,7 +45,7 @@ export default function WhoSplit() {
       </div>
       <BlueWipe from="right" className="text-bg [--art-fill:var(--navy)] [--signal:var(--accent)]">
         {AUDIENCES.map((a, i) => (
-          <article key={a.title} data-use className={`${styles.row} md:!min-h-[72dvh]`}>
+          <article key={a.title} data-use className={`${styles.row} md:!min-h-[44dvh] md:!py-[8vh]`}>
             <div>
               <p className="label flex items-center justify-between gap-6 text-bg/65">
                 <span>

@@ -130,3 +130,4 @@
   .forBiz { display: flex; flex-direction: column; justify-content: center; min-height: 100dvh; padding-block: 0 !important; }
   .forBizFrame { transform-origin: 50% 50%; }
 }
+.forBizSquares { position: absolute !important; z-index: 0; left: 0; right: 0; top: 55%; height: 38%; opacity: 0.35; }

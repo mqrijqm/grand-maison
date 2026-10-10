@@ -2512,3 +2512,6 @@ html:not([data-hydrated]) :is([data-client-state], .nav__mode-desk, .nav__cart-c
   background: var(--ink) !important;
   color: #fff !important;
 }
+/* Tri prednosti: naslov i tekst uvijek zajedno u kadru */
+.split-panel { justify-content: flex-start; gap: 36px; }
+.split-panel__foot { margin-left: 0 !important; }

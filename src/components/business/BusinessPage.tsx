@@ -1,9 +1,9 @@
 'use client'
 
+/* eslint-disable @next/next/no-img-element -- fotografija iz /public, već u WebP */
+
 import { useRef } from 'react'
 import Cta from '@/components/ui/Cta'
-import SquareDissolve from '@/components/ui/SquareDissolve'
-import { COMPANY as GC } from '@/gc/gc'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { useMediaMotion } from '@/lib/media'
 import { MQ } from '@/lib/motion'
@@ -61,7 +61,6 @@ export default function BusinessPage() {
         <section id="portal" className={`gutter scroll-mt-24 ${styles.portalBlock}`} aria-label="B2B portal, interaktivni prikaz">
           <Showcase />
         </section>
-        <SquareDissolve className={styles.dissolve} />
       </div>
 
       {/* Koraci do naloga: prijava, narudžba po šifri, praćenje (kao u V1) */}
@@ -75,23 +74,22 @@ export default function BusinessPage() {
       {/* Za koga: raspored kao "Šta gradite?" na početnoj */}
       <WhoSplit />
 
-      {/* 06 — Završni poziv */}
+      {/* 06 — Završni poziv: kratko, jedan CTA i uska vertikalna fotografija */}
       <section className={`gutter ${styles.block}`} aria-labelledby="biz-cta">
         <div className={styles.final}>
-          <h2 id="biz-cta" data-head className={`display invisible ${styles.finalTitle}`}>
-            Materijal za vaše projekte. Jednostavnija nabavka za vašu firmu.
-          </h2>
-          <div className={styles.finalSide}>
-            <p className={styles.lead}>Pošaljite nam upit za poslovnu saradnju i saznajte kako Grand Company može pojednostaviti vašu svakodnevnu nabavku.</p>
+          <div>
+            <h2 id="biz-cta" data-head className={`display invisible ${styles.finalTitle}`}>
+              Jednostavnija nabavka za vašu firmu.
+            </h2>
+            <p className={styles.lead}>Pošaljite upit za poslovnu saradnju, prodaja vam se javlja.</p>
             <div className={styles.actions}>
               <Cta href="/upit-za-izvodjace?vrsta=saradnja" solid>
                 Zatražite poslovni nalog
               </Cta>
-              <Cta href="/kontakt">Kontaktirajte prodaju</Cta>
             </div>
-            <p className={styles.fine}>
-              Nalog otvara prodaja nakon razgovora o saradnji. Prodaja: <a href={GC.phoneLandlineHref}>{GC.phoneLandline}</a> · <a href={`mailto:${GC.emailInfo}`}>{GC.emailInfo}</a>
-            </p>
+          </div>
+          <div data-curtain className={styles.finalPhoto}>
+            <img src="/editorial/firme/kran.webp" alt="Toranjski kran iznad zgrade u izgradnji" width={1200} height={1500} loading="lazy" decoding="async" />
           </div>
         </div>
       </section>
