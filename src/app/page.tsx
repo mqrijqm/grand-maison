@@ -13,6 +13,7 @@ import WallCalculator from "@/components/calc/WallCalculator";
 import Bento from "@/components/landing/Bento";
 import ForBusiness from "@/components/landing/ForBusiness";
 import QuoteBand from "@/components/landing/QuoteBand";
+import Yard from "@/components/landing/Yard";
 
 // Početna sa naglaskom na nabavku za firme i izvođače.
 export default function Home() {
@@ -37,7 +38,8 @@ export default function Home() {
         <Bento />
         <ForBusiness />
         <BrandsSplit />
-        {/* Stovarište je sada kraj sekcije "Tri prednosti" (fotografije stižu u lijevi blok). */}
+        {/* Stovarište: dvije fotografije preko cijele širine (foto → plava na hover). */}
+        <Yard />
         <QuoteBand />
         <Footer />
       </main>

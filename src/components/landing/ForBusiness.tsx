@@ -6,7 +6,8 @@ import { gsap, useGSAP } from '@/lib/gsap'
 import s from '@/components/portal/Portal.module.css'
 
 // Odmah ispod B2B blokova (Bento): isti interaktivni portal kao na /za-firme, bez teksta i koraka.
-// Na ulazu je iste širine kao blokovi iznad; skrolom se smanji i odmakne od ivica ekrana.
+// Na ulazu je iste širine kao blokovi iznad; sekcija se zakači, a portal se centriran u ekranu
+// smanji i odmakne od ivica.
 // Pozadina je mirna krem, bez animiranih kvadratića.
 export default function ForBusiness() {
   const root = useRef<HTMLElement>(null)
@@ -14,7 +15,8 @@ export default function ForBusiness() {
     () => {
       gsap.matchMedia().add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
         const frame = root.current!.querySelector<HTMLElement>('[data-zoom]')!
-        gsap.fromTo(frame, { scale: 1 }, { scale: 0.84, ease: 'none', scrollTrigger: { trigger: root.current!, start: 'top 70%', end: 'top 5%', scrub: 0.6 } })
+        // Sekcija se zakači; portal stoji centriran u ekranu i smanji se sa pune širine na 84 %.
+        gsap.fromTo(frame, { scale: 1 }, { scale: 0.84, ease: 'none', scrollTrigger: { trigger: root.current!, start: 'top top', end: '+=70%', pin: true, scrub: 0.6, anticipatePin: 1 } })
       })
     },
     { scope: root },

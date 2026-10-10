@@ -89,3 +89,4 @@
 }
 .win { border-radius: 0; outline: 1px solid var(--navy); outline-offset: 6px; overflow: visible; } .win > .body { overflow: hidden; } .main { border-radius: 0; }
 .win { border-radius: 16px; } .main { border-radius: 12px; }
+.win, .win *:not(svg):not(svg *) { border-radius: 0 !important; }

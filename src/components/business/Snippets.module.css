@@ -51,3 +51,4 @@
   .box:hover { transform: none; }
 }
 .track li { padding: 0 3px; line-height: 1.15; } .track span { font-size: 9.5px; }
+.box, .box *, .hero, .hero * { border-radius: 0 !important; }

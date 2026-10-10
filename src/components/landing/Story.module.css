@@ -96,3 +96,4 @@
   .steps .step:nth-child(even) { margin-top: 0; }
   .steps { margin-top: 8vh; gap: 1.2vw; }
 }
+.steps .step, .steps .stepPhoto, .steps .stepNum { border-radius: 0 !important; }

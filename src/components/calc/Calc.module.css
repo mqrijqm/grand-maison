@@ -148,3 +148,4 @@
   .qtyBox { grid-column: 2; grid-row: 2; justify-self: start; }
   .remove { grid-column: 3; grid-row: 1; }
 }
+.page, .page *:not(svg):not(svg *) { border-radius: 0 !important; }

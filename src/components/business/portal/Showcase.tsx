@@ -353,7 +353,7 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
                       <button
                         type="button"
                         data-t="stage-cta"
-                        className={s.stageCta}
+                        className={`${s.stageCta} ${s.glow}`}
                         onClick={() => {
                           setOfferSel(stageOffer.no)
                           go('ponude')

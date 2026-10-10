@@ -125,3 +125,8 @@
 @media (min-width: 768px) { .forBizInner { padding-inline: 16px; } }
 .forBiz { z-index: 21; }
 .forBiz { padding-bottom: clamp(40px, 8vh, 100px); }
+/* Zakačena sekcija: portal centriran po visini ekrana */
+@media (min-width: 900px) and (prefers-reduced-motion: no-preference) {
+  .forBiz { display: flex; flex-direction: column; justify-content: center; min-height: 100dvh; padding-block: 0 !important; }
+  .forBizFrame { transform-origin: 50% 50%; }
+}

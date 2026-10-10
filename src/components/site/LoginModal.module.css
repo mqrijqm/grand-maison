@@ -29,3 +29,4 @@
 .note { font-size: 13.5px; line-height: 1.6; color: rgb(27 36 54 / 0.8); }
 @media (prefers-reduced-motion: reduce) { .backdrop, .dialog { animation: none; } }
 .dialog *, .dialog input::placeholder { text-transform: none; letter-spacing: 0; } .field > span:first-child { text-transform: uppercase !important; letter-spacing: 0.1em !important; }
+.dialog, .dialog *:not(svg):not(svg *) { border-radius: 0 !important; }
