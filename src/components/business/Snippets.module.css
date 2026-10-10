@@ -1,0 +1,53 @@
+/* Isječci portala: bijela površina, tanka linija, tamnoplavi tekst, kobalt samo za glavnu radnju. */
+.box, .hero { --line: rgb(27 36 54 / 0.12); --soft: rgb(27 36 54 / 0.7); display: grid; gap: 10px; padding: 14px; border: 1px solid var(--line); border-radius: 12px; background: #fff; color: var(--ink); font-family: var(--font-text), Arial, sans-serif; font-size: 12.5px; line-height: 1.35; text-transform: none; letter-spacing: 0; transition: transform 0.35s cubic-bezier(0.2, 0.75, 0.15, 1), box-shadow 0.35s; }
+.box * , .hero * { text-transform: none; letter-spacing: 0; }
+.box b, .hero b { font-weight: 600; }
+.box i, .hero i { font-style: normal; color: var(--soft); font-size: 11.5px; }
+.kick { font-size: 10.5px !important; letter-spacing: 0.08em !important; text-transform: uppercase !important; color: var(--soft); }
+.acc { display: flex; align-items: center; gap: 10px; }
+.acc > span:last-child { display: grid; }
+.av { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: var(--ink); color: #fff; font-size: 11px; font-weight: 700; }
+.tabs { display: flex; gap: 4px; padding: 3px; border-radius: 99px; background: #eef0f4; }
+.tabs span { flex: 1; padding: 6px 8px; border-radius: 99px; font-size: 11.5px; text-align: center; }
+.tabs span[data-on] { background: var(--cobalt); color: #fff; font-weight: 600; }
+.lines { display: grid; }
+.lines li { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+.lines li:last-child { border-bottom: 0; }
+.lines li > span { display: grid; min-width: 0; }
+.lines b { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.lines em { flex: none; padding: 4px 10px; border: 1px solid var(--line); border-radius: 99px; font-style: normal; font-variant-numeric: tabular-nums; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.row > span:first-child { display: grid; min-width: 0; }
+.chip { flex: none; padding: 4px 10px; border-radius: 99px; background: #eef0f4; font-size: 11px; font-weight: 600; white-space: nowrap; }
+.chip[data-k='act'] { background: var(--cobalt); color: #fff; }
+.btn, .ghost { justify-self: start; display: inline-flex; align-items: center; min-height: 32px; padding: 0 14px; border-radius: 99px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.btn { background: var(--cobalt); color: #fff; }
+.ghost { border: 1.4px solid rgb(27 36 54 / 0.45); }
+.search { display: flex; align-items: center; min-height: 34px; padding: 0 12px; border: 1.4px solid var(--cobalt); border-radius: 99px; font-family: ui-monospace, monospace; font-size: 12px; }
+.track { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+.track li { position: relative; display: grid; justify-items: center; gap: 5px; font-size: 10px; text-align: center; color: var(--soft); }
+.track li::before { content: ''; position: absolute; top: 5px; right: 50%; width: 100%; height: 2px; background: var(--line); }
+.track li:first-child::before { display: none; }
+.track li[data-done] { color: var(--ink); }
+.track li[data-done]::before { background: var(--cobalt); }
+.track i { position: relative; width: 12px; height: 12px; border: 2px solid rgb(27 36 54 / 0.25); border-radius: 50%; background: #fff; }
+.track li[data-done] i { border-color: var(--cobalt); background: var(--cobalt); }
+
+/* Heroj */
+.hero { gap: 0; padding: 0; overflow: hidden; box-shadow: 0 40px 80px -40px rgb(27 36 54 / 0.55); }
+.bar { display: flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; background: var(--ink); color: rgb(255 255 255 / 0.8); }
+.bar i { width: 7px; height: 7px; border-radius: 50%; background: rgb(255 255 255 / 0.25); }
+.bar i:first-child { background: var(--cobalt); }
+.bar span { flex: 1; text-align: center; font-family: ui-monospace, monospace; font-size: 10.5px; }
+.bar em { padding: 2px 8px; border: 1px solid rgb(255 255 255 / 0.4); border-radius: 99px; font-size: 10px; font-style: normal; text-transform: uppercase; letter-spacing: 0.06em; }
+.heroBody { display: grid; gap: 10px; padding: 16px; }
+.heroFoot { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 4px; }
+
+@media (hover: hover) {
+  .box:hover { transform: translateY(-3px); box-shadow: 0 20px 40px -28px rgb(27 36 54 / 0.45); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .box, .hero { transition: none; }
+  .box:hover { transform: none; }
+}
+.track li { padding: 0 3px; line-height: 1.15; } .track span { font-size: 9.5px; }
