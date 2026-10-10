@@ -2512,3 +2512,5 @@ html:not([data-hydrated]) :is([data-client-state], .nav__mode-desk, .nav__cart-c
   background: var(--ink) !important;
   color: #fff !important;
 }
+/* Portal na početnoj se nastavlja direktno u plavi prelaz sekcije ispod (bez velikog razmaka) */
+.home-flow > #za-firme + * { margin-top: 0 !important; }

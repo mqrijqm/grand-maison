@@ -31,3 +31,9 @@
 @media(max-width:767px) { .section, .guides { padding:56px 0; } .cards { margin-top:36px; gap:40px; } .art { min-height:210px; } .cardTitle { max-width:24ch; } .photos { gap:28px; } }
 @media(prefers-reduced-motion:reduce) { .photoBlue { transition:none; } }
 @media(max-width:767px) { .title { font-size:clamp(30px,9vw,56px); } }
+/* Prodaja i stovarište: dvije fotografije preko cijele širine, iste visine, natpis centriran ispod */
+.photosFull { grid-template-columns: 1fr 1fr !important; gap: 12px; margin-top: 48px; padding-inline: var(--nav-inset, 12px); }
+.photosFull figure:nth-child(2) { margin-top: 0 !important; }
+.photosFull .photo { aspect-ratio: 16 / 10; height: auto; }
+.captionCenter { justify-content: center; padding-top: 16px; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; }
+@media (max-width: 767px) { .photosFull { grid-template-columns: 1fr !important; } }

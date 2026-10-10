@@ -27,17 +27,17 @@ export default function Yard() {
             <h2 id="yard-title" data-head className={`display invisible ${styles.title}`}>Prodaja i stovarište u Banjoj Luci</h2>
           </div>
         </div>
-        <div className={styles.photos}>
-          {PHOTOS.map((photo) => (
-            <figure className="m-0" key={photo.photo}>
-              <div className={styles.photoWrap}>
-                <img className={styles.photo} src={photo.photo} alt={photo.alt} width={1360} height={765} loading="lazy" decoding="async" />
-                <img className={`${styles.photo} ${styles.photoBlue}`} src={photo.blue} alt="" aria-hidden width={1360} height={765} loading="lazy" decoding="async" />
-              </div>
-              <figcaption className={styles.caption}><span>{photo.label}</span></figcaption>
-            </figure>
-          ))}
-        </div>
+      </div>
+      <div className={`${styles.photos} ${styles.photosFull}`}>
+        {PHOTOS.map((photo) => (
+          <figure className="m-0" key={photo.photo}>
+            <div className={styles.photoWrap}>
+              <img className={styles.photo} src={photo.photo} alt={photo.alt} width={1360} height={765} loading="lazy" decoding="async" />
+              <img className={`${styles.photo} ${styles.photoBlue}`} src={photo.blue} alt="" aria-hidden width={1360} height={765} loading="lazy" decoding="async" />
+            </div>
+            <figcaption className={`${styles.caption} ${styles.captionCenter}`}><span>{photo.label}</span></figcaption>
+          </figure>
+        ))}
       </div>
     </section>
   )

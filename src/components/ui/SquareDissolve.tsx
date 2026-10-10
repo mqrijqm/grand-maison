@@ -10,7 +10,8 @@ import { MQ } from '@/lib/motion'
 const CELL = 18
 const GAP = 3
 
-export default function SquareDissolve({ className = '', color = 'var(--bg)' }: { className?: string; color?: string }) {
+/** tint: kvadratići su prozirniji gore, a puni boje pri dnu (blijedo → jarko). solid: puna traka na dnu. */
+export default function SquareDissolve({ className = '', color = 'var(--bg)', tint = false, solid = true }: { className?: string; color?: string; tint?: boolean; solid?: boolean }) {
   const root = useRef<HTMLDivElement>(null)
 
   useGSAP(
@@ -39,7 +40,7 @@ export default function SquareDissolve({ className = '', color = 'var(--bg)' }: 
               const t = r / (rows - 1)
               // f: krajnja veličina (gore 0, dole puno); d: kad kvadratić krene da raste
               const f = Math.min(1, Math.max(0, (t - 0.12) / 0.62 + (rnd() - 0.5) * 0.5))
-              if (t <= 0.86) cells.push({ x: c * (CELL + GAP), y: r * (CELL + GAP), f, d: (1 - t) * 0.55 + rnd() * 0.2 })
+              if (t <= (solid ? 0.86 : 1)) cells.push({ x: c * (CELL + GAP), y: r * (CELL + GAP), f, d: (1 - t) * 0.55 + rnd() * 0.2 })
             }
         }
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
@@ -51,11 +52,14 @@ export default function SquareDissolve({ className = '', color = 'var(--bg)' }: 
           if (e <= 0.02) continue
           const size = CELL * e
           const off = (CELL - size) / 2
+          if (tint) ctx.globalAlpha = Math.min(1, 0.2 + 0.8 * (k.y / h))
           ctx.fillRect(k.x + off, k.y + off, size, size)
         }
       }
       const drawAll = () => {
         draw()
+        ctx.globalAlpha = 1
+        if (!solid) return
         // Dno: puna krem traka (posljednjih ~14 % visine) koja raste sa skrolom i spaja se sa stranicom ispod.
         const w = el.clientWidth, h = el.clientHeight
         const band = h * 0.14 * Math.min(1, state.p / 0.6)

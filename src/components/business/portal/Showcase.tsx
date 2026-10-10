@@ -64,7 +64,7 @@ const orderStatus = (o: Order) => (o.step === 3 ? (o.mode === 'Preuzimanje' ? 'S
 /** Korak vođenog objašnjenja (sekcija ispod portala): koji ekran i šta kursor radi. */
 export type TourStep = 'pregled' | 'materijali' | 'upit' | 'ponude' | 'narudzbe' | 'gradilista'
 
-export default function Showcase({ tour }: { tour?: TourStep } = {}) {
+export default function Showcase({ tour, light }: { tour?: TourStep; light?: boolean } = {}) {
   const [view, setView] = useState<View>('pregled')
   const [draft, setDraft] = useState<Line[]>([
     { sku: 'GKP-001', qty: 120 },
@@ -272,7 +272,7 @@ export default function Showcase({ tour }: { tour?: TourStep } = {}) {
   const nextStep = steps.find((x) => !done[x.k])
 
   return (
-    <div className={s.wrap}>
+    <div className={s.wrap} data-light={light || undefined}>
       {!tour && <div className={s.scenario}>
         <ol className={s.scenarioSteps}>
           {steps.map((x, i) => (

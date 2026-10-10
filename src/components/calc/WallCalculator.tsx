@@ -2,7 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element -- fotografije artikala iz /public/shop, već u WebP */
 
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import Cta from '@/components/ui/Cta'
 import { addToCart, notify, openCart } from '@/lib/cart'
 import { PRODUCT_MAP, plural, shotOf } from '@/lib/shop'
@@ -105,6 +105,22 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
       setOver({})
     }
   }
+  // Izbor materijala: pretraga sa padajućom listom (dodaj), izabrani artikli ispod (ukloni ×).
+  const [query, setQuery] = useState('')
+  const [openList, setOpenList] = useState(false)
+  const picker = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    const close = (e: MouseEvent) => !picker.current?.contains(e.target as Node) && setOpenList(false)
+    document.addEventListener('mousedown', close)
+    return () => document.removeEventListener('mousedown', close)
+  }, [])
+  const label = (r: Row) => PRODUCT_MAP[skuOf(r.key)]?.name ?? NORM[r.key].label
+  const options = ROWS.filter((r) => !on[r.key] && label(r).toLowerCase().includes(query.trim().toLowerCase()))
+  const pick = (key: string) => {
+    setOn((st) => ({ ...st, [key]: true }))
+    setQuery('')
+    setOpenList(false)
+  }
   const setQty = (key: string, n: number) => setOver((o) => ({ ...o, [key]: Math.max(0, Math.min(9999, Math.round(n))) }))
 
   useGSAP(
@@ -144,15 +160,13 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
           <Heading id="calc-title" data-head className={`display invisible ${styles.title}`}>
             Koliko materijala vam treba?
           </Heading>
-          <p className={styles.sub}>Upišite mjere zida, pa izaberite materijal. Količine računamo mi, a vi ih možete promijeniti.</p>
+          <p className={styles.sub}>Mjere zida, pa materijal. Količine računamo mi.</p>
         </header>
 
         <div className={styles.body}>
           {/* ——— 1. Vaš zid ——— */}
           <div className={styles.input}>
-            <p className={styles.step}>
-              <b>1</b> Vaš zid
-            </p>
+            <p className={styles.step}>Vaš zid</p>
             <div className={styles.dims}>
               {DIMS.map((d) => (
                 <div key={d.key} className={styles.dim}>
@@ -214,27 +228,64 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
 
           {/* ——— 2. Izaberite materijal ——— */}
           <div className={styles.result}>
-            <p className={styles.step}>
-              <b>2</b> Izaberite materijal
-            </p>
+            <p className={styles.step}>Materijal</p>
+            <div ref={picker} className={styles.picker}>
+              <label className={styles.search}>
+                <svg viewBox="0 0 16 16" aria-hidden>
+                  <path d="M7 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM10.6 10.6l3.9 3.9" fill="none" stroke="currentColor" strokeWidth="1.4" />
+                </svg>
+                <input
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.target.value)
+                    setOpenList(true)
+                  }}
+                  onFocus={() => setOpenList(true)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && options[0]) {
+                      e.preventDefault()
+                      pick(options[0].key)
+                    }
+                    if (e.key === 'Escape') setOpenList(false)
+                  }}
+                  placeholder="Dodajte materijal, npr. traka"
+                  aria-label="Dodajte materijal"
+                  aria-expanded={openList}
+                  role="combobox"
+                  aria-controls="calc-options"
+                />
+              </label>
+              {openList && (
+                <ul id="calc-options" role="listbox" className={styles.options}>
+                  {options.length === 0 && <li className={styles.optEmpty}>Svi materijali za zid su već izabrani.</li>}
+                  {options.map((r) => (
+                    <li key={r.key} role="option" aria-selected={false}>
+                      <button type="button" onClick={() => pick(r.key)}>
+                        <img src={shotOf(skuOf(r.key))} alt="" width={600} height={600} loading="lazy" decoding="async" />
+                        <span>
+                          <b>{label(r)}</b>
+                          <i>{r.hint}</i>
+                        </span>
+                        <em>+ Dodaj</em>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
             <ul className={styles.list}>
-              {ROWS.map((r) => {
+              {ROWS.filter((r) => on[r.key]).map((r) => {
                 const sku = skuOf(r.key)
                 const p = PRODUCT_MAP[sku]
                 const q = qtyOf(r.key)
                 const recQ = rec[r.key]?.packs ?? 0
                 const edited = over[r.key] !== undefined && over[r.key] !== recQ
-                const active = on[r.key]
                 return (
-                  <li key={r.key} className={styles.item} data-off={!active || undefined}>
-                    <label className={styles.check}>
-                      <input type="checkbox" checked={active} onChange={(e) => setOn((s) => ({ ...s, [r.key]: e.target.checked }))} aria-label={`Uključi: ${p?.name ?? r.hint}`} />
-                      <span aria-hidden />
-                    </label>
+                  <li key={r.key} className={styles.item}>
                     <img src={shotOf(sku)} alt="" width={600} height={600} loading="lazy" decoding="async" />
                     <span className={styles.what}>
                       {r.variants ? (
-                        <select value={sku} onChange={(e) => setVariant((v) => ({ ...v, [r.key]: e.target.value }))} disabled={!active} aria-label="Vrsta">
+                        <select value={sku} onChange={(e) => setVariant((v) => ({ ...v, [r.key]: e.target.value }))} aria-label="Vrsta">
                           {r.variants.map((v) => (
                             <option key={v.sku} value={v.sku}>
                               {r.key === 'board' ? `Gips-kartonska ploča · ${v.label}` : v.label}
@@ -250,17 +301,20 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
                       </i>
                     </span>
                     <span className={styles.qtyBox}>
-                      <button type="button" onClick={() => setQty(r.key, q - 1)} disabled={!active} aria-label="Manje">
+                      <button type="button" onClick={() => setQty(r.key, q - 1)} aria-label="Manje">
                         −
                       </button>
                       <span className={styles.qty}>
                         <Num value={q} />
                         <em>{plural(q, ...r.units)}</em>
                       </span>
-                      <button type="button" onClick={() => setQty(r.key, q + 1)} disabled={!active} aria-label="Više">
+                      <button type="button" onClick={() => setQty(r.key, q + 1)} aria-label="Više">
                         +
                       </button>
                     </span>
+                    <button type="button" className={styles.remove} onClick={() => setOn((st) => ({ ...st, [r.key]: false }))} aria-label={`Ukloni: ${p?.name ?? NORM[r.key].label}`}>
+                      ×
+                    </button>
                   </li>
                 )
               })}

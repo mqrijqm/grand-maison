@@ -1,51 +1,42 @@
 'use client'
 
 import { useRef } from 'react'
-import Cta from '@/components/ui/Cta'
 import Showcase from '@/components/business/portal/Showcase'
+import SquareDissolve from '@/components/ui/SquareDissolve'
 import { gsap, useGSAP } from '@/lib/gsap'
-import { MQ } from '@/lib/motion'
-import { revealChars } from '@/lib/reveal'
 import s from '@/components/portal/Portal.module.css'
 
-// Ulaz za firme na početnoj: isti interaktivni B2B portal (Showcase) kao na /za-firme, sa scenarijem
-// narudžbe u četiri koraka. Vodi na /za-firme (glavna B2B stranica).
+// Odmah ispod B2B blokova (Bento): isti interaktivni portal kao na /za-firme, bez uvodnog teksta.
+// Na ulazu je širok kao blokovi iznad (ista margina), pa se skrolom "odzumira" na svoju veličinu.
+// Pozadina je bijela; pri dnu niču kvadratići, prvo blijedi pa jarko plavi, i nastavljaju se u
+// plavi prelaz sekcije ispod (BrandsSplit).
 export default function ForBusiness() {
   const root = useRef<HTMLElement>(null)
   useGSAP(
     () => {
-      gsap.matchMedia().add(MQ, (ctx) => {
-        const { reduce } = ctx.conditions as { reduce: boolean }
-        revealChars(root.current!.querySelector('[data-head]')!, reduce, 'top 80%')
+      gsap.matchMedia().add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
+        const el = root.current!
+        const frame = el.querySelector<HTMLElement>('[data-zoom]')!
+        // Početni zum: širina okvira = širina sekcije minus margina blokova (12–16 px).
+        const start = () => (el.clientWidth - 32) / frame.offsetWidth
+        gsap.fromTo(
+          frame,
+          { scale: start },
+          { scale: 1, ease: 'none', scrollTrigger: { trigger: el, start: 'top 85%', end: 'top 10%', scrub: 0.6, invalidateOnRefresh: true } },
+        )
       })
     },
     { scope: root },
   )
 
   return (
-    <section ref={root} id="za-firme" aria-labelledby="biz-title">
-      <header className={`gutter ${s.intro}`}>
-        <p className={`label ${s.kicker}`}>
-          <i />
-          Za firme i izvođače
-        </p>
-        <h2 id="biz-title" data-head className={`display invisible ${s.title}`}>
-          B2B portal za nabavku
-        </h2>
-        <div className={s.introSide}>
-          <p className={s.lead}>Za građevinske firme, izvođače i javne ustanove: brza narudžba po šifri, ponude, narudžbe i isporuke po gradilištima, dokumenti i odobrenja u timu. Ispod je interaktivni prikaz portala.</p>
-          <div className={s.actions}>
-            <Cta href="/za-firme" solid>
-              Saznajte više
-            </Cta>
-            <Cta href="/upit-za-izvodjace?vrsta=saradnja">Zatražite nalog</Cta>
-          </div>
+    <section ref={root} id="za-firme" aria-label="B2B portal, interaktivni prikaz" className={s.forBiz}>
+      <div className={`gutter ${s.forBizInner}`}>
+        <div data-zoom className={s.forBizFrame}>
+          <Showcase light />
         </div>
-      </header>
-      {/* Isti interaktivni portal kao na /za-firme, na plavoj traci preko cijele širine */}
-      <div className={`gutter ${s.showcaseBand}`}>
-        <Showcase />
       </div>
+      <SquareDissolve className={s.forBizDissolve} color="var(--cobalt)" tint solid={false} />
     </section>
   )
 }

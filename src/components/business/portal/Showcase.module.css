@@ -341,3 +341,9 @@
 .brand span { margin-left: 2px; }
 .brandMark { flex: none; width: auto; height: 26px; color: #fff; }
 .brand { white-space: nowrap; font-size: 14px; } .brand span { font-size: 13px; }
+/* Na svijetloj podlozi (početna): koraci scenarija i napomena tamni */
+.wrap[data-light] .scenarioSteps button { border-color: rgb(27 36 54 / 0.25); color: var(--navy); }
+.wrap[data-light] .scenarioSteps button:hover { border-color: var(--navy); }
+.wrap[data-light] .scenarioSteps i { background: rgb(27 36 54 / 0.08); }
+.wrap[data-light] .scenarioSteps button[data-next] { background: var(--navy); border-color: var(--navy); color: #fff; }
+.wrap[data-light] .note { color: rgb(27 36 54 / 0.65); }
