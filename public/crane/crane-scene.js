@@ -232,7 +232,7 @@ export function createCraneScene() {
     const paint=(mark)=>{
       const g=c.getContext('2d');g.clearRect(0,0,c.width,c.height);
       if(mark){
-        // Znak za kran (bakar, bijela, zlato) crta se u svojim bojama, bez prebojavanja.
+        // Znak na kranu je potpuno bijel (bijela verzija logotipa), kao i natpis ispod njega.
         const w=250,h=w*414/359;
         g.drawImage(mark,(c.width-w)/2,58,w,h);
       }
@@ -242,7 +242,7 @@ export function createCraneScene() {
       tex.needsUpdate=true;
     };
     paint(null);
-    const img=new Image();img.onload=()=>{document.fonts.ready.then(()=>paint(img));};img.src='/brand/mark-crane.svg';
+    const img=new Image();img.onload=()=>{document.fonts.ready.then(()=>paint(img));};img.src='/brand/mark-white.svg';
     document.fonts.ready.then(()=>paint(img.complete&&img.naturalWidth?img:null));
     // Jedna čista oplata tačno preko spoljne strane kontratega skriva samo fuge/tehničke linije
     // na strani sa logom. Suprotna strana i ostatak krana zadržavaju postojeći line-art.

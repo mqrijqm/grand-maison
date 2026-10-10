@@ -83,3 +83,16 @@
 
 /* SplitText umota svaku riječ u <div>; bez nowrap browser lomi red između slova. */
 .title > div, .bandTitle > div { white-space:nowrap; }
+
+/* Od plana do gradilišta: mirnije kartice, manje slike, mali blijedi broj, bez dugmadi */
+.steps .step { gap: 0; padding: 10px; border: 1px solid rgb(27 36 54 / 0.12); border-radius: 18px; background: #fff; transition: transform .35s var(--ease-out), box-shadow .35s; }
+.steps .step:hover { transform: translateY(-4px); box-shadow: 0 24px 40px -30px rgb(27 36 54 / 0.4); }
+.steps .stepPhoto { margin-top: 0; aspect-ratio: 4 / 3; border-radius: 12px; }
+.stepBody { display: flex; align-items: flex-start; gap: 12px; padding: 16px 8px 8px; }
+.steps .stepNum { display: grid; place-items: center; flex: none; width: 32px; height: 32px; border-radius: 50%; background: rgb(49 86 234 / 0.1); font-family: var(--font-text), Arial, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0; line-height: 1; color: var(--cobalt); }
+.steps .stepTitle { margin-top: 4px; font-family: var(--font-heavy), Arial, sans-serif; font-weight: 800; font-size: clamp(15px, 1.1vw, 18px); line-height: 1.1; text-transform: uppercase; }
+.steps .stepText { margin-top: 6px; font-size: 13px; }
+@media (min-width: 1024px) {
+  .steps .step:nth-child(even) { margin-top: 0; }
+  .steps { margin-top: 8vh; gap: 1.2vw; }
+}
