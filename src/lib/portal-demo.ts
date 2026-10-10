@@ -50,6 +50,9 @@ export const ORDERS: Order[] = [
   { no: 'GC-26-04460', site: 'a', days: 5, step: 2, mode: 'Dostava', slot: 'Pet 10–12h', lines: [['GKP-002', 96], ['CHM-002', 8], ['ACC-003', 20]] },
   { no: 'GC-26-04402', site: 'a', days: 12, step: 4, mode: 'Dostava', slot: 'Isporučeno', lines: [['GKP-001', 400], ['PRF-075', 140], ['PRF-UW75', 48], ['ISO-001', 300]] },
   { no: 'GC-26-04371', site: 'c', days: 18, step: 4, mode: 'Preuzimanje', slot: 'Preuzeto', lines: [['ISO-002', 60], ['ACC-003', 6]] },
+  { no: 'GC-26-04344', site: 'b', days: 23, step: 4, mode: 'Dostava', slot: 'Isporučeno', lines: [['GKP-001', 180], ['PRF-CD60', 90], ['PRF-UD28', 30], ['ACC-006', 3]] },
+  { no: 'GC-26-04318', site: 'a', days: 29, step: 4, mode: 'Dostava', slot: 'Isporučeno', lines: [['GKP-002', 120], ['PRF-075', 60], ['CHM-002', 10], ['ACC-001', 4]] },
+  { no: 'GC-26-04290', site: 'c', days: 36, step: 4, mode: 'Preuzimanje', slot: 'Preuzeto', lines: [['ISO-003', 96], ['CHM-001', 6]] },
 ]
 
 // ——— Isporuke i preuzimanja u ovoj sedmici (dan 0 = ponedjeljak) ———
@@ -72,7 +75,7 @@ export type SavedList = { id: string; name: string; from: string; site: string; 
 export const LISTS: SavedList[] = [
   { id: 'l1', name: 'Pregradni zid 100 mm — tipski stan', from: 'Kalkulator', site: 'a', lines: [['GKP-001', 64], ['PRF-075', 22], ['PRF-UW75', 8], ['ISO-001', 31], ['CHM-001', 3]] },
   { id: 'l2', name: 'Spušteni plafon — kancelarija', from: 'Narudžba GC-26-04498', site: 'b', lines: [['GKP-001', 52], ['PRF-CD60', 34], ['PRF-UD28', 10], ['ACC-006', 2]] },
-  { id: 'l3', name: 'Kupatilo — impregnirane ploče', from: 'Ručno', site: 'a', lines: [['GKP-002', 24], ['PRF-075', 9], ['CHM-002', 2], ['ACC-003', 4]] },
+  { id: 'l3', name: 'Standardna adaptacija kupatila', from: 'Ručno', site: 'a', lines: [['GKP-002', 24], ['PRF-075', 9], ['PRF-UW75', 4], ['CHM-002', 2], ['ACC-003', 4], ['ACC-001', 1]] },
   { id: 'l4', name: 'Potkrovlje — izolacija', from: 'Kalkulator', site: 'c', lines: [['ISO-003', 90], ['GKP-001', 70], ['PRF-CD60', 30]] },
 ]
 

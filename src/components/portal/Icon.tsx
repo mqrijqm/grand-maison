@@ -18,6 +18,9 @@ const PATHS: Record<string, string> = {
   down: 'M8 2.5v9M4 8l4 4 4-4M2.5 13.5h11',
   upload: 'M8 11.5v-9M4 6l4-4 4 4M2.5 13.5h11',
   repeat: 'M2.5 7V5.5h9.5L10 3.5M13.5 9v1.5H4l2 2',
+  katalog: 'M2 2.5h5.5l6.5 6.5-5 5L2.5 7.5zM5 5h.01',
+  scan: 'M1.5 5V1.5H5M11 1.5h3.5V5M14.5 11v3.5H11M5 14.5H1.5V11M4.5 4.5v7M7 4.5v7M9 4.5v7M11.5 4.5v7',
+  phone: 'M3 1.5h3l1.5 3.5-2 1.2a8 8 0 0 0 4.3 4.3l1.2-2 3.5 1.5v3a1 1 0 0 1-1 1A12.5 12.5 0 0 1 2 2.5a1 1 0 0 1 1-1z',
 }
 
 export default function Icon({ name, className }: { name: keyof typeof PATHS | string; className?: string }) {

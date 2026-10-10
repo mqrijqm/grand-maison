@@ -1,9 +1,8 @@
 'use client'
 
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { PRODUCT_MAP, PRODUCTS, money } from '@/lib/shop'
 import {
-  APPROVALS,
   CATEGORY_SPEND,
   DAYS,
   DOCS,
@@ -16,7 +15,6 @@ import {
   SITES,
   TEAM,
   WEEK,
-  lineTotal,
   lineWeight,
   siteById,
   type Approval,
@@ -28,10 +26,12 @@ import {
   type Quote,
   type QuoteStatus,
 } from '@/lib/portal-demo'
+import { netTotal, price, toBase, uoms, TERMS, type SiteId } from '@/lib/portal-b2b'
+import { ApprovalsMini, CreditWidget, DocCenter, Guides, LiveOrders, QuickAdd, RecentOrders, Scanner } from './b2b-views'
 import Icon from './Icon'
 import s from './Dashboard.module.css'
 
-export type ViewId = 'pregled' | 'brza' | 'ponude' | 'narudzbe' | 'isporuke' | 'gradilista' | 'liste' | 'dokumenti' | 'tim'
+export type ViewId = 'pregled' | 'katalog' | 'brza' | 'ponude' | 'narudzbe' | 'isporuke' | 'gradilista' | 'liste' | 'dokumenti' | 'tim'
 
 /** Ono što svaki ekran dobija od ljuske: navigacija, zum kamere, korpa i živi tok. */
 export type Api = {
@@ -41,6 +41,13 @@ export type Api = {
   push: (item: FeedItem) => void
   toast: (text: string) => void
   loadRows: (lines: Line[]) => void
+  /** u korpu bez otvaranja korpe (brzi unos, katalog, skener) */
+  addQuiet: (lines: Line[], label: string) => void
+  /** aktivno gradilište iz zaglavlja: adresa isporuke i projektne cijene */
+  site: SiteId
+  approvals: Approval[]
+  decide: (a: Approval, ok: boolean) => void
+  catalogQuery: string
 }
 
 const km0 = (n: number) => `${Math.round(n).toLocaleString('de-DE')} KM`
@@ -125,59 +132,26 @@ function Chart({ metric }: { metric: MetricId }) {
 
 export function Overview({ api, metric, setMetric, feed }: { api: Api; metric: MetricId; setMetric: (m: MetricId) => void; feed: (FeedItem & { t: string; id: number })[] }) {
   const m = METRICS.find((x) => x.id === metric)!
-  const nextSlots = WEEK.filter((w) => w.day >= 2).slice(0, 4)
   const catMax = Math.max(...CATEGORY_SPEND.map((c) => c.value))
   return (
     <>
-      <div className={s.kpis}>
-        {METRICS.map((k) => (
-          <button
-            key={k.id}
-            type="button"
-            className={s.kpi}
-            data-on={k.id === metric || undefined}
-            data-tour={`kpi-${k.id}`}
-            data-focus={`kpi-${k.id}`}
-            onClick={() => {
-              setMetric(k.id)
-              api.focus('chart')
-            }}
-          >
-            <span className={s.kpiLabel}>
-              <i />
-              {k.label}
-            </span>
-            <span className={s.kpiValue}>{k.value}</span>
-            <span className={s.kpiDelta} data-down={k.delta < 0 || undefined}>
-              {k.delta === 0 ? '— 0,0 %' : `${k.delta > 0 ? '▲' : '▼'} ${Math.abs(k.delta).toLocaleString('de-DE', { minimumFractionDigits: 1 })} %`}
-            </span>
-            <Spark data={k.series} on={k.id === metric} />
-          </button>
-        ))}
+      {/* Iznad prevoja: novac, narudžbe u toku, brzi unos */}
+      <div className={s.hero3}>
+        <CreditWidget api={api} />
+        <LiveOrders api={api} />
+        <QuickAdd api={api} />
       </div>
 
+      {/* Ponavljanje kupovine */}
       <div className={s.row2}>
-        <section className={s.panel} data-focus="chart">
-          <header className={s.panelHead}>
-            <h3>{m.label}</h3>
-            <div className={s.legend}>
-              <span>
-                <i className={s.lgHot} />
-                Zadnjih 7 dana
-              </span>
-              <span>
-                <i className={s.lgBar} />
-                Ovaj period
-              </span>
-              <span>
-                <i className={s.lgPrev} />
-                Prošli period
-              </span>
-            </div>
-          </header>
-          <Chart metric={metric} />
-        </section>
+        <RecentOrders api={api} />
+        <Guides api={api} />
+      </div>
 
+      {/* Dokumenti i komunikacija */}
+      <div className={s.row3c}>
+        <DocCenter api={api} />
+        <ApprovalsMini api={api} />
         <section className={s.panel} data-focus="feed">
           <header className={s.panelHead}>
             <h3>Uživo</h3>
@@ -205,33 +179,53 @@ export function Overview({ api, metric, setMetric, feed }: { api: Api; metric: M
         </section>
       </div>
 
-      <div className={s.row3}>
-        <section className={s.panel} data-focus="slots">
+      {/* Analitika nabavke */}
+      <div className={s.kpis}>
+        {METRICS.map((k) => (
+          <button
+            key={k.id}
+            type="button"
+            className={s.kpi}
+            data-on={k.id === metric || undefined}
+            data-tour={`kpi-${k.id}`}
+            data-focus={`kpi-${k.id}`}
+            onClick={() => {
+              setMetric(k.id)
+              api.focus('chart')
+            }}
+          >
+            <span className={s.kpiLabel}>
+              <i />
+              {k.label}
+            </span>
+            <span className={s.kpiValue}>{k.value}</span>
+            <span className={s.kpiDelta} data-down={k.delta < 0 || undefined}>
+              {k.delta === 0 ? '— 0,0 %' : `${k.delta > 0 ? '▲' : '▼'} ${Math.abs(k.delta).toLocaleString('de-DE', { minimumFractionDigits: 1 })} %`}
+            </span>
+            <Spark data={k.series} on={k.id === metric} />
+          </button>
+        ))}
+      </div>
+      <div className={s.row2}>
+        <section className={s.panel} data-focus="chart">
           <header className={s.panelHead}>
-            <h3>Naredne isporuke i preuzimanja</h3>
-            <button type="button" className={s.link} onClick={() => api.go('isporuke')}>
-              Kalendar →
-            </button>
+            <h3>{m.label}</h3>
+            <div className={s.legend}>
+              <span>
+                <i className={s.lgHot} />
+                Zadnjih 7 dana
+              </span>
+              <span>
+                <i className={s.lgBar} />
+                Ovaj period
+              </span>
+              <span>
+                <i className={s.lgPrev} />
+                Prošli period
+              </span>
+            </div>
           </header>
-          <ul className={s.slots}>
-            {nextSlots.map((w, i) => (
-              <li key={i}>
-                <span className={s.slotDay}>
-                  {DAYS[w.day]}
-                  <b>
-                    {String(w.from).padStart(2, '0')}–{String(w.to).padStart(2, '0')}h
-                  </b>
-                </span>
-                <span className={s.slotText}>
-                  <b>{siteById(w.site).short}</b>
-                  <i>{w.what}</i>
-                </span>
-                <span className={s.tag} data-solid={w.mode === 'Dostava' || undefined}>
-                  {w.mode}
-                </span>
-              </li>
-            ))}
-          </ul>
+          <Chart metric={metric} />
         </section>
         <section className={s.panel} data-focus="cats">
           <header className={s.panelHead}>
@@ -257,34 +251,75 @@ export function Overview({ api, metric, setMetric, feed }: { api: Api; metric: M
 
 /* ———————————————————————————— Brza narudžba ———————————————————————————— */
 
-export type Row = { id: number; sku: string; qty: number }
+export type Row = { id: number; sku: string; qty: number; uom?: string }
 
 const FREQUENT = ['GKP-001', 'GKP-002', 'PRF-075', 'PRF-UW75', 'PRF-CD60', 'ISO-001', 'CHM-001', 'ACC-003']
 
+// Parsira CSV / Excel kolone: šifra;količina (razdvojeno ; , tab ili razmakom); zaglavlje bez brojeva se preskače.
+function parseLines(text: string, next: () => number): Row[] {
+  return text
+    .split(/\r?\n/)
+    .map((l) => l.split(/[;,\t ]+/).filter(Boolean))
+    .filter((p) => p.length >= 1 && /\d/.test(p.join('')))
+    .map((p) => ({ id: next(), sku: p[0].toUpperCase().replace(/"/g, ''), qty: Number((p[1] ?? '1').replace(',', '.')) || 1 }))
+}
+
 export function QuickOrder({ api, rows, setRows }: { api: Api; rows: Row[]; setRows: (r: Row[]) => void }) {
   const [paste, setPaste] = useState(false)
+  const [scan, setScan] = useState(false)
+  const [drop, setDrop] = useState(false)
   const [text, setText] = useState('GKP-001;120\nPRF-075;40\nISO-001;60')
-  const nextId = useRef(100)
+  // Redovi žive u ljusci i preživljavaju prelazak između ekrana, pa brojač kreće iza najvećeg postojećeg id-a.
+  const nextId = useRef(Math.max(100, ...rows.map((r) => r.id)) + 1)
+  const focusRow = useRef<number | null>(null)
+  const table = useRef<HTMLDivElement>(null)
+  const next = () => nextId.current++
+  const base = (r: Row) => toBase(r.sku, r.qty, r.uom)
   const valid = rows.filter((r) => PRODUCT_MAP[r.sku] && r.qty > 0)
-  const lines: Line[] = valid.map((r) => [r.sku, r.qty])
+  const bad = rows.filter((r) => r.sku && !PRODUCT_MAP[r.sku]).length
+  const lines: Line[] = valid.map((r) => [r.sku, base(r)])
   const patch = (id: number, p: Partial<Row>) => setRows(rows.map((r) => (r.id === id ? { ...r, ...p } : r)))
-  const add = () => setRows([...rows, { id: nextId.current++, sku: '', qty: 1 }])
-  const importText = () => {
-    const parsed = text
-      .split(/\r?\n/)
-      .map((l) => l.split(/[;,\t ]+/).filter(Boolean))
-      .filter((p) => p.length >= 1)
-      .map((p) => ({ id: nextId.current++, sku: p[0].toUpperCase(), qty: Number((p[1] ?? '1').replace(',', '.')) || 1 }))
+  const add = () => {
+    const id = next()
+    focusRow.current = id
+    setRows([...rows, { id, sku: '', qty: 1 }])
+  }
+  // Enter u količini: novi prazan red i kursor odmah u njegovu šifru.
+  useEffect(() => {
+    if (focusRow.current === null) return
+    table.current?.querySelector<HTMLInputElement>(`[data-row="${focusRow.current}"] input`)?.focus()
+    focusRow.current = null
+  }, [rows])
+  const importRows = (parsed: Row[], from: string) => {
     setRows([...rows.filter((r) => r.sku), ...parsed])
-    setPaste(false)
-    api.toast(`Uvezeno ${parsed.length} redova`)
+    const unknown = parsed.filter((r) => !PRODUCT_MAP[r.sku]).length
+    api.toast(`${from}: ${parsed.length} redova${unknown ? `, ${unknown} nije u asortimanu` : ''}`)
+  }
+  const onDrop = async (e: React.DragEvent) => {
+    e.preventDefault()
+    setDrop(false)
+    const f = e.dataTransfer.files[0]
+    if (f) importRows(parseLines(await f.text(), next), f.name)
   }
   return (
     <div className={s.qo}>
-      <section className={s.panel} data-focus="qo-table">
+      <section
+        className={s.panel}
+        data-focus="qo-table"
+        data-drop={drop || undefined}
+        onDragOver={(e) => {
+          e.preventDefault()
+          setDrop(true)
+        }}
+        onDragLeave={() => setDrop(false)}
+        onDrop={onDrop}
+      >
         <header className={s.panelHead}>
           <h3>Šifra · proizvod · količina</h3>
           <div className={s.headBtns}>
+            <button type="button" className={s.btnGhost} onClick={() => setScan(true)}>
+              <Icon name="scan" /> Skeniraj
+            </button>
             <button type="button" className={s.btnGhost} onClick={() => setPaste(!paste)}>
               <Icon name="upload" /> CSV / Excel
             </button>
@@ -293,50 +328,100 @@ export function QuickOrder({ api, rows, setRows }: { api: Api; rows: Row[]; setR
             </button>
           </div>
         </header>
+        {scan && (
+          <Scanner
+            onScan={([sku, q], label) => {
+              setRows([...rows.filter((r) => r.sku), { id: next(), sku, qty: q }])
+              api.toast(`Skenirano: ${label}`)
+            }}
+            onClose={() => setScan(false)}
+          />
+        )}
         {paste && (
           <div className={s.paste}>
             <textarea value={text} onChange={(e) => setText(e.target.value)} rows={4} aria-label="Zalijepite redove: šifra;količina" />
             <div>
-              <p className={s.muted}>Zalijepite kolone iz Excela ili CSV: šifra; količina — jedan artikal po redu.</p>
-              <button type="button" className={s.btn} onClick={importText}>
+              <p className={s.muted}>Zalijepite kolone iz Excela ili CSV predmjera: šifra; količina, jedan artikal po redu. CSV fajl možete i prevući u tabelu.</p>
+              <button
+                type="button"
+                className={s.btn}
+                onClick={() => {
+                  importRows(parseLines(text, next), 'Uvezeno')
+                  setPaste(false)
+                }}
+              >
                 Uvezi redove
               </button>
             </div>
           </div>
         )}
-        <div className={s.table} role="table">
-          <div className={`${s.tr} ${s.th}`} role="row">
+        <p className={s.keys}>
+          <kbd>Tab</kbd> sa šifre na količinu · <kbd>Enter</kbd> novi red · prevucite CSV iz predmjera u tabelu
+        </p>
+        <div ref={table} className={s.table} role="table">
+          <div className={`${s.tr} ${s.th} ${s.trQo}`} role="row">
             <span>Šifra</span>
             <span>Proizvod</span>
             <span>Količina</span>
-            <span>Demo cijena</span>
+            <span>Jedinica</span>
+            <span>Vaša cijena</span>
             <span>Ukupno</span>
             <span />
           </div>
           {rows.map((r) => {
             const p = PRODUCT_MAP[r.sku]
             const state = !r.sku ? 'empty' : p ? 'ok' : 'bad'
+            const units = uoms(r.sku)
+            const b = base(r)
+            const pr = p ? price(r.sku, b, api.site) : null
             return (
-              <div key={r.id} className={s.tr} role="row" data-state={state}>
+              <div key={r.id} className={`${s.tr} ${s.trQo}`} role="row" data-state={state} data-row={r.id}>
                 <span className={s.skuCell}>
                   <input
                     value={r.sku}
                     list="gc-skus"
                     placeholder="npr. GKP-001"
                     spellCheck={false}
-                    onChange={(e) => patch(r.id, { sku: e.target.value.toUpperCase().trim() })}
+                    onChange={(e) => patch(r.id, { sku: e.target.value.toUpperCase().trim(), uom: undefined })}
+                    onKeyDown={(e) => {
+                      if (e.key !== 'Enter') return
+                      e.preventDefault()
+                      e.currentTarget.closest('[data-row]')?.querySelector<HTMLInputElement>('input[type="number"]')?.focus()
+                    }}
                     aria-label="Šifra artikla"
                     data-tour="qo-sku"
                   />
                   <i className={s.valid}>{state === 'ok' ? <Icon name="check" /> : state === 'bad' ? <Icon name="x" /> : null}</i>
                 </span>
-                <span className={s.prodCell}>{p ? p.name : state === 'bad' ? 'Nepoznata šifra' : '—'}</span>
+                <span className={s.prodCell}>{p ? p.name : state === 'bad' ? 'Nije u asortimanu' : '—'}</span>
                 <span className={s.qtyCell}>
-                  <input type="number" min={0} value={r.qty} onChange={(e) => patch(r.id, { qty: Math.max(0, Number(e.target.value)) })} aria-label="Količina" />
-                  <i>{p?.unit}</i>
+                  <input
+                    type="number"
+                    min={0}
+                    step="any"
+                    value={r.qty}
+                    onChange={(e) => patch(r.id, { qty: Math.max(0, Number(e.target.value)) })}
+                    onKeyDown={(e) => {
+                      if (e.key !== 'Enter') return
+                      e.preventDefault()
+                      add()
+                    }}
+                    aria-label="Količina"
+                  />
                 </span>
-                <span className={s.num}>{p ? money(p.price) : '—'}</span>
-                <span className={s.num}>{p ? money(p.price * r.qty) : '—'}</span>
+                <select className={s.uom} value={r.uom ?? units[0]?.id ?? ''} disabled={!p} onChange={(e) => patch(r.id, { uom: e.target.value })} aria-label="Jedinica mjere">
+                  {units.length ? (
+                    units.map((u) => (
+                      <option key={u.id} value={u.id}>
+                        {u.label}
+                      </option>
+                    ))
+                  ) : (
+                    <option>—</option>
+                  )}
+                </select>
+                <span className={s.num}>{pr ? `${money(pr.unit)}/${p!.unit}` : '—'}</span>
+                <span className={s.num}>{pr ? money(pr.unit * b) : '—'}</span>
                 <button type="button" className={s.iconBtn} onClick={() => setRows(rows.filter((x) => x.id !== r.id))} aria-label="Ukloni red">
                   <Icon name="x" />
                 </button>
@@ -344,11 +429,12 @@ export function QuickOrder({ api, rows, setRows }: { api: Api; rows: Row[]; setR
             )
           })}
         </div>
+        {drop && <div className={s.dropHint}>Pustite CSV: šifre i količine ulaze u tabelu</div>}
         <div className={s.freq}>
           <span className={s.muted}>Često naručujete</span>
           <div>
             {FREQUENT.map((sku) => (
-              <button key={sku} type="button" onClick={() => setRows([...rows.filter((r) => r.sku), { id: nextId.current++, sku, qty: PRODUCT_MAP[sku]?.pack?.size ?? 1 }])}>
+              <button key={sku} type="button" onClick={() => setRows([...rows.filter((r) => r.sku), { id: next(), sku, qty: 1, uom: PRODUCT_MAP[sku]?.pack?.name }])}>
                 <b className={s.mono}>{sku}</b>
                 <i>{name(sku)}</i>
                 <Icon name="plus" />
@@ -375,9 +461,15 @@ export function QuickOrder({ api, rows, setRows }: { api: Api; rows: Row[]; setR
               {valid.length} / {rows.length}
             </dd>
           </div>
+          {bad > 0 && (
+            <div data-bad>
+              <dt>Nije u asortimanu</dt>
+              <dd>{bad}</dd>
+            </div>
+          )}
           <div>
-            <dt>Demo iznos</dt>
-            <dd>{money(lineTotal(lines))}</dd>
+            <dt>Vaš iznos (neto)</dt>
+            <dd>{money(netTotal(lines, api.site))}</dd>
           </div>
           <div>
             <dt>Ukupna težina</dt>
@@ -387,9 +479,9 @@ export function QuickOrder({ api, rows, setRows }: { api: Api; rows: Row[]; setR
         <button type="button" className={s.btnSolid} disabled={!valid.length} onClick={() => api.addLines(lines, 'Brza narudžba')} data-tour="qo-send">
           Dodaj sve u upit <Icon name="arrow" />
         </button>
-        <p className={s.note}>Cijene i šifre su demo iz kataloga. U produkciji šifre dolaze iz kataloga Grand Company-ja, a konačnu ponudu šalje prodaja.</p>
+        <p className={s.note}>Cijene su demo neto cijene ({TERMS.tier}, uslovi po ugovoru). Količina ide u skladište u osnovnoj jedinici artikla; konačnu ponudu šalje prodaja.</p>
         <div className={s.miniLists}>
-          <span className={s.muted}>Učitaj sačuvanu listu</span>
+          <span className={s.muted}>Učitaj šemu materijala</span>
           {LISTS.slice(0, 3).map((l) => (
             <button key={l.id} type="button" onClick={() => api.loadRows(l.lines)}>
               {l.name}
@@ -422,7 +514,7 @@ export function Quotes({ api, status, setStatus }: { api: Api; status: Record<st
             <span>Broj</span>
             <span>Gradilište</span>
             <span>Stavki</span>
-            <span>Demo iznos</span>
+            <span>Vaš iznos</span>
             <span>Status</span>
           </div>
           {list.map((x) => (
@@ -430,7 +522,7 @@ export function Quotes({ api, status, setStatus }: { api: Api; status: Record<st
               <span className={s.mono}>{x.no}</span>
               <span>{siteById(x.site).short}</span>
               <span className={s.num}>{x.lines.length}</span>
-              <span className={s.num}>{km0(lineTotal(x.lines))}</span>
+              <span className={s.num}>{km0(netTotal(x.lines, x.site as SiteId))}</span>
               <span>
                 <StatusTag value={x.status} />
               </span>
@@ -471,8 +563,8 @@ function QuoteDetail({ q, st, api, accept }: { q: Quote; st: QuoteStatus; api: A
       </ul>
       <dl className={s.sum}>
         <div>
-          <dt>Demo iznos</dt>
-          <dd>{money(lineTotal(q.lines))}</dd>
+          <dt>Vaš iznos (neto)</dt>
+          <dd>{money(netTotal(q.lines, q.site as SiteId))}</dd>
         </div>
         <div>
           <dt>Težina</dt>
@@ -886,13 +978,8 @@ export function Documents() {
 /* ———————————————————————————— Tim i odobrenja ———————————————————————————— */
 
 export function Team({ api }: { api: Api }) {
-  const [queue, setQueue] = useState<Approval[]>(APPROVALS)
-  const decide = (a: Approval, ok: boolean) => {
-    setQueue(queue.filter((x) => x.id !== a.id))
-    api.push({ kind: 'tim', title: `${ok ? 'Odobren' : 'Odbijen'} zahtjev — ${a.who}`, meta: `${siteById(a.site).short} · ${a.lines.length} stavke` })
-    if (ok) api.addLines(a.lines, `Zahtjev: ${a.who}`)
-    else api.toast('Zahtjev je odbijen')
-  }
+  const queue = api.approvals
+  const decide = api.decide
   return (
     <div className={s.split}>
       <section className={s.panel} data-focus="team">
@@ -917,7 +1004,7 @@ export function Team({ api }: { api: Api }) {
         <div className={s.proposed}>
           <span className={s.tag}>Predložena funkcija</span>
           <p>
-            <b>Uslovi saradnje na nalogu.</b> Individualne cijene, rabat i odgođeno plaćanje mogu se prikazati na nalogu firme kada ih prodaja ugovori. U demu nisu aktivni i nisu postojeći uslovi Grand Company-ja.
+            <b>Uslovi saradnje na nalogu.</b> Neto cijene, rabat ({TERMS.tier}), projektne cijene po gradilištu i kreditni okvir u demu su primjer iz partnerske skale. Stvarni uslovi Grand Company-ja se dogovaraju ugovorom sa prodajom.
           </p>
         </div>
       </section>
@@ -932,7 +1019,9 @@ export function Team({ api }: { api: Api }) {
             <p>
               <b>{a.who}</b> · {siteById(a.site).short}
             </p>
-            <p className={s.muted}>{a.note}</p>
+            <p className={s.muted}>
+              {a.note} · {km0(netTotal(a.lines, a.site as SiteId))}
+            </p>
             <ul className={s.lines}>
               {a.lines.map(([sku, n]) => (
                 <li key={sku}>
