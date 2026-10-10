@@ -246,3 +246,72 @@
   .reset { grid-area: reset; }
 }
 .glyph svg * { fill: none !important; stroke: currentColor; stroke-width: 1.1; vector-effect: non-scaling-stroke; } .glyph svg [fill^='url'] { display: none; }
+
+/* ——— Iz V3: bočni meni sa brendom, pretragom i grupama ——— */
+.side { gap: 14px; }
+.brand { display: flex; align-items: baseline; justify-content: space-between; padding: 4px 8px 0; font-size: 15px; font-weight: 700; letter-spacing: -0.01em; }
+.brand span { font-weight: 400; opacity: 0.7; }
+.account { position: relative; background: rgb(255 255 255 / 0.05); }
+.demoTag { margin-left: auto; font-size: 10px; font-style: normal; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.7; }
+.sideSearch { display: flex; align-items: center; gap: 8px; min-height: 40px; padding: 0 12px; border-radius: 10px; background: rgb(255 255 255 / 0.07); color: rgb(255 255 255 / 0.75); }
+.sideSearch:focus-within { box-shadow: inset 0 0 0 1.4px var(--cobalt); }
+.sideSearch input { width: 100%; min-width: 0; color: #fff; font-size: 12.5px; }
+.sideSearch input::placeholder { color: rgb(255 255 255 / 0.6); }
+.nav { gap: 14px; }
+.navGroup { display: grid; gap: 3px; }
+.navLabel { padding: 0 12px 4px; font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: rgb(255 255 255 / 0.55); }
+.nav em { min-width: 0; padding: 0; background: none; color: rgb(255 255 255 / 0.7); font-weight: 500; }
+.nav button[aria-current] em { color: #fff; }
+
+/* ——— Iz V3: plava scena na vrhu Pregleda ——— */
+.stage { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 24px; margin: 14px 14px 4px; padding: 22px 22px 22px 26px; border-radius: 14px; background: var(--cobalt); color: #fff; }
+.stageInfo { display: flex; flex-direction: column; justify-content: space-between; gap: 18px; min-width: 0; }
+.stageInfo h3 { font-size: clamp(24px, 2.2vw, 34px); font-weight: 350; letter-spacing: -0.04em; line-height: 1; }
+.stageInfo p { max-width: 34ch; margin-top: 6px; font-size: 12px; opacity: 0.8; }
+.stagePick { display: grid; gap: 4px; padding-top: 14px; border-top: 1px solid rgb(255 255 255 / 0.3); }
+.stagePick > span { font-size: 11px; opacity: 0.75; font-variant-numeric: tabular-nums; }
+.stagePick b { font-size: 17px; font-weight: 600; line-height: 1.2; }
+.stageTools { display: flex; align-items: center; gap: 10px; margin-top: 8px; font-size: 11px; font-variant-numeric: tabular-nums; }
+.stageTools > button:not(.stageCta) { display: grid; place-items: center; width: 30px; height: 30px; border: 1px solid rgb(255 255 255 / 0.45); border-radius: 50%; color: #fff; transition: background 0.2s, color 0.2s; }
+.stageTools > button:not(.stageCta):hover { background: #fff; color: var(--cobalt); }
+.stageCta { margin-left: auto; min-height: 34px; padding: 0 14px; border-radius: 99px; background: #fff; color: var(--navy); font-size: 12px; font-weight: 600; transition: background 0.2s, color 0.2s; }
+.stageCta:hover { background: var(--navy); color: #fff; }
+.stageList { display: grid; align-content: center; }
+.stageList button { display: grid; grid-template-columns: 76px minmax(0, 1fr) auto; align-items: center; gap: 12px; width: 100%; min-height: 40px; padding: 0 12px; color: #fff; font-size: 13px; text-align: left; transition: background 0.2s, color 0.2s; }
+.stageList button span:nth-child(2) { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.stageList button:hover { background: rgb(255 255 255 / 0.1); }
+.stageList button[data-on] { background: #fff; color: var(--navy); }
+.stageList .mono { font-family: ui-monospace, monospace; font-size: 11px; opacity: 0.8; }
+.stageList b { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* ——— Iz V3: kartica Uživo ——— */
+.liveHead { display: flex; align-items: center; justify-content: space-between; }
+.liveTag { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border: 1.4px solid rgb(27 36 54 / 0.3); font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase; }
+.liveTag i { width: 7px; height: 7px; background: var(--cobalt); animation: pulse 1.2s ease-in-out infinite alternate; }
+.live { display: grid; }
+.live button { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; align-items: center; gap: 12px; width: 100%; min-height: 54px; padding: 6px 0; border-bottom: 1px solid var(--line); text-align: left; }
+.live li:last-child button { border-bottom: 0; }
+.live button:hover b { color: var(--cobalt); }
+.liveIcon { display: grid; place-items: center; width: 34px; height: 34px; border: 1px solid rgb(27 36 54 / 0.2); color: var(--cobalt); }
+.liveText { display: grid; min-width: 0; }
+.liveText b { font-size: 13px; font-weight: 600; transition: color 0.2s; }
+.liveText i { overflow: hidden; font-style: normal; font-size: 11.5px; color: var(--soft); white-space: nowrap; text-overflow: ellipsis; }
+.live time { font-family: ui-monospace, monospace; font-size: 11px; color: var(--soft); }
+.live li[data-new] { animation: in 0.5s cubic-bezier(0.2, 0.75, 0.15, 1); }
+
+@media (max-width: 1100px) {
+  .stage { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 760px) {
+  .brand, .sideSearch, .navLabel { display: none; }
+  .nav { display: flex; gap: 4px; }
+  .navGroup { display: flex; gap: 4px; }
+  .stage { margin: 8px 8px 0; padding: 16px; }
+  .stageList button { grid-template-columns: 64px minmax(0, 1fr) auto; font-size: 12px; }
+  .stageCta { margin-left: 0; }
+  .stageTools { flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .liveTag i, .live li[data-new] { animation: none; }
+}
+.stageTools .stageCta { color: var(--navy); } .stageTools .stageCta:hover { color: #fff; }

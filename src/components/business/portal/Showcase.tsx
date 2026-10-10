@@ -43,6 +43,12 @@ const NAV: { id: View; label: string; icon: string }[] = [
   { id: 'gradilista', label: 'Gradilišta', icon: 'gradilista' },
   { id: 'dokumenti', label: 'Dokumenti', icon: 'dokumenti' },
 ]
+const GROUPS_NAV: { label: string; ids: View[] }[] = [
+  { label: 'Nabavka', ids: ['pregled', 'materijali', 'ponude', 'narudzbe'] },
+  { label: 'Projekti', ids: ['gradilista'] },
+  { label: 'Nalog', ids: ['dokumenti'] },
+]
+type Feed = { t: string; kind: string; text: string; meta: string }
 const CAPTION: Record<View, [string, string]> = {
   pregled: ['Pregled', 'Šta danas čeka vašu odluku: ponude za potvrdu, isporuke i nastavak upita.'],
   materijali: ['Materijali i brza narudžba', 'Odaberite artikle, upišite količine i pošaljite jedan upit za više proizvoda.'],
@@ -69,11 +75,14 @@ export default function Showcase() {
   const [query, setQuery] = useState('')
   const [group, setGroup] = useState<string>('sve')
   const [toast, setToast] = useState<string | null>(null)
-  const [activity, setActivity] = useState<{ t: string; text: string }[]>([
-    { t: 'Juče', text: 'Prodaja je poslala ponudu P-26-0142 za Lamelu A' },
-    { t: 'Juče', text: 'GC-26-04498 je spremna za preuzimanje na stovarištu' },
-    { t: '27.09.', text: 'GC-26-04402 isporučena na Lamelu A' },
+  const [activity, setActivity] = useState<Feed[]>([
+    { t: 'juče', kind: 'ponude', text: 'Ponuda P-26-0142 je spremna', meta: 'Lamela A · 5 stavki · prodaja' },
+    { t: 'juče', kind: 'isporuke', text: 'GC-26-04498 spremna za preuzimanje', meta: 'Stovarište · danas 13–15h' },
+    { t: '2 dana', kind: 'narudzbe', text: 'GC-26-04512 u pripremi', meta: 'Lamela A · dostava sutra 08–10h' },
+    { t: '27.09.', kind: 'dokumenti', text: 'Otpremnica uz GC-26-04402', meta: 'Lamela A · isporučeno' },
   ])
+  const [stageSel, setStageSel] = useState(0)
+  const [side, setSide] = useState('')
   const [slot, setSlot] = useState(SLOTS[0])
   // Vođeni scenarij: četiri koraka jedne narudžbe, štikliraju se dok ih kupac prolazi.
   const [done, setDone] = useState({ added: false, sent: false, confirmed: false, tracked: false })
@@ -109,7 +118,7 @@ export default function Showcase() {
     setToast(text)
     timers.current.push(setTimeout(() => setToast((t) => (t === text ? null : t)), 3200))
   }
-  const log = (text: string) => setActivity((a) => [{ t: 'Sada', text }, ...a].slice(0, 6))
+  const log = (text: string, kind = 'ponude', meta = 'simulacija') => setActivity((a) => [{ t: 'sad', kind, text, meta }, ...a].slice(0, 5))
   const go = (v: View) => setView(v)
 
   const addLine = (sku: string, qty: number) => {
@@ -130,14 +139,14 @@ export default function Showcase() {
     setOfferSel(no)
     setDraft([])
     mark('sent')
-    log(`Upit za ${site(draftSite).name} poslat prodaji (simulacija)`)
+    log('Upit poslat prodaji', 'ponude', `${site(draftSite).name} · ${draft.length} stavki · simulacija`)
     say('Simulacija: upit je kod prodaje. U demu se ništa ne šalje.')
     go('ponude')
     // Simulacija: prodaja priprema ponudu.
     timers.current.push(
       setTimeout(() => {
         setOffers((o) => o.map((x) => (x.no === no ? { ...x, status: 'Čeka potvrdu', title: `Ponuda po vašem upitu, ${lines.length} stavki` } : x)))
-        log(`Prodaja je pripremila ponudu ${no} (simulacija)`)
+        log(`Ponuda ${no} je spremna`, 'ponude', `${site(draftSite).name} · prodaja · simulacija`)
         say(`Simulacija: stigla je ponuda ${no}`)
       }, 2600),
     )
@@ -148,17 +157,21 @@ export default function Showcase() {
     setOrders((all) => [{ no, site: o.site, step: 1, mode, slot: mode === 'Dostava' ? `${slot} (prijedlog, potvrđuje prodaja)` : 'Termin preuzimanja dogovara prodaja', lines: o.lines, days: 0, from: o.no }, ...all])
     setOrderSel(no)
     mark('confirmed')
-    log(`Ponuda ${o.no} potvrđena, otvorena narudžba ${no} (simulacija)`)
+    log(`${no} je potvrđena`, 'narudzbe', `Po ponudi ${o.no} · simulacija`)
     say(`Simulacija: ponuda potvrđena, narudžba ${no} je otvorena`)
   }
   const advance = (o: Order) => {
     const step = Math.min(4, o.step + 1)
     setOrders((all) => all.map((x) => (x.no === o.no ? { ...x, step, slot: step === 3 ? (x.mode === 'Dostava' ? 'Danas, 08–10h' : 'Danas, 13–15h') : step === 4 ? 'Završeno danas' : x.slot } : x)))
     mark('tracked')
-    log(`${o.no}: ${orderStatus({ ...o, step })} (simulacija)`)
+    log(`${o.no}: ${orderStatus({ ...o, step }).toLowerCase()}`, step >= 3 ? 'isporuke' : 'narudzbe', `${site(o.site).name} · simulacija`)
   }
 
   const offer = offers.find((o) => o.no === offerSel) ?? offers[0]
+  // Plava scena na Pregledu: stavke ponude koja čeka potvrdu (ili zadnje potvrđene).
+  const stageOffer = offers.find((o) => o.status === 'Čeka potvrdu') ?? offers.find((o) => o.lines.length) ?? null
+  const stageIdx = stageOffer ? stageSel % stageOffer.lines.length : 0
+  const stageLine = stageOffer ? stageOffer.lines[stageIdx] : { sku: '', qty: 0 }
   const order = orders.find((o) => o.no === orderSel) ?? orders[0]
   const pending = offers.filter((o) => o.status === 'Čeka potvrdu')
   const active = orders.filter((o) => o.step < 4)
@@ -220,27 +233,100 @@ export default function Showcase() {
         </div>
         <div className={s.body}>
           <aside className={s.side}>
+            <p className={s.brand}>
+              Grand Company <span>Portal</span>
+            </p>
             <div className={s.account}>
               <span className={s.avatar}>{FIRM.short}</span>
               <span>
                 <b>{FIRM.name}</b>
                 <i>{FIRM.user}</i>
               </span>
+              <em className={s.demoTag}>Demo</em>
             </div>
+            <form
+              className={s.sideSearch}
+              onSubmit={(e) => {
+                e.preventDefault()
+                setQuery(side)
+                setGroup('sve')
+                go('materijali')
+              }}
+            >
+              <Icon name="search" />
+              <input value={side} onChange={(e) => setSide(e.target.value)} placeholder="Šifra, ponuda, narudžba" aria-label="Pretraga portala" />
+            </form>
             <nav className={s.nav} aria-label="Portal (demo)">
-              {NAV.map((n) => (
-                <button key={n.id} type="button" aria-current={view === n.id || undefined} onClick={() => go(n.id)}>
-                  <Icon name={n.icon} />
-                  <span>{n.label}</span>
-                  {n.id === 'ponude' && pending.length > 0 && <em>{pending.length}</em>}
-                  {n.id === 'materijali' && draft.length > 0 && <em>{draft.length}</em>}
-                </button>
+              {GROUPS_NAV.map((g) => (
+                <div key={g.label} className={s.navGroup}>
+                  <span className={s.navLabel}>{g.label}</span>
+                  {NAV.filter((n) => g.ids.includes(n.id)).map((n) => {
+                    const count = n.id === 'ponude' ? pending.length : n.id === 'narudzbe' ? active.length : n.id === 'gradilista' ? SITES.length : n.id === 'materijali' ? draft.length : 0
+                    return (
+                      <button key={n.id} type="button" aria-current={view === n.id || undefined} onClick={() => go(n.id)}>
+                        <Icon name={n.icon} />
+                        <span>{n.label}</span>
+                        {count > 0 && <em>{count}</em>}
+                      </button>
+                    )
+                  })}
+                </div>
               ))}
             </nav>
           </aside>
 
           <main className={s.main}>
-            <header className={s.head}>
+            {view === 'pregled' && stageOffer && (
+              <section className={s.stage} aria-label="Ponuda koja čeka potvrdu">
+                <div className={s.stageInfo}>
+                  <div>
+                    <h3>Pregled</h3>
+                    <p>Šta danas čeka vašu odluku na gradilištima DEMO GRADNJA d.o.o.</p>
+                  </div>
+                  <div className={s.stagePick}>
+                    <span>
+                      Ponuda {stageOffer.no} · {stageLine.sku} · {stageLine.qty} {unit(stageLine.sku)}
+                    </span>
+                    <b>{name(stageLine.sku)}</b>
+                    <div className={s.stageTools}>
+                      <button type="button" aria-label="Prethodna stavka" onClick={() => setStageSel((i) => (i + stageOffer.lines.length - 1) % stageOffer.lines.length)}>
+                        <Icon name="back" />
+                      </button>
+                      <span>
+                        {String(stageIdx + 1).padStart(2, '0')} / {String(stageOffer.lines.length).padStart(2, '0')}
+                      </span>
+                      <button type="button" aria-label="Sljedeća stavka" onClick={() => setStageSel((i) => (i + 1) % stageOffer.lines.length)}>
+                        <Icon name="arrow" />
+                      </button>
+                      <button
+                        type="button"
+                        className={s.stageCta}
+                        onClick={() => {
+                          setOfferSel(stageOffer.no)
+                          go('ponude')
+                        }}
+                      >
+                        Pregledaj ponudu
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <ul className={s.stageList}>
+                  {stageOffer.lines.map((l, i) => (
+                    <li key={l.sku}>
+                      <button type="button" data-on={i === stageIdx || undefined} onClick={() => setStageSel(i)} onMouseEnter={() => setStageSel(i)}>
+                        <span className={s.mono}>{l.sku}</span>
+                        <span>{name(l.sku)}</span>
+                        <b>
+                          {l.qty} {unit(l.sku)}
+                        </b>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            )}
+            <header className={s.head} hidden={view === 'pregled' && !!stageOffer}>
               <div>
                 <h3>{title}</h3>
                 <p>{sub}</p>
@@ -256,7 +342,8 @@ export default function Showcase() {
               {view === 'pregled' && (
                 <>
                   <ul className={s.next} aria-label="Sljedeći koraci">
-                    {pending.slice(0, 1).map((o) => (
+                    {/* Ponuda koja čeka potvrdu je već u plavoj sceni iznad; ovdje samo ako scene nema. */}
+                    {(stageOffer ? [] : pending.slice(0, 1)).map((o) => (
                       <li key={o.no} data-k="offer">
                         <span className={s.kicker}>Ponuda čeka potvrdu</span>
                         <b>
@@ -369,12 +456,26 @@ export default function Showcase() {
                       </ul>
                     </section>
                     <section className={s.card}>
-                      <h4>Nedavna aktivnost</h4>
-                      <ul className={s.feed}>
+                      <div className={s.liveHead}>
+                        <h4>Uživo</h4>
+                        <span className={s.liveTag}>
+                          <i />
+                          Uživo
+                        </span>
+                      </div>
+                      <ul className={s.live}>
                         {activity.map((a, i) => (
-                          <li key={`${a.text}-${i}`}>
-                            <time>{a.t}</time>
-                            <span>{a.text}</span>
+                          <li key={`${a.text}-${i}`} data-new={(i === 0 && a.t === 'sad') || undefined}>
+                            <button type="button" onClick={() => go(a.kind === 'ponude' ? 'ponude' : a.kind === 'dokumenti' ? 'dokumenti' : 'narudzbe')}>
+                              <span className={s.liveIcon}>
+                                <Icon name={a.kind} />
+                              </span>
+                              <span className={s.liveText}>
+                                <b>{a.text}</b>
+                                <i>{a.meta}</i>
+                              </span>
+                              <time>{a.t}</time>
+                            </button>
                           </li>
                         ))}
                       </ul>
