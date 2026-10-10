@@ -125,14 +125,16 @@ export default function BrandsSplit() {
         // Zadnja prednost (Stovarište) dolazi: naslov i tekst lijevo izlaze, fotografije stovarišta ulaze odozdo.
         const intro = el.querySelector<HTMLElement>('[data-intro]')!
         const yard = el.querySelector<HTMLElement>('[data-yard]')!
-        const last = el.querySelector<HTMLElement>('[data-brand]:last-of-type')!
+        const rows = el.querySelectorAll<HTMLElement>('[data-brand]')
+        const last = rows[rows.length - 1]
         if (reduce) {
           gsap.set(yard, { autoAlpha: 0 })
         } else if (window.matchMedia('(min-width: 768px)').matches) {
+          gsap.set(yard.children, { yPercent: 105 })
           gsap
             .timeline({ scrollTrigger: { trigger: last, start: 'top 75%', end: 'top 15%', scrub: 0.6 } })
             .to(intro, { autoAlpha: 0, y: -40, ease: 'none', duration: 0.4 }, 0)
-            .fromTo(yard.children, { yPercent: 105 }, { yPercent: 0, ease: 'power2.out', duration: 0.7, stagger: 0.15 }, 0.15)
+            .to(yard.children, { yPercent: 0, ease: 'power2.out', duration: 0.7, stagger: 0.15 }, 0.15)
         }
 
         gsap.utils.toArray<HTMLElement>('[data-brand]', el).forEach((row, i) => {
