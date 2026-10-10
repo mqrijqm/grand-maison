@@ -2489,3 +2489,26 @@ html:not([data-hydrated]) :is([data-client-state], .nav__mode-desk, .nav__cart-c
 @media (max-width: 1023px) {
   .nav__login { display: none; }
 }
+
+/* CTA dugmad u boji brenda: bakarna iz znaka (#B46C44, isti ton kao u /brand/logo.svg).
+   Zamjenjuje sivo-bež i tamnoplavu podlogu; na hover se dugme napuni tamnoplavom. */
+:root {
+  --orange: #b46c44;
+  --btn: var(--orange);
+  --btn-ink: #fff;
+}
+.cta,
+.cta--solid {
+  background: var(--orange);
+  color: #fff;
+  --cta-fill: var(--ink);
+  --cta-ink: #fff;
+}
+.nav__buy {
+  background: var(--orange) !important;
+  color: #fff !important;
+}
+.nav__buy:hover {
+  background: var(--ink) !important;
+  color: #fff !important;
+}
