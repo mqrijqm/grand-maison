@@ -73,7 +73,7 @@ export default function BusinessPage() {
           <h2 id="biz-explain" data-head className={`display invisible ${styles.title}`}>
             Portal, korak po korak
           </h2>
-          <p className={styles.lead}>Deset ekrana koje firma koristi svaki dan. Skrolujte: portal desno se prebacuje na ekran o kome čitate.</p>
+          <p className={styles.lead}>Prvo kako firma postaje partner i ulazi na portal, pa deset ekrana koje koristi svaki dan. Skrolujte: portal desno se prebacuje na ekran o kome čitate.</p>
         </div>
         <PortalExplainer />
       </section>

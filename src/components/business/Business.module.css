@@ -79,8 +79,14 @@
 /* Portal korak po korak: lijevo koraci, desno zalijepljen dashboard */
 .explain { display:grid; gap:40px; margin-top:56px; }
 .explainSteps { display:flex; flex-direction:column; }
-.explainStep { display:grid; grid-template-columns:44px minmax(0,1fr); gap:6px 14px; padding:28px 0; border-top:1px solid rgb(27 36 54 / .2); transition:opacity .35s; }
-.explainNum { grid-row:span 3; font-family:var(--font-heavy),Arial,sans-serif; font-weight:800; font-size:22px; letter-spacing:-.03em; color:var(--cobalt); font-variant-numeric:tabular-nums; }
+.explainGroup + .explainGroup { margin-top:clamp(64px,12vh,140px); }
+.explainGroupHead { display:grid; gap:14px; padding-bottom:28px; }
+.explainGroupTitle { max-width:18ch; font-family:var(--font-heavy),Arial,sans-serif; font-weight:800; font-size:clamp(26px,2.6vw,44px); line-height:1; letter-spacing:-.02em; text-transform:uppercase; text-wrap:balance; }
+.explainStep { position:relative; isolation:isolate; display:flex; flex-direction:column; gap:10px; padding:40px 0 36px; border-top:1px solid rgb(27 36 54 / .2); transition:opacity .35s; }
+/* Veliki svijetli broj iza teksta */
+.explainNum { position:absolute; z-index:-1; right:-.04em; top:50%; transform:translateY(-50%); font-family:var(--font-heavy),Arial,sans-serif; font-weight:800; font-size:clamp(110px,10vw,190px); line-height:.8; letter-spacing:-.06em; color:rgb(49 86 234 / .045); font-variant-numeric:tabular-nums; pointer-events:none; user-select:none; transition:color .5s; }
+.explainStep[data-on] .explainNum { color:rgb(49 86 234 / .085); }
+.explainLabel { color:var(--cobalt); }
 .explainTitle { font-family:var(--font-heavy),Arial,sans-serif; font-weight:800; font-size:clamp(20px,1.7vw,28px); line-height:1.05; letter-spacing:-.01em; text-transform:uppercase; }
 .explainText { max-width:44ch; font-size:14px; line-height:1.6; opacity:.78; text-transform:none; }
 .explainPoints { display:flex; flex-direction:column; gap:6px; margin-top:8px; }
@@ -112,7 +118,7 @@
 }
 @media (min-width:1024px) {
   .explain { grid-template-columns:minmax(0,.62fr) minmax(0,1.38fr); gap:3vw; align-items:start; }
-  .explainStep { min-height:62vh; align-content:center; opacity:.3; }
+  .explainStep { min-height:62vh; justify-content:center; opacity:.3; }
   .explainStep[data-on] { opacity:1; }
   .explainStage { display:block; height:100%; }
   .explainSticky { position:sticky; top:calc(var(--nav-h) + var(--nav-inset, 12px) + 20px); }
