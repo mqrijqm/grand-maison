@@ -5,14 +5,17 @@ import BlueWipe from '@/components/ui/BlueWipe'
 import Cta from '@/components/ui/Cta'
 import SquareDissolve from '@/components/ui/SquareDissolve'
 import { gsap, useGSAP } from '@/lib/gsap'
+import { drawOnScroll } from '@/lib/draw'
 import { MQ } from '@/lib/motion'
 import { revealChars } from '@/lib/reveal'
+import { axisShift } from './iso'
+import WorkArt, { type WorkKind } from './WorkArt'
 import styles from './WorkSections.module.css'
 
 // Svaki red = jedan posao i kategorija iz verifikovanog researcha (2026-09-17). Samo kategorije, bez
 // pojedinačnih artikala. Kupatilo je sanitarna oprema (registrovana djelatnost), ne pločice. Zid i krov
 // su istorijski potvrđeni (B), pa idu isključivo kao upit, bez tvrdnje da su u ponudi.
-const WORKS: { id: string; title: string; label: string; description: string; href: string; cta: string }[] = [
+const WORKS: { id: WorkKind; title: string; label: string; description: string; href: string; cta: string }[] = [
   { id:'suha-gradnja', title:'Pregradni zid ili spušteni plafon', label:'Suha gradnja', description:'Ploče, profili i pribor.', href:'/prodavnica?kategorija=suha-gradnja#artikli', cta:'Materijal za suhu gradnju' },
   { id:'izolacija', title:'Toplotna i zvučna izolacija', label:'Kamena vuna', description:'Kamena vuna za zid i krov.', href:'/prodavnica?kategorija=izolacija#artikli', cta:'Materijal za izolaciju' },
   { id:'zidanje-krov', title:'Zidanje i pokrivanje krova', label:'Po upitu', description:'Po upitu, prema vašoj specifikaciji.', href:'/upit-za-izvodjace?program=zidni-krovni', cta:'Pošaljite specifikaciju' },
@@ -29,6 +32,17 @@ export default function UsesSplit() {
       revealChars(el.querySelector('[data-head]')!,reduce,'top 75%')
       gsap.utils.toArray<HTMLElement>('[data-use]',el).forEach(row=>{
         revealChars(row.querySelector('[data-title]')!,reduce,'top 80%',row)
+        row.querySelectorAll<SVGSVGElement>('[data-work-art] svg').forEach(svg=>{
+          drawOnScroll(svg,reduce,{trigger:row,start:'top bottom'})
+          if(reduce)return
+          const axis=svg.dataset.axis as 'x'|'y'|'z'
+          const gap=Number(svg.dataset.gap)
+          if(!gap)return
+          gsap.utils.toArray<SVGGElement>('[data-layer]',svg).forEach((layer,k)=>{
+            const { x,y }=axisShift(axis,k*gap)
+            gsap.fromTo(layer,{x:0,y:0},{x,y,ease:'none',scrollTrigger:{trigger:row,start:'top 60%',end:'bottom 30%',scrub:.8}})
+          })
+        })
       })
     })
   },{scope:root})
@@ -47,6 +61,7 @@ export default function UsesSplit() {
           <p className="label text-bg/65">{String(i+1).padStart(2,'0')} / 04</p>
           <h3 data-title className={`display invisible ${styles.title}`}>{work.title}</h3>
         </div>
+        <div className={styles.illustration}><WorkArt kind={work.id} /></div>
         <div className={styles.bottom}>
           <p className={styles.description}>{work.description}</p>
           <div className={styles.actions}>
