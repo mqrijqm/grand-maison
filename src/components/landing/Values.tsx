@@ -13,27 +13,29 @@ import styles from './Heritage.module.css'
 // Ikonice su linijski crteži koji se iscrtaju kad kartica uđe u ekran.
 
 const Icon = ({ kind }: { kind: 'world' | 'check' | 'headset' }) => (
-  <svg viewBox="0 0 84 84" className={styles.pillarIcon} fill="none" stroke="currentColor" strokeWidth={1.4} aria-hidden>
+  <svg viewBox="0 0 48 48" className={styles.pillarIcon} fill="none" stroke="currentColor" strokeWidth={2.5} strokeLinecap="square" strokeLinejoin="miter" aria-hidden>
+    {/* Naš pristup: krug, upisan romb i tačka u centru */}
     {kind === 'world' && (
       <>
-        <circle data-d="0" cx="42" cy="42" r="32" />
-        <ellipse data-d="1" cx="42" cy="42" rx="14" ry="32" />
-        <path data-d="1" d="M10 42h64M15 26h54M15 58h54" />
-        <circle data-d="2" cx="42" cy="42" r="2.5" fill="currentColor" stroke="none" />
+        <circle data-d="0" cx="24" cy="24" r="19" />
+        <path data-d="1" d="M24 8 40 24 24 40 8 24Z" />
+        <rect data-d="2" x="21.5" y="21.5" width="5" height="5" fill="currentColor" stroke="none" />
       </>
     )}
+    {/* Naše vrijednosti: dva kvadrata koji se preklapaju — bliski odnos */}
     {kind === 'check' && (
       <>
-        <path data-d="0" d="M12 18h60v38H40L26 68V56H12z" />
-        <path data-d="1" d="M29 37l9 9 17-18" />
+        <rect data-d="0" x="6" y="6" width="22" height="22" />
+        <rect data-d="1" x="20" y="20" width="22" height="22" />
+        <rect data-d="2" x="20" y="20" width="8" height="8" fill="currentColor" stroke="none" />
       </>
     )}
+    {/* Naš tim: tri kruga u trouglu */}
     {kind === 'headset' && (
       <>
-        <path data-d="0" d="M18 48V40a24 24 0 0 1 48 0v8" />
-        <rect data-d="1" x="12" y="44" width="12" height="20" rx="3" />
-        <rect data-d="1" x="60" y="44" width="12" height="20" rx="3" />
-        <path data-d="2" d="M66 64c0 6-8 10-18 10h-4" />
+        <circle data-d="0" cx="24" cy="13" r="8" />
+        <circle data-d="1" cx="13" cy="33" r="8" />
+        <circle data-d="1" cx="35" cy="33" r="8" />
       </>
     )}
   </svg>

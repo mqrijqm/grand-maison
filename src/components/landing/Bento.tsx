@@ -8,9 +8,9 @@ import { gsap, useGSAP } from '@/lib/gsap'
 import { useMediaMotion } from '@/lib/media'
 import { EASE, MQ } from '@/lib/motion'
 
-// B2B Partner Portal kao "bento" blok: veliko zaobljeno polje sa ogromnom riječju i kratkim tekstom
-// desno, ispod tri kartice — rabatna skala (kobalt), kreditni limit i valuta (tamna) i Pantheon ERP
-// zalihe (fotografija). Podaci iz dokumentacije firme (PDF, tačke 3 i 5).
+// B2B Partner Portal kao "bento" blok: veliko polje sa ogromnom riječju i kratkim tekstom desno, ispod
+// tri kartice — cijene za firme (kobalt), uslovi plaćanja (tamna) i stovarište (fotografija).
+// Rabat, kreditni limit i valuta NISU potvrđeni (ponuda ih tek traži od firme), pa piše "na upit"/"po dogovoru".
 
 const Arrow = ({ className = '' }: { className?: string }) => (
   <span className={`grid size-[26px] place-items-center transition-transform duration-500 group-hover:translate-x-1.5 ${className}`} aria-hidden>
@@ -64,37 +64,37 @@ export default function Bento() {
           </span>
         </h2>
         <p className="max-w-[340px] text-[12.5px] leading-[1.55] text-ink/75 md:mb-[1.2vw] md:mr-[2vw]">
-          Za građevinske firme i izvođače: ugovorena cijena, kreditni limit i uvid u asortiman. Naručite online —
-          dostavu dogovaramo prema lokaciji i vrsti robe.
+          Za građevinske firme i izvođače: pregled asortimana i upit na jednom mjestu. Cijene i uslove saradnje
+          dogovarate sa prodajom, a dostavu po Banjoj Luci prema lokaciji i vrsti robe.
         </p>
       </div>
 
       <div className="mt-2.5 grid gap-2.5 md:grid-cols-[1fr_1fr_2fr]">
         {/* Plava kartica: rabatna skala */}
         <Link href="/za-firme" data-bento className="group flex min-h-[300px] flex-col bg-cobalt p-7 text-white md:min-h-[400px]" data-cursor="Portal">
-          <span className="label">Rabatna skala</span>
-          <span className="display mt-auto text-[clamp(34px,3vw,52px)]">10–22%</span>
+          <span className="label">Cijene za firme</span>
+          <span className="display mt-auto text-[clamp(34px,3vw,52px)]">Na upit</span>
           <span className="mt-4 flex flex-wrap gap-1.5">
-            <Tag tone="blue">Nivo 1 · 10%</Tag>
-            <Tag tone="blue">Nivo 2 · 15%</Tag>
-            <Tag tone="blue">Nivo 3 · 18–22%</Tag>
+            <Tag tone="blue">Veleprodaja</Tag>
+            <Tag tone="blue">Izvođači</Tag>
+            <Tag tone="blue">Firme</Tag>
           </span>
           <span className="mb-6 mt-auto max-w-[260px] pt-8 text-[12px] leading-[1.5] opacity-85">
-            Zanatlije i manji izvođači, srednje firme i veliki ugovorni partneri. Okvirni nivoi — tačan rabat se dogovara.
+            Pošaljite šta vam treba i u kojoj količini. Prodaja vam šalje ponudu sa cijenom za vašu narudžbu.
           </span>
           <Arrow className="bg-white text-cobalt" />
         </Link>
 
         {/* Tamna kartica: kreditni limit i valuta */}
         <Link href="/za-firme" data-bento className="group flex min-h-[300px] flex-col bg-char p-7 text-white md:min-h-[400px]" data-cursor="Portal">
-          <span className="label">Kreditni limit</span>
-          <span className="display mt-auto text-[clamp(34px,3vw,52px)]">30/60/90</span>
+          <span className="label">Uslovi plaćanja</span>
+          <span className="display mt-auto text-[clamp(34px,3vw,52px)]">Po dogovoru</span>
           <span className="mt-4 flex flex-wrap gap-1.5">
-            <Tag tone="dark">Dana valute</Tag>
-            <Tag tone="dark">Menica / garancija</Tag>
+            <Tag tone="dark">Ponuda</Tag>
+            <Tag tone="dark">Predračun</Tag>
           </span>
           <span className="mb-6 mt-auto max-w-[260px] pt-8 text-[12px] leading-[1.5] opacity-85">
-            Odobreni limit uz odgođeno plaćanje; iskorištenost limita vidite na portalu. Okvirno — tačan limit i valuta se dogovaraju.
+            Način i rok plaćanja dogovarate direktno sa prodajom, prema vrsti i obimu saradnje.
           </span>
           <Arrow className="bg-white text-[#1e1e1e]" />
         </Link>
