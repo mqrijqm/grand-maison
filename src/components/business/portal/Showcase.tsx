@@ -64,6 +64,8 @@ export type TourStep = 'pregled' | 'materijali' | 'upit' | 'ponude' | 'narudzbe'
 
 export default function Showcase({ tour, light, steps: showSteps = true }: { tour?: TourStep; light?: boolean; steps?: boolean } = {}) {
   const [view, setView] = useState<View>('pregled')
+  // Korak koji je korisnik kliknuo u traci iznad prozora (null = još ništa nije kliknuto).
+  const [picked, setPicked] = useState<string | null>(null)
   const [draft, setDraft] = useState<Line[]>([
     { sku: 'GKP-001', qty: 120 },
     { sku: 'PRF-075', qty: 40 },
@@ -267,6 +269,8 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
     { k: 'tracked', label: 'Pratite narudžbu', view: 'narudzbe' },
   ]
   const nextStep = steps.find((x) => !done[x.k])
+  // Aktivan (plavi) je korak koji je korisnik kliknuo; dok ništa nije kliknuto, to je sljedeći nedovršeni.
+  const activeStep = picked ?? nextStep?.k
 
   return (
     <div className={s.wrap} data-light={light || undefined}>
@@ -274,7 +278,16 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
         <ol className={s.scenarioSteps}>
           {steps.map((x, i) => (
             <li key={x.k}>
-              <button type="button" data-done={done[x.k] || undefined} data-next={nextStep?.k === x.k || undefined} onClick={() => setView(x.view)}>
+              <button
+                type="button"
+                data-done={done[x.k] || undefined}
+                data-next={activeStep === x.k || undefined}
+                aria-pressed={activeStep === x.k}
+                onClick={() => {
+                  setPicked(x.k)
+                  setView(x.view)
+                }}
+              >
                 <i>{done[x.k] ? '✓' : i + 1}</i>
                 {x.label}
               </button>

@@ -197,8 +197,8 @@
 .scenarioSteps button { display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 0 14px 0 6px; border: 1px solid rgb(255 255 255 / 0.3); border-radius: 99px; color: #fff; font-size: 12.5px; font-weight: 600; text-transform: none; letter-spacing: 0; transition: background 0.2s, border-color 0.2s; }
 .scenarioSteps button:hover { border-color: #fff; }
 .scenarioSteps i { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: rgb(255 255 255 / 0.14); font-style: normal; font-size: 11.5px; }
-.scenarioSteps button[data-next] { border-color: #fff; background: #fff; color: var(--navy); }
-.scenarioSteps button[data-next] i { background: var(--cobalt); color: #fff; }
+.scenarioSteps button[data-next] { border-color: var(--cobalt); background: var(--cobalt); color: #fff; }
+.scenarioSteps button[data-next] i { background: #fff; color: var(--cobalt); }
 .scenarioSteps button[data-done] i { background: #2f9a6a; color: #fff; }
 .scenarioHint { font-size: 12.5px; color: rgb(255 255 255 / 0.85); text-transform: none; letter-spacing: 0; }
 .reset { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 12px; border-radius: 99px; color: rgb(255 255 255 / 0.85); font-size: 12px; text-transform: none; letter-spacing: 0; }
@@ -345,7 +345,8 @@
 .wrap[data-light] .scenarioSteps button { border-color: rgb(27 36 54 / 0.25); color: var(--navy); }
 .wrap[data-light] .scenarioSteps button:hover { border-color: var(--navy); }
 .wrap[data-light] .scenarioSteps i { background: rgb(27 36 54 / 0.08); }
-.wrap[data-light] .scenarioSteps button[data-next] { background: var(--navy); border-color: var(--navy); color: #fff; }
+.wrap[data-light] .scenarioSteps button[data-next] { background: var(--cobalt); border-color: var(--cobalt); color: #fff; }
+.wrap[data-light] .scenarioSteps button[data-next] i { background: #fff; color: var(--cobalt); }
 .wrap[data-light] .note { color: rgb(27 36 54 / 0.65); }
 /* Oštre ivice i tanak tamnoplavi okvir par milimetara od prozora */
 .window { border-radius: 0 !important; outline: 1px solid var(--navy); outline-offset: 6px; }

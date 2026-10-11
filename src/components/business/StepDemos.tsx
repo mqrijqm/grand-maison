@@ -162,6 +162,8 @@ const buildLogin: Build = (q, tl, cursorTo) => {
   // Bez reklama i opšte početne: odmah dashboard firme.
   tl.to(q('[data-s="dash"]'), { autoAlpha: 1, y: 0, duration: 0.5, ease: 'power3.out' }, '+=0.9')
   tl.fromTo(q('[data-bar]'), { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: 'power3.out' }, '<0.2')
+  // Dijelovi dashboarda izranjaju jedan za drugim (pozdrav, ponuda, brojke, narudžbe, brzi unos).
+  tl.fromTo(q('[data-s="dash"]').querySelectorAll('[data-dash-item]'), { autoAlpha: 0, y: 14 }, { autoAlpha: 1, y: 0, duration: 0.45, ease: 'power3.out', stagger: 0.07 }, '<')
 }
 const finalLogin = (q: (sel: string) => HTMLElement) => {
   q('[data-t="firm"]').textContent = FIRM
@@ -221,24 +223,50 @@ function LoginDemo() {
           <p className={styles.h}>Dobro došli</p>
           <p className={styles.muted}>DEMO GRADNJA d.o.o.</p>
         </div>
-        <div className={styles.dash} data-show data-s="dash">
-          <div className={styles.tileDark}>
-            <span className={styles.muted}>Ponuda P-26-0142 čeka potvrdu</span>
-            <b>5 stavki</b>
-            <i className={styles.meter}>
-              <em data-bar />
-            </i>
-          </div>
-          <div className={styles.tile}>
-            <span className={styles.muted}>Narudžbe u toku</span>
-            <p>
-              GC-26-04477 <span className={styles.chip}>Na putu ka gradilištu</span>
-            </p>
-          </div>
-          <div className={styles.tile}>
-            <span className={styles.muted}>Brzi unos</span>
-            <span className={styles.fakeInput}>Šifra, npr. GKP-001</span>
-          </div>
+      </div>
+      {/* Poslije prijave: dashboard firme preko cijele scene (ne u maloj kartici za prijavu). */}
+      <div className={styles.dash} data-show data-s="dash">
+        <div className={styles.dashTop} data-dash-item>
+          <span>
+            <span className={styles.muted}>Dobro došli</span>
+            <b className={styles.dashFirm}>DEMO GRADNJA d.o.o.</b>
+          </span>
+          <span className={styles.dashBadge}>Demo nalog</span>
+        </div>
+        <div className={styles.dashHero} data-dash-item>
+          <span className={styles.dashHeroLabel}>Ponuda P-26-0142 čeka vašu potvrdu</span>
+          <b className={styles.dashHeroNum}>5 stavki</b>
+          <i className={styles.meter}>
+            <em data-bar />
+          </i>
+          <span className={styles.dashHeroBtn}>Pregledaj ponudu →</span>
+        </div>
+        <div className={styles.dashKpis}>
+          {[
+            ['1', 'Ponuda čeka'],
+            ['2', 'Narudžbe u toku'],
+            ['3', 'Sačuvane liste'],
+          ].map(([n, l]) => (
+            <span key={l} className={styles.dashKpi} data-dash-item>
+              <b>{n}</b>
+              <span className={styles.muted}>{l}</span>
+            </span>
+          ))}
+        </div>
+        <div className={styles.dashList} data-dash-item>
+          <span className={styles.muted}>Narudžbe u toku</span>
+          <p>
+            <span>GC-26-04477</span>
+            <span className={styles.chip}>Na putu ka gradilištu</span>
+          </p>
+          <p>
+            <span>GC-26-04480</span>
+            <span className={styles.chipSoft}>U pripremi</span>
+          </p>
+        </div>
+        <div className={styles.dashQuick} data-dash-item>
+          <span className={styles.muted}>Brzi unos</span>
+          <span className={styles.fakeInput}>Šifra, npr. GKP-001</span>
         </div>
       </div>
       <Cursor />
