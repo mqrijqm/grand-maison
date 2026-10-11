@@ -16,9 +16,7 @@ import {
   SITES,
   STEPS,
   USERS,
-  amount,
   dateAgo,
-  km,
   name,
   site,
   unit,
@@ -531,7 +529,7 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
                         </p>
                       </div>
                     ) : (
-                      <p className={`${s.fine} ${s.delivery}`}>Stovarište, Ul. Nenada Kostića 151, Banja Luka · pon–pet 07–16, sub 07–15</p>
+                      <p className={`${s.fine} ${s.delivery}`}>Stovarište, Ul. Nenada Kostića 151, Banja Luka · 07:00–16:00</p>
                     )}
                     {draft.length === 0 ? (
                       <p className={s.empty}>Upit je prazan. Dodajte materijal iz liste ili učitajte sačuvanu listu.</p>
@@ -635,14 +633,14 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
                                 <td>
                                   {l.qty} {unit(l.sku)}
                                 </td>
-                                <td>{km(amount([l]))}</td>
+                                <td>Na upit</td>
                               </tr>
                             ))}
                           </tbody>
                           <tfoot>
                             <tr>
-                              <td colSpan={2}>Ukupno (orijentaciono, primjer)</td>
-                              <td>{km(amount(offer.lines))}</td>
+                              <td colSpan={2}>Ukupno</td>
+                              <td>Cijena na upit</td>
                             </tr>
                           </tfoot>
                         </table>

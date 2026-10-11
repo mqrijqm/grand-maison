@@ -50,7 +50,6 @@ export default async function ProductPage({ params }: PageProps<'/prodavnica/[sk
     ...(product.pack && product.unit === 'm²' ? [['Pakovanje', `${qtyLabel(product.pack.size, product.unit)} — 1 ${product.pack.name}`]] : []),
     ['Masa', massLabel(product)],
     ['Brend', product.brand],
-    ...(systems.length ? [['Sistemi', systems.map((s) => s.code).join(', ')]] : []),
     ['Šifra', product.sku],
   ]
 
@@ -79,7 +78,7 @@ export default async function ProductPage({ params }: PageProps<'/prodavnica/[sk
           </Pw></h1>
 
           <p className="fade-up mt-6 text-[clamp(22px,1.8vw,30px)] tabular-nums" style={{ animationDelay: '0.16s' }}>
-            <Price value={product.price} unit={product.unit} /> <span className="text-[0.6em] opacity-50">sa PDV-om · orijentaciono</span>
+            <Price /> <span className="text-[0.6em] opacity-50">· pošaljite upit za ponudu</span>
           </p>
 
           <p className="fade-up mt-8 max-w-[44ch] text-[13px] leading-[1.55] opacity-80" style={{ animationDelay: '0.24s' }}>

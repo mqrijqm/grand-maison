@@ -1,14 +1,14 @@
 {
  "PRODUCT_PHOTOS": {
-  "ACC-003": "/products/ACC-003.webp",
-  "ISO-003": "/products/ISO-003.webp",
-  "ISO-004": "/products/ISO-004.webp"
+  "ACC-003": "/products/ACC-003.webp"
  },
  "COMPANY": {
   "name": "Grand Company d.o.o. Banja Luka",
   "address": "Ul. Nenada Kostića 151, 78000 Banja Luka",
   "phoneLandline": "051 388-995",
   "phoneLandlineHref": "tel:+38751388995",
+  "phoneLandline2": "051 385 111",
+  "phoneLandline2Href": "tel:+38751385111",
   "phoneMobile": "065 516-696",
   "phoneMobileHref": "tel:+38765516696",
   "emailInfo": "info@grandcompany.com",
@@ -35,20 +35,20 @@
   },
   {
    "id": "izolacija",
-   "label": "Izolacija i fasade",
-   "lead": "EPS i XPS ploče, kamena i staklena vuna",
+   "label": "Izolacija",
+   "lead": "Kamena vuna u pločama",
    "image": "img/facade.webp",
    "gallery": [
     "img/facade.webp",
     "img/office.webp"
    ],
    "color": "#B7862C",
-   "usage": "Toplotna i zvučna izolacija za pregradne zidove, potkrovlja, podove i kontaktne fasade. Kamena vuna je negoriva i dobro prigušuje zvuk, staklena vuna u rolni je lakša za kose krovove, a grafitni stiropor daje istu izolaciju sa tanjom pločom."
+   "usage": "Toplotna i zvučna izolacija za pregradne zidove, potkrovlja i krovove. Kamena vuna je negoriva i dobro prigušuje zvuk."
   },
   {
    "id": "veziva",
    "label": "Veziva i vrećasti materijali",
-   "lead": "Mase za spojeve, ljepila, glet i cement",
+   "lead": "Mase za spojeve, keramička ljepila i cement",
    "image": "img/concrete-curves.webp",
    "gallery": [
     "img/concrete-curves.webp",
@@ -56,7 +56,7 @@
    ],
    "app": "img/app/jointing.webp",
    "color": "#4E7A55",
-   "usage": "Gipsane mase za fugovanje, ljepila za fasadne sisteme i keramiku, glet mase i cement. Vreće čuvajte na paleti, na suhom i zaštićene od vlage, i koristite ih unutar roka trajanja otisnutog na pakovanju."
+   "usage": "Gipsane mase za spojeve i fugovanje, keramička ljepila, cementi i mašinski malteri. Vreće čuvajte na paleti, na suhom i zaštićene od vlage, i koristite ih unutar roka trajanja otisnutog na pakovanju."
   },
   {
    "id": "oprema",
@@ -284,69 +284,6 @@
    }
   },
   {
-   "sku": "ISO-003",
-   "name": "Staklena vuna u rolni 035",
-   "brand": "Ostali proizvođači",
-   "spec": "Debljina 100 mm, rolna oko 6 m², λ = 0,035 W/mK",
-   "desc": "Lagana vuna u rolni za kose krovove i potkrovlja.",
-   "price": 5.5,
-   "unit": "m²",
-   "category": "izolacija",
-   "stock": 2400,
-   "weight": 1.5,
-   "pack": {
-    "size": 6,
-    "name": "rolna"
-   },
-   "art": {
-    "kind": "roll",
-    "label": "Staklena vuna 035"
-   }
-  },
-  {
-   "sku": "ISO-004",
-   "name": "Fasadni stiropor EPS 70, bijeli",
-   "brand": "Ostali proizvođači",
-   "spec": "Debljina 80 mm, ploča 1000 × 500 mm",
-   "desc": "Za standardne kontaktne fasade (demit).",
-   "price": 8.2,
-   "unit": "m²",
-   "category": "izolacija",
-   "stock": 3100,
-   "weight": 1.2,
-   "pack": {
-    "size": 0.5,
-    "name": "ploča"
-   },
-   "art": {
-    "kind": "slab",
-    "material": "eps",
-    "thick": 30,
-    "count": 3,
-    "label": "EPS 70"
-   }
-  },
-  {
-   "sku": "ISO-006",
-   "name": "Grafitni stiropor EPS, sivi",
-   "brand": "Ostali proizvođači",
-   "spec": "Debljina 100 mm, λ = 0,031 W/mK",
-   "desc": "Nisko-energetska fasadna izolacija sa tanjom pločom.",
-   "price": 14.2,
-   "unit": "m²",
-   "category": "izolacija",
-   "stock": 1150,
-   "weight": 1.6,
-   "featured": true,
-   "art": {
-    "kind": "slab",
-    "material": "graphite",
-    "thick": 32,
-    "count": 3,
-    "label": "Grafitni EPS 100"
-   }
-  },
-  {
    "sku": "CHM-001",
    "name": "Gipsana masa za spojeve",
    "brand": "Ostali proizvođači",
@@ -383,45 +320,6 @@
     "body": "#F4F1EA",
     "band": "#2F5FA7",
     "label": "Gips masa",
-    "weight": "25 kg"
-   }
-  },
-  {
-   "sku": "CHM-003",
-   "name": "Ceresit CT 83 ljepilo za stiropor",
-   "brand": "Ceresit",
-   "spec": "Vreća 25 kg",
-   "desc": "Ljepilo za lijepljenje polistirenskih ploča na fasadu.",
-   "price": 11.5,
-   "unit": "kom",
-   "category": "veziva",
-   "stock": 520,
-   "weight": 25,
-   "art": {
-    "kind": "bag",
-    "body": "#F4F1EA",
-    "band": "#C0392B",
-    "label": "CT 83",
-    "weight": "25 kg"
-   }
-  },
-  {
-   "sku": "CHM-004",
-   "name": "Ceresit CT 85 ljepilo i masa za armiranje",
-   "brand": "Ceresit",
-   "spec": "Vreća 25 kg",
-   "desc": "Za lijepljenje ploča i armiranje fasadne mrežice, sa vlaknima.",
-   "price": 16.2,
-   "unit": "kom",
-   "category": "veziva",
-   "stock": 470,
-   "weight": 25,
-   "featured": true,
-   "art": {
-    "kind": "bag",
-    "body": "#F4F1EA",
-    "band": "#C0392B",
-    "label": "CT 85",
     "weight": "25 kg"
    }
   },
@@ -828,44 +726,26 @@
  "DELIVERY_ZONES": [
   {
    "id": "bl",
-   "label": "Banja Luka, do 10 km",
-   "standard": 30,
-   "kranTransport": 30,
-   "kranWork": 60
-  },
-  {
-   "id": "z25",
-   "label": "Regija do 25 km (Laktaši, Čelinac…)",
-   "standard": 50,
-   "kranTransport": 70,
-   "kranWork": 60
-  },
-  {
-   "id": "z50",
-   "label": "Regija do 50 km (Prijedor, Gradiška…)",
-   "standard": 80,
-   "kranTransport": 110,
-   "kranWork": 70
+   "label": "Banja Luka (teritorija grada)",
+   "standard": 0,
+   "kranTransport": 0,
+   "kranWork": 0
   }
  ],
- "FREE_STANDARD_DELIVERY_OVER": 3000,
+ "FREE_STANDARD_DELIVERY_OVER": 0,
  "CRANE_RECOMMEND_OVER_KG": 1000,
  "BRAND_NOTES": [
   [
-   "Baumit",
-   "Fasadni sistemi, malteri i toplotna izolacija."
+   "Baumalt",
+   "Građevinska hemija."
   ],
   [
    "Tondach",
-   "Crijep i elementi za krov."
+   "Crijep i krovni sistemi (Wienerberger)."
   ],
   [
-   "Ceresit",
-   "Ljepila, mase za armiranje i fasadni sistemi."
-  ],
-  [
-   "Baumalt",
-   "Brend iz aktuelne partnerske liste — asortiman po upitu."
+   "Porotherm",
+   "Zidni blokovi od opeke (Wienerberger)."
   ]
  ],
  "WALL_SYSTEMS": [

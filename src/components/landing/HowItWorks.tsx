@@ -20,7 +20,7 @@ const STEPS = [
   },
   {
     title: 'Izračunajte količine',
-    text: 'Kalkulator za zid i plafon.',
+    text: 'Kalkulator za pregradni zid.',
     image: '/stock/board-cut.webp',
     alt: 'Mjerenje i rezanje gips-kartonske ploče',
   },

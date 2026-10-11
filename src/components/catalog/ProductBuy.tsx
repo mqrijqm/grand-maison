@@ -28,7 +28,7 @@ export default function ProductBuy({ product }: Props) {
             <span className="pr-3 text-[12px]">{product.unit}</span>
             <button type="button" aria-label="Povećaj količinu" onClick={() => changeQuantity(1)}>+</button>
           </div>
-          {qty !== null && <span className="text-[12px]" aria-live="polite"><span className="block text-[9px] opacity-55">Orijentacioni iznos</span><Price value={product.price} qty={qty} /></span>}
+          {qty !== null && <span className="text-[12px]" aria-live="polite"><span className="block text-[9px] opacity-55">Iznos</span><Price /></span>}
         </div>
         <p id={`quantity-hint-${product.sku}`} className="text-[10px] normal-case leading-relaxed opacity-60">{qty === null ? 'Unesite količinu od 0,01 do 9.999.' : product.pack ? `Pakovanje: ${qtyLabel(product.pack.size, product.unit)} / ${product.pack.name}. Količine i dostupnost potvrđuje prodaja.` : `Jedinica prodaje: ${product.unit}. Količine i dostupnost potvrđuje prodaja.`}</p>
         <div className={styles.purchaseActions}>

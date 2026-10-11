@@ -1,27 +1,7 @@
 'use client'
 
-import { withDiscount } from '@/lib/b2b'
-import { usePortalPartner } from '@/lib/portal'
-import { money } from '@/lib/shop'
-
-// Cijena artikla (sa PDV-om). U B2B načinu za prijavljenog partnera: cijena sa ugovorenim rabatom,
-// maloprodajna precrtana i mala oznaka rabata (npr. −18%). U maloprodaji: kataloška cijena.
-export default function Price({ value, qty = 1, unit, className = '' }: { value: number; qty?: number; unit?: string; className?: string }) {
-  const discount = usePortalPartner()?.discount ?? 0
-  const retail = value * qty
-  if (!discount)
-    return (
-      <span className={`tabular-nums ${className}`}>
-        {money(retail)}
-        {unit && <span className="opacity-50"> / {unit}</span>}
-      </span>
-    )
-  return (
-    <span className={`inline-flex flex-wrap items-baseline gap-x-2 gap-y-1 tabular-nums ${className}`}>
-      <span>{money(withDiscount(value, discount) * qty)}</span>
-      {unit && <span className="-ml-1 opacity-50">/ {unit}</span>}
-      <s className="text-[0.85em] opacity-45">{money(retail)}</s>
-      <span className="b2b-pill">−{Math.round(discount * 100)}%</span>
-    </span>
-  )
+// Cijena artikla. Javnog cjenovnika nema, pa se umjesto iznosa svuda prikazuje "Cijena na upit"
+// (katalog, stranica artikla, korpa). Props ostaju isti da pozivi ne moraju da se mijenjaju.
+export default function Price({ className = '' }: { value?: number; qty?: number; unit?: string; className?: string }) {
+  return <span className={className}>Cijena na upit</span>
 }

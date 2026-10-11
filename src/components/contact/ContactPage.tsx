@@ -8,9 +8,10 @@ import styles from './ContactPage.module.css'
 // lukovi u pozadini i dvije ravne fotografije.
 const ROWS: { n: string; label: string; value: string; href: string; external?: boolean }[] = [
   { n: '01', label: 'Prodaja', value: GC.phoneLandline, href: GC.phoneLandlineHref },
-  { n: '02', label: 'Mobilni', value: GC.phoneMobile, href: GC.phoneMobileHref },
-  { n: '03', label: 'E-pošta', value: GC.emailInfo, href: `mailto:${GC.emailInfo}` },
-  { n: '04', label: 'Stovarište', value: GC.address, href: MAPS_URL, external: true },
+  { n: '02', label: 'Prodaja', value: GC.phoneLandline2, href: GC.phoneLandline2Href },
+  { n: '03', label: 'Mobilni', value: GC.phoneMobile, href: GC.phoneMobileHref },
+  { n: '04', label: 'E-pošta', value: GC.emailInfo, href: `mailto:${GC.emailInfo}` },
+  { n: '05', label: 'Stovarište', value: GC.address, href: MAPS_URL, external: true },
 ]
 
 export default function ContactPage() {
@@ -29,7 +30,7 @@ export default function ContactPage() {
           <h1 className={`display ${styles.title}`}>
             <Pw>Kontakt</Pw>
           </h1>
-          <p className={styles.lead}>Imate li plan šta gradite? Recite nam koji vam naši materijali i usluge trebaju. Ponudu i isporuku dogovaramo direktno s vama.</p>
+          <p className={styles.lead}>Imate li plan šta gradite? Recite nam koji vam materijal treba i u kojoj količini. Cijenu, dostupnost i dostavu po Banjoj Luci dogovaramo direktno s vama.</p>
         </div>
 
         <div className={styles.composition}>
@@ -43,14 +44,14 @@ export default function ContactPage() {
           <a key={row.n} className={styles.row} href={row.href} {...(row.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
             <span className={styles.rowNumber}>{row.n}</span>
             <span className={`label ${styles.rowLabel}`}>{row.label}</span>
-            <span className={`${styles.rowValue} ${row.n === '03' ? styles.rowEmail : ''}`}>{row.value}</span>
+            <span className={`${styles.rowValue} ${row.label === 'E-pošta' ? styles.rowEmail : ''}`}>{row.value}</span>
             <span className={styles.rowArrow} aria-hidden>↗</span>
           </a>
         ))}
       </section>
 
       <section className={`gutter ${styles.hours}`} aria-label="Radno vrijeme">
-        <p className="label opacity-60">05 · Radno vrijeme</p>
+        <p className="label opacity-60">06 · Radno vrijeme</p>
         <dl>
           {HOURS.map((h) => (
             <div key={h.days}>

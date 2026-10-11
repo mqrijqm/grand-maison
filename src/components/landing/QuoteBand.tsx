@@ -33,7 +33,7 @@ export default function QuoteBand() {
             Imate li plan šta gradite?
           </h2>
           <p data-up className={`mt-8 ${styles.lead}`}>
-            Recite nam koji vam naši materijali i usluge trebaju. Prodaja vam šalje ponudu.
+            Recite nam koji vam materijal treba i u kojoj količini. Prodaja vam šalje ponudu sa cijenom i dostupnošću, a naš tim vam savjetuje izbor.
           </p>
           <div className={styles.actions}>
             <Cta href="/upit-za-izvodjace" solid>
@@ -53,10 +53,13 @@ export default function QuoteBand() {
               <a href={GC.phoneLandlineHref} className="mt-2 block">
                 {GC.phoneLandline}
               </a>
+              <a href={GC.phoneLandline2Href} className="block">
+                {GC.phoneLandline2}
+              </a>
             </div>
             <div>
-              <p className="label opacity-60">Pon–Pet · Sub</p>
-              <span className="mt-2 block">07–16 · 07–15</span>
+              <p className="label opacity-60">Radno vrijeme</p>
+              <span className="mt-2 block">07:00–16:00</span>
             </div>
           </div>
         </div>

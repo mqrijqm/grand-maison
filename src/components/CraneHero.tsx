@@ -23,7 +23,7 @@ const SCRIPT = '/crane/crane-hero.js'
 // Rečenica koja se na kraju hero-a (kad kamera izađe kroz prozor i vidi se opet nebo)
 // polako ispisuje, slovo po slovo. Skrol je vozi: scena postavlja `--type-p` (0..1) na sekciju,
 // a svako slovo ima svoj prag `--th` i pojavi se (mekano) tačno kad skrol stigne dotle.
-const PHRASE = 'Građevinski materijal za profesionalce. Veleprodaja. Dostava na gradilište.'
+const PHRASE = 'Građevinski materijal za profesionalce. Veleprodaja. Dostava po Banjoj Luci.'
 // Slova se drže u rečima (nowrap), da se reč nikad ne prelomi usred slova na uskom ekranu.
 const WORDS = PHRASE.split(' ')
 const TOTAL = [...PHRASE].length

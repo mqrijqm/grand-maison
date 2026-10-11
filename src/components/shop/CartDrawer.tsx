@@ -4,7 +4,7 @@ import { useEffect, useRef } from 'react'
 import { useLenis } from 'lenis/react'
 import { useRouter } from 'next/navigation'
 import { cartCount, cartLines, closeCart, removeFromCart, setQty, useShop } from '@/lib/cart'
-import { artikala, money, qtyLabel } from '@/lib/shop'
+import { artikala, qtyLabel } from '@/lib/shop'
 import ProductImage from './ProductImage'
 import { useScrollTo } from '@/lib/useScrollTo'
 import Cta from '@/components/ui/Cta'
@@ -12,7 +12,7 @@ import Price from '@/components/b2b/Price'
 import { buildQuote } from '@/components/b2b/quote'
 import { METHOD_LABEL, setPrefs, useDeliveryPrefs } from '@/components/b2b/prefs'
 import { usePortalPartner } from '@/lib/portal'
-import { DELIVERY_ZONES, recommendCrane, tons, type DeliveryMethod } from '@/lib/logistics'
+import { recommendCrane, tons, type DeliveryMethod } from '@/lib/logistics'
 
 const FOCUSABLE = 'button:not(:disabled), a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
 
@@ -187,16 +187,7 @@ export default function CartDrawer() {
                 </p>
               )}
               {prefs.method !== 'preuzimanje' && (
-                <label className="mt-4 grid gap-1.5 text-[10.5px] opacity-80">
-                  Zona dostave
-                  <select value={prefs.zoneId} onChange={(e) => setPrefs({ zoneId: e.target.value })} className="b2b-input">
-                    {DELIVERY_ZONES.map((z) => (
-                      <option key={z.id} value={z.id}>
-                        {z.label}
-                      </option>
-                    ))}
-                  </select>
-                </label>
+                <p className="mt-4 text-[10.5px] opacity-80">Dostava samo na teritoriji grada Banja Luka.</p>
               )}
             </section>
           )}
@@ -205,34 +196,18 @@ export default function CartDrawer() {
         {lines.length > 0 && (
           <div className="border-t border-ink/15 px-6 pb-7 pt-5 md:px-8">
             <dl className="grid gap-1.5 text-[11.5px]">
-              {q.savings > 0 && (
-                <>
-                  <div className="flex justify-between opacity-60">
-                    <dt>Maloprodajna vrijednost</dt>
-                    <dd className="tabular-nums">{money(q.retail)}</dd>
-                  </div>
-                  <div className="flex justify-between">
-                    <dt>Ugovoreni rabat {Math.round(discount * 100)}%</dt>
-                    <dd className="tabular-nums">−{money(q.savings)}</dd>
-                  </div>
-                </>
-              )}
               <div className="flex justify-between opacity-80">
                 <dt>{artikala(count)}</dt>
-                <dd className="tabular-nums">{money(q.goods)}</dd>
+                <dd>Cijena na upit</dd>
               </div>
               <div className="flex justify-between opacity-80">
-                <dt>{METHOD_LABEL[prefs.method]} · orijentaciono</dt>
-                <dd className="tabular-nums">{q.delivery ? money(q.delivery) : 'bez troška'}</dd>
+                <dt>{METHOD_LABEL[prefs.method]}</dt>
+                <dd>{prefs.method === 'preuzimanje' ? 'Nenada Kostića 151' : 'Banja Luka · na upit'}</dd>
               </div>
             </dl>
-            <p className="mt-2 text-[10.5px] leading-[1.5] opacity-50">
-              Trošak i način isporuke su orijentacioni — tačne uslove potvrđujemo prije narudžbe.
+            <p className="mt-3 border-t border-ink/15 pt-3 text-[11.5px] leading-[1.5] opacity-70">
+              Javnog cjenovnika nema. Pošaljite upit, a prodaja vam javlja cijenu, dostupnost i termin dostave.
             </p>
-            <div className="mt-3 flex items-baseline justify-between border-t border-ink/15 pt-3">
-              <p className="text-[11.5px] opacity-60">Ukupno sa PDV-om</p>
-              <p className="num text-[28px]">{money(q.total)}</p>
-            </div>
             <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
               <Cta solid onClick={() => go('ponuda')}>
                 Upit

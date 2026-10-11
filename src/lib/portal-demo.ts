@@ -24,7 +24,7 @@ export type Site = { id: string; name: string; short: string; address: string; b
 export const SITES: Site[] = [
   { id: 'a', name: 'Demo gradilište A — stambena lamela', short: 'Lamela A', address: 'Banja Luka, demo adresa 1', budget: 48000, spent: 31260, phase: 'Pregradni zidovi, sprat 3', progress: 0.65, lead: 'Demo poslovođa 1' },
   { id: 'b', name: 'Demo gradilište B — poslovni prostor', short: 'Poslovni B', address: 'Banja Luka, demo adresa 2', budget: 22500, spent: 8940, phase: 'Spušteni plafoni', progress: 0.4, lead: 'Demo poslovođa 2' },
-  { id: 'c', name: 'Demo gradilište C — porodična kuća', short: 'Kuća C', address: 'Okolina Banje Luke, demo', budget: 16800, spent: 14120, phase: 'Krov i izolacija', progress: 0.84, lead: 'Demo poslovođa 3' },
+  { id: 'c', name: 'Demo gradilište C — porodična kuća', short: 'Kuća C', address: 'Banja Luka, demo', budget: 16800, spent: 14120, phase: 'Krov i izolacija', progress: 0.84, lead: 'Demo poslovođa 3' },
 ]
 export const siteById = (id: string) => SITES.find((s) => s.id === id)!
 

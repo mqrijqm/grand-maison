@@ -11,7 +11,7 @@ export type Site = { id: string; name: string; address: string; lead: string; ph
 export const SITES: Site[] = [
   { id: 'a', name: 'Lamela A, stambeni objekat', address: 'Banja Luka, demo adresa 1', lead: 'Demo poslovođa 1', phase: 'Pregradni zidovi, sprat 3' },
   { id: 'b', name: 'Poslovni prostor B', address: 'Banja Luka, demo adresa 2', lead: 'Demo poslovođa 2', phase: 'Spušteni plafoni' },
-  { id: 'c', name: 'Porodična kuća C', address: 'Okolina Banje Luke, demo', lead: 'Demo poslovođa 3', phase: 'Krov i izolacija' },
+  { id: 'c', name: 'Porodična kuća C', address: 'Banja Luka, demo', lead: 'Demo poslovođa 3', phase: 'Krov i izolacija' },
 ]
 export const site = (id: string) => SITES.find((s) => s.id === id) ?? SITES[0]
 
@@ -57,7 +57,7 @@ export const OFFERS: Offer[] = [
     validDays: 10,
     days: 6,
     lines: [
-      { sku: 'ISO-003', qty: 140 },
+      { sku: 'ISO-002', qty: 140 },
       { sku: 'GKP-002', qty: 120 },
       { sku: 'PRF-CD60', qty: 70 },
     ],

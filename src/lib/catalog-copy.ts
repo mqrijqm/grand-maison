@@ -107,36 +107,6 @@ export const ARTICLE_COPY: Record<string, ArticleCopy> = {
     together: ["Pocinčani zidni profil CW 75", "Gips-kartonska ploča GKB 12,5 mm", "Staklena bandaž traka za spojeve"],
     tip: "Za obračun količine računajte površinu izolacije i dodajte rezervu za krojenje prema rasporedu konstrukcije."
   },
-  "ISO-003": {
-    lead: "Staklena vuna u rolni debljine 100 mm namijenjena je izolaciji kosih krovova i potkrovlja.",
-    body: [
-      "Rolna pokriva oko 6 m², a deklarisana toplotna provodljivost je λ = 0,035 W/mK. Rolna se kroji prema poljima konstrukcije i postavlja kao sloj izolacije.",
-      "Prije ugradnje provjerite detalje slojeva krova, naročito položaj parne brane i način ventilacije. Za razmake, preklapanja i druge tehničke zahtjeve pratite projekat i tehnički list proizvođača."
-    ],
-    uses: ["Kosi krovovi", "Potkrovlja", "Toplotna izolacija krovne konstrukcije"],
-    together: ["Gips-kartonska ploča GKB 12,5 mm", "Pocinčani plafonski profil CD 60/27", "Direktni ovjes za CD profil 120 mm"],
-    tip: "Rolne držite zatvorene i suhe do ugradnje, a površinu za izolovanje izmjerite prije krojenja."
-  },
-  "ISO-004": {
-    lead: "Bijeli EPS 70 debljine 80 mm je fasadna ploča za kontaktne fasade.",
-    body: [
-      "Ploča dimenzija 1000 × 500 mm koristi se kao dio ETICS sistema. Uobičajeni redoslijed radova obuhvata ljepilo, izolacionu ploču, osnovni sloj sa mrežicom, prajmer i završni malter.",
-      "Slojevi i način pričvršćenja moraju odgovarati izabranom fasadnom sistemu i podlozi. Potrošnju materijala i detalje ugradnje provjerite prema tehničkom listu proizvođača."
-    ],
-    uses: ["Kontaktne fasade", "Toplotna izolacija spoljašnjih zidova", "Fasadni radovi na porodičnim i poslovnim objektima"],
-    together: ["Ceresit CT 83 ljepilo za stiropor", "Ceresit CT 85 ljepilo i masa za armiranje"],
-    tip: "Prije naručivanja obračunajte neto površinu fasade, otvore i dodatke za krojenje."
-  },
-  "ISO-006": {
-    lead: "Sivi grafitni EPS debljine 100 mm namijenjen je fasadnoj izolaciji kada se bira grafitna ploča.",
-    body: [
-      "Deklarisana toplotna provodljivost iznosi λ = 0,031 W/mK. Ploča se ugrađuje u kontaktni fasadni sistem uz ljepilo, armirani osnovni sloj sa mrežicom, prajmer i završni malter.",
-      "Zaštitite ploče od jakog direktnog sunca tokom skladištenja i ugradnje prema uputstvima proizvođača. Provjerite kompatibilnost svih slojeva i način pričvršćenja za konkretnu podlogu."
-    ],
-    uses: ["Kontaktne fasade", "Toplotna izolacija spoljašnjih zidova", "Fasadni sistemi sa grafitnim EPS-om"],
-    together: ["Ceresit CT 83 ljepilo za stiropor", "Ceresit CT 85 ljepilo i masa za armiranje"],
-    tip: "Ploče čuvajte pokrivene i izbjegavajte duže izlaganje direktnom suncu prije ugradnje."
-  },
   "CHM-001": {
     lead: "Gipsana masa u vreći od 5 kg služi za ispunu spojeva gips-kartonskih ploča prema predviđenom sistemu obrade.",
     body: [
@@ -156,26 +126,6 @@ export const ARTICLE_COPY: Record<string, ArticleCopy> = {
     uses: ["Fugovanje gips-kartonskih ploča", "Obrada spojeva sa bandažnom trakom", "Završna obrada pregrada i plafona"],
     together: ["Staklena bandaž traka za spojeve", "Gips-kartonska ploča GKB 12,5 mm", "Gips-kartonska ploča GKBI 12,5 mm"],
     tip: "Vreće držite na paleti, u suhom prostoru i upotrijebite unutar roka trajanja otisnutog na pakovanju."
-  },
-  "CHM-003": {
-    lead: "Ceresit CT 83 je ljepilo za lijepljenje polistirenskih izolacionih ploča na fasadnu podlogu.",
-    body: [
-      "Isporučuje se u vreći od 25 kg. Koristi se kao dio fasadnog sistema, uz pripremu podloge i način nanošenja predviđen tehničkim listom proizvoda.",
-      "Ljepilo za ploče nije završni sloj fasade. Uskladite ga s izolacijom, osnovnim armiranim slojem i ostalim komponentama sistema; potrošnju i primjenu provjerite prema tehničkom listu proizvođača."
-    ],
-    uses: ["Lijepljenje EPS ploča na fasadu", "Ugradnja bijelog EPS-a", "Ugradnja grafitnog EPS-a prema sistemu"],
-    together: ["Fasadni stiropor EPS 70, bijeli", "Grafitni stiropor EPS, sivi", "Ceresit CT 85 ljepilo i masa za armiranje"],
-    tip: "Prije početka rada provjerite čvrstoću i čistoću podloge, kao i uslove primjene navedene na vreći."
-  },
-  "CHM-004": {
-    lead: "Ceresit CT 85 je ljepilo i masa za armiranje fasadnih izolacionih ploča, sa vlaknima.",
-    body: [
-      "Proizvod se isporučuje u vreći od 25 kg i koristi se za lijepljenje ploča i izradu armiranog sloja sa fasadnom mrežicom. Priprema i nanošenje treba da prate uputstvo za proizvod.",
-      "Uskladite ga sa vrstom izolacije i ostalim slojevima fasadnog sistema. Potrošnju i detalje rada provjerite prema tehničkom listu proizvođača."
-    ],
-    uses: ["Lijepljenje fasadnih izolacionih ploča", "Armiranje fasadne mrežice", "Izrada osnovnog sloja kontaktne fasade"],
-    together: ["Fasadni stiropor EPS 70, bijeli", "Grafitni stiropor EPS, sivi", "Ceresit CT 83 ljepilo za stiropor"],
-    tip: "Mrežicu ugradite u svježi osnovni sloj prema uputstvu sistema i ne ostavljajte je izloženu bez završne obrade."
   },
   "ACC-003": {
     lead: "Samoljepljiva staklena bandaž traka u rolni od 25 m služi za ojačanje spojeva gips-kartonskih ploča.",

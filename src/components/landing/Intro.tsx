@@ -80,7 +80,7 @@ export default function Intro() {
 
         <div data-up data-delay="0.1" className={styles.lead}>
             <p className="text-[15px] leading-[1.7] opacity-75">
-              Veleprodaja građevinskog materijala u Banjoj Luci. Za firme, izvođače i vaš sljedeći projekat.
+              Stovarište, veleprodaja i maloprodaja građevinskog materijala u Banjoj Luci, od 2012. Za firme, izvođače i vaš sljedeći projekat.
             </p>
             <div data-up data-delay="0.2" className="mt-7 flex flex-wrap gap-3">
               <Cta href="/prodavnica" solid>

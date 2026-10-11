@@ -71,10 +71,8 @@ export const POSTS: Post[] = [
       {
         t: 'spec',
         rows: [
-          ['Sistem', 'W111'],
           ['Profil', 'CW 75 + UW 75'],
           ['Gotova debljina', '100 mm'],
-          ['Deklarisana zvučna izolacija sistema', 'Rw 47 dB'],
         ],
       },
     ],
@@ -112,13 +110,13 @@ export const POSTS: Post[] = [
   },
   {
     slug: 'kamena-ili-staklena-vuna',
-    title: 'Kamena ili staklena vuna',
-    lead: 'Gustoća, format i mjesto ugradnje određuju praktičan izbor.',
+    title: 'Kamena vuna: zid i krov',
+    lead: 'Gustoća, debljina i mjesto ugradnje određuju praktičan izbor.',
     tag: 'Materijal',
     date: '2026-07-21',
     read: 5,
     art: 'attic',
-    skus: ['ISO-001', 'ISO-002', 'ISO-003'],
+    skus: ['ISO-001', 'ISO-002'],
     body: [
       { t: 'h', text: 'Za pregradni zid' },
       {
@@ -129,7 +127,7 @@ export const POSTS: Post[] = [
       { t: 'h', text: 'Za kosi krov' },
       {
         t: 'p',
-        text: 'Staklena vuna u rolni je lagana i pogodna za duga polja između rogova. '
+        text: 'Kamena vuna u pločama postavlja se između rogova, tijesno i bez zazora. '
           + 'Dva sloja sa pomjerenim spojevima smanjuju toplotne mostove.',
       },
       {
@@ -143,40 +141,9 @@ export const POSTS: Post[] = [
     ],
   },
   {
-    slug: 'demit-fasada-redoslijed-slojeva',
-    title: 'Demit fasada: redoslijed slojeva',
-    lead: 'Od pripreme podloge do armiranog sloja — gdje nastaju najčešće greške.',
-    tag: 'Vodič',
-    date: '2026-06-30',
-    read: 6,
-    art: 'facade-layers',
-    skus: ['ISO-004', 'ISO-006', 'CHM-003', 'CHM-004'],
-    body: [
-      { t: 'h', text: 'Podloga i lijepljenje' },
-      {
-        t: 'p',
-        text: 'Podloga mora biti nosiva, čista i ravna. EPS ploče lijepite vezano, '
-          + 'bez poklapanja vertikalnih spojeva i bez ljepila u spojevima.',
-      },
-      { t: 'h', text: 'Armirani sloj' },
-      {
-        t: 'list',
-        items: [
-          'Nakon vezivanja ljepila slijedi mehaničko pričvršćenje prema projektu.',
-          'Mrežica se utapa u svježu masu, sa preklopom na spojevima.',
-          'Uglove otvora dodatno armirajte dijagonalnim trakama.',
-        ],
-      },
-      {
-        t: 'note',
-        text: 'CT 83 je ljepilo za lijepljenje EPS-a. CT 85 je ljepilo i masa za armiranje; koristite proizvod prema sloju sistema.',
-      },
-    ],
-  },
-  {
     slug: 'obracun-materijala-za-10-m2-zida',
     title: 'Kako se obračunava materijal za 10 m² zida',
-    lead: 'Primjer W111 zida dimenzija 4 × 2,5 m, sa uračunatim otpadom.',
+    lead: 'Primjer pregradnog zida 4 × 2,5 m (CW 75, jednostruka obloga), sa uračunatim otpadom.',
     tag: 'Vodič',
     date: '2026-05-19',
     read: 6,
@@ -227,7 +194,7 @@ export const POSTS: Post[] = [
   {
     slug: 'spusteni-plafon-na-cd-profilima',
     title: 'Spušteni plafon na CD profilima',
-    lead: 'Osnovni redoslijed za D112 potkonstrukciju i ravnu oblogu.',
+    lead: 'Osnovni redoslijed za potkonstrukciju od CD profila i ravnu oblogu.',
     tag: 'Sistemi',
     date: '2026-03-11',
     read: 6,
@@ -249,36 +216,6 @@ export const POSTS: Post[] = [
         t: 'note',
         text: 'Rasponi i razmaci zavise od klase sistema, broja slojeva i dodatnog opterećenja. '
           + 'Prije montaže provjerite projekt i tehnički list.',
-      },
-    ],
-  },
-  {
-    slug: 'podovi-eps-100-ili-xps',
-    title: 'Podovi: EPS 100 ili XPS',
-    lead: 'Pritisna čvrstoća i vlaga su važnije od boje izolacione ploče.',
-    tag: 'Materijal',
-    date: '2026-02-17',
-    read: 4,
-    art: 'floor-layers',
-    skus: [],
-    body: [
-      { t: 'h', text: 'EPS 100 ispod estriha' },
-      {
-        t: 'p',
-        text: 'EPS 100 je namijenjen izolaciji uobičajenih podova ispod estriha. Ploče polažite ravno, tijesno i sa pomjerenim spojevima.',
-      },
-      { t: 'h', text: 'XPS u zahtjevnijim zonama' },
-      {
-        t: 'p',
-        text: 'XPS birajte gdje se očekuju vlaga, kontakt sa tlom ili veće lokalno opterećenje, uz provjeru projektovane klase proizvoda.',
-      },
-      {
-        t: 'spec',
-        rows: [
-          ['EPS 100', 'Standardni pod ispod estriha'],
-          ['XPS', 'Cokla, temelj i vlažnije zone'],
-          ['Preklopni rub', 'Smanjuje otvorene spojeve'],
-        ],
       },
     ],
   },

@@ -69,7 +69,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
         blocks: [
           {
             t: 'p',
-            text: 'Za dostavu u Banjoj Luci, okolini ili na drugoj lokaciji pošaljite adresu i opis robe. Mogućnost isporuke prodaja provjerava pojedinačno prije potvrde narudžbe.',
+            text: 'Dostavljamo na teritoriji grada Banja Luka. Pošaljite adresu i opis robe; cijenu i termin dostave prodaja javlja prije potvrde narudžbe.',
           },
           {
             t: 'p',
@@ -398,7 +398,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
     title: 'Načini plaćanja',
     group: 'kupovina',
     kicker: 'Plaćanje',
-    lead: 'Cijene su u KM i uključuju PDV. Trenutno se može platiti gotovinom pri isporuci ili bankovnim prenosom po predračunu ili ponudi; plaćanje karticom preko sajta bit će dostupno kada bude aktivirano.',
+    lead: 'Cijenu dobijate u ponudi, u KM sa PDV-om. Trenutno se može platiti gotovinom pri isporuci ili bankovnim prenosom po predračunu ili ponudi; plaćanje karticom preko sajta bit će dostupno kada bude aktivirano.',
     updated: UPDATED,
     sections: [
       {
@@ -410,8 +410,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
             items: [
               'gotovinom pri isporuci ili preuzimanju;',
               'bankovnim prenosom po predračunu ili ponudi;',
-              'platnom karticom preko sajta (kada bude aktivirano);',
-              'za ugovorne partnere: po fakturi, sa valutom do 90 dana uz mjenicu ili bankarsku garanciju, prema nivou partnerskog programa.',
+              'platnom karticom preko sajta (kada bude aktivirano).',
             ],
           },
           {
@@ -1327,7 +1326,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
         blocks: [
           {
             t: 'p',
-            text: '{naziv} bavi se trgovinom na veliko i malo građevinskim materijalom: Knauf sistemima suhe gradnje, izolacijom (kamena i staklena vuna, stiropor, stirodur), vezivima i priborom za montažu. Prodavnica je namijenjena privatnim kupcima, zanatlijama i građevinskim firmama.',
+            text: '{naziv} bavi se trgovinom na veliko i malo građevinskim materijalom: sistemima suhe gradnje, kamenom vunom, fasadnim, termoizolacionim, hidroizolacionim i krovnim sistemima, keramičkim ljepilima, cementima, mašinskim malterima, željezom i blokovima. Registrovana djelatnost je trgovina na veliko drvetom, građevinskim materijalom i sanitarnom opremom. Prodavnica je namijenjena privatnim kupcima, zanatlijama i građevinskim firmama.',
           },
           {
             t: 'dl',
@@ -1485,7 +1484,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
         blocks: [
           {
             t: 'p',
-            text: 'Stručan tim pomaže pri izboru materijala, na primjer Knauf sistema suhe gradnje ili izolacije za zid, potkrovlje, pod i fasadu. Ako niste sigurni šta odgovara vašem poslu, opišite zadatak i pomoći ćemo.',
+            text: 'Stručan tim pomaže pri izboru materijala, na primjer sistema suhe gradnje ili izolacije za zid, potkrovlje i krov. Ako niste sigurni šta odgovara vašem poslu, opišite zadatak i pomoći ćemo.',
           },
           {
             t: 'p',

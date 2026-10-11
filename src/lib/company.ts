@@ -26,15 +26,11 @@ export const COMPANY = {
   web: null as string | null,
 }
 
-// Radno vrijeme stovarišta (potvrđeno).
-export const HOURS: { days: string; time: string }[] = [
-  { days: 'Ponedjeljak – petak', time: '07–16' },
-  { days: 'Subota', time: '07–15' },
-  { days: 'Nedjelja', time: 'Zatvoreno' },
-]
+// Radno vrijeme stovarišta: 07:00–16:00 (stari sajt firme). Dani i subota nisu potvrđeni, pa se ne navode.
+export const HOURS: { days: string; time: string }[] = [{ days: 'Stovarište i prodaja', time: '07:00–16:00' }]
 
 /** Isto radno vrijeme u jednoj liniji — za podnožje i kontakt. */
-export const HOURS_SHORT = 'Pon–Pet 07–16 · Sub 07–15 · Ned zatvoreno'
+export const HOURS_SHORT = 'Radno vrijeme 07:00–16:00'
 
 // Lokacija stovarišta na Google mapi (Nenada Kostića 151, Zalužani). Svaka adresa na sajtu vodi ovdje.
 export const MAPS_URL =
@@ -46,7 +42,7 @@ export const MAPS_URL =
 export const TERMS = {
   currency: 'KM',
   deliveryDays: 'po dogovoru, nakon potvrde narudžbe',
-  deliveryZone: 'Banja Luka i okolna mjesta',
+  deliveryZone: 'teritorija grada Banja Luka',
   withdrawalDays: null as number | null,
 }
 

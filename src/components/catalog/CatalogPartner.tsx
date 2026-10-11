@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element -- male fotografije artikala iz /public/shop */
 import Cta from '@/components/ui/Cta'
-import { PRODUCTS, money } from '@/lib/shop'
+import { PRODUCTS } from '@/lib/shop'
 import styles from './CatalogPartner.module.css'
 
 // Kraj kataloga: kratak poziv firmama. Lijevo naslov i dugme, u sredini svedeni prozor B2B portala
@@ -57,8 +57,8 @@ export default function CatalogPartner() {
               ))}
             </ul>
             <p className={styles.total}>
-              <span>Orijentaciono</span>
-              <b>{money(120 * 5.2 + 86 * 4.1 + 60 * 6.9)}</b>
+              <span>Cijena</span>
+              <b>Na upit</b>
             </p>
             <span className={styles.confirm}>Potvrdi ponudu</span>
           </div>
