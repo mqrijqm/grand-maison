@@ -10,7 +10,9 @@ import { EASE, MQ } from '@/lib/motion'
 import styles from './Heritage.module.css'
 
 // Asortiman kao tipografski indeks. Grupe su doslovno sa stare stranice "O nama" (grandcompany.ba,
-// 2021–2025), plus suha gradnja (javno naveden segment). Bilješke desno su samo ono što je
+// 2021–2025), plus suha gradnja (javno naveden segment), plus programi predstavljeni na Danu otvorenih
+// vrata u Grand Company (Tondach, oko 2023: dimnjački i cijevni sistemi, opločnici, sinterovani kamen) —
+// označeni su "po upitu", jer prezentacija ne dokazuje stalan lager. Bilješke desno su samo ono što je
 // potvrđeno izvorom; bez artikala, cijena i stanja (javnog cjenovnika nema).
 // Fotografije su prave (Pexels, izvori u public/stock/credits.json); Codex ih je samo izrezao i ujednačio ton.
 const GROUPS: { name: string; img: string; note?: string }[] = [
@@ -18,20 +20,25 @@ const GROUPS: { name: string; img: string; note?: string }[] = [
   { name: 'Termoizolacioni sistemi', img: 'termoizolacioni', note: 'Uključujući kamenu vunu' },
   { name: 'Hidroizolacioni sistemi', img: 'hidroizolacioni' },
   { name: 'Krovni sistemi', img: 'krovni', note: 'Tondach crijep i krovni elementi' },
-  { name: 'Keramička ljepila', img: 'keramicka-ljepila' },
-  { name: 'Cementi', img: 'cementi' },
-  { name: 'Mašinski malteri', img: 'masinski-malteri' },
-  { name: 'Željezo', img: 'zeljezo' },
+  { name: 'Dimnjački sistemi', img: 'dimnjacki', note: 'Po upitu' },
   { name: 'Blokovi', img: 'blokovi', note: 'Porotherm blokovi od opeke' },
   { name: 'Suha gradnja', img: 'suha-gradnja', note: 'Sistemi za pregradne zidove i plafone' },
+  { name: 'Keramička ljepila', img: 'keramicka-ljepila' },
+  { name: 'Mašinski malteri', img: 'masinski-malteri', note: 'Baumalt malteri' },
+  { name: 'Cementi', img: 'cementi' },
+  { name: 'Željezo', img: 'zeljezo' },
+  { name: 'Cijevni sistemi', img: 'cijevni', note: 'Po upitu' },
+  { name: 'Opločnici', img: 'oplocnici', note: 'Po upitu' },
+  { name: 'Sinterovani kamen', img: 'sinterovani-kamen', note: 'Po upitu' },
 ]
 const src = (img: string) => `/assortment/${img}.webp`
 
-// Prodajna mjesta prema javnim listama proizvođača (Baumalt; Wienerberger, april 2020).
+// Prodajna mjesta prema javnim listama proizvođača: Baumalt (aktuelna lista partnera), Wienerberger
+// (lista prodajnih mjesta, april 2020 — istorijski dokaz, pa dostupnost modela potvrđuje prodaja).
 const MAKERS = [
   { name: 'Baumalt', text: 'Građevinska hemija. Grand Company je na Baumaltovoj listi prodajnih lokacija za Banju Luku.', href: '/prodavnica?brend=baumalt#artikli' },
-  { name: 'Tondach', text: 'Crijep i krovni sistemi grupe Wienerberger.', href: '/prodavnica?brend=tondach#artikli' },
-  { name: 'Porotherm', text: 'Zidni blokovi od opeke grupe Wienerberger.', href: '/prodavnica?brend=porotherm#artikli' },
+  { name: 'Tondach', text: 'Crijep i krovni sistemi grupe Wienerberger. Na Wienerbergerovoj listi prodajnih mjesta (2020).', href: '/prodavnica?brend=tondach#artikli' },
+  { name: 'Porotherm', text: 'Zidni blokovi od opeke grupe Wienerberger. Na Wienerbergerovoj listi prodajnih mjesta (2020).', href: '/prodavnica?brend=porotherm#artikli' },
 ]
 
 export default function AssortmentIndex() {
@@ -137,7 +144,7 @@ export default function AssortmentIndex() {
         <div data-up>
           <p className="label opacity-60">Proizvođači</p>
           <p className={`mt-4 max-w-[34ch] ${styles.indexLead}`}>
-            Grand Company je prodajno mjesto za proizvode ovih proizvođača.
+            Grand Company je na listama prodajnih mjesta ovih proizvođača. Dostupnost pojedinih modela potvrđuje prodaja.
           </p>
         </div>
         <div>

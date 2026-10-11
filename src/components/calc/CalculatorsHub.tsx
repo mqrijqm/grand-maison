@@ -12,7 +12,7 @@ import { revealChars } from '@/lib/reveal'
 import styles from './CalculatorsHub.module.css'
 
 // "Kalkulatori": kartice koje vode na zvanične kalkulatore Wienerbergera (Tondach krov, Porotherm zid).
-// Grand Company je prodajno mjesto za ove proizvode (javne liste prodajnih mjesta proizvođača); kalkulatori
+// Grand Company je na Wienerbergerovoj listi prodajnih mjesta (april 2020) za ove proizvode; kalkulatori
 // nisu naši i otvaraju se na sajtu proizvođača. `embedded` = sekcija na početnoj (h2, sidro #kalkulator).
 
 const External = () => (
@@ -60,7 +60,7 @@ export default function CalculatorsHub({ embedded = false }: { embedded?: boolea
         </div>
         <p data-up className={`${styles.lead} ${styles.headLead}`}>
           Za krov od Tondach crijepa i zid od Porotherm opeke proizvođač Wienerberger nudi besplatne kalkulatore. Grand
-          Company je prodajno mjesto za ove proizvode, prema javnim listama prodajnih mjesta proizvođača.
+          Company je na Wienerbergerovoj listi prodajnih mjesta za ove proizvode, a dostupnost modela potvrđuje prodaja.
         </p>
       </header>
 

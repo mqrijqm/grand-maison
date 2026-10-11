@@ -311,14 +311,16 @@ export default function CatalogMarkets({ variant = 'page' }: { variant?: 'page' 
             </article>
           ))}
 
-          {/* Posljednja kartica: pitch i poziv. Ostale grupe sa starog sajta firme (fasade, izolacija,
-              cement, željezo) nemaju potvrdu proizvođača, pa idu kao upit, ne kao lista artikala. */}
+          {/* Posljednja kartica: pitch i poziv. Ostale grupe sa starog sajta firme (fasade, hidroizolacija,
+              cement, željezo) i programi predstavljeni na Danu otvorenih vrata (dimnjački i cijevni sistemi,
+              opločnici, sinterovani kamen) nemaju potvrđen lager, pa idu kao upit, ne kao lista artikala. */}
           <article data-card className={`${styles.card} ${styles.cardLast}`} data-ink="light">
             <div className={styles.lastInner}>
               <p className={styles.lastLabel}>Ostali program · po upitu</p>
               <h2 className={styles.lastTitle}>Ne vidite šta vam treba?</h2>
               <p className={styles.lastText}>
-                Za fasadne, termoizolacione i hidroizolacione sisteme, cemente i željezo pošaljite upit sa količinama.
+                Za dimnjačke i cijevne sisteme, hidroizolaciju, opločnike, sinterovani kamen, fasadne sisteme, cemente i
+                željezo pošaljite upit sa količinama.
                 Prodaja vam javlja dostupnost, cijenu i termin preuzimanja ili dostave po Banjoj Luci.
               </p>
               <div className={styles.lastActions}>

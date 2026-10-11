@@ -48,7 +48,7 @@
   {
    "id": "veziva",
    "label": "Veziva i vrećasti materijali",
-   "lead": "Mase za spojeve, keramička ljepila i cement",
+   "lead": "Gipsane mase za spojeve i fugovanje",
    "image": "img/concrete-curves.webp",
    "gallery": [
     "img/concrete-curves.webp",
@@ -56,7 +56,7 @@
    ],
    "app": "img/app/jointing.webp",
    "color": "#4E7A55",
-   "usage": "Gipsane mase za spojeve i fugovanje, keramička ljepila, cementi i mašinski malteri. Vreće čuvajte na paleti, na suhom i zaštićene od vlage, i koristite ih unutar roka trajanja otisnutog na pakovanju."
+   "usage": "Gipsane mase za spojeve i fugovanje. Vreće čuvajte na paleti, na suhom i zaštićene od vlage, i koristite ih unutar roka trajanja otisnutog na pakovanju."
   },
   {
    "id": "oprema",

@@ -23,6 +23,7 @@ const PROGRAM_HINT: Record<string, string> = {
   veziva: 'Ljepila, mase, mortovi',
   'drvni-program': 'Građa, daske, letve',
   'sanitarna-oprema': 'Kupatilo',
+  'ostali-program': 'Dimnjaci, cijevi, opločnici, hidroizolacija',
 }
 const AFTER = ['Upit stiže prodaji', 'Prodaja provjerava program i količine', 'Dobijate ponudu e-poštom ili telefonom', 'Potvrdite i dogovaramo termin']
 

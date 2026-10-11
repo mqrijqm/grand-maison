@@ -21,13 +21,13 @@ export const BRANDS: Brand[] = [
     id: 'tondach',
     name: 'Tondach',
     logo: '/brands/tondach.svg',
-    text: 'Glineni crijep i sistemska oprema za kose krovove iz programa Wienerberger: Continental, Traditon, Twiston, Planoton, Contiton, Veneton i Biber.',
+    text: 'Glineni crijep i sistemska oprema za kose krovove iz programa Wienerberger: Continental, Traditon, Twiston, Planoton, Contiton, Veneton i Biber. Grand Company je na Wienerbergerovoj listi prodajnih mjesta; dostupnost modela potvrđuje prodaja.',
   },
   {
     id: 'porotherm',
     name: 'Porotherm',
     logo: '/brands/porotherm.svg',
-    text: 'Opeka Wienerberger za nosive, spoljne i pregradne zidove, od deset do pedeset centimetara. Profi blokovi se zidaju ljepilom Dryfix.extra.',
+    text: 'Opeka Wienerberger za nosive, spoljne i pregradne zidove, od deset do pedeset centimetara. Profi blokovi se zidaju ljepilom Dryfix.extra. Dostupnost modela potvrđuje prodaja.',
   },
   {
     id: 'baumalt',

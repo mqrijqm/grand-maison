@@ -9,7 +9,7 @@ export const metadata = SHOW_DRYWALL_CALC
     }
   : {
       title: 'Kalkulatori za krov i zid | Grand Company',
-      description: 'Zvanični Wienerberger kalkulatori za Tondach krov i Porotherm zid: jednostrešni i dvostrešni krov, U-vrijednost zida, analiza cijene vanjskih zidova i besplatan izračun materijala.',
+      description: 'Zvanični Wienerberger kalkulatori za Tondach krov i Porotherm zid: jednostrešni i dvostrešni krov, U-vrijednost zida i besplatan izračun materijala.',
     }
 
 // Dok asortiman suhe gradnje nije potvrđen (SHOW_DRYWALL_CALC = false), ovdje su kalkulatori proizvođača

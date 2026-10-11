@@ -55,4 +55,14 @@ export const OFFERINGS = [
     alt: 'Bijela keramička WC šolja i bide u kupatilu — sanitarni program',
     href: '/prodavnica?kategorija=sanitarna-oprema#artikli', cta: 'Pogledajte sanitarni program', mode: 'Po upitu',
   },
+  {
+    // Programi predstavljeni na Danu otvorenih vrata u Grand Company (oko 2023); lager nije potvrđen, zato samo upit.
+    id: 'ostali-program', name: 'Ostali program',
+    keywords: [],
+    description: 'Dimnjački i cijevni sistemi, hidroizolacija, opločnici i sinterovani kamen, po upitu.',
+    image: '/assortment/dimnjacki.webp',
+    detail: '/assortment/cijevni.webp',
+    alt: 'Dimnjak na krovu od crijepa — dimnjački sistemi',
+    href: '/upit-za-izvodjace?program=ostali-program', cta: 'Pošaljite upit', mode: 'Po upitu',
+  },
 ] as const

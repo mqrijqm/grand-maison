@@ -1326,7 +1326,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
         blocks: [
           {
             t: 'p',
-            text: '{naziv} bavi se trgovinom na veliko i malo građevinskim materijalom: sistemima suhe gradnje, kamenom vunom, fasadnim, termoizolacionim, hidroizolacionim i krovnim sistemima, keramičkim ljepilima, cementima, mašinskim malterima, željezom i blokovima. Registrovana djelatnost je trgovina na veliko drvetom, građevinskim materijalom i sanitarnom opremom. Prodavnica je namijenjena privatnim kupcima, zanatlijama i građevinskim firmama.',
+            text: '{naziv} bavi se trgovinom na veliko i malo građevinskim materijalom: sistemima suhe gradnje, kamenom vunom, fasadnim, termoizolacionim, hidroizolacionim i krovnim sistemima, keramičkim ljepilima, cementima, mašinskim malterima, željezom i blokovima, a po upitu i dimnjačkim i cijevnim sistemima, opločnicima i sinterovanim kamenom. Registrovana djelatnost je trgovina na veliko drvetom, građevinskim materijalom i sanitarnom opremom. Prodavnica je namijenjena privatnim kupcima, zanatlijama i građevinskim firmama.',
           },
           {
             t: 'dl',
