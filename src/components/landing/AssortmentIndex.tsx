@@ -148,7 +148,6 @@ export default function AssortmentIndex() {
               </article>
             ))}
           </div>
-          <p className={styles.fine}>Prema javnim listama prodajnih mjesta proizvođača.</p>
         </div>
       </div>
     </section>

@@ -397,3 +397,34 @@
 .more { padding: 8px; font-size: 12px; color: var(--soft); }
 @media (max-width: 760px) { .finder { grid-template-columns: minmax(0, 1fr); } }
 .search input:focus-visible { outline: none !important; }
+
+/* ——— Telefon: kompaktan (minimalizovan) prikaz portala ———
+   Manje: navigacija, naslov bez podnaslova, prve 3 stavke ponude bez šifri, manja dugmad i razmaci. */
+@media (max-width: 560px) {
+  .chrome { height: 34px; padding: 0 12px; gap: 8px; }
+  .demo { font-size: 9.5px; padding: 3px 6px; }
+  .side { padding: 2px 6px 8px; gap: 6px; }
+  .brand { display: none; }
+  .nav { gap: 2px; }
+  .nav button { min-height: 36px; padding: 0 10px; gap: 6px; font-size: 12px; border-radius: 8px; }
+  .nav em { min-width: 16px; font-size: 10px; }
+  .main { margin: 0 4px 4px; }
+  .head { padding: 10px 12px 6px; }
+  .head h3 { font-size: 16px; }
+  .head p { display: none; }
+  .stage { gap: 12px; margin: 6px 6px 0; padding: 14px; }
+  .stageInfo { gap: 10px; }
+  .stageInfo h3 { font-size: 20px; }
+  .stageInfo p { display: none; }
+  .stagePick { padding-top: 10px; gap: 2px; }
+  .stagePick > span { font-size: 10px; }
+  .stagePick b { font-size: 14px; }
+  .stageTools { gap: 6px; margin-top: 4px; }
+  .stageTools > button:not(.stageCta) { width: 26px; height: 26px; }
+  .stageCta { min-height: 30px; padding: 0 12px; font-size: 11px; }
+  .stageList button { grid-template-columns: minmax(0, 1fr) auto; min-height: 32px; padding: 0 10px; font-size: 12px; }
+  .stageList .mono { display: none; }
+  .stageList li:nth-child(n + 4) { display: none; }
+  .card { padding: 12px; gap: 8px; }
+  .card h4 { font-size: 12.5px; }
+}
