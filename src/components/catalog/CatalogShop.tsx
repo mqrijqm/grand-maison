@@ -94,7 +94,7 @@ function ProgramCard({ item }: { item: ProgramItem }) {
   )
 }
 
-export default function CatalogShop() {
+export default function CatalogShop({ compact = false }: { compact?: boolean }) {
   const root = useRef<HTMLDivElement>(null)
   const { q, cat, use, price, sort, list, programs, filtered, update, reset } = useCatalogFilters()
   const selection = useCatalogInquiry()
@@ -129,15 +129,15 @@ export default function CatalogShop() {
 
   return (
     <div ref={root}>
-      <header data-hero className={styles.hero}>
-        <div aria-hidden className={styles.squares}>
+      <header data-hero className={`${styles.hero} ${compact ? styles.heroCompact : ''}`}>
+        {!compact && <div aria-hidden className={styles.squares}>
           {SQUARES.map(([x, y, size, alpha, speed], i) => (
             <i key={i} data-sq={speed} style={{ left: `${x}%`, top: `${y}%`, width: `${size}vw`, height: `${size}vw`, background: `rgb(255 255 255 / ${alpha})` }} />
           ))}
-        </div>
+        </div>}
         <div className={`gutter ${styles.heroInner}`}>
           <p className="label">Grand Company / Katalog</p>
-          <h1 className={`display ${styles.title}`}>Asortiman</h1>
+          {compact ? <h2 className={`display ${styles.titleCompact}`}>Svi artikli</h2> : <h1 className={`display ${styles.title}`}>Asortiman</h1>}
           <label className={styles.search}>
             <svg viewBox="0 0 20 20" aria-hidden fill="none" stroke="currentColor" strokeWidth={1.6}>
               <circle cx="9" cy="9" r="6" />

@@ -616,5 +616,40 @@
   "url": "https://www.pexels.com/photo/27728636/",
   "license": "Pexels License (free for commercial use, no attribution required)",
   "note": "Isti snimak kao stock/board-stack-2; crop 1:1 + ton: Codex CLI"
+ },
+ "markets/krovni": {
+  "id": 36496646,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/36496646/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "note": "Crop 5:4 + ton: Codex CLI"
+ },
+ "markets/blokovi": {
+  "id": 40059199,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/40059199/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "note": "Crop 5:4 + ton: Codex CLI"
+ },
+ "markets/malteri-ljepila": {
+  "id": 11806477,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/11806477/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "note": "Crop 5:4 + ton: Codex CLI"
+ },
+ "markets/suha-gradnja": {
+  "id": 27728636,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/27728636/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "note": "Crop 5:4 + ton: Codex CLI"
+ },
+ "markets/izolacija": {
+  "id": 9893816,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/9893816/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "note": "Crop 5:4 + ton: Codex CLI"
  }
 }
