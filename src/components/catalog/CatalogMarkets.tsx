@@ -281,15 +281,14 @@ export default function CatalogMarkets() {
                     ))}
                   </ul>
                 )}
-                <div className={styles.panelFoot}>
-                  <div>
-                    <h2 className={styles.cardTitle}>{m.title}</h2>
-                    <p className={styles.count}>
-                      {i + 1} / {MARKETS.length}
-                    </p>
-                  </div>
-                  <p className={styles.cardSub}>{m.sub}</p>
+                {/* Naslov je na vrhu panela (odmah ispod fotografije), da se vidi na svakoj visini ekrana. */}
+                <div className={styles.panelHead}>
+                  <h2 className={styles.cardTitle}>{m.title}</h2>
+                  <p className={styles.count}>
+                    {i + 1} / {MARKETS.length}
+                  </p>
                 </div>
+                <p className={styles.cardSub}>{m.sub}</p>
               </div>
             </article>
           ))}
