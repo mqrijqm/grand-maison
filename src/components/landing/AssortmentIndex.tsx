@@ -2,6 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element -- male WebP fotografije iz /public */
 
+import Link from 'next/link'
 import { useRef } from 'react'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { useMediaMotion } from '@/lib/media'
@@ -28,9 +29,9 @@ const src = (img: string) => `/assortment/${img}.webp`
 
 // Prodajna mjesta prema javnim listama proizvođača (Baumalt; Wienerberger, april 2020).
 const MAKERS = [
-  { name: 'Baumalt', text: 'Građevinska hemija. Grand Company je na Baumaltovoj listi prodajnih lokacija za Banju Luku.' },
-  { name: 'Tondach', text: 'Crijep i krovni sistemi grupe Wienerberger.' },
-  { name: 'Porotherm', text: 'Zidni blokovi od opeke grupe Wienerberger.' },
+  { name: 'Baumalt', text: 'Građevinska hemija. Grand Company je na Baumaltovoj listi prodajnih lokacija za Banju Luku.', href: '/prodavnica?brend=baumalt#artikli' },
+  { name: 'Tondach', text: 'Crijep i krovni sistemi grupe Wienerberger.', href: '/prodavnica?brend=tondach#artikli' },
+  { name: 'Porotherm', text: 'Zidni blokovi od opeke grupe Wienerberger.', href: '/prodavnica?brend=porotherm#artikli' },
 ]
 
 export default function AssortmentIndex() {
@@ -142,10 +143,16 @@ export default function AssortmentIndex() {
         <div>
           <div className={styles.makerList}>
             {MAKERS.map((m) => (
-              <article key={m.name} data-up className={styles.maker}>
+              <Link key={m.name} href={m.href} data-up className={styles.maker} aria-label={`${m.name}: artikli u asortimanu`}>
                 <h3 className={`display ${styles.makerName}`}>{m.name}</h3>
                 <p className={styles.makerText}>{m.text}</p>
-              </article>
+                <span className={styles.makerGo}>
+                  Asortiman
+                  <svg viewBox="0 0 24 12" aria-hidden fill="none" stroke="currentColor" strokeWidth={1.6}>
+                    <path d="M0 6h22M17 1l5 5-5 5" />
+                  </svg>
+                </span>
+              </Link>
             ))}
           </div>
         </div>
