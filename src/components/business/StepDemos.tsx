@@ -3,7 +3,12 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from '@/lib/gsap'
 import type { IntroDemo } from '@/lib/business'
+import ProductGlyph from '@/components/art/ProductGlyph'
+import Icon from '@/components/portal/Icon'
+import LogoMark from '@/components/site/LogoMark'
+import { FIRM as PORTAL_FIRM, SITES } from '@/lib/b2b-demo'
 import { PRODUCT_MAP } from '@/lib/shop'
+import ps from './portal/Showcase.module.css'
 import styles from './StepDemos.module.css'
 
 // Animirane UI scene uz uvodne korake na /za-firme: kursor prelazi preko forme, kuca i klikće.
@@ -274,102 +279,187 @@ function LoginDemo() {
   )
 }
 
-// 02 — brza narudžba: šifra, artikal se sam popuni, količina, "Pošalji upit".
+// Okvir pravog portala (isti CSS modul kao Showcase): hrom sa adresom, tamna bočna traka sa aktivnom
+// stavkom, zaglavlje ekrana i sadržaj. Scena se umanji da stane u karticu (vidi fit u useDemo).
+const PORTAL_NAV: { id: string; label: string; icon: string; count?: number }[] = [
+  { id: 'pregled', label: 'Pregled', icon: 'pregled' },
+  { id: 'materijali', label: 'Materijali', icon: 'brza', count: 2 },
+  { id: 'ponude', label: 'Ponude', icon: 'ponude', count: 1 },
+  { id: 'narudzbe', label: 'Narudžbe', icon: 'narudzbe', count: 2 },
+]
+function PortalFrame({ view, title, sub, children }: { view: string; title: string; sub: string; children: React.ReactNode }) {
+  return (
+    <div className={`${ps.wrap} ${ps.window} ${styles.portal}`}>
+      <div className={ps.chrome} aria-hidden>
+        <span className={ps.dots}>
+          <i />
+          <i />
+          <i />
+        </span>
+        <span className={ps.url}>portal.grandcompany.ba/{view}</span>
+        <span className={ps.demo}>Demo podaci</span>
+      </div>
+      <div className={`${ps.body} ${styles.portalBody}`}>
+        <aside className={ps.side}>
+          <p className={ps.brand}>
+            <LogoMark className={ps.brandMark} />
+            Grand Company <span>Portal</span>
+          </p>
+          <div className={ps.account}>
+            <span className={ps.avatar}>{PORTAL_FIRM.short}</span>
+            <span>
+              <b>{PORTAL_FIRM.name}</b>
+              <i>{PORTAL_FIRM.user}</i>
+            </span>
+          </div>
+          <nav className={ps.nav} aria-hidden>
+            <div className={ps.navGroup}>
+              <span className={ps.navLabel}>Nabavka</span>
+              {PORTAL_NAV.map((n) => (
+                <button key={n.id} type="button" tabIndex={-1} aria-current={n.id === view || undefined}>
+                  <Icon name={n.icon} />
+                  <span>{n.label}</span>
+                  {n.count ? <em>{n.count}</em> : null}
+                </button>
+              ))}
+            </div>
+          </nav>
+        </aside>
+        <main className={ps.main}>
+          <header className={ps.head}>
+            <div>
+              <h3>{title}</h3>
+              <p>{sub}</p>
+            </div>
+          </header>
+          <div className={styles.portalContent}>{children}</div>
+        </main>
+      </div>
+    </div>
+  )
+}
+
+// 02 — isti ekran kao "Materijali i brza narudžba" u portalu: šifra u pretragu, artikal se pojavi
+// u rezultatima, ide u "Vaš upit" sa količinom, pa "Pošalji upit".
 const buildOrder: Build = (q, tl, cursorTo) => {
-  const key = (label: string, at?: gsap.Position) => {
-    tl.call(() => void (q('[data-t="key"]').textContent = label), undefined, at)
-    tl.fromTo(q('[data-s="key"]'), { autoAlpha: 0, y: 6 }, { autoAlpha: 1, y: 0, duration: 0.2 }, '<')
-    tl.to(q('[data-s="key"]'), { autoAlpha: 0, duration: 0.25 }, '+=0.55')
-  }
+  cursorTo('[data-f="q"]')
   ORDER.forEach(([sku, qty], i) => {
-    if (i) tl.to(q(`[data-s="row${i}"]`), { autoAlpha: 1, y: 0, duration: 0.3 }, '<')
-    else cursorTo(`[data-f="sku${i}"]`)
-    tl.call(() => on(q(`[data-f="sku${i}"]`)))
-    type(tl, q(`[data-t="sku${i}"]`), sku, '+=0.1')
-    tl.to(q(`[data-s="name${i}"]`), { autoAlpha: 1, y: 0, duration: 0.3 }, '+=0.15')
-    key('Tab ⇥', '+=0.1')
     tl.call(() => {
-      q(`[data-f="sku${i}"]`).removeAttribute('data-on')
-      on(q(`[data-f="qty${i}"]`))
-    }, undefined, '<0.3')
+      q('[data-t="q"]').textContent = ''
+      on(q('[data-f="q"]'))
+    })
+    type(tl, q('[data-t="q"]'), sku, '+=0.15')
+    tl.to(q(`[data-s="res${i}"]`), { autoAlpha: 1, y: 0, duration: 0.25 }, '+=0.1')
+    cursorTo(`[data-s="res${i}"] em`, '+=0.1')
+    click(tl, q(`[data-s="res${i}"] em`))
+    tl.call(() => q('[data-f="q"]').removeAttribute('data-on'))
+    tl.to(q(`[data-s="res${i}"]`), { autoAlpha: 0, duration: 0.2 }, '+=0.05')
+    tl.to(q(`[data-s="line${i}"]`), { autoAlpha: 1, y: 0, duration: 0.35, ease: 'power3.out' }, '<')
+    tl.call(() => on(q(`[data-f="qty${i}"]`)))
     type(tl, q(`[data-t="qty${i}"]`), qty, '+=0.1')
-    if (i < ORDER.length - 1) key('Enter ↵ novi red', '+=0.15')
-    tl.call(() => q(`[data-f="qty${i}"]`).removeAttribute('data-on'), undefined, '+=0.1')
+    tl.call(() => q(`[data-f="qty${i}"]`).removeAttribute('data-on'), undefined, '+=0.15')
+    if (i < ORDER.length - 1) cursorTo('[data-f="q"]', '+=0.1')
   })
   cursorTo('[data-b="send"]', '+=0.2')
   click(tl, q('[data-b="send"]'))
   tl.to(q('[data-s="sent"]'), { autoAlpha: 1, y: 0, duration: 0.4, ease: 'power3.out' }, '+=0.15')
 }
 const finalOrder = (q: (sel: string) => HTMLElement) => {
-  q('[data-t="key"]').textContent = 'Tab ⇥ · Enter ↵'
-  ORDER.forEach(([sku, qty], i) => {
-    q(`[data-t="sku${i}"]`).textContent = sku
-    q(`[data-t="qty${i}"]`).textContent = qty
-  })
+  ORDER.forEach(([, qty], i) => (q(`[data-t="qty${i}"]`).textContent = qty))
 }
 
 function OrderDemo() {
   const root = useDemo(buildOrder, finalOrder)
   return (
     <div ref={root} className={styles.demo}>
-      <div className={styles.win}>
-        <Bar url="portal.grandcompany.ba/brza-narudzba" />
-        <div className={styles.pad}>
-          <p className={styles.h}>Brza narudžba</p>
-          <div className={styles.table}>
-            <div className={styles.thead}>
-              <span>Šifra</span>
-              <span>Artikal</span>
-              <span>Količina</span>
+      <PortalFrame view="materijali" title="Materijali i brza narudžba" sub="Odaberite artikle, upišite količine i pošaljite jedan upit za više proizvoda.">
+        <div className={ps.split}>
+          <section className={ps.card}>
+            <h4>Dodajte materijal</h4>
+            <div className={ps.finder}>
+              <span className={ps.groupSelect}>Sve grupe</span>
+              <span className={`${ps.search} ${styles.pSearch}`} data-f="q">
+                <Icon name="search" />
+                <span>
+                  <em data-type data-t="q" />
+                  <i className={styles.caret} />
+                </span>
+              </span>
             </div>
-            {ORDER.map(([sku], i) => (
-              <div key={sku} className={styles.row} {...(i ? { 'data-show': '', 'data-s': `row${i}` } : {})}>
-                <span className={styles.cell} data-f={`sku${i}`}>
-                  <em data-type data-t={`sku${i}`} />
-                  <i className={styles.caret} />
-                </span>
-                <span className={styles.name} data-show data-s={`name${i}`}>
-                  <i className={styles.valid}>✓</i>
-                  {PRODUCT_MAP[sku]?.name}
-                </span>
-                <span className={`${styles.cell} ${styles.qty}`} data-f={`qty${i}`}>
-                  <em data-type data-t={`qty${i}`} />
-                  <i className={styles.caret} />
-                  <small>{PRODUCT_MAP[sku]?.unit}</small>
-                </span>
-              </div>
-            ))}
-          </div>
-          <p className={styles.drop}>CSV iz predmjera radova prevucite ovdje</p>
-          <div className={styles.foot}>
-            <span className={styles.key} data-show data-s="key">
-              <kbd data-type data-t="key" />
+            <ul className={styles.pResults}>
+              {ORDER.map(([sku], i) => (
+                <li key={sku} data-show data-s={`res${i}`}>
+                  <span className={ps.glyph} aria-hidden>
+                    {PRODUCT_MAP[sku] && <ProductGlyph product={PRODUCT_MAP[sku]} kind={sku.startsWith('GKP-') ? 'board' : undefined} />}
+                  </span>
+                  <span className={ps.resName}>
+                    <b>{PRODUCT_MAP[sku]?.name}</b>
+                    <i>{sku}</i>
+                  </span>
+                  <em>+ Dodaj</em>
+                </li>
+              ))}
+            </ul>
+            <p className={ps.fine}>Količinu mijenjate u upitu desno.</p>
+          </section>
+          <aside className={`${ps.card} ${ps.request}`}>
+            <h4>Vaš upit</h4>
+            <span className={`${ps.field} ${styles.pField}`}>
+              <span>Gradilište</span>
+              <b>{SITES[0].name}</b>
             </span>
-            <span className={styles.toast} data-show data-s="sent">
+            <ul className={ps.lines}>
+              {ORDER.map(([sku], i) => (
+                <li key={sku} data-show data-s={`line${i}`}>
+                  <span>
+                    <b>{PRODUCT_MAP[sku]?.name}</b>
+                    <i>{sku}</i>
+                  </span>
+                  <span className={styles.pQty} data-f={`qty${i}`}>
+                    <em data-type data-t={`qty${i}`} />
+                    <i className={styles.caret} />
+                    <small>{PRODUCT_MAP[sku]?.unit}</small>
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <span className={`${ps.primary} ${ps.wide}`} data-b="send">
+              Pošalji upit (demo) <Icon name="arrow" />
+            </span>
+            <span className={styles.pToast} data-show data-s="sent">
               ✓ Upit je poslat prodaji
             </span>
-            <span className={styles.btn} data-b="send">
-              Pošalji upit
-            </span>
-          </div>
+          </aside>
         </div>
-      </div>
+      </PortalFrame>
       <Cursor />
     </div>
   )
 }
 
-// 03 — ponuda i isporuka: "Prihvati ponudu", status ide korak po korak, pa termin dostave.
+// 03 — isti ekran kao "Ponude" u portalu: izabrana ponuda, stavke "na upit", "Potvrdi ponudu",
+// pa status narudžbe korak po korak i dogovoreni termin.
+const OFFER_LINES: [string, string][] = [
+  ['GKP-001', '420'],
+  ['PRF-075', '180'],
+  ['ISO-001', '380'],
+]
+const all = (q: (sel: string) => HTMLElement, sel: string) => Array.from(q('[data-root]').querySelectorAll<HTMLElement>(sel))
 const buildTrack: Build = (q, tl, cursorTo) => {
   cursorTo('[data-b="accept"]')
   click(tl, q('[data-b="accept"]'))
-  tl.call(() => on(q('[data-b="accept"]')))
-  TRACK.slice(0, 4).forEach((_, i) => tl.call(() => on(q(`[data-k="${i}"]`)), undefined, i ? '+=0.55' : '+=0.3'))
+  tl.call(() => {
+    on(q('[data-b="accept"]'))
+    all(q, '[data-chip]').forEach(on)
+  })
+  tl.to(q('[data-s="progress"]'), { autoAlpha: 1, y: 0, duration: 0.35, ease: 'power3.out' }, '+=0.2')
+  TRACK.slice(0, 4).forEach((_, i) => tl.call(() => on(q(`[data-k="${i}"]`)), undefined, i ? '+=0.5' : '+=0.2'))
   tl.to(q('[data-s="slot"]'), { autoAlpha: 1, y: 0, duration: 0.4, ease: 'power3.out' }, '+=0.3')
   cursorTo('[data-s="slot"]', '+=0.2')
 }
 const finalTrack = (q: (sel: string) => HTMLElement) => {
   on(q('[data-b="accept"]'))
+  all(q, '[data-chip]').forEach(on)
   TRACK.slice(0, 4).forEach((_, i) => on(q(`[data-k="${i}"]`)))
 }
 
@@ -377,33 +467,77 @@ function TrackDemo() {
   const root = useDemo(buildTrack, finalTrack)
   return (
     <div ref={root} className={styles.demo}>
-      <div className={styles.win}>
-        <Bar url="portal.grandcompany.ba/ponude" />
-        <div className={styles.pad}>
-          <div className={styles.quote}>
-            <div>
-              <p className={styles.muted}>Ponuda P-26-0142</p>
-              <p className={styles.h}>Pregradni zidovi, sprat 3</p>
-            </div>
-            <span className={styles.btn} data-b="accept">
-              <span className={styles.idle}>Prihvati ponudu</span>
-              <span className={styles.done}>Prihvaćeno ✓</span>
-            </span>
-          </div>
-          <ol className={styles.track}>
-            {TRACK.map((t, i) => (
-              <li key={t} data-k={i}>
-                <i />
-                <span>{t}</span>
+      <PortalFrame view="ponude" title="Ponude" sub="Ponude koje prodaja pripremi po vašem upitu. Provjerite stavke i potvrdite.">
+        <div className={ps.split} data-root>
+          <section className={ps.card}>
+            <ul className={ps.pick}>
+              <li>
+                <button type="button" tabIndex={-1} aria-pressed="true">
+                  <span>
+                    <b>P-26-0142</b>
+                    <i>{SITES[0].name} · 5 stavki</i>
+                  </span>
+                  <span className={`${ps.chip} ${styles.pChip}`} data-k="act" data-chip>
+                    <span className={styles.idle}>Čeka potvrdu</span>
+                    <span className={styles.done}>Potvrđena</span>
+                  </span>
+                </button>
               </li>
-            ))}
-          </ol>
-          <div className={styles.slot} data-show data-s="slot">
-            <span>Na putu ka gradilištu · Lamela A</span>
-            <b>Stiže 08–10h</b>
-          </div>
+              <li>
+                <button type="button" tabIndex={-1}>
+                  <span>
+                    <b>P-26-0131</b>
+                    <i>{SITES[2].name} · 3 stavke</i>
+                  </span>
+                  <span className={ps.chip} data-k="done">
+                    Potvrđena
+                  </span>
+                </button>
+              </li>
+            </ul>
+          </section>
+          <section className={`${ps.card} ${ps.detail}`}>
+            <div className={ps.detailHead}>
+              <span>
+                <span className={ps.kicker}>Ponuda P-26-0142</span>
+                <b>{SITES[0].phase}</b>
+                <i>{SITES[0].name} · važi 14 dana</i>
+              </span>
+            </div>
+            <ul className={ps.lines}>
+              {OFFER_LINES.map(([sku, qty]) => (
+                <li key={sku}>
+                  <span>
+                    <b>{PRODUCT_MAP[sku]?.name}</b>
+                    <i>
+                      {sku} · {qty} {PRODUCT_MAP[sku]?.unit}
+                    </i>
+                  </span>
+                  <span className={styles.pPrice}>Na upit</span>
+                </li>
+              ))}
+            </ul>
+            <span className={`${ps.primary} ${styles.pAccept}`} data-b="accept">
+              <span className={styles.idle}>Potvrdi ponudu (demo) ✓</span>
+              <span className={styles.done}>Ponuda potvrđena ✓</span>
+            </span>
+            <div className={styles.pProgress} data-show data-s="progress">
+              <ol className={styles.track}>
+                {TRACK.map((t, i) => (
+                  <li key={t} data-k={i}>
+                    <i />
+                    <span>{t}</span>
+                  </li>
+                ))}
+              </ol>
+              <div className={styles.slot} data-show data-s="slot">
+                <span>Dostava · {SITES[0].name}</span>
+                <b>Sutra, 07–09h</b>
+              </div>
+            </div>
+          </section>
         </div>
-      </div>
+      </PortalFrame>
       <Cursor />
     </div>
   )

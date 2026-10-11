@@ -133,3 +133,29 @@
 .mFoot { font-size: 11.5px; color: rgb(27 36 54 / 0.75); text-align: center; }
 .modal .ok { inset: 0; }
 .demo, .demo *:not(svg):not(svg *) { border-radius: 0 !important; }
+
+/* ——— 02/03: umanjen pravi ekran portala (klase iz portal/Showcase.module.css) ——— */
+/* .wrap iz portala nosi njegove boje (--navy tamno plava, --mist); gap se poništava jer je isti element i prozor. */
+.portal { flex: none; width: 1040px; gap: 0 !important; transform-origin: center; border-radius: 0 !important; }
+.portalBody { height: 600px !important; grid-template-columns: 200px minmax(0, 1fr) !important; }
+.portalContent { flex: 1; min-height: 0; overflow: hidden; padding: 0 22px 22px; }
+.pSearch { flex: 1; min-height: 40px; }
+.pSearch > span { display: inline-flex; align-items: center; font-family: ui-monospace, monospace; font-size: 12.5px; }
+.pSearch[data-on] { border-color: var(--cobalt) !important; box-shadow: 0 0 0 3px rgb(49 86 234 / 0.15); }
+.pSearch[data-on] .caret { opacity: 1; animation: blink 0.9s steps(1) infinite; }
+.pResults { display: grid; min-height: 64px; }
+.pResults li { grid-area: 1 / 1; display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 8px 10px; border: 1px solid rgb(27 36 54 / 0.12); border-radius: 10px; background: #f6f8ff; }
+.pResults em { font-style: normal; font-size: 12px; font-weight: 600; color: var(--cobalt); }
+.pField b { display: block; padding: 9px 12px; border: 1px solid rgb(27 36 54 / 0.18); border-radius: 8px; font-weight: 500; }
+.pQty { display: inline-flex; align-items: center; justify-content: flex-end; gap: 4px; min-width: 96px; padding: 6px 10px; border: 1px solid rgb(27 36 54 / 0.18); border-radius: 8px; font-variant-numeric: tabular-nums; }
+.pQty small { opacity: 0.6; font-size: 11px; }
+.pQty[data-on] { border-color: var(--cobalt); box-shadow: 0 0 0 3px rgb(49 86 234 / 0.15); }
+.pQty[data-on] .caret { opacity: 1; animation: blink 0.9s steps(1) infinite; }
+.pToast { justify-self: center; font-size: 12px; font-weight: 600; color: var(--cobalt); }
+.pPrice { font-size: 12px; font-weight: 600; white-space: nowrap; }
+.pAccept { justify-self: start; }
+.pAccept[data-on] { background: #1b2436 !important; border-color: #1b2436 !important; }
+.pAccept[data-on] .idle, .pChip[data-on] .idle { display: none; }
+.pAccept[data-on] .done, .pChip[data-on] .done { display: inline; }
+.pChip[data-on] { background: #e3efe8 !important; color: #1b5e3f !important; }
+.pProgress { display: grid; gap: 12px; padding-top: 4px; }
