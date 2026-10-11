@@ -1,13 +1,15 @@
 'use client'
 
 import { useRef } from 'react'
-import { gsap, useGSAP } from '@/lib/gsap'
+import { gsap, ScrollTrigger, useGSAP } from '@/lib/gsap'
 import { MQ } from '@/lib/motion'
 
 // Kraj plave površine: kvadratići boje stranice niču odozdo, gore rijetki i sitni, prema dnu sve gušći
 // i na dnu puna krem površina (isti mozaik kao prelazi na početnoj, samo obrnuto). Stoji iza donje polovine
 // sadržaja iznad sebe. Kad uđe u ekran, prelaz se sam odigra (brzo, ~0,8 s) i ne zavisi od toga koliko
-// se skrola, pa nikad ne ostane "zaglavljen" na pola; skrol nazad ga vrati. Reduced motion: odmah gotov.
+// se skrola, pa nikad ne ostane "zaglavljen" na pola; skrol nazad ga vrati. Dok je u ekranu, mozaik je
+// stalno živ: kvadratići glatko "dišu", a talas putuje dijagonalno preko njih (gsap.ticker, samo dok se vidi).
+// Reduced motion: odmah gotov, bez disanja.
 const CELL = 18
 const GAP = 3
 
@@ -21,10 +23,12 @@ export default function SquareDissolve({ className = '', color = 'var(--bg)', ti
       const canvas = el.querySelector('canvas')!
       const ctx = canvas.getContext('2d')!
       const probe = el.querySelector<HTMLElement>('[data-probe]')!
-      let cells: { x: number; y: number; f: number; d: number }[] = []
+      let cells: { x: number; y: number; f: number; d: number; ph: number }[] = []
       let built = ''
       let fill = ''
       const state = { p: 0 }
+      let time = 0
+      let live = false
       const draw = () => {
         const w = el.clientWidth, h = el.clientHeight
         const dpr = Math.min(1.5, window.devicePixelRatio || 1)
@@ -43,7 +47,8 @@ export default function SquareDissolve({ className = '', color = 'var(--bg)', ti
               const t = r / (rows - 1)
               // f: krajnja veličina (gore 0, dole puno); d: kad kvadratić krene da raste
               const f = Math.min(1, Math.max(0, (t - 0.12) / 0.62 + (rnd() - 0.5) * 0.5))
-              if (t <= (solid ? 0.86 : 1)) cells.push({ x: c * (CELL + GAP), y: r * (CELL + GAP), f, d: (1 - t) * 0.55 + rnd() * 0.2 })
+              // ph: faza talasa (dijagonala + malo slučajnosti), da disanje putuje preko mozaika
+              if (t <= (solid ? 0.86 : 1)) cells.push({ x: c * (CELL + GAP), y: r * (CELL + GAP), f, d: (1 - t) * 0.55 + rnd() * 0.2, ph: c * 0.38 - r * 0.55 + rnd() * 1.2 })
             }
         }
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
@@ -51,7 +56,9 @@ export default function SquareDissolve({ className = '', color = 'var(--bg)', ti
         ctx.fillStyle = fill
         const p = state.p
         for (const k of cells) {
-          const e = k.f * Math.min(1, Math.max(0, (p - k.d) / 0.3))
+          let e = k.f * Math.min(1, Math.max(0, (p - k.d) / 0.3))
+          // Disanje: rijetki kvadratići gore jače pulsiraju, gusti pri dnu blago (da dno ostane puno).
+          if (live) e *= 1 - (0.55 - 0.4 * k.f) * (0.5 + 0.5 * Math.sin(time * 3.2 + k.ph))
           if (e <= 0.02) continue
           const size = CELL * e
           const off = (CELL - size) / 2
@@ -76,6 +83,17 @@ export default function SquareDissolve({ className = '', color = 'var(--bg)', ti
           return
         }
         drawAll()
+        // Disanje ide na GSAP tickeru, samo dok je prelaz u ekranu.
+        const tick = (t: number) => {
+          time = t
+          drawAll()
+        }
+        const breathe = (on: boolean) => {
+          live = on
+          if (on) gsap.ticker.add(tick)
+          else gsap.ticker.remove(tick)
+        }
+        ScrollTrigger.create({ trigger: el, start: 'top bottom', end: 'bottom top', onToggle: (self) => breathe(self.isActive) })
         // Vremenska animacija (ne scrub): okidač je kad gornja ivica prelaza dođe do 85 % ekrana.
         gsap.to(state, {
           p: 1,
@@ -89,7 +107,10 @@ export default function SquareDissolve({ className = '', color = 'var(--bg)', ti
           drawAll()
         })
         ro.observe(el)
-        return () => ro.disconnect()
+        return () => {
+          ro.disconnect()
+          breathe(false)
+        }
       })
     },
     { scope: root },

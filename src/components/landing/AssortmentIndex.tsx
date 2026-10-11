@@ -6,7 +6,6 @@ import { useRef } from 'react'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { useMediaMotion } from '@/lib/media'
 import { EASE, MQ } from '@/lib/motion'
-import { revealChars } from '@/lib/reveal'
 import styles from './Heritage.module.css'
 
 // Asortiman kao tipografski indeks. Grupe su doslovno sa stare stranice "O nama" (grandcompany.ba,
@@ -43,7 +42,6 @@ export default function AssortmentIndex() {
       const el = root.current!
       gsap.matchMedia().add(MQ, (ctx) => {
         const { reduce } = ctx.conditions as { reduce: boolean }
-        revealChars(el.querySelector('[data-head]')!, reduce, 'top 80%')
         if (reduce) return
         // Redovi indeksa ulaze jedan za drugim, kao kad se lista ispisuje.
         gsap.from(el.querySelectorAll('[data-row]'), {
@@ -108,14 +106,11 @@ export default function AssortmentIndex() {
   )
 
   return (
-    <section ref={root} id="asortiman-grupe" aria-labelledby="index-title" className={styles.index}>
+    <section ref={root} id="asortiman-grupe" aria-label="Asortiman" className={styles.index}>
       <div className={`gutter ${styles.indexHead}`}>
         <p data-up className="label opacity-60">
           Asortiman
         </p>
-        <h2 id="index-title" data-head className={`display invisible ${styles.indexTitle}`}>
-          Veliki izbor asortimana
-        </h2>
       </div>
 
       <div className={styles.listWrap}>
