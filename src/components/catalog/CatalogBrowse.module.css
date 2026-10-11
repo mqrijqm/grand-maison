@@ -50,9 +50,7 @@
   gap: 10px;
   padding: 10px clamp(8px, 1vw, 14px);
   border-block: 1px solid var(--line);
-  background: color-mix(in srgb, #fff 94%, transparent);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  background: #fff;
 }
 .barRow {
   display: grid;
