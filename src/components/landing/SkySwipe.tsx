@@ -29,9 +29,10 @@ export default function SkySwipe() {
         const tl = gsap.timeline({
           scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom bottom', scrub: 0.5 },
         })
-        // Svaka kolona raste u skokovima (steps), a kasni za lijevom susjedom.
+        // Svaka kolona kasni za lijevom susjedom.
         visible.forEach((c, i) => {
-          tl.fromTo(c, { scaleY: 0 }, { scaleY: 1, ease: 'steps(8)', duration: 1 }, i * 0.14)
+          // Glatko (bez stepenica), da prelaz teče uz skrol bez trzanja.
+          tl.fromTo(c, { scaleY: 0 }, { scaleY: 1, ease: 'power2.inOut', duration: 1 }, i * 0.14)
         })
       })
     },

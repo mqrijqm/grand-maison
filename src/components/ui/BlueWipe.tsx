@@ -7,7 +7,7 @@ import css from './BlueWipe.module.css'
 
 // Prelaz za plave površine: plavo se sklapa od malih kvadratića (isti mozaik kao iza dashboarda
 // portala). Kvadratići niču od jedne strane prema drugoj, rastu i na kraju se spoje u punu plavu
-// pozadinu. Skrol vodi pokret; sadržaj (bijeli tekst) se pojavi tek kad je plavo puno.
+// pozadinu. Kad sekcija uđe u ekran, prelaz se sam odigra (~0,9 s); sadržaj (bijeli tekst) izroni na kraju.
 //   from="right": kvadratići kreću od desne ivice
 //   from="left":  kvadratići kreću od lijeve ivice
 
@@ -85,9 +85,14 @@ export default function BlueWipe({ children, from, className = '', fillClassName
         }
         gsap.set(content, { autoAlpha: 0, y: 24 })
         draw()
-        const tl = gsap.timeline({ scrollTrigger: { trigger, start: 'top 92%', end: 'top 12%', scrub: 0.6, onRefresh: draw } })
-        tl.to(state, { p: 1, ease: 'none', duration: 1, onUpdate: draw }, 0)
-        tl.to(content, { autoAlpha: 1, y: 0, ease: 'power1.out', duration: 0.14 }, 0.96)
+        // Vremenska animacija (ne scrub): kad sekcija uđe u ekran, plavo se sklopi za ~0,9 s i tekst
+        // izroni. Ne zavisi od brzine skrola, pa kvadratići nikad ne ostanu zaglavljeni na pola.
+        const tl = gsap.timeline({
+          paused: true,
+          scrollTrigger: { trigger, start: 'top 78%', toggleActions: 'play none none reverse', onRefresh: draw },
+        })
+        tl.to(state, { p: 1, ease: 'power2.inOut', duration: 0.9, onUpdate: draw }, 0)
+        tl.to(content, { autoAlpha: 1, y: 0, ease: 'power3.out', duration: 0.5 }, 0.75)
         const ro = new ResizeObserver(draw)
         ro.observe(el)
         return () => {
