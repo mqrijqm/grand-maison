@@ -651,5 +651,33 @@
   "url": "https://www.pexels.com/photo/9893816/",
   "license": "Pexels License (free for commercial use, no attribution required)",
   "note": "Crop 5:4 + ton: Codex CLI"
+ },
+ "calculators/roof-mono": {
+  "id": 27806095,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/27806095/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "note": "Zoom crop 3:2 + ton: Codex CLI"
+ },
+ "calculators/roof-gable": {
+  "id": 39279728,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/39279728/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "note": "Zoom crop 3:2 + ton: Codex CLI"
+ },
+ "calculators/u-value": {
+  "id": 39370865,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/39370865/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "note": "Zoom crop 3:2 + ton: Codex CLI"
+ },
+ "calculators/order": {
+  "id": 38561967,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/38561967/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "note": "Zoom crop 3:2 + ton: Codex CLI"
  }
 }

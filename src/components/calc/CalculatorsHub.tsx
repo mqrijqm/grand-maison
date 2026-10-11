@@ -1,14 +1,14 @@
 'use client'
 
+/* eslint-disable @next/next/no-img-element -- WebP fotografije iz /public */
+
 import { useRef } from 'react'
 import Cta from '@/components/ui/Cta'
-import { drawOnScroll } from '@/lib/draw'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { CALC_GROUPS, MANUFACTURER_CALCS } from '@/lib/manufacturer-calculators'
 import { useMediaMotion } from '@/lib/media'
 import { EASE, MQ } from '@/lib/motion'
 import { revealChars } from '@/lib/reveal'
-import CalcArt from './CalcArt'
 import styles from './CalculatorsHub.module.css'
 
 // "Kalkulatori": kartice koje vode na zvanične kalkulatore Wienerbergera (Tondach krov, Porotherm zid).
@@ -31,7 +31,6 @@ export default function CalculatorsHub({ embedded = false }: { embedded?: boolea
       gsap.matchMedia().add(MQ, (ctx) => {
         const { reduce } = ctx.conditions as { reduce: boolean }
         revealChars(el.querySelector('[data-head]')!, reduce, 'top 82%')
-        el.querySelectorAll('[data-calc-art] svg').forEach((svg) => drawOnScroll(svg, reduce, { trigger: svg, start: 'top 88%' }))
         if (reduce) return
         el.querySelectorAll<HTMLElement>('[data-group]').forEach((group) => {
           gsap.from(group.querySelectorAll('[data-card]'), {
@@ -53,11 +52,13 @@ export default function CalculatorsHub({ embedded = false }: { embedded?: boolea
   return (
     <section ref={root} id={embedded ? 'kalkulator' : undefined} aria-labelledby="calcs-title" className={styles.page}>
       <header className={`gutter ${styles.head}`}>
-        <p className="label opacity-60">Kalkulatori · Tondach i Porotherm</p>
-        <Heading id="calcs-title" data-head className={`display invisible ${styles.title}`}>
-          Izračunajte krov i zid
-        </Heading>
-        <p data-up className={styles.lead}>
+        <div>
+          <p className="label opacity-60">Kalkulatori · Tondach i Porotherm</p>
+          <Heading id="calcs-title" data-head className={`display invisible ${styles.title}`}>
+            Izračunajte krov i zid
+          </Heading>
+        </div>
+        <p data-up className={`${styles.lead} ${styles.headLead}`}>
           Za krov od Tondach crijepa i zid od Porotherm opeke proizvođač Wienerberger nudi besplatne kalkulatore. Grand
           Company je prodajno mjesto za ove proizvode, prema javnim listama prodajnih mjesta proizvođača.
         </p>
@@ -72,9 +73,10 @@ export default function CalculatorsHub({ embedded = false }: { embedded?: boolea
           <ul className={styles.grid}>
             {MANUFACTURER_CALCS.filter((c) => c.group === g.id).map((c) => (
               <li key={c.id} data-card className={styles.card}>
-                <div data-calc-art className={styles.art}>
-                  <CalcArt kind={c.art} />
-                </div>
+                <a className={styles.art} href={c.href} target="_blank" rel="noopener noreferrer" tabIndex={-1} aria-hidden>
+                  {/* Prava fotografija materijala izbliza (Pexels); Codex samo crop i ton. */}
+                  <img src={c.image} alt="" width={1200} height={800} loading="lazy" decoding="async" />
+                </a>
                 <div className={styles.body}>
                   <h3 className={`font-pretty ${styles.cardTitle}`}>{c.title}</h3>
                   <p className={styles.cardText}>{c.text}</p>

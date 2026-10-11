@@ -3,8 +3,9 @@
 //   https://www.wienerberger.ba/alati-i-servisi/alati-za-krov/kalkulatori.html
 //   https://www.wienerberger.ba/alati-i-servisi/alati-za-zid/kalkulatori.html
 // Opisi su naši. Samo link na njihov sajt: bez iframe-a, bez njihovog koda, slika i logotipa.
+// Kalkulator za analizu cijene vanjskih zidova je namjerno izostavljen (na njihovom sajtu ne radi ispravno).
 
-export type CalcArt = 'roof-mono' | 'roof-gable' | 'u-value' | 'wall-cost' | 'order'
+export type CalcArt = 'roof-mono' | 'roof-gable' | 'u-value' | 'order'
 
 export type ManufacturerCalc = {
   id: string
@@ -13,6 +14,8 @@ export type ManufacturerCalc = {
   text: string
   href: string
   art: CalcArt
+  /** Prava fotografija izbliza (Pexels, izvor u public/stock/credits.json), Codex: crop i ton. */
+  image: string
 }
 
 const WB = 'https://www.wienerberger.ba/alati-i-servisi'
@@ -30,6 +33,7 @@ export const MANUFACTURER_CALCS: ManufacturerCalc[] = [
     text: 'Izračun Tondach materijala za krov sa jednom kosinom.',
     href: `${WB}/alati-za-krov/kalkulatori/kalkulator-za-tondach-jednostresni-krov.html`,
     art: 'roof-mono',
+    image: '/calculators/roof-mono.webp',
   },
   {
     id: 'tondach-dvostresni',
@@ -38,6 +42,7 @@ export const MANUFACTURER_CALCS: ManufacturerCalc[] = [
     text: 'Izračun Tondach materijala za krov sa dvije kosine.',
     href: `${WB}/alati-za-krov/kalkulatori/kalkulator-za-tondach-dvostresni-krov.html`,
     art: 'roof-gable',
+    image: '/calculators/roof-gable.webp',
   },
   {
     id: 'porotherm-u-vrijednost',
@@ -46,14 +51,7 @@ export const MANUFACTURER_CALCS: ManufacturerCalc[] = [
     text: 'Provjerite toplotne karakteristike zida od Porotherm opeke.',
     href: `${WB}/alati-za-zid/kalkulatori/wienerberger-kalkulator-za-izracun-U-vrijednost-zida.html`,
     art: 'u-value',
-  },
-  {
-    id: 'porotherm-analiza-cijene',
-    group: 'zid',
-    title: 'Analiza cijene vanjskih zidova',
-    text: 'Uporedite troškove različitih izvedbi vanjskog zida.',
-    href: `${WB}/alati-za-zid/kalkulatori/wienerberger-kalkulator-za-analizu-cijene-vanjskih-zidova.html`,
-    art: 'wall-cost',
+    image: '/calculators/u-value.webp',
   },
   {
     id: 'wienerberger-izracun-materijala',
@@ -62,5 +60,6 @@ export const MANUFACTURER_CALCS: ManufacturerCalc[] = [
     text: 'Pošaljite podatke o objektu, a Wienerberger besplatno računa količinu za Tondach krov i Porotherm zid.',
     href: `${WB}/alati-za-zid/kalkulatori/narucite-besplatni-izracun-materijala.html`,
     art: 'order',
+    image: '/calculators/order.webp',
   },
 ]
