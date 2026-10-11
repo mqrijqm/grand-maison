@@ -1,5 +1,4 @@
 .page { position: relative; overflow: clip; padding-bottom: clamp(80px, 14vh, 180px); }
-.arcs { position: absolute; top: -8vw; left: -14vw; width: min(70vw, 900px); aspect-ratio: 1; color: rgb(27 36 54 / 0.16); pointer-events: none; }
 
 .top { position: relative; display: grid; gap: 56px; padding-top: clamp(40px, 8vh, 110px); padding-bottom: clamp(56px, 10vh, 120px); }
 .titleBlock { position: relative; z-index: 1; }
@@ -36,7 +35,6 @@
   .hours { grid-template-columns: calc(56px + 9rem) minmax(0, 1fr); }
 }
 @media (max-width: 899px) {
-  .arcs { width: 120vw; left: -40vw; }
 }
 
 /* Tri telefona u jednom redu: ćelije razdvojene jedva vidljivim tankim linijama, hover kao kod redova. */

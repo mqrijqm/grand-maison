@@ -498,3 +498,14 @@
   inset: 0;
   z-index: 2;
 }
+
+/* "Izbor je Vaš!": spušteno (više prostora iznad) i blago uvećano */
+.signoff {
+  margin-top: clamp(140px, 22vh, 260px);
+  font-size: clamp(52px, 9.5vw, 180px);
+}
+@media (max-width: 767px) {
+  .signoff {
+    margin-top: 16vh;
+  }
+}

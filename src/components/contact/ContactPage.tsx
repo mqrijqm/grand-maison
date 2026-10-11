@@ -4,8 +4,7 @@ import { COMPANY as GC } from '@/gc/gc'
 import { HOURS, MAPS_URL } from '@/lib/company'
 import styles from './ContactPage.module.css'
 
-// Kontakt kao zasebna stranica, apstraktnijeg rasporeda: krupna tipografija, tanke linije, koncentrični
-// lukovi u pozadini i dvije ravne fotografije.
+// Kontakt kao zasebna stranica: krupna tipografija, tanke linije i dvije ravne fotografije.
 const ROWS: { n: string; label: string; value: string; href: string; external?: boolean }[] = [
   { n: '01', label: 'Prodaja', value: GC.phoneLandline, href: GC.phoneLandlineHref },
   { n: '02', label: 'Prodaja', value: GC.phoneLandline2, href: GC.phoneLandline2Href },
@@ -17,13 +16,6 @@ const ROWS: { n: string; label: string; value: string; href: string; external?: 
 export default function ContactPage() {
   return (
     <div className={styles.page}>
-      <svg className={styles.arcs} viewBox="0 0 800 800" fill="none" stroke="currentColor" strokeWidth={1} aria-hidden>
-        <circle cx="400" cy="400" r="120" />
-        <circle cx="400" cy="400" r="230" />
-        <circle cx="400" cy="400" r="340" />
-        <circle cx="400" cy="400" r="390" strokeDasharray="2 7" />
-        <path d="M400 0v800M0 400h800" strokeDasharray="1 9" />
-      </svg>
 
       <header className={`gutter ${styles.top}`}>
         <div className={styles.titleBlock}>
