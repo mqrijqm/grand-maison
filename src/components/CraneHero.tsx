@@ -30,7 +30,7 @@ const TOTAL = [...PHRASE].length
 let cursor = 0
 // Demo font nema slova sa dijakriticima: ispisujemo osnovno slovo iz fonta, a znak iznad
 // (kvačicu/akcenat) dodaje CSS. Kad se kupi puna verzija fonta, ovo se može isključiti.
-const DEMO_FONT_WITHOUT_DIACRITICS = true
+const DEMO_FONT_WITHOUT_DIACRITICS = false
 const MARKS: Record<string, [string, string]> = {
   š: ['s', 'ˇ'], č: ['c', 'ˇ'], ž: ['z', 'ˇ'], ć: ['c', '´'], đ: ['d', '-'],
 }

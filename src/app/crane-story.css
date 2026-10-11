@@ -149,19 +149,20 @@ html[data-hero-dark]:not([data-past-hero]) [data-badge] {
   position: absolute;
   z-index: 3;
   left: 50%;
-  /* Centar ekrana (a ne scene, koja počinje ispod wordmarka). */
-  top: calc(50svh - var(--story-header));
+  /* Centar vidljive plave scene (ispod wordmarka i navbara), po obje ose. */
+  top: calc(50% + var(--nav-h, 64px) * 0.7);
   transform: translate(-50%, -50%);
   width: min(88vw, 1100px);
   margin: 0;
   text-align: center;
   text-wrap: balance;
-  font-family: var(--font-pretty), Georgia, serif;
-  font-weight: 300;
-  font-size: clamp(22px, 3.2vw, 52px); /* jedini serif na sajtu: rečenica na kraju herosa, manja */
-  text-transform: none;
-  letter-spacing: -0.01em;
-  line-height: 1.06;
+  /* Debeli sans sajta, verzal, centrirano po obje ose ekrana. */
+  font-family: var(--font-heavy), 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 800;
+  font-size: clamp(20px, 2.6vw, 42px);
+  text-transform: uppercase;
+  letter-spacing: -0.015em;
+  line-height: 1.02;
   /* Ispisuje se preko pune kobalt pozadine (poslednje poglavlje štampe). */
   color: #f4f1ec;
   pointer-events: none;
@@ -195,9 +196,9 @@ html[data-hero-dark]:not([data-past-hero]) [data-badge] {
 
 @media (max-width: 767px) {
   .story-type {
-    width: min(92vw, 640px);
-    font-size: clamp(30px, 9.6vw, 56px);
-    line-height: 1.1;
+    width: min(90vw, 640px);
+    font-size: clamp(22px, 7.2vw, 36px);
+    line-height: 1.05;
   }
 }
 

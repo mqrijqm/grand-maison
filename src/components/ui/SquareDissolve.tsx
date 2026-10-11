@@ -23,14 +23,14 @@ export default function SquareDissolve({ className = '', color = 'var(--bg)', ti
       const canvas = el.querySelector('canvas')!
       const ctx = canvas.getContext('2d')!
       const probe = el.querySelector<HTMLElement>('[data-probe]')!
-      let cells: { x: number; y: number; f: number; d: number; ph: number }[] = []
+      let cells: { x: number; y: number; f: number; d: number; ph: number; t: number }[] = []
       let built = ''
       let fill = ''
       const state = { p: 0 }
       let time = 0
       let live = false
       const draw = () => {
-        const w = el.clientWidth, h = el.clientHeight
+        const w = el.clientWidth, h = el.clientHeight + 2
         const dpr = Math.min(1.5, window.devicePixelRatio || 1)
         const key = `${w}x${h}`
         if (key !== built) {
@@ -46,19 +46,24 @@ export default function SquareDissolve({ className = '', color = 'var(--bg)', ti
             for (let r = 0; r < rows; r++) {
               const t = r / (rows - 1)
               // f: krajnja veličina (gore 0, dole puno); d: kad kvadratić krene da raste
-              const f = Math.min(1, Math.max(0, (t - 0.12) / 0.62 + (rnd() - 0.5) * 0.5))
+              const fr = Math.min(1, Math.max(0, (t - 0.12) / 0.62 + (rnd() - 0.5) * 0.5))
+              // Donji dio: slučajnost nestaje, svi kvadratići rastu do pune veličine i spoje se u krem.
+              const solidify = Math.min(1, Math.max(0, (t - 0.42) / 0.16))
+              const f = fr + (1 - fr) * solidify
               // ph: faza talasa (dijagonala + malo slučajnosti), da disanje putuje preko mozaika
-              if (t <= (solid ? 0.86 : 1)) cells.push({ x: c * (CELL + GAP), y: r * (CELL + GAP), f, d: (1 - t) * 0.55 + rnd() * 0.2, ph: c * 0.38 - r * 0.55 + rnd() * 1.2 })
+              if (t <= (solid ? 0.74 : 1)) cells.push({ x: c * (CELL + GAP), y: r * (CELL + GAP), f, d: (1 - t) * 0.55 + rnd() * 0.2, ph: c * 0.38 - r * 0.55 + rnd() * 1.2, t })
             }
         }
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
         ctx.clearRect(0, 0, w, h)
         ctx.fillStyle = fill
+        ctx.globalAlpha = 1
         const p = state.p
         for (const k of cells) {
           let e = k.f * Math.min(1, Math.max(0, (p - k.d) / 0.3))
-                    // Ciklus ~1 s; gore kvadratići potpuno nestaju i vraćaju se, dole jasno pulsiraju (do 35 %).
-          if (live) e *= 1 - (0.95 - 0.6 * k.f) * (0.5 + 0.5 * Math.sin(time * 6.2 + k.ph))
+          // Ciklus ~1 s; gore kvadratići potpuno nestaju i vraćaju se, prema dnu disanje slabi do nule,
+          // da donji redovi ostanu puni i ne otvaraju plave procjepe iznad krem trake.
+          if (live) e *= 1 - (0.95 - 0.6 * k.f) * (1 - Math.min(1, k.t / 0.45)) * (0.5 + 0.5 * Math.sin(time * 6.2 + k.ph))
           if (e <= 0.02) continue
           const size = CELL * e
           const off = (CELL - size) / 2
@@ -70,10 +75,18 @@ export default function SquareDissolve({ className = '', color = 'var(--bg)', ti
         draw()
         ctx.globalAlpha = 1
         if (!solid) return
-        // Dno: puna krem traka (posljednjih ~14 % visine) koja raste sa skrolom i spaja se sa stranicom ispod.
-        const w = el.clientWidth, h = el.clientHeight
-        const band = h * 0.14 * Math.min(1, state.p / 0.6)
-        ctx.fillRect(0, h - band, w, band + 1)
+        // Dno: krem preliv preko mozaika (od prozirnog na ~38 % visine do pune boje na ~72 %), pa puna
+        // krem ispod. Plavo i procjepi između kvadratića postepeno blijede u pozadinu, bez ijedne linije.
+        const w = el.clientWidth, h = el.clientHeight + 2
+        const rgb = fill.match(/[\d.]+/g)?.slice(0, 3).join(',') ?? '244,241,236'
+        const g = ctx.createLinearGradient(0, h * 0.38, 0, h * 0.72)
+        g.addColorStop(0, `rgba(${rgb},0)`)
+        g.addColorStop(0.5, `rgba(${rgb},0.55)`)
+        g.addColorStop(1, `rgb(${rgb})`)
+        ctx.globalAlpha = Math.min(1, state.p / 0.5)
+        ctx.fillStyle = g
+        ctx.fillRect(0, h * 0.38, w, h * 0.62 + 3)
+        ctx.globalAlpha = 1
       }
       gsap.matchMedia().add(MQ, (c) => {
         const { reduce } = c.conditions as { reduce: boolean }
@@ -119,7 +132,8 @@ export default function SquareDissolve({ className = '', color = 'var(--bg)', ti
   return (
     <div ref={root} aria-hidden className={`pointer-events-none relative ${className}`}>
       <span data-probe className="hidden" style={{ background: color }} />
-      <canvas className="absolute inset-0 h-full w-full" />
+      {/* Platno ide 2 px ispod ivice: zaokruživanje veličine ne ostavlja plavu crtu na dnu. */}
+      <canvas className="absolute inset-x-0 top-0 h-[calc(100%+2px)] w-full" />
     </div>
   )
 }
