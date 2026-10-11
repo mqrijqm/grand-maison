@@ -6,8 +6,13 @@ import { CATEGORIES, PRODUCTS, USES } from '@/lib/shop'
 
 export type CatalogSort = 'preporuceno' | 'cijena-rastuce' | 'cijena-opadajuce' | 'naziv'
 
-// Oblasti koje se prodaju po upitu: nemaju cijenu, pa se prikazuju kao pozicije u istoj lepezi.
-export const PROGRAM_IDS = ['zidni-krovni', 'drvni-program', 'sanitarna-oprema'] as const
+// Grupe po upitu: provjereni proizvođači (Tondach, Porotherm, Baumalt), prikazani u istoj mreži.
+export const PROGRAM_IDS = ['krovni-sistemi', 'zidni-blokovi', 'malteri-ljepila'] as const
+export const PROGRAM_NAMES: Record<(typeof PROGRAM_IDS)[number], string> = {
+  'krovni-sistemi': 'Krovni sistemi',
+  'zidni-blokovi': 'Zidni blokovi',
+  'malteri-ljepila': 'Malteri i ljepila',
+}
 export type ProgramId = (typeof PROGRAM_IDS)[number]
 
 export const CATALOG_BRANDS = [...new Set(PRODUCTS.map(p => p.brand).filter(brand => brand !== 'Ostali proizvođači'))].sort((a, b) => a.localeCompare(b, 'bs'))
@@ -64,7 +69,7 @@ export function useCatalogFilters() {
   const programsHidden = use !== 'sve' || brand !== 'sve' || !!band || featured || (!!cat && cat !== 'sve' && !isProgramCat)
   const programs = programsHidden ? [] : PROGRAM_ITEMS.filter(item => (cat === 'sve' || item.program === cat)
     && (unit === 'sve' || item.unit === unit)
-    && words.every(word => normalizeCatalog(`${item.name} ${item.spec} ${item.lead}`).includes(word)))
+    && words.every(word => normalizeCatalog(`${item.brand} ${item.name} ${item.spec} ${item.lead}`).includes(word)))
   if (sort === 'naziv') programs.sort((a, b) => a.name.localeCompare(b.name, 'bs'))
 
   return { q, cat, use, brand, unit, price, featured, sort, list, programs, update, reset,

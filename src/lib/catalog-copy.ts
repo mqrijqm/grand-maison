@@ -253,150 +253,58 @@ export const GROUP_COPY: Record<
   }
 };
 
+// Artikli po upitu: samo provjereni proizvođači za Grand Company (Wienerberger mapa prodajnih mjesta:
+// "Tondach krovni sistemi | Porotherm zidni sistemi"; Baumalt lista partnera). Nazivi i podaci su
+// prepisani sa stranica proizvođača (izvor u `source`), bez cijena; dostupnost potvrđuje prodaja.
 export type ProgramItem = {
   id: string;
-  program: "zidni-krovni" | "drvni-program" | "sanitarna-oprema";
+  program: "krovni-sistemi" | "zidni-blokovi" | "malteri-ljepila";
+  brand: string;
   name: string;
   spec: string;
   unit: string;
   lead: string;
   uses: string[];
+  image: string;
+  source: string;
 };
 
+const WB = "https://www.wienerberger.ba/proizvodi";
+const BM = "https://baumalt.ba/portfolio";
+const ROOF = ["/markets/krovni.webp", "/assortment/krovni.webp"];
+const WALL = ["/markets/blokovi.webp", "/assortment/blokovi.webp"];
+
 export const PROGRAM_ITEMS: ProgramItem[] = [
-  {
-    id: "glineni-blok-250",
-    program: "zidni-krovni",
-    name: "Šuplji glineni blok",
-    spec: "Dimenzije 250 × 190 × 190 mm, šuplji blok",
-    unit: "kom",
-    lead: "Zidni blok za zidanje unutrašnjih i spoljašnjih zidova prema projektu.",
-    uses: ["Zidanje zidova", "Ispuna zidnih polja"]
-  },
-  {
-    id: "krovni-crijep",
-    program: "zidni-krovni",
-    name: "Krovni crijep",
-    spec: "Profilisani crijep, izbor boje i dimenzije po upitu",
-    unit: "kom",
-    lead: "Element krovnog pokrivača za kose krovove.",
-    uses: ["Pokrivanje kosih krovova", "Zamjena oštećenih elemenata pokrivača"]
-  },
-  {
-    id: "sljemenjak-crijep",
-    program: "zidni-krovni",
-    name: "Sljemenjak za crijep",
-    spec: "Profilisani element za završetak sljemena, izbor po upitu",
-    unit: "kom",
-    lead: "Krovni element za završetak sljemena u sklopu odgovarajućeg pokrivača.",
-    uses: ["Završetak sljemena", "Krovni detalji uz odgovarajući crijep"]
-  },
-  {
-    id: "puna-opeka",
-    program: "zidni-krovni",
-    name: "Puna opeka",
-    spec: "Dimenzije približno 250 × 120 × 65 mm, puna opeka",
-    unit: "kom",
-    lead: "Puna opeka za zidarske radove i elemente predviđene projektom.",
-    uses: ["Zidanje manjih elemenata", "Zidarski detalji"]
-  },
-  {
-    id: "betonski-nadvoj",
-    program: "zidni-krovni",
-    name: "Betonski nadvoj",
-    spec: "Dužine i presjek po upitu, armirani betonski element",
-    unit: "kom",
-    lead: "Nadvoj za premošćavanje otvora u zidu prema projektnom rješenju.",
-    uses: ["Nadvoj iznad vrata", "Nadvoj iznad prozora"]
-  },
-  {
-    id: "rezana-gradja",
-    program: "drvni-program",
-    name: "Rezana građa",
-    spec: "Presjek i dužina po upitu, građa za konstrukcijske radove",
-    unit: "m³",
-    lead: "Rezani drveni elementi za građevinske radove prema dimenzijama iz projekta.",
-    uses: ["Krovne konstrukcije", "Pomoćni građevinski radovi"]
-  },
-  {
-    id: "krovna-letva",
-    program: "drvni-program",
-    name: "Krovna letva",
-    spec: "Presjek 30 × 50 mm, dužina po upitu",
-    unit: "kom",
-    lead: "Letva za izradu podkonstrukcije krovnog pokrivača.",
-    uses: ["Krovna podkonstrukcija", "Montaža crijepa prema sistemu"]
-  },
-  {
-    id: "lamelirana-greda",
-    program: "drvni-program",
-    name: "Lamelirana drvena greda",
-    spec: "Presjek i dužina po upitu",
-    unit: "kom",
-    lead: "Lamelirana greda za konstrukcijske namjene prema projektu.",
-    uses: ["Krovne konstrukcije", "Drveni noseći elementi prema projektu"]
-  },
-  {
-    id: "osb-ploca",
-    program: "drvni-program",
-    name: "OSB ploča",
-    spec: "Dimenzije 2500 × 1250 mm, debljina po upitu",
-    unit: "m²",
-    lead: "Pločasti materijal za oblaganje i konstrukcijske namjene prema projektu.",
-    uses: ["Oblaganje zidova i krovova", "Podloge i privremene zaštite"]
-  },
-  {
-    id: "podna-daska",
-    program: "drvni-program",
-    name: "Podna daska",
-    spec: "Širina i dužina po upitu, profilisana daska",
-    unit: "m²",
-    lead: "Profilisana daska za drvene podove i obloge.",
-    uses: ["Drveni podovi", "Unutrašnje obloge"]
-  },
-  {
-    id: "umivaonik",
-    program: "sanitarna-oprema",
-    name: "Umivaonik",
-    spec: "Širina i način ugradnje po upitu",
-    unit: "kom",
-    lead: "Umivaonik za ugradnju u kupatilo, prema rasporedu prostora i priključaka.",
-    uses: ["Oprema kupatila", "Ugradnja uz odgovarajuću slavinu"]
-  },
-  {
-    id: "wc-solja",
-    program: "sanitarna-oprema",
-    name: "WC šolja",
-    spec: "Podna ili konzolna izvedba, priključak po upitu",
-    unit: "kom",
-    lead: "Sanitarni element za kupatilo koji se bira prema odvodu i načinu ugradnje.",
-    uses: ["Oprema kupatila", "Zamjena postojeće WC šolje"]
-  },
-  {
-    id: "tus-kada",
-    program: "sanitarna-oprema",
-    name: "Tuš kada",
-    spec: "Dimenzije i oblik po upitu",
-    unit: "kom",
-    lead: "Tuš kada za uređenje tuš zone prema raspoloživom prostoru.",
-    uses: ["Tuš zone u kupatilu", "Rekonstrukcija kupatila"]
-  },
-  {
-    id: "kupatilska-slavina",
-    program: "sanitarna-oprema",
-    name: "Kupatilska slavina",
-    spec: "Izvedba za umivaonik, završna obrada po upitu",
-    unit: "kom",
-    lead: "Slavina za umivaonik, izabrana prema priključcima i odabranom sanitarnom elementu.",
-    uses: ["Ugradnja uz umivaonik", "Zamjena postojeće slavine"]
-  },
-  {
-    id: "kupatilski-ormaric",
-    program: "sanitarna-oprema",
-    name: "Kupatilski ormarić",
-    spec: "Širina i izvedba po upitu",
-    unit: "kom",
-    lead: "Ormarić za odlaganje u kupatilu, samostalno ili uz umivaonik prema odabranoj izvedbi.",
-    uses: ["Oprema kupatila", "Odlaganje uz umivaonik"]
-  }
+  // ——— Porotherm zidni blokovi (Wienerberger) ———
+  { id: "porotherm-25-s", program: "zidni-blokovi", brand: "Porotherm", name: "Porotherm 25 S", spec: "375 × 250 × 238 mm · 10,50 kom/m² · 15,10 kg/kom", unit: "kom", lead: "Opeka za nosive zidove, sa mortnim džepom, za zidanje mortom.", uses: ["Nosivi zidovi"], image: WALL[0], source: `${WB}/zid/porotherm-opeka/porotherm-25-s.html` },
+  { id: "porotherm-25-profi", program: "zidni-blokovi", brand: "Porotherm", name: "Porotherm 25 Profi", spec: "375 × 250 × 249 mm · 10,50 kom/m² · 17,60 kg/kom", unit: "kom", lead: "Brušena opeka za zidanje ljepilom Dryfix.extra.", uses: ["Nosivi zidovi"], image: WALL[1], source: `${WB}/zid/porotherm-opeka/porotherm-25-profi.html` },
+  { id: "porotherm-30-profi", program: "zidni-blokovi", brand: "Porotherm", name: "Porotherm 30 Profi", spec: "250 × 300 × 249 mm · 16 kom/m² · 14,60 kg/kom", unit: "kom", lead: "Brušena opeka za zid debljine 30 cm.", uses: ["Nosivi zidovi"], image: WALL[0], source: `${WB}/zid/porotherm-opeka/porotherm-30-profi.html` },
+  { id: "porotherm-38-izo-profi", program: "zidni-blokovi", brand: "Porotherm", name: "Porotherm 38 IZO Profi", spec: "250 × 380 × 249 mm · 16 kom/m² · 14,70 kg/kom", unit: "kom", lead: "Brušena opeka punjena kamenom vunom, za energetski efikasan spoljni zid.", uses: ["Spoljni zidovi"], image: WALL[1], source: `${WB}/zid/porotherm-opeka/porotherm-38-izo-profi.html` },
+  { id: "porotherm-50-izo-profi", program: "zidni-blokovi", brand: "Porotherm", name: "Porotherm 50 IZO Profi", spec: "250 × 500 × 249 mm · 16 kom/m² · 19,30 kg/kom", unit: "kom", lead: "Brušena opeka sa kamenom vunom, za zid debljine 50 cm.", uses: ["Spoljni zidovi"], image: WALL[0], source: `${WB}/zid/porotherm-opeka/porotherm-50-izo-profi.html` },
+  { id: "porotherm-20", program: "zidni-blokovi", brand: "Porotherm", name: "Porotherm 20", spec: "375 × 200 × 238 mm · 8 kom/m² · 11,90 kg/kom", unit: "kom", lead: "Opeka za zid debljine 20 cm.", uses: ["Zidovi"], image: WALL[1], source: `${WB}/zid/porotherm-opeka/porotherm-20.html` },
+  { id: "porotherm-15", program: "zidni-blokovi", brand: "Porotherm", name: "Porotherm 15", spec: "500 × 150 × 238 mm · 12,05 kg/kom", unit: "kom", lead: "Pregradna opeka debljine 15 cm.", uses: ["Pregradni zidovi"], image: WALL[0], source: `${WB}/zid/porotherm-opeka/porotherm-15.html` },
+  { id: "porotherm-10-s", program: "zidni-blokovi", brand: "Porotherm", name: "Porotherm 10 S", spec: "500 × 100 × 238 mm · 8 kom/m² · 8,10 kg/kom", unit: "kom", lead: "Pregradna opeka debljine 10 cm.", uses: ["Pregradni zidovi"], image: WALL[1], source: `${WB}/zid/porotherm-opeka/porotherm-10-s.html` },
+
+  // ——— Tondach krovni sistemi (Wienerberger) ———
+  { id: "tondach-continental-12", program: "krovni-sistemi", brand: "Tondach", name: "Tondach Continental 12", spec: "27,2 × 44,5 cm · 12,0–15,5 kom/m² · 3,00 kg/kom", unit: "kom", lead: "Glineni crijep modernog izgleda; standardni nagib krova 27°.", uses: ["Kosi krovovi"], image: ROOF[0], source: `${WB}/krov/tondach-linije-proizvoda/continental-12-siguran-i-moderan-crijep.html` },
+  { id: "tondach-traditon-9", program: "krovni-sistemi", brand: "Tondach", name: "Tondach Traditon 9", spec: "29 × 48,5 cm · 9,5–10,5 kom/m² · 4,08 kg/kom", unit: "kom", lead: "Crijep velikog formata sa dva duboka žlijeba; standardni nagib 27°.", uses: ["Kosi krovovi"], image: ROOF[1], source: `${WB}/krov/tondach-linije-proizvoda/traditon-9-crijep-idealan-za-svaki-krov.html` },
+  { id: "tondach-twiston-9", program: "krovni-sistemi", brand: "Tondach", name: "Tondach Twiston 9", spec: "30 × 50 cm · 9 kom/m² · 3,50 kg/kom", unit: "kom", lead: "Crijep velikog formata za svaku arhitekturu; standardni nagib 25°.", uses: ["Kosi krovovi"], image: ROOF[0], source: `${WB}/krov/tondach-linije-proizvoda/twiston-9-crijep-za-svaki-objekt.html` },
+  { id: "tondach-planoton-10", program: "krovni-sistemi", brand: "Tondach", name: "Tondach Planoton 10", spec: "29 × 48,5 cm · 10,0–11,0 kom/m² · 3,84 kg/kom", unit: "kom", lead: "Ravni moderni crijep; standardni nagib 35°.", uses: ["Kosi krovovi"], image: ROOF[1], source: `${WB}/krov/tondach-linije-proizvoda/planoton-10-moderan-crijep-vrhunske-kvalitete.html` },
+  { id: "tondach-contiton-9", program: "krovni-sistemi", brand: "Tondach", name: "Tondach Contiton 9", spec: "29 × 48,5 cm · 9,6–10,6 kom/m² · 4,0 kg/kom", unit: "kom", lead: "Crijep velikog formata; standardni nagib 17°.", uses: ["Kosi krovovi"], image: ROOF[0], source: `${WB}/krov/tondach-linije-proizvoda/contiton-9-crijep-velikog-formata.html` },
+  { id: "tondach-veneton-13", program: "krovni-sistemi", brand: "Tondach", name: "Tondach Veneton 13", spec: "27,5 × 44,0 cm · 13,6–14,4 kom/m² · 3,20 kg/kom", unit: "kom", lead: "Mediteranski valoviti crijep; standardni nagib 30°.", uses: ["Kosi krovovi"], image: ROOF[1], source: `${WB}/krov/tondach-linije-proizvoda/veneton-13-mediteranska-elegancija-na-krovu.html` },
+  { id: "tondach-biber", program: "krovni-sistemi", brand: "Tondach", name: "Tondach Biber", spec: "19 × 40 cm · 30,40 kom/m² · 1,9 kg/kom", unit: "kom", lead: "Tradicionalni ravni crijep.", uses: ["Kosi krovovi"], image: ROOF[0], source: `${WB}/krov/tondach-linije-proizvoda/biber-tradicionalni-crijep-za-svaki-krov.html` },
+  { id: "tondach-fol-s-145", program: "krovni-sistemi", brand: "Tondach", name: "Paropropusna folija FOL S 145 g/m²", spec: "145 g/m²", unit: "rolna", lead: "Sistemska oprema za krov: paropropusna folija ispod pokrivača.", uses: ["Krovna oprema"], image: ROOF[1], source: `${WB}/krov/tondach-sistemska-oprema/paropropusna-folija-fol-s-145-gm2.html` },
+
+  // ——— Baumalt malteri i ljepila ———
+  { id: "baumalt-ck-12", program: "malteri-ljepila", brand: "Baumalt", name: "Baumalt CK 12", spec: "Cementno-krečni malter 1,2 mm · cca 14 kg/m²/cm", unit: "vreća", lead: "Za mašinsko i ručno malterisanje unutra i spolja.", uses: ["Malterisanje"], image: "/assortment/masinski-malteri.webp", source: `${BM}/baumalt-ck-12/` },
+  { id: "baumalt-ck-20", program: "malteri-ljepila", brand: "Baumalt", name: "Baumalt CK 20", spec: "Cementno-krečni malter 2,0 mm · cca 16 kg/m²/cm", unit: "vreća", lead: "Mašinski cementno-krečni malter.", uses: ["Malterisanje"], image: "/assortment/masinski-malteri.webp", source: `${BM}/baumalt-ck-20/` },
+  { id: "baumalt-gk-12", program: "malteri-ljepila", brand: "Baumalt", name: "Baumalt GK 12", spec: "Gipsano-krečni malter, gletani 1,2 mm · 11,0 kg/m²/cm", unit: "vreća", lead: "Za unutrašnje zidove, mašinski ili ručno.", uses: ["Malterisanje"], image: "/assortment/masinski-malteri.webp", source: `${BM}/baumalt-gk-12/` },
+  { id: "baumalt-cs-20", program: "malteri-ljepila", brand: "Baumalt", name: "Baumalt CS 20 cementni špric", spec: "Cca 6–8 kg/m²", unit: "vreća", lead: "Vezni sloj prije malterisanja.", uses: ["Malterisanje"], image: "/assortment/masinski-malteri.webp", source: `${BM}/baumalt-cs-20-cementni-spric/` },
+  { id: "baumalt-bmcolle-f", program: "malteri-ljepila", brand: "Baumalt", name: "Baumalt BMCOLLE F", spec: "Fleksibilno ljepilo za keramiku · 3,0–4,0 kg/m²", unit: "vreća", lead: "Za unutrašnje i spoljne radove, vodootporno.", uses: ["Polaganje keramike"], image: "/markets/malteri-ljepila.webp", source: `${BM}/baumalt-bmcolle-f-ljepilo-za-keramiku/` },
+  { id: "baumalt-bmcolle-s", program: "malteri-ljepila", brand: "Baumalt", name: "Baumalt BMCOLLE S", spec: "Poboljšano ljepilo za keramiku · 3,0–4,0 kg/m²", unit: "vreća", lead: "Za unutrašnje radove.", uses: ["Polaganje keramike"], image: "/assortment/keramicka-ljepila.webp", source: `${BM}/baumalt-bmcolle-s/` },
+  { id: "baumalt-bmcolle-f-premium", program: "malteri-ljepila", brand: "Baumalt", name: "Baumalt BMCOLLE F Premium", spec: "Fleksibilno ljepilo sa vlaknima, smanjeno klizanje (EN 12004)", unit: "vreća", lead: "Za keramiku, kamen i podno grijanje.", uses: ["Polaganje keramike"], image: "/markets/malteri-ljepila.webp", source: `${BM}/baumalt-bmcolle-f-premium/` },
+  { id: "baumalt-bmcolle-u", program: "malteri-ljepila", brand: "Baumalt", name: "Baumalt BMCOLLE U", spec: "Lijepljenje 3,0–4,0 kg/m² · armiranje cca 4,0 kg/m²", unit: "vreća", lead: "Univerzalno ljepilo za lijepljenje i armiranje EPS-a (termofasada).", uses: ["Fasada"], image: "/assortment/fasadni.webp", source: `${BM}/baumalt-bmcolle-u/` },
+  { id: "baumalt-bmedelputz-f15", program: "malteri-ljepila", brand: "Baumalt", name: "Baumalt BMEdelPutz F15", spec: "Ribana tekstura 1,5 mm · 3,0–4,0 kg/m²", unit: "vreća", lead: "Strukturno-dekorativni malter za unutra i spolja.", uses: ["Fasada"], image: "/assortment/fasadni.webp", source: `${BM}/baumalt-bmedelputz-f15/` },
+  { id: "baumalt-bmedelputz-r20", program: "malteri-ljepila", brand: "Baumalt", name: "Baumalt BMEdelPutz R20", spec: "Zaribana tekstura 2,0 mm · 3,0–4,0 kg/m²", unit: "vreća", lead: "Strukturno-dekorativni malter.", uses: ["Fasada"], image: "/assortment/fasadni.webp", source: `${BM}/baumalt-bmedelputz-r20/` },
 ];
+

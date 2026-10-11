@@ -7,26 +7,22 @@ import Price from '@/components/b2b/Price'
 import { type ProgramItem } from '@/lib/catalog-copy'
 import { inquiryHref, inquiryLines, toggleInquiryItem, useCatalogInquiry } from '@/lib/catalog-inquiry'
 import { gsap, useGSAP } from '@/lib/gsap'
-import { OFFERINGS } from '@/lib/offerings'
 import { CATEGORIES, USES, categoryName, type Product } from '@/lib/shop'
-import { PRICE_BANDS, PROGRAM_IDS, useCatalogFilters, type CatalogSort } from './catalog-filters'
+import { PROGRAM_IDS, PROGRAM_NAMES, useCatalogFilters, type CatalogSort } from './catalog-filters'
 import styles from './CatalogShop.module.css'
 
 // Katalog kao web-prodavnica: jarko plavi vrh sa pretragom i kategorijama (iza veliki prozirni kvadrati),
 // ispod mreža svedenih kartica — fotografija, naziv, cijena. Opis i detalji su tek na stranici artikla.
 
-const offering = (id: string) => OFFERINGS.find((item) => item.id === id)!
 
 const CHIPS = [
   { id: 'sve', name: 'Sve' },
   ...CATEGORIES.map((c) => ({ id: c.id as string, name: c.name })),
-  ...PROGRAM_IDS.map((id) => ({ id: id as string, name: offering(id).name })),
+  ...PROGRAM_IDS.map((id) => ({ id: id as string, name: PROGRAM_NAMES[id] })),
 ]
 
 const SORTS: { id: CatalogSort; label: string }[] = [
   { id: 'preporuceno', label: 'Preporučeno' },
-  { id: 'cijena-rastuce', label: 'Cijena: niža prvo' },
-  { id: 'cijena-opadajuce', label: 'Cijena: viša prvo' },
   { id: 'naziv', label: 'Naziv A–Ž' },
 ]
 
@@ -67,25 +63,27 @@ function Card({ product, index }: { product: Product; index: number }) {
   )
 }
 
+// Artikal provjerenog proizvođača po upitu: link vodi na formu sa već upisanim nazivom artikla.
 function ProgramCard({ item }: { item: ProgramItem }) {
-  const o = offering(item.program)
+  const href = `/upit-za-izvodjace?naziv=${encodeURIComponent(item.name)}${item.program === 'malteri-ljepila' ? '' : '&program=zidni-krovni'}`
   return (
     <li className={styles.card}>
-      <Link href={`/upit-za-izvodjace?program=${item.program}`} className={styles.photo}>
-        <img src={o.image} alt={o.alt} width={900} height={1125} loading="lazy" decoding="async" />
-        <span className={styles.badge}>Po upitu</span>
+      <Link href={href} className={styles.photo}>
+        <img src={item.image} alt={`${item.name} (${PROGRAM_NAMES[item.program]})`} width={900} height={1125} loading="lazy" decoding="async" />
+        <span className={styles.badge}>{item.brand}</span>
       </Link>
       <div className={styles.info}>
         <p className={styles.meta}>
-          <span>{o.name}</span>
+          <span>{PROGRAM_NAMES[item.program]}</span>
           <span>{item.unit}</span>
         </p>
         <h3 className={styles.name}>
-          <Link href={`/upit-za-izvodjace?program=${item.program}`}>{item.name}</Link>
+          <Link href={href}>{item.name}</Link>
         </h3>
+        <p className={styles.spec}>{item.spec}</p>
         <div className={styles.buy}>
           <span className={styles.price}>Cijena na upit</span>
-          <Link className={styles.add} href={`/upit-za-izvodjace?program=${item.program}`}>
+          <Link className={styles.add} href={href}>
             Upit ↗
           </Link>
         </div>
@@ -96,7 +94,7 @@ function ProgramCard({ item }: { item: ProgramItem }) {
 
 export default function CatalogShop({ compact = false }: { compact?: boolean }) {
   const root = useRef<HTMLDivElement>(null)
-  const { q, cat, use, price, sort, list, programs, filtered, update, reset } = useCatalogFilters()
+  const { q, cat, use, sort, list, programs, filtered, update, reset } = useCatalogFilters()
   const selection = useCatalogInquiry()
   const picked = inquiryLines(selection).length
   const total = list.length + programs.length
@@ -172,7 +170,6 @@ export default function CatalogShop({ compact = false }: { compact?: boolean }) 
           </p>
           <div className={styles.selects}>
             {select('Namjena', use, 'namjena', [['sve', 'Sve namjene'], ...USES.map((u): [string, string] => [u.id, u.name])])}
-            {select('Cijena', price, 'cijena', [['sve', 'Sve cijene'], ...PRICE_BANDS.map((b): [string, string] => [b.id, b.label])])}
             {select('Sortiranje', sort, 'sortiranje', SORTS.map((s): [string, string] => [s.id, s.label]))}
           </div>
         </div>

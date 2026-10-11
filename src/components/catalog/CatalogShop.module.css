@@ -9,6 +9,14 @@
 .heroInner :global(.label) { color: rgb(255 255 255 / 0.75); }
 .title { font-size: clamp(56px, 10vw, 168px); line-height: 0.88; }
 .heroCompact .heroInner { padding-top: clamp(56px, 9vh, 96px); padding-bottom: clamp(36px, 6vh, 64px); }
+/* Traka "Svi artikli" ispod kartica kategorija: bijela podloga, tamnoplavi tekst, kobalt za izbor. */
+.heroCompact { background: #fff; color: var(--ink); border-bottom: 1px solid rgb(27 36 54 / 0.12); }
+.heroCompact .heroInner :global(.label) { color: rgb(27 36 54 / 0.6); }
+.heroCompact .search { border: 1.5px solid var(--ink); }
+.heroCompact .search:focus-within { outline-color: var(--cobalt); }
+.heroCompact .chips button { border-color: rgb(27 36 54 / 0.3); color: var(--ink); }
+.heroCompact .chips button:hover { border-color: var(--ink); background: rgb(27 36 54 / 0.05); }
+.heroCompact .chips button[aria-pressed='true'] { background: var(--cobalt); border-color: var(--cobalt); color: #fff; }
 .titleCompact { font-size: clamp(32px, 4vw, 64px); line-height: 0.92; }
 .search { display: flex; align-items: center; gap: 12px; width: min(100%, 720px); min-height: 60px; margin-top: 10px; padding: 0 20px; background: #fff; color: var(--ink); }
 .search:focus-within { outline: 2px solid #fff; outline-offset: 4px; }
@@ -76,3 +84,6 @@
 @media (prefers-reduced-motion: reduce) {
   .photo img { transition: none; }
 }
+
+/* Kratka specifikacija ispod naziva (artikli provjerenih proizvođača po upitu) */
+.spec { margin-top: 6px; font-size: 12px; line-height: 1.45; text-transform: none; letter-spacing: 0; color: rgb(27 36 54 / 0.6); }

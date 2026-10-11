@@ -59,10 +59,13 @@ export default function QuoteDesk() {
     const fromQuery = inquiryTextFromQuery(q)
     const prod = PRODUCTS.find((x) => x.sku === q.get('artikal'))
     const vrsta = q.get('vrsta')
+    // ?naziv= dolazi iz kartica provjerenih proizvođača u katalogu (Porotherm, Tondach, Baumalt).
+    const naziv = (q.get('naziv') || '').slice(0, 120)
     const t = window.setTimeout(() => {
       if (p) setProgram(p.name)
       if (fromQuery) setMaterials(fromQuery)
       else if (prod) setMaterials(`${prod.name}\nKoličina: `)
+      else if (naziv) setMaterials(`${naziv}\nKoličina: `)
       if (vrsta === 'saradnja') setDesc('Želimo dogovoriti redovnu nabavku za firmu (nalog na B2B portalu). Šta najčešće nabavljamo: ')
       if (vrsta === 'projekat') setDesc('Nabavka materijala za projekat. Faza radova i termini: ')
       if (vrsta === 'dokumentacija') setNote('Tražim tehničku dokumentaciju za materijal naveden u upitu.')

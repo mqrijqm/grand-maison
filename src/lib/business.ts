@@ -36,13 +36,13 @@ export const AUDIENCES: { label: string; art: 'zidanje-krov' | 'suha-gradnja' | 
     alt: 'Fasadna skela uz stambenu zgradu u izgradnji',
   },
   {
-    label: 'Majstori',
+    label: 'Podizvođači',
     art: 'suha-gradnja',
-    title: 'Majstori i specijalizovani podizvođači',
+    title: 'Specijalizovani podizvođači',
     text: 'Suha gradnja, izolacija i građevinska hemija za radove koji se ponavljaju.',
     points: ['Sačuvane liste za tipske radove', 'Preuzimanje na stovarištu'],
     image: '/editorial/firme/majstor.webp',
-    alt: 'Majstor, okrenut leđima, oblaže zid od gips-kartonskih ploča',
+    alt: 'Radnik, okrenut leđima, oblaže zid od gips-kartonskih ploča',
   },
   {
     label: 'Investitori',
