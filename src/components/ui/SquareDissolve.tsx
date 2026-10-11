@@ -98,7 +98,12 @@ export default function SquareDissolve({ className = '', color = 'var(--bg)', ti
         }
         drawAll()
         // Disanje ide na GSAP tickeru, samo dok je prelaz u ekranu.
+        // Telefon: disanje se crta 30 puta u sekundi (talas je spor, razlika se ne vidi, procesor radi upola manje).
+        const coarse = window.matchMedia('(pointer: coarse)').matches
+        let lastDraw = -1
         const tick = (t: number) => {
+          if (coarse && t - lastDraw < 1 / 30) return
+          lastDraw = t
           time = t
           drawAll()
         }

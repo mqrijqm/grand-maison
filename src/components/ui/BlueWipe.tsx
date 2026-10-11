@@ -108,7 +108,11 @@ export default function BlueWipe({ children, from, className = '', fillClassName
           const cell = coarse ? 22 : 18
           let grid: { x: number; y: number; ph: number }[] = []
           let gk = ''
+          let lastDraw = -1
           const tick = (time: number) => {
+            // Telefon: 30 sličica u sekundi je dovoljno za sporo treptanje, a procesor radi upola manje.
+            if (coarse && time - lastDraw < 1 / 30) return
+            lastDraw = time
             const r = el.getBoundingClientRect()
             const vh = window.innerHeight
             const w = el.clientWidth
