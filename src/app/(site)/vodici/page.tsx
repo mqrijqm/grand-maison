@@ -16,7 +16,7 @@ export default function PostsPage() {
   return (
     <div className="pb-[16dvh]">
       <header className="px-5 pb-[10dvh] pt-[18dvh] text-center md:pt-[22dvh]">
-        <h1 className="display text-[clamp(56px,11vw,190px)]"><Pw>
+        <h1 className="display text-[clamp(36px,11vw,190px)]"><Pw>
           Znanje sa <em>gradilišta</em>
         </Pw></h1>
         <p className="mx-auto mt-12 max-w-[38ch] text-[13px] text-ink/70">

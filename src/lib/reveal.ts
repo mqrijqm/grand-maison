@@ -55,8 +55,18 @@ export function revealLines(el: Element, reduce: boolean, start = 'top 88%') {
   })
 }
 
-// Kratki naslovi slovo po slovo. Riječi ostaju cjelovite (words), pa se ne lome usred riječi.
+// Telefon i tablet: isti pokret maske, ali po riječima. Podjela na slova pravi stotine elemenata i za svaki
+// GSAP čita stil (getComputedStyle), pa se na sporijem telefonu stranica zamrzne na učitavanju.
+const TOUCH = '(hover: none), (pointer: coarse), (max-width: 1023px)'
+
+// Kratki naslovi slovo po slovo (desktop) ili riječ po riječ (telefon). Riječi se ne lome usred riječi.
 export function revealChars(el: Element, reduce: boolean, start = 'top 88%', trigger: Element = el) {
+  if (!reduce && window.matchMedia(TOUCH).matches) {
+    const words = SplitText.create(el, { type: 'words', mask: 'words', wordsClass: 'wd' })
+    gsap.set(el, { visibility: 'visible' })
+    gsap.from(words.words, { yPercent: 120, duration: 0.55, ease: EASE.quint, stagger: 0.05, scrollTrigger: { trigger, start } })
+    return words
+  }
   const split = SplitText.create(el, { type: 'words,chars', mask: 'chars', charsClass: 'ch' })
   gsap.set(el, { visibility: 'visible' })
   if (reduce) return split

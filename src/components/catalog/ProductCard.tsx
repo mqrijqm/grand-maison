@@ -79,7 +79,7 @@ export default function ProductCard({ product, view = 'grid', priority, stacked 
       </div>
 
       <div className={`flex flex-col gap-1 pt-3 sm:pt-4 ${stacked ? '' : 'sm:flex-row sm:items-start sm:justify-between sm:gap-4'}`}>
-        <Link href={href} className="font-pretty text-[clamp(19px,1.45vw,24px)] leading-[1.1]">
+        <Link href={href} className="min-w-0 font-pretty text-[clamp(19px,1.45vw,24px)] leading-[1.1] [overflow-wrap:anywhere]">
           {pw(product.name)}
         </Link>
         <p className="shrink-0 text-[14px] sm:pt-[2px] sm:text-[12.5px]">
