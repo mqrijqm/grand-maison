@@ -543,3 +543,11 @@
   outline: 1px solid rgb(27 36 54 / 0.12);
   outline-offset: -1px;
 }
+
+/* Početna: strelica umjesto "+", hover pomjeri strelicu udesno */
+.strip a.plus svg {
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.strip a.plus:hover svg {
+  transform: translateX(3px);
+}

@@ -113,6 +113,11 @@ const Plus = () => (
     <path d="M10 3v14M3 10h14" />
   </svg>
 )
+const Arrow = () => (
+  <svg viewBox="0 0 20 20" aria-hidden fill="none" stroke="currentColor" strokeWidth={1.3}>
+    <path d="M3 10h14M12 5l5 5-5 5" />
+  </svg>
+)
 const Chevron = () => (
   <svg viewBox="0 0 10 16" aria-hidden fill="none" stroke="currentColor" strokeWidth={1.3}>
     <path d="m2 2 6 6-6 6" />
@@ -279,26 +284,35 @@ export default function CatalogMarkets({ variant = 'page' }: { variant?: 'page' 
               </Link>
               {/* Boja je na panelu (ne na kartici): GSAP piše --img na karticu, pa joj ne dira ostale stilove. */}
               <div className={styles.panel} style={{ '--panel': m.bg } as React.CSSProperties}>
-                <button
-                  type="button"
-                  className={styles.plus}
-                  aria-expanded={open === m.id}
-                  aria-label={`${open === m.id ? 'Zatvori' : 'Otvori'} podkategorije: ${m.title}`}
-                  onClick={() => setOpen((o) => (o === m.id ? null : m.id))}
-                >
-                  <Plus />
-                </button>
-                {m.links && (
-                  <ul className={styles.subs}>
-                    {m.links.map((l) => (
-                      <li key={l.label}>
-                        <Link href={l.href} tabIndex={open === m.id ? 0 : -1}>
-                          {l.label}
-                          <Chevron />
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
+                {strip ? (
+                  // Početna: kvadrat sa strelicom vodi pravo na katalog filtriran na ovu kategoriju (bez podkategorija).
+                  <Link href={m.href} className={styles.plus} aria-label={`${m.title}: artikli u katalogu`}>
+                    <Arrow />
+                  </Link>
+                ) : (
+                  <>
+                  <button
+                    type="button"
+                    className={styles.plus}
+                    aria-expanded={open === m.id}
+                    aria-label={`${open === m.id ? 'Zatvori' : 'Otvori'} podkategorije: ${m.title}`}
+                    onClick={() => setOpen((o) => (o === m.id ? null : m.id))}
+                  >
+                    <Plus />
+                  </button>
+                  {m.links && (
+                    <ul className={styles.subs}>
+                      {m.links.map((l) => (
+                        <li key={l.label}>
+                          <Link href={l.href} tabIndex={open === m.id ? 0 : -1}>
+                            {l.label}
+                            <Chevron />
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  </>
                 )}
                 {/* Naslov je na vrhu panela (odmah ispod fotografije), da se vidi na svakoj visini ekrana. */}
                 <div className={styles.panelHead}>
