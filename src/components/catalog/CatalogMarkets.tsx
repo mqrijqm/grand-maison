@@ -117,7 +117,9 @@ const Chevron = () => (
   </svg>
 )
 
-export default function CatalogMarkets() {
+/** strip: samo traka kartica (bez uvoda sa fotografijom stovarišta), npr. na početnoj ispod naslova. */
+export default function CatalogMarkets({ variant = 'page' }: { variant?: 'page' | 'strip' }) {
+  const strip = variant === 'strip'
   const root = useRef<HTMLElement>(null)
   const [open, setOpen] = useState<string | null>(null)
 
@@ -127,15 +129,16 @@ export default function CatalogMarkets() {
       const stage = el.querySelector<HTMLElement>('[data-stage]')!
       const track = el.querySelector<HTMLElement>('[data-track]')!
       const cards = gsap.utils.toArray<HTMLElement>('[data-card]', track)
-      const shade = el.querySelector<HTMLElement>('[data-shade]')!
-      const introText = el.querySelector<HTMLElement>('[data-intro-text]')!
-      const bg = el.querySelector<HTMLElement>('[data-intro-bg]')!
+      const shade = el.querySelector<HTMLElement>('[data-shade]')
+      const introText = el.querySelector<HTMLElement>('[data-intro-text]')
+      const bg = el.querySelector<HTMLElement>('[data-intro-bg]')
       const mm = gsap.matchMedia()
 
       // Desktop: scena se zakači, skrol vodi traku ulijevo (scrub = mekano kašnjenje kao na lpas).
       mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
         const vw = () => window.innerWidth
-        const start = () => vw() * 0.86 // prva kartica viri ~14 % ekrana
+        // Prodavnica: prva kartica viri ~14 % ekrana preko uvoda. Traka na početnoj kreće od lijeve margine.
+        const start = () => (strip ? Math.min(vw() * 0.06, 90) : vw() * 0.86)
         const distance = () => start() + track.scrollWidth - vw()
 
         // Visina fotografije po kartici: desno 50 %, kad stigne do lijeve trećine 68 %.
@@ -169,9 +172,11 @@ export default function CatalogMarkets() {
         })
         tl.fromTo(track, { x: () => start() }, { x: () => -(track.scrollWidth - vw()), ease: 'none' }, 0)
         // Uvod tamni i blago se povlači ulijevo dok ga kartice prekrivaju.
-        tl.fromTo(shade, { opacity: 0.38 }, { opacity: 0.8, ease: 'none', duration: 0.35 }, 0)
-        tl.fromTo(introText, { x: 0 }, { x: () => -vw() * 0.06, ease: 'none', duration: 0.35 }, 0)
-        tl.fromTo(bg, { scale: 1.08 }, { scale: 1, ease: 'none', duration: 0.5 }, 0)
+        if (shade && introText && bg) {
+          tl.fromTo(shade, { opacity: 0.38 }, { opacity: 0.8, ease: 'none', duration: 0.35 }, 0)
+          tl.fromTo(introText, { x: 0 }, { x: () => -vw() * 0.06, ease: 'none', duration: 0.35 }, 0)
+          tl.fromTo(bg, { scale: 1.08 }, { scale: 1, ease: 'none', duration: 0.5 }, 0)
+        }
         return () => {
           gsap.set(track, { clearProps: 'transform' })
           cards.forEach((c) => c.style.removeProperty('--img'))
@@ -180,7 +185,7 @@ export default function CatalogMarkets() {
 
       // Ulaz: tekst uvoda izranja, prva kartica uklizi sa desne ivice.
       mm.add('(prefers-reduced-motion: no-preference)', () => {
-        gsap.from(introText.querySelectorAll('[data-line]'), { yPercent: 110, duration: 0.9, ease: 'power4.out', stagger: 0.08, delay: 0.15 })
+        if (introText) gsap.from(introText.querySelectorAll('[data-line]'), { yPercent: 110, duration: 0.9, ease: 'power4.out', stagger: 0.08, delay: 0.15 })
         gsap.from(el.querySelectorAll('[data-meta]'), { autoAlpha: 0, y: 12, duration: 0.6, ease: 'power3.out', stagger: 0.06, delay: 0.35 })
       })
 
@@ -216,10 +221,10 @@ export default function CatalogMarkets() {
   )
 
   return (
-    <section ref={root} className={styles.root} aria-label="Kategorije kataloga">
+    <section ref={root} className={`${styles.root} ${strip ? styles.strip : ''}`} aria-label="Kategorije kataloga">
       <div data-stage className={styles.stage}>
         {/* ——— Uvod ——— */}
-        <div className={styles.intro}>
+        {!strip && <div className={styles.intro}>
           <div className={styles.introBg}>
             <div data-intro-bg className={styles.introPics}>
               {/* Stalna pozadina: plavi duotone dron snimka stovarišta, krov i fasada u boji. */}
@@ -255,7 +260,7 @@ export default function CatalogMarkets() {
               </span>
             </h1>
           </div>
-        </div>
+        </div>}
 
         {/* ——— Kartice kategorija ——— */}
         <div data-track className={styles.track}>

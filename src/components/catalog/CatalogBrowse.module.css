@@ -16,10 +16,28 @@
 /* ——— Naslov: centriran, kao "ASORTIMAN / LAMINATI / opis" ——— */
 .intro {
   display: grid;
-  justify-items: center;
   gap: clamp(14px, 1.6vw, 22px);
-  padding: clamp(72px, 13vh, 150px) 20px clamp(48px, 9vh, 110px);
-  text-align: center;
+  padding: clamp(72px, 13vh, 150px) clamp(20px, 4.6vw, 66px) clamp(48px, 9vh, 110px);
+}
+/* Desktop: naslov lijevo, tekst u desnom dijelu ekrana. */
+@media (min-width: 900px) {
+  .intro {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 4vw;
+    align-items: end;
+  }
+  .intro .kicker {
+    grid-column: 1;
+  }
+  .intro .title {
+    grid-column: 1;
+  }
+  .intro .lead {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: end;
+    justify-self: start;
+  }
 }
 .kicker {
   font-size: 13px;
@@ -36,7 +54,7 @@
   text-transform: uppercase;
 }
 .lead {
-  max-width: 34ch;
+  max-width: 40ch;
   font-size: clamp(17px, 1.45vw, 21px);
   line-height: 1.35;
 }
@@ -600,9 +618,13 @@
 }
 .code {
   justify-self: start;
-  font-size: clamp(17px, 1.4vw, 21px);
-  line-height: 1.15;
+  font-family: var(--font-heavy), 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 800;
+  font-size: clamp(15px, 1.25vw, 19px);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
   text-align: left;
+  text-transform: uppercase;
   text-underline-offset: 3px;
 }
 .card:hover .code {

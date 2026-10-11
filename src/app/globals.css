@@ -2658,3 +2658,9 @@ html[data-hero-dark] .nav .nav__bar {
     line-height: 1.35 !important;
   }
 }
+
+/* Prodavnica: sve što je bilo krug je kvadrat, i kursor (tačka i oznaka). */
+html:has(#artikli) .cursor-spark,
+html:has(#artikli) .cursor-tag {
+  border-radius: 0 !important;
+}

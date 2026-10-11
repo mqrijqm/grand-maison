@@ -333,9 +333,6 @@ export default function CatalogBrowse() {
                           {item.code}
                         </button>
                       )}
-                      <span className={styles.spec}>
-                        {CATEGORY_NAMES[item.category]} · {item.spec}
-                      </span>
                     </p>
                   </li>
                 )
