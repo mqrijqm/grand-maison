@@ -21,6 +21,7 @@ type Market = {
   id: string
   title: string
   sub: string
+  desc: string
   href: string
   img: string
   bg: string
@@ -33,6 +34,7 @@ const MARKETS: Market[] = [
     id: 'krovni',
     title: 'Krovni sistemi',
     sub: 'Tondach crijep, Wienerberger',
+    desc: 'Glineni crijep i sistemska oprema za kose krovove: Continental, Traditon, Twiston, Planoton i drugi modeli.',
     href: '/prodavnica?kategorija=krovni-sistemi#artikli',
     img: '/markets/krovni.webp',
     bg: '#1b2436',
@@ -46,6 +48,7 @@ const MARKETS: Market[] = [
     id: 'blokovi',
     title: 'Zidni blokovi',
     sub: 'Porotherm, Wienerberger',
+    desc: 'Opeka za nosive, spoljne i pregradne zidove, debljine od 10 do 50 cm, i blokovi punjeni kamenom vunom.',
     href: '/prodavnica?kategorija=zidni-blokovi#artikli',
     img: '/markets/blokovi.webp',
     bg: '#b46c44',
@@ -59,6 +62,7 @@ const MARKETS: Market[] = [
     id: 'malteri',
     title: 'Malteri i ljepila',
     sub: 'Baumalt i gipsane mase',
+    desc: 'Mašinski cementno-krečni i gipsani malteri, ljepila za keramiku i dekorativni malteri Baumalt.',
     href: '/prodavnica?kategorija=malteri-ljepila#artikli',
     img: '/markets/malteri-ljepila.webp',
     bg: '#3156ea',
@@ -72,6 +76,7 @@ const MARKETS: Market[] = [
     id: 'suha-gradnja',
     title: 'Suha gradnja',
     sub: 'Ploče, profili i pribor',
+    desc: 'Gips-kartonske ploče, pocinčani profili i pribor za pregradne zidove i spuštene plafone.',
     href: '/prodavnica?kategorija=suha-gradnja#artikli',
     img: '/markets/suha-gradnja.webp',
     bg: '#bd9446',
@@ -87,6 +92,7 @@ const MARKETS: Market[] = [
     id: 'izolacija',
     title: 'Izolacija',
     sub: 'Kamena vuna u pločama',
+    desc: 'Kamena vuna u pločama za toplotnu i zvučnu izolaciju zidova, potkrovlja i krovova.',
     href: '/prodavnica?kategorija=izolacija#artikli',
     img: '/markets/izolacija.webp',
     bg: '#f4f1ec',
@@ -212,7 +218,11 @@ export default function CatalogMarkets() {
         {/* ——— Uvod ——— */}
         <div className={styles.intro}>
           <div className={styles.introBg}>
-            <img data-intro-bg src="/photos/stovariste-pregled.webp" alt="" width={1360} height={765} fetchPriority="high" decoding="async" />
+            <div data-intro-bg className={styles.introPics}>
+              <img src="/photos/stovariste-pregled.webp" alt="" width={1360} height={765} fetchPriority="high" decoding="async" />
+              {/* Na hover uvoda fotografija stovarišta prelazi u plavu verziju (isti kadar). */}
+              <img className={styles.introBlue} src="/stovariste/shop-duotone.webp" alt="" width={1685} height={933} loading="lazy" decoding="async" />
+            </div>
             <span data-shade className={styles.shade} aria-hidden />
           </div>
           <div data-intro-text className={styles.introText}>
@@ -287,6 +297,7 @@ export default function CatalogMarkets() {
                   <p className={styles.count}>
                     {i + 1} / {MARKETS.length}
                   </p>
+                  <p className={styles.cardDesc}>{m.desc}</p>
                 </div>
                 <p className={styles.cardSub}>{m.sub}</p>
               </div>
