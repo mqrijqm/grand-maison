@@ -27,13 +27,15 @@ import {
   type Offer,
   type Order,
 } from '@/lib/b2b-demo'
+import { AdminView, NotificationsView, PaymentSeg, SaldoCard, notesFor, stockLine, type Payment } from '@/components/portal/extra-views'
 import s from './Showcase.module.css'
 
 // Interaktivni prikaz predloženog B2B portala (demo). Sve je lokalno stanje u browseru:
 // upit se ne šalje, ponudu "pripremi" simulacija, statusi se pomjeraju dugmetom.
-// Fokus je na naručivanju materijala, ne na analitici: nema grafikona, limita ni zaliha.
+// Fokus je na naručivanju materijala, ne na analitici. Dodaci (demo, jasno označeni): zalihe po lokaciji,
+// saldo i otvorene stavke, plaćanje odgodom ili avansom, obavještenja sa primjerom mejla i admin za prodaju.
 
-type View = 'pregled' | 'materijali' | 'ponude' | 'narudzbe' | 'gradilista' | 'dokumenti'
+type View = 'pregled' | 'materijali' | 'ponude' | 'narudzbe' | 'gradilista' | 'dokumenti' | 'obavjestenja' | 'admin'
 const NAV: { id: View; label: string; icon: string }[] = [
   { id: 'pregled', label: 'Pregled', icon: 'pregled' },
   { id: 'materijali', label: 'Materijali', icon: 'brza' },
@@ -41,11 +43,14 @@ const NAV: { id: View; label: string; icon: string }[] = [
   { id: 'narudzbe', label: 'Narudžbe', icon: 'narudzbe' },
   { id: 'gradilista', label: 'Gradilišta', icon: 'gradilista' },
   { id: 'dokumenti', label: 'Dokumenti', icon: 'dokumenti' },
+  { id: 'obavjestenja', label: 'Obavještenja', icon: 'bell' },
+  { id: 'admin', label: 'Admin (prodaja)', icon: 'admin' },
 ]
 const GROUPS_NAV: { label: string; ids: View[] }[] = [
   { label: 'Nabavka', ids: ['pregled', 'materijali', 'ponude', 'narudzbe'] },
   { label: 'Projekti', ids: ['gradilista'] },
-  { label: 'Nalog', ids: ['dokumenti'] },
+  { label: 'Nalog', ids: ['dokumenti', 'obavjestenja'] },
+  { label: 'Grand Company', ids: ['admin'] },
 ]
 type Feed = { t: string; kind: string; text: string; meta: string }
 const CAPTION: Record<View, [string, string]> = {
@@ -54,7 +59,9 @@ const CAPTION: Record<View, [string, string]> = {
   ponude: ['Ponude', 'Ponude koje prodaja pripremi po vašem upitu. Provjerite stavke i potvrdite.'],
   narudzbe: ['Narudžbe', 'Status svake narudžbe i dogovorena dostava ili preuzimanje.'],
   gradilista: ['Gradilišta', 'Upiti, ponude i narudžbe razvrstani po mjestu isporuke.'],
-  dokumenti: ['Dokumenti', 'Ponude, otpremnice i fakture uz vaše narudžbe, na jednom mjestu.'],
+  dokumenti: ['Dokumenti', 'Saldo i otvorene stavke, ponude, otpremnice i fakture, na jednom mjestu.'],
+  obavjestenja: ['Obavještenja', 'Narudžbe, promjene statusa i fakture pred dospijećem; isto stiže i e-poštom.'],
+  admin: ['Admin · Grand Company', 'Pogled prodaje: firme na odobrenju, cjenovnici po klijentu i narudžbe svih klijenata.'],
 }
 const statusKind = (o: Order) => (o.step >= 4 ? 'done' : o.step === 3 ? 'ready' : 'prep')
 const orderStatus = (o: Order) => (o.step === 3 ? (o.mode === 'Preuzimanje' ? 'Spremno za preuzimanje' : 'Na putu ka gradilištu') : o.step === 4 ? (o.mode === 'Preuzimanje' ? 'Preuzeto' : 'Isporučeno') : STEPS[o.step])
@@ -72,6 +79,7 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
   ])
   const [draftSite, setDraftSite] = useState('a')
   const [mode, setMode] = useState<'Dostava' | 'Preuzimanje'>('Dostava')
+  const [payment, setPayment] = useState<Payment>('Odgoda')
   const [offers, setOffers] = useState<Offer[]>(OFFERS)
   const [orders, setOrders] = useState<Order[]>(ORDERS)
   const [offerSel, setOfferSel] = useState(OFFERS[0].no)
@@ -216,7 +224,7 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
     if (!draft.length) return
     const no = `P-26-0${seq.current++}`
     const lines = draft
-    setOffers((o) => [{ no, site: draftSite, title: `Upit, ${lines.length} stavki`, lines, status: 'Kod prodaje', validDays: 14, days: 0, demo: true }, ...o])
+    setOffers((o) => [{ no, site: draftSite, title: `Upit, ${lines.length} stavki · ${payment.toLowerCase()}`, lines, status: 'Kod prodaje', validDays: 14, days: 0, demo: true }, ...o])
     setOfferSel(no)
     setDraft([])
     mark('sent')
@@ -261,6 +269,7 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
     return MATERIALS.filter((m) => (group === 'sve' || m.group === group) && (!q || m.name.toLowerCase().includes(q) || m.sku.toLowerCase().includes(q)))
   }, [query, group])
   const [title, sub] = CAPTION[view]
+  const notes = notesFor(orders, pending.length)
 
   const steps: { k: keyof typeof done; label: string; view: View }[] = [
     { k: 'added', label: 'Dodajte materijal', view: 'materijali' },
@@ -325,7 +334,7 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
                 <div key={g.label} className={s.navGroup}>
                   <span className={s.navLabel}>{g.label}</span>
                   {NAV.filter((n) => g.ids.includes(n.id)).map((n) => {
-                    const count = n.id === 'ponude' ? pending.length : n.id === 'narudzbe' ? active.length : n.id === 'gradilista' ? SITES.length : n.id === 'materijali' ? draft.length : 0
+                    const count = n.id === 'ponude' ? pending.length : n.id === 'narudzbe' ? active.length : n.id === 'gradilista' ? SITES.length : n.id === 'materijali' ? draft.length : n.id === 'obavjestenja' ? notes.length : 0
                     return (
                       <button key={n.id} type="button" aria-current={view === n.id || undefined} onClick={() => go(n.id)}>
                         <Icon name={n.icon} />
@@ -494,6 +503,7 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
                                   <span className={s.resName}>
                                     <b>{m.name}</b>
                                     <i>{m.sku}</i>
+                                    <i>{stockLine(m.sku)}</i>
                                   </span>
                                   <em>{has ? `✓ ${has.toLocaleString('de-DE')} ${m.unit}` : '+ Dodaj'}</em>
                                 </button>
@@ -579,6 +589,7 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
                         <b>{(weight(draft) / 1000).toLocaleString('de-DE', { maximumFractionDigits: 1 })} t</b>
                       </p>
                     )}
+                    <PaymentSeg value={payment} onChange={setPayment} />
                     <button type="button" data-t="send" className={`${s.primary} ${s.wide}`} disabled={!draft.length} onClick={send}>
                       Pošalji upit (demo) <Icon name="arrow" />
                     </button>
@@ -788,7 +799,10 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
 
               {view === 'dokumenti' && (
                 <div className={s.split}>
+                  <div className={s.tools}>
+                  <SaldoCard />
                   <section className={s.card}>
+                    <h4>Dokumenti</h4>
                     <ul className={s.rows}>
                       {DOCS.map((d) => (
                         <li key={d.id}>
@@ -805,6 +819,7 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
                       ))}
                     </ul>
                   </section>
+                  </div>
                   <aside className={s.card}>
                     <h4>Korisnici naloga</h4>
                     <ul className={s.rows}>
@@ -821,6 +836,8 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
                   </aside>
                 </div>
               )}
+              {view === 'obavjestenja' && <NotificationsView notes={notes} onOpen={(v) => go(v as View)} />}
+              {view === 'admin' && <AdminView orders={orders} advance={advance} />}
             </div>
           </main>
         </div>

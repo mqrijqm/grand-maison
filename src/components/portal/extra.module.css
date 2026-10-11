@@ -1,0 +1,172 @@
+/* Dodaci demo portala na /za-firme (Showcase): saldo, plaćanje, obavještenja, admin i zalihe.
+   Koristi varijable portala (--navy, --mist, --line, --soft) iz Showcase.module.css. */
+
+.num {
+  flex: none;
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Saldo i otvorene stavke */
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.kpis > div {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--mist);
+}
+.kpis span {
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--soft);
+}
+.kpis b {
+  font-size: 16px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.kpis > div[data-warn] {
+  background: #fbe9e5;
+}
+.kpis > div[data-warn] b {
+  color: #b2361f;
+}
+.dueChip[data-k='late'] {
+  background: #b2361f !important;
+  color: #fff !important;
+}
+
+/* Plaćanje */
+.pay {
+  display: grid;
+  gap: 6px;
+}
+
+/* Obavještenja */
+.notesHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.notesHead .ghost {
+  min-height: 30px;
+}
+.note {
+  position: relative;
+  padding-left: 12px;
+}
+.note[data-unread]::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cobalt);
+  transform: translateY(-50%);
+}
+.note > button:first-child {
+  flex: 1;
+  min-width: 0;
+}
+.note [aria-pressed='true'] {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #fff;
+}
+.mail {
+  gap: 14px;
+}
+.mailHead {
+  display: grid;
+  margin: 0;
+  padding: 10px 0;
+  border-block: 1px solid var(--line);
+}
+.mailHead > div {
+  display: grid;
+  grid-template-columns: 54px 1fr;
+  gap: 8px;
+  padding: 2px 0;
+  font-size: 12px;
+}
+.mailHead dt {
+  color: var(--soft);
+}
+.mailHead dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.mailBody {
+  display: grid;
+  gap: 10px;
+  font-size: 12.5px;
+  line-height: 1.55;
+}
+.mailBody p {
+  margin: 0;
+}
+.mailBtn {
+  justify-self: start;
+  padding: 8px 14px;
+  border-radius: 99px;
+  background: var(--cobalt);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* Admin */
+.admin {
+  gap: 14px;
+}
+.firm,
+.client {
+  flex-wrap: wrap;
+  padding: 8px 0;
+}
+.firm > span:first-child,
+.client > span:first-child {
+  flex: 1 1 220px;
+}
+.fromForm {
+  margin-left: 8px;
+  padding: 2px 7px;
+  border-radius: 99px;
+  background: var(--cobalt);
+  color: #fff;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 600;
+  vertical-align: 1px;
+}
+.actions {
+  display: flex;
+  gap: 6px;
+}
+.actions button {
+  min-height: 32px;
+  padding: 0 14px;
+}
+.select {
+  height: 32px;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  font-size: 12px;
+}
+.client :global(*) {
+  white-space: nowrap;
+}
+.client > span:last-child {
+  width: 170px;
+}
