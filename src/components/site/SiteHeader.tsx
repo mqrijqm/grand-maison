@@ -7,6 +7,7 @@ import { cartCount, openCart, useShop } from '@/lib/cart'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { EASE, MQ } from '@/lib/motion'
 import { pw } from '@/components/ui/Pw'
+import { LOGIN_EVENT, type LoginMode } from '@/lib/login-events'
 import LoginModal from './LoginModal'
 import LogoMark from './LogoMark'
 
@@ -43,6 +44,19 @@ export default function SiteHeader({ variant }: { variant: 'inner' | 'overlay' |
   const [open, setOpen] = useState(false)
   const [login, setLogin] = useState(false)
   const closeLogin = useCallback(() => setLogin(false), [])
+  // Režim prozora i brojač otvaranja (svako otvaranje kreće od čistog stanja: prijava ili registracija).
+  const [loginMode, setLoginMode] = useState<LoginMode>('login')
+  const [loginSeq, setLoginSeq] = useState(0)
+  const openLoginModal = useCallback((mode: LoginMode = 'login') => {
+    setLoginMode(mode)
+    setLoginSeq((n) => n + 1)
+    setLogin(true)
+  }, [])
+  useEffect(() => {
+    const on = (e: Event) => openLoginModal((e as CustomEvent<LoginMode>).detail ?? 'login')
+    window.addEventListener(LOGIN_EVENT, on)
+    return () => window.removeEventListener(LOGIN_EVENT, on)
+  }, [openLoginModal])
   const pathname = usePathname()
   const { cart } = useShop()
   const count = cartCount(cart)
@@ -143,7 +157,7 @@ export default function SiteHeader({ variant }: { variant: 'inner' | 'overlay' |
                 <path d="M0 6h22M17 1l5 5-5 5" />
               </svg>
             </Link>
-            <button type="button" onClick={() => setLogin(true)} className="nav__login" aria-haspopup="dialog">
+            <button type="button" onClick={() => openLoginModal('login')} className="nav__login" aria-haspopup="dialog">
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.4} aria-hidden>
                 <rect x="3" y="7" width="10" height="7" />
                 <path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" />
@@ -196,7 +210,7 @@ export default function SiteHeader({ variant }: { variant: 'inner' | 'overlay' |
               className="menu__cta menu__cta--login"
               onClick={() => {
                 setOpen(false)
-                setLogin(true)
+                openLoginModal('login')
               }}
             >
               <svg viewBox="0 0 16 16" aria-hidden fill="none" stroke="currentColor" strokeWidth={1.4}>
@@ -211,7 +225,7 @@ export default function SiteHeader({ variant }: { variant: 'inner' | 'overlay' |
           </div>
         </div>
       </div>
-      <LoginModal open={login} onClose={closeLogin} />
+      <LoginModal key={loginSeq} open={login} onClose={closeLogin} initialMode={loginMode} />
     </>
   )
 }

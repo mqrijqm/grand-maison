@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
+import { openRegistration } from '@/lib/login-events'
 import BlueWipe from '@/components/ui/BlueWipe'
 import Cta from '@/components/ui/Cta'
 import styles from '@/components/landing/WorkSections.module.css'
@@ -38,7 +39,7 @@ export default function WhoSplit() {
         </h2>
         <div className={styles.foot}>
           <p className="text-[14px] leading-[1.7] opacity-75">Za firme koje kupuju za posao, redovno ili za jedan projekat.</p>
-          <Cta href="/upit-za-izvodjace?vrsta=saradnja" solid>
+          <Cta onClick={openRegistration} solid>
             Zatražite poslovni nalog
           </Cta>
         </div>

@@ -4,6 +4,7 @@
 
 import { useRef } from 'react'
 import Cta from '@/components/ui/Cta'
+import { openRegistration } from '@/lib/login-events'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { useMediaMotion } from '@/lib/media'
 import { MQ } from '@/lib/motion'
@@ -47,7 +48,7 @@ export default function BusinessPage() {
             <Cta href="#portal" solid>
               Istražite B2B portal
             </Cta>
-            <Cta href="/upit-za-izvodjace?vrsta=saradnja">Zatražite poslovni nalog</Cta>
+            <Cta onClick={openRegistration}>Zatražite poslovni nalog</Cta>
           </div>
         </header>
 
@@ -76,7 +77,7 @@ export default function BusinessPage() {
             </h2>
             <p className={styles.lead}>Pošaljite upit za poslovnu saradnju, prodaja vam se javlja.</p>
             <div className={styles.actions}>
-              <Cta href="/upit-za-izvodjace?vrsta=saradnja" solid>
+              <Cta onClick={openRegistration} solid>
                 Zatražite poslovni nalog
               </Cta>
             </div>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
+import { openRegistration } from '@/lib/login-events'
 import Cta from '@/components/ui/Cta'
 import { PORTAL_INTRO_STEPS } from '@/lib/business'
 import { gsap, useGSAP } from '@/lib/gsap'
@@ -102,7 +103,7 @@ export default function PartnerSteps() {
           ))}
           <li className={styles.partnerEnd}>
             <p>Firma još nema nalog? Pošaljite zahtjev, a prodaja otvara nalog i javlja vam se.</p>
-            <Cta href="/upit-za-izvodjace?vrsta=saradnja">Zatražite nalog za firmu</Cta>
+            <Cta onClick={openRegistration}>Zatražite nalog za firmu</Cta>
           </li>
         </ol>
       </div>

@@ -22,7 +22,7 @@ const readReg = (): Registration | null => {
   }
 }
 
-export default function LoginModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+export default function LoginModal({ open, onClose, initialMode = 'login' }: { open: boolean; onClose: () => void; initialMode?: 'login' | 'register' }) {
   const router = useRouter()
   const id = useId()
   const first = useRef<HTMLInputElement>(null)
@@ -33,7 +33,7 @@ export default function LoginModal({ open, onClose }: { open: boolean; onClose: 
   const [remember, setRemember] = useState(true)
   const [error, setError] = useState('')
   const [done, setDone] = useState(false)
-  const [mode, setMode] = useState<'login' | 'register'>('login')
+  const [mode, setMode] = useState<'login' | 'register'>(initialMode)
   const [reg, setReg] = useState({ name: '', jib: '', pdv: '', person: '', email: '', phone: '' })
   const [pending, setPending] = useState<Registration | null>(null)
   const [regError, setRegError] = useState('')
@@ -266,9 +266,16 @@ export default function LoginModal({ open, onClose }: { open: boolean; onClose: 
             >
               Otvori prikaz portala
             </button>
-            <Link href="/upit-za-izvodjace?vrsta=saradnja" onClick={onClose} className={s.link}>
+            <button
+              type="button"
+              className={s.link}
+              onClick={() => {
+                setDone(false)
+                setMode('register')
+              }}
+            >
               Zatražite poslovni nalog
-            </Link>
+            </button>
           </div>
         )}
       </div>
