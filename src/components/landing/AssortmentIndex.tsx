@@ -1,7 +1,8 @@
 'use client'
 
+/* eslint-disable @next/next/no-img-element -- male WebP fotografije iz /public */
+
 import { useRef } from 'react'
-import Cta from '@/components/ui/Cta'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { useMediaMotion } from '@/lib/media'
 import { EASE, MQ } from '@/lib/motion'
@@ -11,18 +12,20 @@ import styles from './Heritage.module.css'
 // Asortiman kao tipografski indeks. Grupe su doslovno sa stare stranice "O nama" (grandcompany.ba,
 // 2021–2025), plus suha gradnja (javno naveden segment). Bilješke desno su samo ono što je
 // potvrđeno izvorom; bez artikala, cijena i stanja (javnog cjenovnika nema).
-const GROUPS: { name: string; note?: string }[] = [
-  { name: 'Fasadni sistemi' },
-  { name: 'Termoizolacioni sistemi', note: 'Uključujući kamenu vunu' },
-  { name: 'Hidroizolacioni sistemi' },
-  { name: 'Krovni sistemi', note: 'Tondach crijep i krovni elementi' },
-  { name: 'Keramička ljepila' },
-  { name: 'Cementi' },
-  { name: 'Mašinski malteri' },
-  { name: 'Željezo' },
-  { name: 'Blokovi', note: 'Porotherm blokovi od opeke' },
-  { name: 'Suha gradnja', note: 'Sistemi za pregradne zidove i plafone' },
+// Fotografije su prave (Pexels, izvori u public/stock/credits.json); Codex ih je samo izrezao i ujednačio ton.
+const GROUPS: { name: string; img: string; note?: string }[] = [
+  { name: 'Fasadni sistemi', img: 'fasadni' },
+  { name: 'Termoizolacioni sistemi', img: 'termoizolacioni', note: 'Uključujući kamenu vunu' },
+  { name: 'Hidroizolacioni sistemi', img: 'hidroizolacioni' },
+  { name: 'Krovni sistemi', img: 'krovni', note: 'Tondach crijep i krovni elementi' },
+  { name: 'Keramička ljepila', img: 'keramicka-ljepila' },
+  { name: 'Cementi', img: 'cementi' },
+  { name: 'Mašinski malteri', img: 'masinski-malteri' },
+  { name: 'Željezo', img: 'zeljezo' },
+  { name: 'Blokovi', img: 'blokovi', note: 'Porotherm blokovi od opeke' },
+  { name: 'Suha gradnja', img: 'suha-gradnja', note: 'Sistemi za pregradne zidove i plafone' },
 ]
+const src = (img: string) => `/assortment/${img}.webp`
 
 // Prodajna mjesta prema javnim listama proizvođača (Baumalt; Wienerberger, april 2020).
 const MAKERS = [
@@ -37,9 +40,9 @@ export default function AssortmentIndex() {
 
   useGSAP(
     () => {
+      const el = root.current!
       gsap.matchMedia().add(MQ, (ctx) => {
         const { reduce } = ctx.conditions as { reduce: boolean }
-        const el = root.current!
         revealChars(el.querySelector('[data-head]')!, reduce, 'top 80%')
         if (reduce) return
         // Redovi indeksa ulaze jedan za drugim, kao kad se lista ispisuje.
@@ -52,6 +55,54 @@ export default function AssortmentIndex() {
           scrollTrigger: { trigger: el.querySelector('[data-list]'), start: 'top 85%' },
         })
       })
+
+      // Hover kvadrat sa fotografijom: prati kursor preko liste, a slika se mijenja po redu.
+      // Samo uređaji sa mišem; na dodir svaki red ima svoju malu sličicu (CSS).
+      gsap.matchMedia().add('(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)', () => {
+        const list = el.querySelector<HTMLElement>('[data-list]')!
+        const float = el.querySelector<HTMLElement>('[data-float]')!
+        const imgs = gsap.utils.toArray<HTMLElement>('[data-float-img]', float)
+        const rows = gsap.utils.toArray<HTMLElement>('[data-row]', list)
+        gsap.set(float, { xPercent: -50, yPercent: -50, scale: 0, autoAlpha: 0 })
+        const x = gsap.quickTo(float, 'x', { duration: 0.45, ease: 'power3' })
+        const y = gsap.quickTo(float, 'y', { duration: 0.45, ease: 'power3' })
+        let first = true
+        const move = (e: PointerEvent) => {
+          const r = list.getBoundingClientRect()
+          const px = e.clientX - r.left
+          const py = e.clientY - r.top
+          // Prvi ulazak: kvadrat se pojavi tačno ispod kursora, bez klizanja iz ugla.
+          if (first) {
+            gsap.set(float, { x: px, y: py })
+            x(px)
+            y(py)
+            first = false
+            return
+          }
+          x(px)
+          y(py)
+        }
+        const show = (i: number) => {
+          imgs.forEach((img, k) => img.classList.toggle(styles.floatOn, k === i))
+          gsap.to(float, { scale: 1, autoAlpha: 1, duration: 0.35, ease: 'power3.out', overwrite: 'auto' })
+        }
+        const hide = () => {
+          first = true
+          gsap.to(float, { scale: 0, autoAlpha: 0, duration: 0.25, ease: 'power2.in', overwrite: 'auto' })
+        }
+        const enters = rows.map((row, i) => {
+          const fn = () => show(i)
+          row.addEventListener('pointerenter', fn)
+          return fn
+        })
+        list.addEventListener('pointermove', move)
+        list.addEventListener('pointerleave', hide)
+        return () => {
+          rows.forEach((row, i) => row.removeEventListener('pointerenter', enters[i]))
+          list.removeEventListener('pointermove', move)
+          list.removeEventListener('pointerleave', hide)
+        }
+      })
     },
     { scope: root },
   )
@@ -59,29 +110,32 @@ export default function AssortmentIndex() {
   return (
     <section ref={root} id="asortiman-grupe" aria-labelledby="index-title" className={styles.index}>
       <div className={`gutter ${styles.indexHead}`}>
+        <p data-up className="label opacity-60">
+          Asortiman
+        </p>
         <h2 id="index-title" data-head className={`display invisible ${styles.indexTitle}`}>
           Veliki izbor asortimana
         </h2>
-        <div data-up className="grid justify-items-start gap-6">
-          <p className={styles.indexLead}>
-            Za vaše potrebe spremili smo veliki izbor asortimana, u veleprodaji i maloprodaji. Tačnu dostupnost i
-            količine potvrđujemo po upitu.
-          </p>
-          <Cta href="/upit-za-izvodjace" solid>
-            Pitajte za dostupnost
-          </Cta>
-        </div>
       </div>
 
-      <ol data-list className={styles.list}>
-        {GROUPS.map((g, i) => (
-          <li key={g.name} data-row className={styles.row}>
-            <span className={styles.num}>{String(i + 1).padStart(2, '0')}</span>
-            <span className={`display ${styles.name}`}>{g.name}</span>
-            <span className={styles.note}>{g.note ?? ''}</span>
-          </li>
-        ))}
-      </ol>
+      <div className={styles.listWrap}>
+        <ol data-list className={styles.list}>
+          {GROUPS.map((g, i) => (
+            <li key={g.name} data-row className={styles.row}>
+              <span className={styles.num}>{String(i + 1).padStart(2, '0')}</span>
+              <span className={`display ${styles.name}`}>{g.name}</span>
+              <span className={styles.note}>{g.note ?? ''}</span>
+              <img className={styles.thumb} src={src(g.img)} alt="" width={800} height={800} loading="lazy" decoding="async" />
+            </li>
+          ))}
+        </ol>
+        {/* Kvadrat koji prati kursor; sve slike su već tu, pa nema čekanja na hover. */}
+        <div data-float aria-hidden className={styles.float}>
+          {GROUPS.map((g) => (
+            <img key={g.img} data-float-img src={src(g.img)} alt="" width={800} height={800} loading="lazy" decoding="async" />
+          ))}
+        </div>
+      </div>
 
       <div className={`gutter ${styles.makers}`}>
         <div data-up>

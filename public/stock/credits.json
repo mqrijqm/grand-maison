@@ -546,5 +546,75 @@
   "license": "Pexels License (free for commercial use, no attribution required)",
   "file": "/shop/CHM-004.webp",
   "edit": "crop + tone only (Codex CLI, ImageMagick)"
+ },
+ "assortment/krovni": {
+  "id": 36496646,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/36496646/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "note": "Crop 1:1 + ton: Codex CLI"
+ },
+ "assortment/zeljezo": {
+  "id": 11891953,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/11891953/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "note": "Crop 1:1 + ton: Codex CLI"
+ },
+ "assortment/blokovi": {
+  "id": 40059199,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/40059199/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "note": "Crop 1:1 + ton: Codex CLI"
+ },
+ "assortment/hidroizolacioni": {
+  "id": 39238314,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/39238314/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "note": "Crop 1:1 + ton: Codex CLI"
+ },
+ "assortment/masinski-malteri": {
+  "id": 6474130,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/6474130/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "note": "Crop 1:1 + ton: Codex CLI"
+ },
+ "assortment/fasadni": {
+  "id": 5511085,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/5511085/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "note": "Isti snimak kao stock/eps-facade; crop 1:1 + ton: Codex CLI"
+ },
+ "assortment/termoizolacioni": {
+  "id": 9893816,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/9893816/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "note": "Isti snimak kao stock/wool-closeup; crop 1:1 + ton: Codex CLI"
+ },
+ "assortment/keramicka-ljepila": {
+  "id": 11806477,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/11806477/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "note": "Isti snimak kao stock/tile-adhesive; crop 1:1 + ton: Codex CLI"
+ },
+ "assortment/cementi": {
+  "id": 29817952,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/29817952/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "note": "Isti snimak kao stock/cement-pallet; crop 1:1 + ton: Codex CLI"
+ },
+ "assortment/suha-gradnja": {
+  "id": 27728636,
+  "source": "Pexels",
+  "url": "https://www.pexels.com/photo/27728636/",
+  "license": "Pexels License (free for commercial use, no attribution required)",
+  "note": "Isti snimak kao stock/board-stack-2; crop 1:1 + ton: Codex CLI"
  }
 }
