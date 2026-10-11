@@ -57,8 +57,8 @@ export default function SquareDissolve({ className = '', color = 'var(--bg)', ti
         const p = state.p
         for (const k of cells) {
           let e = k.f * Math.min(1, Math.max(0, (p - k.d) / 0.3))
-          // Disanje: rijetki kvadratići gore jače pulsiraju, gusti pri dnu blago (da dno ostane puno).
-          if (live) e *= 1 - (0.55 - 0.4 * k.f) * (0.5 + 0.5 * Math.sin(time * 3.2 + k.ph))
+                    // Ciklus ~1 s; gore kvadratići potpuno nestaju i vraćaju se, dole jasno pulsiraju (do 35 %).
+          if (live) e *= 1 - (0.95 - 0.6 * k.f) * (0.5 + 0.5 * Math.sin(time * 6.2 + k.ph))
           if (e <= 0.02) continue
           const size = CELL * e
           const off = (CELL - size) / 2
