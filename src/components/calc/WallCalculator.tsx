@@ -184,6 +184,17 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
   const wPct = ratio >= 1.6 ? 84 : (84 * ratio) / 1.6
   const hPct = ratio >= 1.6 ? (84 * 1.6) / ratio : 84
 
+  // Crtež prati spisak: crta se samo ono što je dodato, u količini koja piše u spisku.
+  const onWall = (key: string) => !!on[key] && qtyOf(key) > 0
+  const studs = onWall('cw') ? Math.min(qtyOf('cw'), 60) : 0
+  // Stubovi ravnomjerno po dužini; jedan stub stoji na sredini.
+  const studX = Array.from({ length: studs }, (_, i) => (studs === 1 ? 50 : (i / (studs - 1)) * 100))
+  // Spojevi ploča: ploča je široka 1,25 m, pa spoj ide na svakih 1,25 m dužine.
+  const seams = onWall('board') ? Array.from({ length: Math.max(0, Math.ceil(dims.len / 1.25) - 1) }, (_, i) => (((i + 1) * 1.25) / dims.len) * 100) : []
+  const drawn = ROWS.filter((r) => onWall(r.key) && ['cw', 'uw', 'board', 'wool'].includes(r.key)).map(
+    (r) => `${qtyOf(r.key)} ${plural(qtyOf(r.key), ...r.units)}${r.key === 'wool' ? ' vune' : ''}`,
+  )
+
   return (
     <section ref={root} id={embedded ? 'kalkulator' : undefined} aria-labelledby="calc-title" className={styles.page}>
       <div className={styles.card}>
@@ -241,14 +252,30 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
               <div className={styles.wallBox}>
                 <div
                   className={styles.wall}
-                  data-wool={on.wool || undefined}
-                  data-double={double || undefined}
-                  style={{ width: `${wPct}%`, height: `${hPct}%`, '--stud': `${(0.625 / dims.len) * 100}%` } as React.CSSProperties}
+                  data-wool={onWall('wool') || undefined}
+                  data-boards={onWall('board') || undefined}
+                  data-double={(onWall('board') && double) || undefined}
+                  style={{ width: `${wPct}%`, height: `${hPct}%` }}
                 >
+                  {onWall('uw') && (
+                    <>
+                      <i className={`${styles.track} ${styles.trackTop}`} aria-hidden />
+                      <i className={`${styles.track} ${styles.trackBottom}`} aria-hidden />
+                    </>
+                  )}
+                  {seams.map((x) => (
+                    <i key={`s${x}`} className={styles.seam} style={{ left: `${x}%` }} aria-hidden />
+                  ))}
+                  {studX.map((x, i) => (
+                    <i key={`c${i}`} className={styles.stud} style={{ left: `${x}%` }} aria-hidden />
+                  ))}
                   <span className={styles.wallW}>{nf(dims.len, 1)} m</span>
                   <span className={styles.wallH}>{nf(dims.height, 1)} m</span>
                 </div>
               </div>
+              <p className={styles.drawn} aria-live="polite">
+                {drawn.length ? `Na crtežu: ${drawn.join(' · ')}` : 'Dodajte materijal u spisak, pa se pojavi na crtežu.'}
+              </p>
               <figcaption className={styles.area}>
                 <span className="label">Površina zida</span>
                 <b>
