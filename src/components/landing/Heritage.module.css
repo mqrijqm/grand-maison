@@ -474,3 +474,13 @@
 .maker:focus-visible .makerGo svg {
   transform: translateX(5px);
 }
+
+/* Mnogo više bijelog prostora ispod "Izbor je Vaš!" prije plavih recenzija (desktop i telefon). */
+.values {
+  padding-bottom: clamp(240px, 42vh, 460px);
+}
+@media (max-width: 767px) {
+  .values {
+    padding-bottom: 32vh;
+  }
+}
