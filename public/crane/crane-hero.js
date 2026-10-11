@@ -26,7 +26,7 @@ function topOffset() {
 
 // Ne čekamo `load` (slike i fontovi ostatka strane): scena kreće čim je modul tu, dok splash traje.
 if(new URLSearchParams(location.search).has('debug'))console.info(`[crane] modul pokrenut: ${Math.round(performance.now())} ms`);
-if(canvas&&!window.__gcCraneAbort&&!matchMedia('(max-width: 1023px), (prefers-reduced-motion: reduce)').matches)init();
+if(canvas&&!window.__gcCraneAbort&&!matchMedia('(prefers-reduced-motion: reduce)').matches&&!((navigator.hardwareConcurrency||8)<=2||(navigator.deviceMemory||8)<=2))init();
 async function init() {
   if(!cover||!viewport)return;
   if(window.__gcCrane)window.__gcCrane.dispose();

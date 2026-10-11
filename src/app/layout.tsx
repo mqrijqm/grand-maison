@@ -81,13 +81,13 @@ export const metadata: Metadata = {
 
 // Prije prvog crtanja: (1) elementi koji izranjaju na skrol su odmah sakriveni; (2) sadržaj čeka
 // fontove (najviše 800 ms), da se prvi kadar ne nacrta rezervnim fontom pa preslaže (skok teksta).
-const MOTION_FLAG = "var d=document.documentElement;if(!matchMedia('(prefers-reduced-motion: reduce), (max-width: 1023px)').matches)d.setAttribute('data-motion','');if(document.fonts&&document.fonts.load){d.setAttribute('data-fonts','');var f=function(){d.removeAttribute('data-fonts')};Promise.all([document.fonts.load('800 1em Montserrat'),document.fonts.load('400 1em Inter'),document.fonts.load('500 1em Inter')]).then(f,f);setTimeout(f,800)}"
+const MOTION_FLAG = "var d=document.documentElement;if(!matchMedia('(prefers-reduced-motion: reduce)').matches)d.setAttribute('data-motion','');if(document.fonts&&document.fonts.load){d.setAttribute('data-fonts','');var f=function(){d.removeAttribute('data-fonts')};Promise.all([document.fonts.load('800 1em Montserrat'),document.fonts.load('400 1em Inter'),document.fonts.load('500 1em Inter')]).then(f,f);setTimeout(f,800)}"
 
 // Na direktnom dolasku na početnu WebGL počinje čim je canvas u HTML-u, prije
 // hidratacije svih sekcija. Ostale stranice ne preuzimaju 3D modul.
 const HERO_BOOT = `
 if(location.pathname==='/'){
-  if(matchMedia('(max-width: 1023px), (prefers-reduced-motion: reduce)').matches){
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches||(navigator.hardwareConcurrency||8)<=2||(navigator.deviceMemory||8)<=2){
     window.__gcCraneReady=true;
   }else{
     window.__gcCraneAbort=false;

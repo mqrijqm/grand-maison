@@ -28,7 +28,7 @@ export default function SiteChrome() {
 
       const boot = contextSafe!(() => {
         if (dead) return
-        const reduce = window.matchMedia('(prefers-reduced-motion: reduce), (max-width: 1023px)').matches
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
         // Slova u maskama: svako slovo izranja odozdo. Razdvaja se PRIJE mjerenja širine.
         // U dev-u se efekat montira dvaput, pa se drugo razdvajanje preskače (ono na već

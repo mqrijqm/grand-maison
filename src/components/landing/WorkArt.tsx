@@ -51,9 +51,6 @@ function Scene({ kind }: { kind: 'zidanje-krov' | 'kupatilo' }) {
 
 export default function WorkArt({ kind }: { kind: WorkKind }) {
   return <div data-work-art className="w-full">
-    {kind === 'suha-gradnja' ? <div className="grid grid-cols-2 items-center gap-6">
-      <div><UseArt use="pregradni-zid" className="w-full" title="Presjek pregradnog zida: ploče, profili i izolacija" /><p className="label mt-5 opacity-60">Zid</p></div>
-      <div><UseArt use="spusteni-plafon" className="w-full" title="Shematski presjek spuštenog plafona" /><p className="label mt-5 opacity-60">Plafon</p></div>
-    </div> : kind === 'izolacija' ? <UseArt use="fasada" className="mx-auto w-full max-w-[470px]" title="Shematski prikaz slojeva izolacije zida" /> : <Scene kind={kind} />}
+    {kind === 'suha-gradnja' ? <UseArt use="pregradni-zid" className="mx-auto w-full max-w-[470px]" title="Presjek pregradnog zida: ploče, profili i izolacija" /> : kind === 'izolacija' ? <UseArt use="fasada" className="mx-auto w-full max-w-[470px]" title="Shematski prikaz slojeva izolacije zida" /> : <Scene kind={kind} />}
   </div>
 }

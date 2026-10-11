@@ -6,7 +6,8 @@ import { MQ } from '@/lib/motion'
 
 // Kraj plave površine: kvadratići boje stranice niču odozdo, gore rijetki i sitni, prema dnu sve gušći
 // i na dnu puna krem površina (isti mozaik kao prelazi na početnoj, samo obrnuto). Stoji iza donje polovine
-// sadržaja iznad sebe; skrol vodi rast. Reduced motion: odmah gotov prelaz.
+// sadržaja iznad sebe. Kad uđe u ekran, prelaz se sam odigra (brzo, ~0,8 s) i ne zavisi od toga koliko
+// se skrola, pa nikad ne ostane "zaglavljen" na pola; skrol nazad ga vrati. Reduced motion: odmah gotov.
 const CELL = 18
 const GAP = 3
 
@@ -22,6 +23,7 @@ export default function SquareDissolve({ className = '', color = 'var(--bg)', ti
       const probe = el.querySelector<HTMLElement>('[data-probe]')!
       let cells: { x: number; y: number; f: number; d: number }[] = []
       let built = ''
+      let fill = ''
       const state = { p: 0 }
       const draw = () => {
         const w = el.clientWidth, h = el.clientHeight
@@ -29,6 +31,7 @@ export default function SquareDissolve({ className = '', color = 'var(--bg)', ti
         const key = `${w}x${h}`
         if (key !== built) {
           built = key
+          fill = getComputedStyle(probe).backgroundColor
           canvas.width = Math.round(w * dpr)
           canvas.height = Math.round(h * dpr)
           const cols = Math.ceil(w / (CELL + GAP)), rows = Math.ceil(h / (CELL + GAP))
@@ -45,7 +48,7 @@ export default function SquareDissolve({ className = '', color = 'var(--bg)', ti
         }
         ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
         ctx.clearRect(0, 0, w, h)
-        ctx.fillStyle = getComputedStyle(probe).backgroundColor
+        ctx.fillStyle = fill
         const p = state.p
         for (const k of cells) {
           const e = k.f * Math.min(1, Math.max(0, (p - k.d) / 0.3))
@@ -73,8 +76,18 @@ export default function SquareDissolve({ className = '', color = 'var(--bg)', ti
           return
         }
         drawAll()
-        gsap.to(state, { p: 1, ease: 'none', onUpdate: drawAll, scrollTrigger: { trigger: el, start: 'top 90%', end: 'bottom 75%', scrub: 0.6, onRefresh: drawAll } })
-        const ro = new ResizeObserver(drawAll)
+        // Vremenska animacija (ne scrub): okidač je kad gornja ivica prelaza dođe do 85 % ekrana.
+        gsap.to(state, {
+          p: 1,
+          duration: 0.8,
+          ease: 'power2.inOut',
+          onUpdate: drawAll,
+          scrollTrigger: { trigger: el, start: 'top 85%', toggleActions: 'play none none reverse', onRefresh: drawAll },
+        })
+        const ro = new ResizeObserver(() => {
+          built = ''
+          drawAll()
+        })
         ro.observe(el)
         return () => ro.disconnect()
       })

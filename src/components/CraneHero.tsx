@@ -51,7 +51,12 @@ export default function CraneHero() {
   useEffect(() => {
     let script: HTMLScriptElement | null = null
     let safety = 0
-    const staticMedia = window.matchMedia('(max-width: 1023px), (prefers-reduced-motion: reduce)')
+    // 3D scena radi i na telefonu (crane-quality.js tamo spušta rezoluciju). Statična slika ostaje
+    // samo uz sistemsko "smanji pokrete" ili na stvarno slabom uređaju (≤ 2 jezgra ili ≤ 2 GB RAM-a).
+    const nav = navigator as Navigator & { deviceMemory?: number }
+    const lowEnd = (nav.hardwareConcurrency || 8) <= 2 || (nav.deviceMemory || 8) <= 2
+    const reducedMedia = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const staticMedia = { get matches() { return lowEnd || reducedMedia.matches } }
     const fallback = () => {
       if (staticMedia.matches || window.__gcCraneReady || window.__gcCraneAbort) return
       window.__gcCraneAbort = true
@@ -93,7 +98,7 @@ export default function CraneHero() {
       }
     }
     updateMode()
-    staticMedia.addEventListener('change', updateMode)
+    reducedMedia.addEventListener('change', updateMode)
     window.addEventListener('gc:crane-boot-failed', start)
     const onReady = () => window.clearTimeout(safety)
     window.addEventListener('gc:crane-ready', onReady)
@@ -101,7 +106,7 @@ export default function CraneHero() {
     return () => {
       window.clearTimeout(safety)
       window.removeEventListener('gc:crane-ready', onReady)
-      staticMedia.removeEventListener('change', updateMode)
+      reducedMedia.removeEventListener('change', updateMode)
       window.removeEventListener('gc:crane-boot-failed', start)
       script?.remove()
       window.__gcCrane?.dispose()

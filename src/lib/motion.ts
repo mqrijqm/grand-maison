@@ -18,8 +18,9 @@ export const DUR = {
 // zato je `all` uvijek tu (uvijek je tačan), inače se na običnom desktopu ništa ne pokrene.
 export const MQ = {
   all: 'all',
-  // Na manjim ekranima mnoštvo istovremenih reveal/parallax animacija blokira skrol.
-  reduce: '(prefers-reduced-motion: reduce), (max-width: 1023px)',
+  // Animacije se gase samo kad korisnik to traži u sistemu (smanji pokrete). Telefon i tablet
+  // dobijaju iste animacije kao desktop; teške stvari (3D, pin) same štede na slabijim uređajima.
+  reduce: '(prefers-reduced-motion: reduce)',
   mobile: '(max-width: 767px)',
 } as const
 

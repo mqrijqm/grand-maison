@@ -93,7 +93,7 @@
 }
 
 /* Uz reduced motion uvoda nema uopšte (ni prije hidratacije). */
-@media (prefers-reduced-motion: reduce), (max-width: 1023px) {
+@media (prefers-reduced-motion: reduce) {
   .splash {
     display: none;
     animation: none;
