@@ -1,0 +1,340 @@
+/* Tri sekcije sa sadržajem starog sajta (grandcompany.ba, 2021–2025) i verifikovanim podacima:
+   indeks asortimana, "Kvalitet na prvom mjestu" i recenzije kupaca. */
+
+/* ---------- Asortiman: tipografski indeks ---------- */
+.index {
+  position: relative;
+  z-index: 20;
+  background: var(--bg);
+}
+.indexHead {
+  display: grid;
+  gap: 28px;
+  padding-bottom: 6vh;
+}
+.indexTitle {
+  font-size: clamp(40px, 6.4vw, 120px);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+}
+.indexLead {
+  max-width: 46ch;
+  font-size: var(--text-lead);
+  line-height: 1.65;
+  opacity: 0.75;
+}
+@media (min-width: 900px) {
+  .indexHead {
+    grid-template-columns: 1.4fr 1fr;
+    align-items: end;
+  }
+}
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: var(--hair) solid color-mix(in srgb, var(--ink) 80%, transparent);
+}
+.row {
+  position: relative;
+  display: grid;
+  grid-template-columns: 3.2em 1fr auto;
+  align-items: baseline;
+  gap: 0 2vw;
+  padding: clamp(14px, 1.6vw, 26px) 20px;
+  border-bottom: var(--hair) solid color-mix(in srgb, var(--ink) 18%, transparent);
+  overflow: hidden;
+  isolation: isolate;
+  transition: color 0.35s ease;
+}
+/* Hover: red se puni plavom odozdo, kao dugmad sajta */
+.row::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: var(--cobalt);
+  transform: scaleY(0);
+  transform-origin: bottom;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.row:hover {
+  color: var(--bg);
+}
+.row:hover::before {
+  transform: scaleY(1);
+}
+@media (min-width: 768px) {
+  .row {
+    padding-inline: 6vw;
+  }
+}
+.num {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.55;
+}
+.name {
+  font-size: clamp(26px, 4.4vw, 78px);
+  line-height: 0.95;
+  letter-spacing: -0.025em;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.row:hover .name {
+  transform: translateX(0.18em);
+}
+.note {
+  max-width: 26ch;
+  text-align: right;
+  font-size: 12px;
+  line-height: 1.45;
+  opacity: 0.6;
+}
+@media (max-width: 640px) {
+  .note {
+    display: none;
+  }
+}
+
+/* Proizvođači sa partnerskih lista */
+.makers {
+  display: grid;
+  gap: 18px;
+  margin-top: 7vh;
+}
+@media (min-width: 900px) {
+  .makers {
+    grid-template-columns: 1fr 2fr;
+    align-items: start;
+  }
+}
+.makerList {
+  display: grid;
+  gap: 10px;
+}
+@media (min-width: 640px) {
+  .makerList {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.maker {
+  display: grid;
+  gap: 14px;
+  align-content: space-between;
+  min-height: 150px;
+  padding: 20px;
+  border: var(--hair) solid color-mix(in srgb, var(--ink) 80%, transparent);
+}
+.makerName {
+  font-size: clamp(22px, 2vw, 32px);
+  line-height: 1;
+}
+.makerText {
+  font-size: 12.5px;
+  line-height: 1.5;
+  opacity: 0.72;
+}
+.fine {
+  margin-top: 14px;
+  font-size: 11px;
+  line-height: 1.5;
+  opacity: 0.5;
+}
+
+/* ---------- Kvalitet na prvom mjestu ---------- */
+.values {
+  position: relative;
+  z-index: 20;
+  background: var(--bg);
+}
+.valuesTitle {
+  font-size: clamp(44px, 8vw, 150px);
+  line-height: 0.88;
+  letter-spacing: -0.035em;
+  text-align: center;
+}
+.pillars {
+  display: grid;
+  gap: 10px;
+  margin-top: 9vh;
+}
+@media (min-width: 900px) {
+  .pillars {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+.pillar {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  min-height: 420px;
+  padding: 28px;
+  background: var(--well);
+  border: var(--hair) solid color-mix(in srgb, var(--ink) 12%, transparent);
+}
+.pillar:nth-child(2) {
+  background: var(--cobalt);
+  color: var(--bg);
+  border-color: transparent;
+}
+.pillar:nth-child(3) {
+  background: var(--char);
+  color: var(--bg);
+  border-color: transparent;
+}
+.pillarIcon {
+  width: 84px;
+  height: 84px;
+}
+.pillarTitle {
+  margin-top: auto;
+  font-size: clamp(26px, 2.4vw, 40px);
+  line-height: 0.95;
+}
+.pillarText {
+  max-width: 38ch;
+  font-size: 13.5px;
+  line-height: 1.6;
+  opacity: 0.8;
+}
+
+/* Kvalitet: dugi citat + spisak + potpis */
+.quality {
+  display: grid;
+  gap: 40px;
+  margin-top: 16vh;
+}
+@media (min-width: 900px) {
+  .quality {
+    grid-template-columns: 1fr 1.25fr;
+    gap: 6vw;
+    align-items: start;
+  }
+}
+.qualityLabel {
+  display: block;
+  margin-bottom: 18px;
+  opacity: 0.6;
+}
+.qualityQuote {
+  font-size: clamp(22px, 2.3vw, 38px);
+  line-height: 1.12;
+  text-transform: none;
+}
+.qualityBody {
+  font-size: var(--text-lead);
+  line-height: 1.7;
+  opacity: 0.78;
+}
+.signoff {
+  margin-top: 12vh;
+  font-size: clamp(64px, 15vw, 300px);
+  line-height: 0.82;
+  letter-spacing: -0.045em;
+  text-align: center;
+  color: var(--cobalt);
+}
+
+/* ---------- Recenzije ---------- */
+.reviews {
+  position: relative;
+  z-index: 20;
+  background: var(--cobalt);
+  color: var(--bg);
+  padding-block: 14vh 12vh;
+  overflow: hidden;
+}
+.reviewsHead {
+  display: grid;
+  gap: 32px;
+}
+@media (min-width: 900px) {
+  .reviewsHead {
+    grid-template-columns: 1fr auto;
+    align-items: end;
+  }
+}
+.reviewsTitle {
+  font-size: clamp(40px, 6vw, 112px);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+}
+.score {
+  display: flex;
+  align-items: flex-end;
+  gap: 18px;
+}
+.scoreNum {
+  font-size: clamp(72px, 9vw, 168px);
+  line-height: 0.8;
+  letter-spacing: -0.04em;
+}
+.scoreMeta {
+  display: grid;
+  gap: 6px;
+  padding-bottom: 6px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.stars {
+  letter-spacing: 0.12em;
+  font-size: 15px;
+}
+/* Traka citata: vozi se skrolom (desktop) ili swipe (telefon) */
+.track {
+  display: flex;
+  gap: 10px;
+  width: max-content;
+  margin-top: 9vh;
+  padding-inline: 20px;
+}
+@media (max-width: 899px) {
+  .trackWrap {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+}
+@media (min-width: 768px) {
+  .track {
+    padding-inline: 6vw;
+  }
+}
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  width: min(78vw, 400px);
+  min-height: 300px;
+  padding: 26px;
+  background: color-mix(in srgb, var(--bg) 10%, transparent);
+  border: var(--hair) solid color-mix(in srgb, var(--bg) 28%, transparent);
+  scroll-snap-align: start;
+}
+.cardStars {
+  font-size: 13px;
+  letter-spacing: 0.14em;
+}
+.cardQuote {
+  font-size: clamp(19px, 1.55vw, 26px);
+  line-height: 1.18;
+  text-transform: none;
+}
+.cardMeta {
+  margin-top: auto;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  opacity: 0.7;
+}
+.source {
+  margin-top: 6vh;
+  font-size: 11px;
+  line-height: 1.5;
+  opacity: 0.65;
+}
+.source a {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

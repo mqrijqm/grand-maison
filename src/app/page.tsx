@@ -14,6 +14,9 @@ import Bento from "@/components/landing/Bento";
 import ForBusiness from "@/components/landing/ForBusiness";
 import QuoteBand from "@/components/landing/QuoteBand";
 import Yard from "@/components/landing/Yard";
+import AssortmentIndex from "@/components/landing/AssortmentIndex";
+import Values from "@/components/landing/Values";
+import Reviews from "@/components/landing/Reviews";
 
 // Početna sa naglaskom na nabavku za firme i izvođače.
 export default function Home() {
@@ -31,6 +34,8 @@ export default function Home() {
             stovarište → završni poziv → podnožje. */}
         <Intro />
         <UsesSplit />
+        {/* Asortiman sa starog sajta + potvrđeni proizvođači (dodato). */}
+        <AssortmentIndex />
         <HowItWorks />
         {/* Pravi kalkulator (ista tabla kao /kalkulator), ne statičan primjer. */}
         <WallCalculator embedded />
@@ -38,8 +43,12 @@ export default function Home() {
         <Bento />
         <ForBusiness />
         <BrandsSplit />
+        {/* "Kvalitet na prvom mjestu!" — tekst sa starog sajta (dodato). */}
+        <Values />
         {/* Stovarište: dvije fotografije preko cijele širine (foto → plava na hover). */}
         <Yard />
+        {/* Recenzije kupaca, Kupci.com (dodato). */}
+        <Reviews />
         <QuoteBand />
         <Footer />
       </main>
