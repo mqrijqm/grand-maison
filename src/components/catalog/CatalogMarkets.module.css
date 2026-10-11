@@ -262,7 +262,7 @@
 /* Posljednja kartica: tamna, bez fotografije */
 .cardLast {
   display: block;
-  background: #1e1e1e;
+  background: #111827;
 }
 .lastInner {
   display: flex;
@@ -313,7 +313,7 @@
 }
 .lastCta:hover span {
   background: #f4f1ec;
-  color: #1e1e1e;
+  color: #111827;
 }
 
 /* Krug "Pogledaj" koji prati kursor */

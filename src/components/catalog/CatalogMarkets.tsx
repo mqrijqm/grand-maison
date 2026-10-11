@@ -14,6 +14,7 @@ import styles from './CatalogMarkets.module.css'
 // Kategorije su samo provjerene (istraživanje 2026-10-11): Tondach i Porotherm su na Wienerbergerovoj
 // mapi prodajnih mjesta, Baumalt na svojoj listi partnera; suha gradnja i izolacija su grupe kataloga.
 // Ostale grupe sa starog sajta firme idu na posljednju karticu, po upitu.
+// Boje panela: tamno plava, bakar i oker iz logotipa, kobalt sajta i krem; tekst bijel ili tamno plav prema pozadini.
 // Fotografije: Pexels (izvori u public/stock/credits.json), Codex samo crop i ton. Uvod: dron snimak stovarišta.
 
 type Market = {
@@ -34,7 +35,7 @@ const MARKETS: Market[] = [
     sub: 'Tondach crijep, Wienerberger',
     href: '/upit-za-izvodjace?program=zidni-krovni',
     img: '/markets/krovni.webp',
-    bg: '#5f5550',
+    bg: '#1b2436',
     ink: 'light',
     links: [{ label: 'Upit za krovni program', href: '/upit-za-izvodjace?program=zidni-krovni' }],
   },
@@ -44,7 +45,7 @@ const MARKETS: Market[] = [
     sub: 'Porotherm, Wienerberger',
     href: '/upit-za-izvodjace?program=zidni-krovni',
     img: '/markets/blokovi.webp',
-    bg: '#8e4f33',
+    bg: '#b46c44',
     ink: 'light',
     links: [{ label: 'Upit za zidni program', href: '/upit-za-izvodjace?program=zidni-krovni' }],
   },
@@ -54,8 +55,8 @@ const MARKETS: Market[] = [
     sub: 'Baumalt i gipsane mase',
     href: '/prodavnica?kategorija=veziva#artikli',
     img: '/markets/malteri-ljepila.webp',
-    bg: '#cfd6e0',
-    ink: 'dark',
+    bg: '#3156ea',
+    ink: 'light',
     links: [
       { label: 'Gipsane mase', href: '/prodavnica?kategorija=veziva#artikli' },
       { label: 'Baumalt po upitu', href: '/upit-za-izvodjace' },
@@ -67,8 +68,8 @@ const MARKETS: Market[] = [
     sub: 'Ploče, profili i pribor',
     href: '/prodavnica?kategorija=suha-gradnja#artikli',
     img: '/markets/suha-gradnja.webp',
-    bg: '#71776b',
-    ink: 'light',
+    bg: '#bd9446',
+    ink: 'dark',
     links: [
       { label: 'Gips-kartonske ploče', href: '/prodavnica?kategorija=suha-gradnja&q=plo%C4%8Da#artikli' },
       { label: 'Profili', href: '/prodavnica?kategorija=suha-gradnja&q=profil#artikli' },
@@ -82,7 +83,7 @@ const MARKETS: Market[] = [
     sub: 'Kamena vuna u pločama',
     href: '/prodavnica?kategorija=izolacija#artikli',
     img: '/markets/izolacija.webp',
-    bg: '#dcc3aa',
+    bg: '#f4f1ec',
     ink: 'dark',
     links: [{ label: 'Kamena vuna', href: '/prodavnica?kategorija=izolacija#artikli' }],
   },

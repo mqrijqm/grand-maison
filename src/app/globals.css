@@ -1721,6 +1721,11 @@ footer li + li {
 .home-flow > :is(section, footer, .pin-spacer, [data-pinwrap]):nth-child(n + 5) {
   margin-top: clamp(140px, 26vh, 340px);
 }
+/* Recenzije se nastavljaju odmah na "Izbor je Vaš!", a stovarište odmah na recenzije. */
+.home-flow > #recenzije,
+.home-flow > #stovariste {
+  margin-top: 0;
+}
 
 /* Navbar i dugme u footeru: isti široki, fini sans kao tekst sajta (Inter), verzal sa razmakom */
 .nav__link,

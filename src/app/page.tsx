@@ -45,10 +45,10 @@ export default function Home() {
         <BrandsSplit />
         {/* "Kvalitet na prvom mjestu!" — tekst sa starog sajta (dodato). */}
         <Values />
-        {/* Stovarište: dvije fotografije preko cijele širine (foto → plava na hover). */}
-        <Yard />
-        {/* Recenzije kupaca, Kupci.com (dodato). */}
+        {/* Recenzije kupaca (Kupci.com) odmah ispod "Izbor je Vaš!", pa odmah dvije fotografije
+            stovarišta preko cijele širine (foto → plava na hover), bez naslova. */}
         <Reviews />
+        <Yard />
         <QuoteBand />
         <Footer />
       </main>

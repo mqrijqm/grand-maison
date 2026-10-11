@@ -37,3 +37,7 @@
 .photosFull .photo { aspect-ratio: 16 / 10; height: auto; }
 .captionCenter { justify-content: center; padding-top: 16px; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; }
 @media (max-width: 767px) { .photosFull { grid-template-columns: 1fr !important; } }
+
+/* Stovarište ispod recenzija: bez naslova, fotografije od ivice do ivice, bez razmaka gore. */
+.yardBleed { padding-top: 0; padding-bottom: 0; }
+.yardBleed .photosFull { margin-top: 0; padding-inline: 0; gap: 0; }
