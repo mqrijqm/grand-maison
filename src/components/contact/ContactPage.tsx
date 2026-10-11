@@ -40,7 +40,20 @@ export default function ContactPage() {
       </header>
 
       <section className={`gutter ${styles.list}`} aria-label="Kontakt podaci">
-        {ROWS.map((row) => (
+        {/* Tri broja telefona u jednom redu, razdvojena jedva vidljivim linijama; svaki je svoj link. */}
+        <div className={styles.phones}>
+          {ROWS.filter((row) => row.href.startsWith('tel:')).map((row) => (
+            <a key={row.n} className={styles.phone} href={row.href}>
+              <span className={styles.phoneTop}>
+                <span className={styles.rowNumber}>{row.n}</span>
+                <span className={`label ${styles.rowLabel}`}>{row.label}</span>
+              </span>
+              <span className={styles.phoneValue}>{row.value}</span>
+              <span className={styles.phoneArrow} aria-hidden>↗</span>
+            </a>
+          ))}
+        </div>
+        {ROWS.filter((row) => !row.href.startsWith('tel:')).map((row) => (
           <a key={row.n} className={styles.row} href={row.href} {...(row.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
             <span className={styles.rowNumber}>{row.n}</span>
             <span className={`label ${styles.rowLabel}`}>{row.label}</span>
