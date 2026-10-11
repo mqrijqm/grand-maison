@@ -6,6 +6,8 @@ import { drawOnScroll } from '@/lib/draw'
 import { useMediaMotion } from '@/lib/media'
 import { EASE, MQ } from '@/lib/motion'
 import { revealChars, revealLines } from '@/lib/reveal'
+import Cta from '@/components/ui/Cta'
+import { COMPANY as GC } from '@/gc/gc'
 import styles from './Heritage.module.css'
 
 // "Kvalitet na prvom mjestu!" — tekst doslovno sa stare stranice "O nama" (grandcompany.ba,
@@ -122,6 +124,30 @@ export default function Values() {
               Izbor je vaš, a mi se trudimo da Vam pomognemo u izboru najboljeg što tržište nudi. Korisnim savjetima
               našeg tima potrudićemo se da Vam olakšamo izbor pravog materijala za vaše potrebe.
             </p>
+          </div>
+        </div>
+
+        {/* Suha gradnja: skraćeno sa profila firme na moja-djelatnost.ba (segment "Sistem suhe gradnje").
+            Formulisano kao savjet i materijal; ugradnja nije potvrđena. */}
+        <div data-up className={styles.dry}>
+          <span className={`label ${styles.qualityLabel}`}>Sistem suhe gradnje</span>
+          <div className={styles.dryGrid}>
+            <p className={`font-pretty ${styles.dryTitle}`}>Stručan savjet za suhu gradnju, jedan poziv daleko.</p>
+            <div className="grid gap-5">
+              <p className={styles.qualityBody}>
+                Tim Grand Companyja stalno usavršava znanje i prati novosti u građevinarstvu. Ljubazni su i pristupačni,
+                i rado objašnjavaju izbor ploča, profila i pribora za vaš pregradni zid ili plafon, da proces bude što
+                jednostavniji.
+              </p>
+              <div className="flex flex-wrap items-center gap-3">
+                <Cta href="/upit-za-izvodjace" solid>
+                  Pošaljite upit
+                </Cta>
+                <a href={GC.phoneLandlineHref} className={styles.dryPhone}>
+                  ili pozovite {GC.phoneLandline}
+                </a>
+              </div>
+            </div>
           </div>
         </div>
 
