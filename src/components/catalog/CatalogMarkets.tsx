@@ -5,6 +5,7 @@
 import Link from 'next/link'
 import { useRef, useState } from 'react'
 import { COMPANY as GC } from '@/gc/gc'
+import { SHOW_DRYWALL_CALC } from '@/lib/flags'
 import { gsap, useGSAP } from '@/lib/gsap'
 import styles from './CatalogMarkets.module.css'
 
@@ -42,6 +43,7 @@ const MARKETS: Market[] = [
     ink: 'light',
     links: [
       { label: 'Tondach crijep', href: '/prodavnica?kategorija=krovni-sistemi#artikli' },
+      { label: 'Kalkulatori za krov', href: '/kalkulator' },
       { label: 'Upit za krovni program', href: '/upit-za-izvodjace?program=zidni-krovni' },
     ],
   },
@@ -56,6 +58,7 @@ const MARKETS: Market[] = [
     ink: 'light',
     links: [
       { label: 'Porotherm blokovi', href: '/prodavnica?kategorija=zidni-blokovi#artikli' },
+      { label: 'Kalkulatori za zid', href: '/kalkulator' },
       { label: 'Upit za zidni program', href: '/upit-za-izvodjace?program=zidni-krovni' },
     ],
   },
@@ -86,7 +89,7 @@ const MARKETS: Market[] = [
       { label: 'Gips-kartonske ploče', href: '/prodavnica?kategorija=suha-gradnja&q=plo%C4%8Da#artikli' },
       { label: 'Profili', href: '/prodavnica?kategorija=suha-gradnja&q=profil#artikli' },
       { label: 'Pribor', href: '/prodavnica?kategorija=oprema#artikli' },
-      { label: 'Kalkulator za zid', href: '/kalkulator' },
+      ...(SHOW_DRYWALL_CALC ? [{ label: 'Kalkulator za zid', href: '/kalkulator' }] : []),
     ],
   },
   {

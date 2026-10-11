@@ -10,6 +10,8 @@ import SkySwipe from "@/components/landing/SkySwipe";
 import UsesSplit from "@/components/landing/UsesSplit";
 import HowItWorks from "@/components/landing/HowItWorks";
 import WallCalculator from "@/components/calc/WallCalculator";
+import CalculatorsHub from "@/components/calc/CalculatorsHub";
+import { SHOW_DRYWALL_CALC } from "@/lib/flags";
 import Bento from "@/components/landing/Bento";
 import ForBusiness from "@/components/landing/ForBusiness";
 import QuoteBand from "@/components/landing/QuoteBand";
@@ -37,8 +39,9 @@ export default function Home() {
         {/* Asortiman sa starog sajta + potvrđeni proizvođači (dodato). */}
         <AssortmentIndex />
         <HowItWorks />
-        {/* Pravi kalkulator (ista tabla kao /kalkulator), ne statičan primjer. */}
-        <WallCalculator embedded />
+        {/* Kalkulatori: proizvođača (Wienerberger) dok asortiman suhe gradnje nije potvrđen; kalkulator
+            pregradnog zida se vraća zastavicom SHOW_DRYWALL_CALC (lib/flags.ts). */}
+        {SHOW_DRYWALL_CALC ? <WallCalculator embedded /> : <CalculatorsHub embedded />}
         {/* B2B portal: plava, tamna i foto kartica (vraćeno iz ranije verzije), pa živi dashboard. */}
         <Bento />
         <ForBusiness />

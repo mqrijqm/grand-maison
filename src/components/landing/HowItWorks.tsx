@@ -2,6 +2,7 @@
 
 /* eslint-disable @next/next/no-img-element -- fotografije iz /public, već u WebP */
 
+import Link from 'next/link'
 import { useRef } from 'react'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { useMediaMotion } from '@/lib/media'
@@ -19,8 +20,9 @@ const STEPS = [
     alt: 'Regali sa profilima i pločama u skladištu građevinskog materijala',
   },
   {
-    title: 'Izračunajte količine',
-    text: 'Kalkulator za pregradni zid.',
+    title: 'Izračunajte krov i zid',
+    text: 'Kalkulatori proizvođača za Tondach i Porotherm.',
+    href: '/kalkulator',
     image: '/stock/board-cut.webp',
     alt: 'Mjerenje i rezanje gips-kartonske ploče',
   },
@@ -72,7 +74,7 @@ export default function HowItWorks() {
                   {String(i + 1).padStart(2, '0')}
                 </span>
                 <span>
-                  <h3 className={styles.stepTitle}>{s.title}</h3>
+                  <h3 className={styles.stepTitle}>{'href' in s ? <Link href={s.href} className="ulink">{s.title}</Link> : s.title}</h3>
                   <p className={styles.stepText}>{s.text}</p>
                 </span>
               </div>

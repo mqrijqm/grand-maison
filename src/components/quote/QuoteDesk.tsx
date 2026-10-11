@@ -42,6 +42,8 @@ export default function QuoteDesk() {
   const [email, setEmail] = useState('')
   const [phone, setPhone] = useState('')
   const [note, setNote] = useState('')
+  // Opciono: rezultat iz Wienerberger kalkulatora (link ili prepisane količine); ide u napomenu upita.
+  const [calcResult, setCalcResult] = useState('')
   const [error, setError] = useState('')
   const [pending, setPending] = useState(false)
   const [sent, setSent] = useState(false)
@@ -69,13 +71,14 @@ export default function QuoteDesk() {
       if (vrsta === 'saradnja') setDesc('Želimo dogovoriti redovnu nabavku za firmu (nalog na B2B portalu). Šta najčešće nabavljamo: ')
       if (vrsta === 'projekat') setDesc('Nabavka materijala za projekat. Faza radova i termini: ')
       if (vrsta === 'dokumentacija') setNote('Tražim tehničku dokumentaciju za materijal naveden u upitu.')
+      if (q.get('izvor') === 'kalkulator') setNote('Dolazim sa stranice Kalkulatori; rezultat iz Wienerberger kalkulatora je u upitu.')
     }, 0)
     return () => window.clearTimeout(t)
   }, [])
 
   const cartText = cartItems.map((l) => `${l.name}${l.spec ? `, ${l.spec}` : ''}\nKoličina: ${l.qty} ${l.unit}`).join('\n\n')
   const allMaterials = [desc && `Opis: ${desc}`, useCart && cartText && `Iz korpe:\n${cartText}`, materials].filter(Boolean).join('\n\n')
-  const data: QuoteRequest = { name: name.trim(), email: email.trim(), phone: phone.trim(), program, materials: allMaterials.trim(), method, location: location.trim(), deadline, note: note.trim() }
+  const data: QuoteRequest = { name: name.trim(), email: email.trim(), phone: phone.trim(), program, materials: allMaterials.trim(), method, location: location.trim(), deadline, note: [note.trim(), calcResult.trim() && `Rezultat iz Wienerberger kalkulatora: ${calcResult.trim()}`].filter(Boolean).join('\n') }
 
   // Šta svaki korak traži prije "Dalje"
   const stepError = (i: number) => {
@@ -251,8 +254,18 @@ export default function QuoteDesk() {
                           </ul>
                         )}
                         <Link href="/kalkulator" className={s.calcLink}>
-                          Ne znate količine? Kalkulator →
+                          Ne znate količine? Kalkulatori za krov i zid →
                         </Link>
+                        <label className={s.field}>
+                          <span>Rezultat iz Wienerberger kalkulatora (opciono)</span>
+                          <textarea
+                            value={calcResult}
+                            onChange={(e) => setCalcResult(e.target.value)}
+                            maxLength={2000}
+                            rows={3}
+                            placeholder="Zalijepite link ili prepišite količine iz kalkulatora"
+                          />
+                        </label>
                       </div>
                     </div>
                   </fieldset>
