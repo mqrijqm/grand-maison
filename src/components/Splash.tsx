@@ -62,7 +62,8 @@ export default function Splash() {
     el.addEventListener('animationend', onEnd)
 
     // Zavjesa se podiže kad je strana spremna: najmanje 1,5 s (da se uvod odigra), a na početnoj i
-    // tek kad je 3D scena nacrtana. Najviše 6 s — spora mreža ne smije zadržati sajt iza zavjese.
+    // tek kad je 3D scena nacrtana. Najviše 3,5 s: ispod zavjese je slika iste scene, a 3D se meko
+    // pojavi preko nje kad stigne, pa spor telefon ili mreža ne drže sajt iza zavjese.
     const t0 = performance.now()
     let lifted = false
     let safety = 0
@@ -77,7 +78,7 @@ export default function Splash() {
     const check = () => {
       if (lifted) return
       const t = performance.now() - t0
-      if ((t >= 1500 && ready()) || t >= 6000) lift()
+      if ((t >= 1500 && ready()) || t >= 3500) lift()
     }
     const timer = window.setInterval(check, 100)
     window.addEventListener('gc:crane-ready', check)

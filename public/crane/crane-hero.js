@@ -40,7 +40,7 @@ async function init() {
   } catch(error) { console.warn('3D hero unavailable; showing illustration.',error); cover.classList.add('crane-failed'); return; }
   // `resolutionCap` postavlja mjerenje GPU-a pri pokretanju (vidi pickResolution): slabiji
   // uređaji dobiju nižu rezoluciju umjesto trzanja, jaki zadržavaju punu.
-  let resolutionCap=Infinity,contactEnabled=true;
+  let resolutionCap=Infinity,contactEnabled=window.innerWidth>=768; // telefon kreće bez SSAO; regulator ga vraća kad je brzo
   const quality=()=>{
     const q=craneQuality(viewport.clientWidth,viewport.clientHeight,window.devicePixelRatio,window.innerWidth<768,renderer.capabilities.maxTextureSize);
     q.pixelRatio=Math.min(q.pixelRatio,Math.max(1,resolutionCap));
