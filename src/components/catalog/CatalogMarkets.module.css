@@ -37,24 +37,12 @@
   height: 100%;
   object-fit: cover;
 }
-.introBlue {
-  opacity: 0;
-  transition: opacity 0.6s ease;
-}
-/* Hover nad uvodom: plava fotografija, a tamni preliv se povuče da plava ostane jasna. */
-.intro:hover .introBlue {
-  opacity: 1;
-}
-.intro:hover .shade {
-  background: rgb(11 20 48 / 0.55);
-}
-.shade {
-  transition: background 0.6s ease;
-}
+
 .shade {
   position: absolute;
   inset: 0;
-  background: #0f0f0f;
+  /* Tamnoplavi preliv preko duotone fotografije, da bijeli tekst bude čitljiv. */
+  background: #0b1430;
   opacity: 0.38;
 }
 .introText {
@@ -304,7 +292,7 @@
   flex-direction: column;
   height: 100%;
   padding: clamp(28px, 3vw, 48px);
-  padding-top: max(18vh, 120px);
+  padding-top: max(14vh, 96px);
 }
 .lastLabel {
   margin: 0 0 3vh;
@@ -313,42 +301,61 @@
   text-transform: none;
   opacity: 0.6;
 }
-.lastList {
+.lastTitle {
   margin: 0;
-  padding: 0;
-  list-style: none;
-  font-family: var(--font-text), 'Helvetica Neue', Arial, sans-serif;
-  font-size: clamp(28px, 3vw, 52px);
-  line-height: 1.12;
-  letter-spacing: -0.03em;
-  text-transform: none;
+  max-width: 12ch;
+  font-family: var(--font-heavy), 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 800;
+  font-size: clamp(30px, min(3.4vw, 7vh), 60px);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
 }
-.lastCta {
+.lastText {
+  max-width: 42ch;
+  margin: 3vh 0 0;
+  font-size: clamp(14px, 1.1vw, 17px);
+  line-height: 1.55;
+  text-transform: none;
+  letter-spacing: 0;
+  opacity: 0.85;
+}
+.lastActions {
   margin-top: auto;
-  align-self: flex-start;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 24px;
+}
+.lastBtn {
   display: inline-flex;
   align-items: center;
   gap: 14px;
-  font-size: 17px;
-  text-transform: none;
-  letter-spacing: -0.01em;
-}
-.lastCta span {
-  display: grid;
-  place-items: center;
-  width: 52px;
-  height: 52px;
-  border: 1px solid currentColor;
-  border-radius: 50%;
+  min-height: 56px;
+  padding: 0 24px;
+  background: var(--cobalt);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   transition: background 0.3s, color 0.3s;
 }
-.lastCta span svg {
+.lastBtn svg {
   width: 8px;
   height: 13px;
 }
-.lastCta:hover span {
+.lastBtn:hover {
   background: #f4f1ec;
   color: #111827;
+}
+.lastPhone {
+  font-size: 14px;
+  text-transform: none;
+  letter-spacing: 0;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  opacity: 0.85;
 }
 
 /* Krug "Pogledaj" koji prati kursor */

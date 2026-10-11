@@ -4,6 +4,7 @@
 
 import Link from 'next/link'
 import { useRef, useState } from 'react'
+import { COMPANY as GC } from '@/gc/gc'
 import { gsap, useGSAP } from '@/lib/gsap'
 import styles from './CatalogMarkets.module.css'
 
@@ -101,7 +102,6 @@ const MARKETS: Market[] = [
   },
 ]
 
-const MORE = ['Fasadni sistemi', 'Termoizolacioni sistemi', 'Hidroizolacioni sistemi', 'Cementi', 'Željezo']
 
 const Plus = () => (
   <svg viewBox="0 0 20 20" aria-hidden fill="none" stroke="currentColor" strokeWidth={1.3}>
@@ -219,9 +219,8 @@ export default function CatalogMarkets() {
         <div className={styles.intro}>
           <div className={styles.introBg}>
             <div data-intro-bg className={styles.introPics}>
-              <img src="/photos/stovariste-pregled.webp" alt="" width={1360} height={765} fetchPriority="high" decoding="async" />
-              {/* Na hover uvoda fotografija stovarišta prelazi u plavu verziju (isti kadar). */}
-              <img className={styles.introBlue} src="/stovariste/shop-duotone.webp" alt="" width={1685} height={933} loading="lazy" decoding="async" />
+              {/* Stalna pozadina: plavi duotone dron snimka stovarišta, krov i fasada u boji. */}
+              <img src="/stovariste/shop-duotone-roof.webp" alt="" width={1581} height={995} fetchPriority="high" decoding="async" />
             </div>
             <span data-shade className={styles.shade} aria-hidden />
           </div>
@@ -304,21 +303,25 @@ export default function CatalogMarkets() {
             </article>
           ))}
 
-          {/* Posljednja kartica: grupe sa starog sajta firme, bez potvrde proizvođača — po upitu. */}
+          {/* Posljednja kartica: pitch i poziv. Ostale grupe sa starog sajta firme (fasade, izolacija,
+              cement, željezo) nemaju potvrdu proizvođača, pa idu kao upit, ne kao lista artikala. */}
           <article data-card className={`${styles.card} ${styles.cardLast}`} data-ink="light">
             <div className={styles.lastInner}>
               <p className={styles.lastLabel}>Ostali program · po upitu</p>
-              <ul className={styles.lastList}>
-                {MORE.map((g) => (
-                  <li key={g}>{g}</li>
-                ))}
-              </ul>
-              <Link href="/upit-za-izvodjace" className={styles.lastCta}>
-                Pošaljite upit
-                <span aria-hidden>
+              <h2 className={styles.lastTitle}>Ne vidite šta vam treba?</h2>
+              <p className={styles.lastText}>
+                Za fasadne, termoizolacione i hidroizolacione sisteme, cemente i željezo pošaljite upit sa količinama.
+                Prodaja vam javlja dostupnost, cijenu i termin preuzimanja ili dostave po Banjoj Luci.
+              </p>
+              <div className={styles.lastActions}>
+                <Link href="/upit-za-izvodjace" className={styles.lastBtn}>
+                  Pošaljite upit
                   <Chevron />
-                </span>
-              </Link>
+                </Link>
+                <a href={GC.phoneLandlineHref} className={styles.lastPhone}>
+                  ili pozovite {GC.phoneLandline}
+                </a>
+              </div>
             </div>
           </article>
         </div>
