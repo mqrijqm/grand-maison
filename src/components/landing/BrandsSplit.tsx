@@ -124,12 +124,19 @@ export default function BrandsSplit() {
           const svg = row.querySelector('svg')!
           if (reduce) return
           gsap.fromTo(svg, { scale: 0.6, autoAlpha: 0, rotate: -20 }, { scale: 1, autoAlpha: 1, rotate: 0, duration: 0.6, ease: EASE.quint, scrollTrigger: { trigger: row, start: 'top 75%' } })
+          // Na dodirnim ekranima crtež se osvježava tek kad se pomak primijeti (96 linija po frejmu je skupo).
+          const step = window.matchMedia('(hover: none), (pointer: coarse)').matches ? 0.012 : 0
+          let drawn = -1
           ScrollTrigger.create({
             trigger: row,
             start: 'top bottom',
             end: 'bottom top',
             scrub: 0.6,
-            onUpdate: (self) => art.draw(g, self.progress * Math.PI),
+            onUpdate: (self) => {
+              if (Math.abs(self.progress - drawn) < step) return
+              drawn = self.progress
+              art.draw(g, self.progress * Math.PI)
+            },
           })
         })
       })

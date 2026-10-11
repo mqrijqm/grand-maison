@@ -34,7 +34,8 @@ export default function UsesSplit() {
         revealChars(row.querySelector('[data-title]')!,reduce,'top 80%',row)
         row.querySelectorAll<SVGSVGElement>('[data-work-art] svg').forEach(svg=>{
           drawOnScroll(svg,reduce,{trigger:row,start:'top bottom'})
-          if(reduce)return
+          // Telefon/tablet: bez razmicanja slojeva uz skrol (SVG bi se precrtavao svaki frejm); crtež ostaje.
+          if(reduce||window.matchMedia('(hover: none), (pointer: coarse), (max-width: 1023px)').matches)return
           const axis=svg.dataset.axis as 'x'|'y'|'z'
           const gap=Number(svg.dataset.gap)
           if(!gap)return
