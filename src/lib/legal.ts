@@ -101,7 +101,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
         blocks: [
           {
             t: 'p',
-            text: 'Ploče, profili, kamena vuna, stiropor i slična roba često se isporučuju na paletama ili u većim količinama. Način isporuke, vrstu vozila i termin dogovaramo s vama unaprijed, obično telefonom ili e-poštom.',
+            text: 'Ploče, profili, kamena vuna i slična roba često se isporučuju na paletama ili u većim količinama. Način isporuke, vrstu vozila i termin dogovaramo s vama unaprijed, obično telefonom ili e-poštom.',
           },
           {
             t: 'p',

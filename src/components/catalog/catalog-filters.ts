@@ -10,8 +10,8 @@ export type CatalogSort = 'preporuceno' | 'cijena-rastuce' | 'cijena-opadajuce' 
 export const PROGRAM_IDS = ['krovni-sistemi', 'zidni-blokovi', 'malteri-ljepila'] as const
 export const PROGRAM_NAMES: Record<(typeof PROGRAM_IDS)[number], string> = {
   'krovni-sistemi': 'Krovni sistemi',
-  'zidni-blokovi': 'Zidni blokovi',
-  'malteri-ljepila': 'Malteri i ljepila',
+  'zidni-blokovi': 'Zidni sistemi',
+  'malteri-ljepila': 'Građevinska hemija',
 }
 export type ProgramId = (typeof PROGRAM_IDS)[number]
 

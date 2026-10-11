@@ -49,7 +49,8 @@ export default async function ProductPage({ params }: PageProps<'/prodavnica/[sk
     // kutija isto piše u specifikaciji ("Vreća 5 kg"), pa se ne ponavlja.
     ...(product.pack && product.unit === 'm²' ? [['Pakovanje', `${qtyLabel(product.pack.size, product.unit)} — 1 ${product.pack.name}`]] : []),
     ['Masa', massLabel(product)],
-    ['Brend', product.brand],
+    // Javni izvori potvrđuju sistem suhe gradnje i kamenu vunu, ne pojedinačne artikle.
+    ['Brend', 'Primjer artikla, proizvođača potvrđuje prodaja'],
     ['Šifra', product.sku],
   ]
 

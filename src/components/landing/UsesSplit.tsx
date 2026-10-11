@@ -14,12 +14,12 @@ import styles from './WorkSections.module.css'
 
 // Svaki red = jedan posao i kategorija iz verifikovanog researcha (2026-09-17). Samo kategorije, bez
 // pojedinačnih artikala. Kupatilo je sanitarna oprema (registrovana djelatnost), ne pločice. Zid i krov
-// su istorijski potvrđeni (B), pa idu isključivo kao upit, bez tvrdnje da su u ponudi.
+// su na Wienerbergerovoj listi prodajnih mjesta (2020): vode na Tondach/Porotherm u katalogu, dostupnost po upitu.
 const WORKS: { id: WorkKind; title: string; label: string; description: string; href: string; cta: string }[] = [
   { id:'suha-gradnja', title:'Pregradni zid ili spušteni plafon', label:'Suha gradnja', description:'Ploče, profili i pribor.', href:'/prodavnica?kategorija=suha-gradnja#artikli', cta:'Materijal za suhu gradnju' },
   { id:'izolacija', title:'Toplotna i zvučna izolacija', label:'Kamena vuna', description:'Kamena vuna za zid i krov.', href:'/prodavnica?kategorija=izolacija#artikli', cta:'Materijal za izolaciju' },
-  { id:'zidanje-krov', title:'Zidanje i pokrivanje krova', label:'Po upitu', description:'Po upitu, prema vašoj specifikaciji.', href:'/upit-za-izvodjace?program=zidni-krovni', cta:'Pošaljite specifikaciju' },
-  { id:'kupatilo', title:'Sanitarna oprema za kupatilo', label:'Sanitarna oprema', description:'Program i dostupnost po upitu.', href:'/prodavnica?kategorija=sanitarna-oprema#artikli', cta:'Sanitarna oprema' },
+  { id:'zidanje-krov', title:'Zidanje i pokrivanje krova', label:'Tondach i Porotherm', description:'Crijep i opeka; dostupnost modela po upitu.', href:'/prodavnica?kategorija=krovni-sistemi,zidni-blokovi#artikli', cta:'Crijep i opeka' },
+  { id:'kupatilo', title:'Sanitarna oprema za kupatilo', label:'Sanitarna oprema', description:'Program i dostupnost po upitu.', href:'/upit-za-izvodjace?program=sanitarna-oprema', cta:'Upit za sanitarnu opremu' },
 ]
 
 export default function UsesSplit() {

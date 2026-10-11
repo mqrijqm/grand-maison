@@ -13,8 +13,10 @@ import styles from './CatalogMarkets.module.css'
 // vozi traku velikih kartica kategorija preko nje. Kartica koja dolazi ulijevo dobija višu fotografiju
 // (a niži panel), kartice desno su "na čekanju" sa nižom fotografijom.
 //
-// Kategorije su samo provjerene (istraživanje 2026-10-11): Tondach i Porotherm su na Wienerbergerovoj
-// mapi prodajnih mjesta, Baumalt na svojoj listi partnera; suha gradnja i izolacija su grupe kataloga.
+// Kategorije prema istraživanju (2026-10-11): suha gradnja i kamena vuna imaju vlastite javne listinge firme,
+// Tondach i Porotherm su na Wienerbergerovoj listi prodajnih mjesta (2020), Baumalt na svojoj listi partnera.
+// Redoslijed: Suha gradnja · Izolacija · Krovni sistemi · Zidni sistemi · Građevinska hemija; sekundarni
+// program (hidroizolacija, dimnjački sistemi, drvni program, sanitarna oprema) je na posljednjoj kartici.
 // Ostale grupe sa starog sajta firme idu na posljednju karticu, po upitu.
 // Boje panela: tamno plava, bakar i oker iz logotipa, kobalt sajta i krem; tekst bijel ili tamno plav prema pozadini.
 // Fotografije: Pexels (izvori u public/stock/credits.json), Codex samo crop i ton. Uvod: dron snimak stovarišta.
@@ -32,50 +34,6 @@ type Market = {
 }
 
 const MARKETS: Market[] = [
-  {
-    id: 'krovni',
-    title: 'Krovni sistemi',
-    sub: 'Tondach crijep, Wienerberger',
-    desc: 'Glineni crijep i sistemska oprema za kose krovove: Continental, Traditon, Twiston, Planoton i drugi modeli.',
-    href: '/prodavnica?kategorija=krovni-sistemi#artikli',
-    img: '/markets/krovni.webp',
-    bg: '#1b2436',
-    ink: 'light',
-    links: [
-      { label: 'Tondach crijep', href: '/prodavnica?kategorija=krovni-sistemi#artikli' },
-      { label: 'Kalkulatori za krov', href: '/kalkulator' },
-      { label: 'Upit za krovni program', href: '/upit-za-izvodjace?program=zidni-krovni' },
-    ],
-  },
-  {
-    id: 'blokovi',
-    title: 'Zidni blokovi',
-    sub: 'Porotherm, Wienerberger',
-    desc: 'Opeka za nosive, spoljne i pregradne zidove, debljine od 10 do 50 cm, i blokovi punjeni kamenom vunom.',
-    href: '/prodavnica?kategorija=zidni-blokovi#artikli',
-    img: '/markets/blokovi.webp',
-    bg: '#b46c44',
-    ink: 'light',
-    links: [
-      { label: 'Porotherm blokovi', href: '/prodavnica?kategorija=zidni-blokovi#artikli' },
-      { label: 'Kalkulatori za zid', href: '/kalkulator' },
-      { label: 'Upit za zidni program', href: '/upit-za-izvodjace?program=zidni-krovni' },
-    ],
-  },
-  {
-    id: 'malteri',
-    title: 'Malteri i ljepila',
-    sub: 'Baumalt i gipsane mase',
-    desc: 'Mašinski cementno-krečni i gipsani malteri, ljepila za keramiku i dekorativni malteri Baumalt.',
-    href: '/prodavnica?kategorija=malteri-ljepila#artikli',
-    img: '/markets/malteri-ljepila.webp',
-    bg: '#3156ea',
-    ink: 'light',
-    links: [
-      { label: 'Baumalt malteri i ljepila', href: '/prodavnica?kategorija=malteri-ljepila#artikli' },
-      { label: 'Gipsane mase', href: '/prodavnica?kategorija=veziva#artikli' },
-    ],
-  },
   {
     id: 'suha-gradnja',
     title: 'Suha gradnja',
@@ -102,6 +60,50 @@ const MARKETS: Market[] = [
     bg: '#f4f1ec',
     ink: 'dark',
     links: [{ label: 'Kamena vuna', href: '/prodavnica?kategorija=izolacija#artikli' }],
+  },
+  {
+    id: 'krovni',
+    title: 'Krovni sistemi',
+    sub: 'Tondach crijep, Wienerberger',
+    desc: 'Glineni crijep i sistemska oprema za kose krovove: Continental, Traditon, Twiston, Planoton i drugi modeli.',
+    href: '/prodavnica?kategorija=krovni-sistemi#artikli',
+    img: '/markets/krovni.webp',
+    bg: '#1b2436',
+    ink: 'light',
+    links: [
+      { label: 'Tondach crijep', href: '/prodavnica?kategorija=krovni-sistemi#artikli' },
+      { label: 'Kalkulatori za krov', href: '/kalkulator' },
+      { label: 'Upit za krovni program', href: '/upit-za-izvodjace?program=zidni-krovni' },
+    ],
+  },
+  {
+    id: 'blokovi',
+    title: 'Zidni sistemi',
+    sub: 'Porotherm, Wienerberger',
+    desc: 'Opeka za nosive, spoljne i pregradne zidove, debljine od 10 do 50 cm, i blokovi punjeni kamenom vunom.',
+    href: '/prodavnica?kategorija=zidni-blokovi#artikli',
+    img: '/markets/blokovi.webp',
+    bg: '#b46c44',
+    ink: 'light',
+    links: [
+      { label: 'Porotherm blokovi', href: '/prodavnica?kategorija=zidni-blokovi#artikli' },
+      { label: 'Kalkulatori za zid', href: '/kalkulator' },
+      { label: 'Upit za zidni program', href: '/upit-za-izvodjace?program=zidni-krovni' },
+    ],
+  },
+  {
+    id: 'malteri',
+    title: 'Građevinska hemija',
+    sub: 'Baumalt i gipsane mase',
+    desc: 'Baumalt malteri, ljepila za keramiku i dekorativni malteri, i gipsane mase za spojeve.',
+    href: '/prodavnica?kategorija=malteri-ljepila#artikli',
+    img: '/markets/malteri-ljepila.webp',
+    bg: '#3156ea',
+    ink: 'light',
+    links: [
+      { label: 'Baumalt malteri i ljepila', href: '/prodavnica?kategorija=malteri-ljepila#artikli' },
+      { label: 'Gipsane mase', href: '/prodavnica?kategorija=veziva#artikli' },
+    ],
   },
 ]
 
@@ -319,8 +321,8 @@ export default function CatalogMarkets({ variant = 'page' }: { variant?: 'page' 
               <p className={styles.lastLabel}>Ostali program · po upitu</p>
               <h2 className={styles.lastTitle}>Ne vidite šta vam treba?</h2>
               <p className={styles.lastText}>
-                Za dimnjačke i cijevne sisteme, hidroizolaciju, opločnike, sinterovani kamen, fasadne sisteme, cemente i
-                željezo pošaljite upit sa količinama.
+                Hidroizolacija, dimnjački sistemi, drvni program i sanitarna oprema, kao i cijevni sistemi, opločnici,
+                sinterovani kamen, fasadni sistemi, cementi i željezo: pošaljite upit sa količinama.
                 Prodaja vam javlja dostupnost, cijenu i termin preuzimanja ili dostave po Banjoj Luci.
               </p>
               <div className={styles.lastActions}>

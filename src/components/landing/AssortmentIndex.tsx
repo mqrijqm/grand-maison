@@ -17,7 +17,7 @@ import styles from './Heritage.module.css'
 // Fotografije su prave (Pexels, izvori u public/stock/credits.json); Codex ih je samo izrezao i ujednačio ton.
 const GROUPS: { name: string; img: string; note?: string }[] = [
   { name: 'Fasadni sistemi', img: 'fasadni' },
-  { name: 'Termoizolacioni sistemi', img: 'termoizolacioni', note: 'Uključujući kamenu vunu' },
+  { name: 'Termoizolacioni sistemi', img: 'termoizolacioni', note: 'Kamena vuna' },
   { name: 'Hidroizolacioni sistemi', img: 'hidroizolacioni' },
   { name: 'Krovni sistemi', img: 'krovni', note: 'Tondach crijep i krovni elementi' },
   { name: 'Dimnjački sistemi', img: 'dimnjacki', note: 'Po upitu' },
@@ -30,6 +30,8 @@ const GROUPS: { name: string; img: string; note?: string }[] = [
   { name: 'Cijevni sistemi', img: 'cijevni', note: 'Po upitu' },
   { name: 'Opločnici', img: 'oplocnici', note: 'Po upitu' },
   { name: 'Sinterovani kamen', img: 'sinterovani-kamen', note: 'Po upitu' },
+  { name: 'Drvni program', img: 'drvni-program', note: 'Registrovana djelatnost · po upitu' },
+  { name: 'Sanitarna oprema', img: 'sanitarna-oprema', note: 'Registrovana djelatnost · po upitu' },
 ]
 const src = (img: string) => `/assortment/${img}.webp`
 

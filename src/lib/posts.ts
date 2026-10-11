@@ -179,7 +179,7 @@ export const POSTS: Post[] = [
         t: 'list',
         items: [
           'Potvrdite širinu prilaza i nosivost podloge.',
-          'Oslobodite mjesto za stabilizatore i radnu zonu krana.',
+          'Oslobodite mjesto za vozilo i istovar paleta.',
           'Provjerite kablove, grane, balkone i druge prepreke iznad vozila.',
           'Odredite ravnu, suhu podlogu za palete.',
           'Imenujte osobu koja preuzima robu i provjerava otpremnicu.',
@@ -187,7 +187,7 @@ export const POSTS: Post[] = [
       },
       {
         t: 'note',
-        text: 'Kran spušta paletu na dogovoreno dostupno mjesto. Unutrašnji prenos i zaštitu materijala od vremena organizuje gradilište.',
+        text: 'Roba se istovara na dogovoreno dostupno mjesto. Unutrašnji prenos i zaštitu materijala od vremena organizuje gradilište.',
       },
     ],
   },

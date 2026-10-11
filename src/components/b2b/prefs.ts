@@ -23,7 +23,8 @@ function load() {
     state = {
       siteId: typeof d.siteId === 'string' ? d.siteId : null,
       zoneId: DELIVERY_ZONES.some((z) => z.id === d.zoneId) ? (d.zoneId as string) : EMPTY.zoneId,
-      method: d.method === 'kran' || d.method === 'preuzimanje' ? d.method : 'standard',
+      // Stari izbor "kran" (nije potvrđena usluga) postaje dostava na adresu.
+      method: d.method === 'preuzimanje' ? d.method : 'standard',
     }
   } catch {}
 }
@@ -56,6 +57,6 @@ export function useDeliveryPrefs() {
 
 export const METHOD_LABEL: Record<DeliveryMethod, string> = {
   preuzimanje: 'Preuzimanje na stovarištu',
-  standard: 'Standardna dostava',
+  standard: 'Dostava na adresu',
   kran: 'Kamion sa kranom',
 }

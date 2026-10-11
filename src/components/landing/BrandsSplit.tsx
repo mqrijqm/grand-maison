@@ -92,7 +92,7 @@ const ARTS = [rays, torus, globe]
 const USPS: { title: string; text: string }[] = [
   {
     title: 'Dostava i istovar',
-    text: 'Za dostavu paletirane i teške robe pošaljite lokaciju i količine. Mogućnosti isporuke i kranskog istovara provjerite s prodajom prema robi i pristupu gradilištu.',
+    text: 'Za dostavu paletirane i teške robe pošaljite lokaciju i količine. Dostavu na adresu u Banjoj Luci i način istovara dogovarate s prodajom prema robi i pristupu gradilištu.',
   },
   {
     title: 'Cijena prilagođena vama',

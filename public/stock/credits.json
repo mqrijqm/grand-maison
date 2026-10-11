@@ -703,5 +703,20 @@
     "source": "Pexels",
     "url": "https://www.pexels.com/photo/4249585/",
     "license": "Pexels License (free for commercial use, no attribution required)"
+  },
+  "assortment-drvni-program": {
+    "id": 12278586,
+    "source": "Pexels",
+    "url": "https://www.pexels.com/photo/12278586/",
+    "license": "Pexels License (free for commercial use, no attribution required)"
+  },
+  "assortment-sanitarna-oprema": {
+    "id": 6956845,
+    "source": "Pexels",
+    "url": "https://www.pexels.com/photo/6956845/",
+    "license": "Pexels License (free for commercial use, no attribution required)",
+    "file": "/editorial/programs/sanitarna-oprema.webp",
+    "edit": "crop + tone only (Codex CLI, ImageMagick)",
+    "note": "kvadratni izrez iste fotografije"
   }
 }

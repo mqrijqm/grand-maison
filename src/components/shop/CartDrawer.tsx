@@ -12,13 +12,13 @@ import Price from '@/components/b2b/Price'
 import { buildQuote } from '@/components/b2b/quote'
 import { METHOD_LABEL, setPrefs, useDeliveryPrefs } from '@/components/b2b/prefs'
 import { usePortalPartner } from '@/lib/portal'
-import { recommendCrane, tons, type DeliveryMethod } from '@/lib/logistics'
+import { tons, type DeliveryMethod } from '@/lib/logistics'
 
 const FOCUSABLE = 'button:not(:disabled), a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
 
 // Korpa je ladica sa desne strane. 
 // bira se gradilište, provjerava raspoloživi kreditni limit i nudi predračun. Isporuka: masa tereta u
-// tonama, zona i način (preuzimanje / standardna / kamion sa kranom) — lib/logistics.
+// tonama, zona i način (preuzimanje / dostava na adresu; kamion sa kranom nije potvrđen) — lib/logistics.
 // Nalazi se IZVAN prodavnice u DOM-u, jer značka i marquee iz landinga
 // stoje na višem sloju od cijele prodavnice, a ladica mora biti iznad njih.
 export default function CartDrawer() {
@@ -162,7 +162,7 @@ export default function CartDrawer() {
                 <span className="tabular-nums opacity-60">Masa tereta {tons(q.kg)} t</span>
               </div>
               <div className="mt-3 grid gap-2" role="radiogroup" aria-label="Način isporuke">
-                {(['preuzimanje', 'standard', 'kran'] as DeliveryMethod[]).map((m) => (
+                {(['preuzimanje', 'standard'] as DeliveryMethod[]).map((m) => (
                   <button
                     key={m}
                     type="button"
@@ -175,17 +175,11 @@ export default function CartDrawer() {
                   >
                     <span>
                       {METHOD_LABEL[m]}
-                      {m === 'kran' && recommendCrane(q.kg) && <span className="b2b-pill ml-2">preporučeno</span>}
                     </span>
                     <span className={`size-3 rounded-full border ${prefs.method === m ? 'border-ink bg-ink' : 'border-ink/40'}`} />
                   </button>
                 ))}
               </div>
-              {prefs.method === 'kran' && (
-                <p className="mt-2 text-[10.5px] leading-[1.5] opacity-60">
-                  Istovar na etažu ili skelu — dogovara se prema lokaciji, pristupu i vrsti robe (prevoz + rad dizalice).
-                </p>
-              )}
               {prefs.method !== 'preuzimanje' && (
                 <p className="mt-4 text-[10.5px] opacity-80">Dostava samo na teritoriji grada Banja Luka.</p>
               )}

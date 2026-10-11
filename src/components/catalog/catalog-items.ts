@@ -38,14 +38,14 @@ export const BRANDS: Brand[] = [
   {
     id: 'ostalo',
     name: 'Suha gradnja i izolacija',
-    text: 'Gips-kartonske ploče, pocinčani profili, kamena vuna, gipsane mase i pribor za montažu. Proizvođača i dostupnost potvrđuje prodaja.',
+    text: 'Sistem suhe gradnje i kamena vuna (javni listinzi firme). Artikli ispod su primjeri iz tih sistema: proizvođača, model i dostupnost potvrđuje prodaja.',
   },
 ]
 
 export const CATEGORY_NAMES: Record<string, string> = {
   'krovni-sistemi': 'Krovni sistemi',
-  'zidni-blokovi': 'Zidni blokovi',
-  'malteri-ljepila': 'Malteri i ljepila',
+  'zidni-blokovi': 'Zidni sistemi',
+  'malteri-ljepila': 'Građevinska hemija',
   ...Object.fromEntries(CATEGORIES.map((c) => [c.id, c.name])),
 }
 
