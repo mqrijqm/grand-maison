@@ -407,6 +407,20 @@
 .card:hover .photo img {
   transform: scale(1.04);
 }
+/* Druga slika (projekat) leži preko artikla i pojavi se samo na hover mišem; prvo stanje je uvijek artikl. */
+.photo .project {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.5s ease, transform 0.8s cubic-bezier(0.2, 0.7, 0.2, 1);
+  pointer-events: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .card:hover .photo .project,
+  .card:focus-within .photo .project {
+    opacity: 1;
+  }
+}
 .cover {
   position: absolute;
   inset: 0;

@@ -62,6 +62,8 @@ export type CatalogItem = {
   unit: string
   uses: string[]
   image: string
+  /** Fotografija objekta/projekta koja se pojavi na hover (prvo stanje je uvijek samo artikl) */
+  hover?: string
   /** Stranica artikla (samo za artikle iz kataloga stovarišta) */
   href?: string
   /** Zvanična stranica proizvođača */
@@ -71,6 +73,21 @@ export type CatalogItem = {
 }
 
 const BRAND_OF: Record<string, BrandId> = { Tondach: 'tondach', Porotherm: 'porotherm', Baumalt: 'baumalt' }
+
+// Hover: Tondach — kuća pokrivena baš tim modelom (referenca sa stranice proizvoda); Porotherm — objekti od
+// opeke ili zidanje Profi blokova ljepilom Dryfix; Baumalt — fotografija radova (malterisanje, keramika, fasada).
+const PROJECT: Record<string, string> = {
+  'tondach-continental-12': '/catalog/tondach-continental-12-projekt.webp',
+  'tondach-traditon-9': '/catalog/tondach-traditon-9-projekt.webp',
+  'tondach-twiston-9': '/catalog/tondach-twiston-9-projekt.webp',
+  'tondach-planoton-10': '/catalog/tondach-planoton-10-projekt.webp',
+  'tondach-contiton-9': '/catalog/tondach-contiton-9-projekt.webp',
+  'tondach-veneton-13': '/catalog/tondach-veneton-13-projekt.webp',
+  'tondach-biber': '/catalog/tondach-biber-projekt.webp',
+}
+const projectOf = (id: string, brand: string, fallback: string) =>
+  PROJECT[id] ??
+  (brand === 'Porotherm' ? `/catalog/porotherm-${/profi/.test(id) ? 'dryfix' : 'objekti'}-projekt.webp` : brand === 'Baumalt' ? fallback : undefined)
 
 const programItems: CatalogItem[] = PROGRAM_ITEMS.map((item) => {
   const brand = BRAND_OF[item.brand] ?? 'ostalo'
@@ -88,6 +105,7 @@ const programItems: CatalogItem[] = PROGRAM_ITEMS.map((item) => {
     // Zvanična fotografija proizvođača (wienerberger.ba, baumalt.ba), samo kvadratni izrez i ujednačena podloga;
     // izvori u public/catalog/sources.json.
     image: `/catalog/${item.id}.webp`,
+    hover: projectOf(item.id, item.brand, item.image),
     source: item.source,
     featured: false,
   }

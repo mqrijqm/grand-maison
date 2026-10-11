@@ -1,5 +1,5 @@
 {
- "note": "Zvanične fotografije proizvođača (Wienerberger: wienerberger.ba, Baumalt: baumalt.ba). Obrada: kvadratni izrez, ujednačena svijetla podloga, blago izoštravanje (Codex). Bez generisanja sadržaja.",
+ "note": "Zvanične fotografije proizvođača (Wienerberger: wienerberger.ba, Baumalt: baumalt.ba). Obrada: kvadratni izrez, ujednačena svijetla podloga, blago izoštravanje (Codex). Bez generisanja sadržaja. Kartica: prvo stanje samo artikl; *-projekt.webp je fotografija objekta koja se prikaže na hover. Codex: samo boja/ton.",
  "images": {
   "porotherm-25-s.webp": {
    "image": "https://www.wienerberger.ba/var/commerce/products/wienerberger/products/wbs_ba_website/wbs_ba_website/wall/905629/assets/asset.imgTransformer/crop_1to1/lg-5/1673448516507/BA_MKT_PHO_PSH_WAL_POR_Porotherm_25_S.jpg",
@@ -34,28 +34,28 @@
    "page": "https://www.wienerberger.ba/proizvodi/zid/porotherm-opeka/porotherm-10-s.html"
   },
   "tondach-continental-12.webp": {
-   "image": "https://www.wienerberger.ba/proizvodi/krov/tondach-linije-proizvoda/continental-12-siguran-i-moderan-crijep/jcr%3Acontent/root/slideshow/item/image.imgTransformer/media_16to7/lg-5/1690962437869/RS_MKT_PHO_REF_TON_Family_home_02_Kragujevac_001.jpg",
-   "page": "https://www.wienerberger.ba/proizvodi/krov/tondach-linije-proizvoda/continental-12-siguran-i-moderan-crijep.html"
+   "image": "https://www.wienerberger.ba/proizvodi/krov/tondach-linije-proizvoda/jcr:content/root/responsivegrid_copy/backgroundcontainer_/backgroundcontainer/teaserbox/smallteaserbox_19475/image.imgTransformer/crop_2to1/lg-7/1775125555383/BG_MKT_PHO_TON_Continental_12_darkbraun.jpg",
+   "page": "https://www.wienerberger.ba/proizvodi/krov.html"
   },
   "tondach-traditon-9.webp": {
    "image": "https://www.wienerberger.ba/var/commerce/products/wienerberger/products/wbs_ba_website/wbs_ba_website/roof/906244/assets/asset.imgTransformer/crop_1to1/lg-5/1676549033100/HR_MKT_PHO_PSH_ROF_TON_Traditon_9_Color_Plus_Crvena.jpg",
    "page": "https://www.wienerberger.ba/proizvodi/krov/tondach-linije-proizvoda/traditon-9-crijep-idealan-za-svaki-krov.html"
   },
   "tondach-twiston-9.webp": {
-   "image": "https://www.wienerberger.ba/proizvodi/krov/tondach-linije-proizvoda/twiston-9-crijep-za-svaki-objekt/jcr%3Acontent/root/slideshow/item/image.imgTransformer/media_16to7/lg-5/1690961524247/MK_MKT_REF_Twiston_9_house_zlatibor-1.jpg",
-   "page": "https://www.wienerberger.ba/proizvodi/krov/tondach-linije-proizvoda/twiston-9-crijep-za-svaki-objekt.html"
+   "image": "https://www.wienerberger.ba/proizvodi/krov/tondach-linije-proizvoda/jcr:content/root/responsivegrid_copy/backgroundcontainer__1921771250/backgroundcontainer/backgroundcontainer/teaserbox/smallteaserbox_16089_695748033/image.imgTransformer/crop_1to1/lg-7/1775125555383/Twiston%209%20antracit-3_900x900.jpg",
+   "page": "https://www.wienerberger.ba/proizvodi/krov.html"
   },
   "tondach-planoton-10.webp": {
    "image": "https://www.wienerberger.ba/proizvodi/krov/tondach-linije-proizvoda/planoton-10-moderan-crijep-vrhunske-kvalitete/jcr:content/root/responsivegrid_copy/responsivegrid_15724/calltoaction/image.imgTransformer/fullwidth/lg-5/1690959713817/HR_MKT_PHO_ROF_TON_Planoton_10_perspective1.jpg",
    "page": "https://www.wienerberger.ba/proizvodi/krov/tondach-linije-proizvoda/planoton-10-moderan-crijep-vrhunske-kvalitete.html"
   },
   "tondach-contiton-9.webp": {
-   "image": "https://www.wienerberger.ba/proizvodi/krov/tondach-linije-proizvoda/contiton-9-crijep-velikog-formata/jcr:content/root/responsivegrid_copy/hero_1226706812_copy/first-image/image.imgTransformer/crop_8to5/lg-5/1690960340980/HR_MKT_PHO_REF_Valens_Residence_013.jpg",
-   "page": "https://www.wienerberger.ba/proizvodi/krov/tondach-linije-proizvoda/contiton-9-crijep-velikog-formata.html"
+   "image": "https://www.wienerberger.hr/var/commerce/products/wienerberger/products/wbs_hr_website/wbs_hr_website/roof/850456/assets/asset.imgTransformer/crop_1to1/lg-7/1612279127527/HR_MKT_PHO_PSH_ROF_TON_Contiton_9_Natur_Color_Crvena.jpg",
+   "page": "https://www.wienerberger.hr/proizvodi/krov/tondach-linije-proizvoda/contiton-9-crijep-velikog-formata-za-kvalitetan-krov.html"
   },
   "tondach-veneton-13.webp": {
-   "image": "https://www.wienerberger.ba/proizvodi/krov/tondach-linije-proizvoda/veneton-13-mediteranska-elegancija-na-krovu/jcr%3Acontent/root/slideshow/item/image.imgTransformer/media_16to7/lg-5/1690885340783/HR_MKT_PHO_REF_Villa_Jordanov_004.jpg",
-   "page": "https://www.wienerberger.ba/proizvodi/krov/tondach-linije-proizvoda/veneton-13-mediteranska-elegancija-na-krovu.html"
+   "image": "https://www.wienerberger.ba/proizvodi/krov/tondach-linije-proizvoda/jcr:content/root/responsivegrid_copy/backgroundcontainer__2031211944/teaserbox/smallteaserbox_copy_/image.imgTransformer/crop_2to1/lg-7/1775125555383/MK_MKT_PHO_TON_Veneton_13_nature%20(2).jpg",
+   "page": "https://www.wienerberger.ba/proizvodi/krov.html"
   },
   "tondach-biber.webp": {
    "image": "https://www.wienerberger.ba/var/commerce/products/wienerberger/products/wbs_ba_website/wbs_ba_website/roof/905574/assets/asset.imgTransformer/crop_1to1/lg-5/1571122401942/SI_MKT_PHO_PSH_ROF_TON_Bobrovec_Natur_Naravno_rdeca.jpg",
@@ -104,6 +104,42 @@
   "baumalt-bmedelputz-r20.webp": {
    "image": "https://baumalt.ba/wp-content/uploads/2019/10/BMEdelPutz_R20-copy.png",
    "page": "https://baumalt.ba/portfolio/baumalt-bmedelputz-r20/"
+  },
+  "tondach-continental-12-projekt.webp": {
+   "note": "referentni objekat sa stranice proizvoda (ranija slika kartice)",
+   "page": "vidi tondach-continental-12"
+  },
+  "tondach-contiton-9-projekt.webp": {
+   "note": "referentni objekat sa stranice proizvoda (ranija slika kartice)",
+   "page": "vidi tondach-contiton-9"
+  },
+  "tondach-twiston-9-projekt.webp": {
+   "note": "referentni objekat sa stranice proizvoda (ranija slika kartice)",
+   "page": "vidi tondach-twiston-9"
+  },
+  "tondach-veneton-13-projekt.webp": {
+   "note": "referentni objekat sa stranice proizvoda (ranija slika kartice)",
+   "page": "vidi tondach-veneton-13"
+  },
+  "tondach-planoton-10-projekt.webp": {
+   "image": "https://www.wienerberger.ba/proizvodi/krov/tondach-linije-proizvoda/planoton-10-moderan-crijep-vrhunske-kvalitete/jcr:content/root/responsivegrid_copy/responsivegrid_15724/backgroundcontainer/backgroundcontainer/imagegallery/image_copy_538495761/image.imgTransformer/media_16to10/lg-7/1690959713817/CZ_PHO_REF_RD_VROUTEK_015.jpg",
+   "page": "https://www.wienerberger.ba/proizvodi/krov/tondach-linije-proizvoda/planoton-10-moderan-crijep-vrhunske-kvalitete.html"
+  },
+  "tondach-traditon-9-projekt.webp": {
+   "image": "https://www.wienerberger.ba/proizvodi/krov/tondach-linije-proizvoda/traditon-9-crijep-idealan-za-svaki-krov/jcr:content/root/responsivegrid_97455/hero_1226706812_copy/first-image/image.imgTransformer/crop_8to5/sm-3/1690961993779/013MM180805TondachealizaciaVrbovceN4A9130hires.jpg",
+   "page": "https://www.wienerberger.ba/proizvodi/krov/tondach-linije-proizvoda/traditon-9-crijep-idealan-za-svaki-krov.html"
+  },
+  "tondach-biber-projekt.webp": {
+   "image": "https://www.wienerberger.ba/proizvodi/krov/tondach-linije-proizvoda/biber-tradicionalni-crijep-za-svaki-krov/jcr%3Acontent/root/responsivegrid_copy_/hero/first-image/image.imgTransformer/crop_5to2_big/lg-7/1690962998039/SI_M%D0%9A%D0%A2_PHO_REF_hisa_Celovska_005.jpg",
+   "page": "https://www.wienerberger.ba/proizvodi/krov/tondach-linije-proizvoda/biber-tradicionalni-crijep-za-svaki-krov.html"
+  },
+  "porotherm-objekti-projekt.webp": {
+   "image": "https://www.wienerberger.ba/proizvodi/zid/porotherm-opeka/porotherm-25-s/jcr:content/root/responsivegrid/responsivegrid/calltoaction_copy_co_1164516556/image.imgTransformer/fullwidth/lg-7/1696844504727/SI_M%D0%9A%D0%A2_PHO_REF_Tri_Hise_021.jpg",
+   "page": "https://www.wienerberger.ba/proizvodi/zid/porotherm-opeka/porotherm-25-s.html"
+  },
+  "porotherm-dryfix-projekt.webp": {
+   "image": "https://www.wienerberger.ba/jcr:content/root/responsivegrid_copy_/backgroundcontainer_1602624416/backgroundcontainer/teaserbox_copy/smallteaserbox_copy__1404722681/image.imgTransformer/crop_2to1/lg-7/1784547512841/Porotherm%20Dryfix%20Photosession%20(28).jpg",
+   "page": "https://www.wienerberger.ba/"
   }
  }
 }

@@ -301,6 +301,7 @@ export default function CatalogBrowse() {
                   <li key={item.key} data-item className={styles.card}>
                     <div className={styles.photo}>
                       <img src={item.image} alt={item.name} width={600} height={600} loading={i < 4 ? 'eager' : 'lazy'} decoding="async" />
+                      {item.hover && <img className={styles.project} src={item.hover} alt="" width={600} height={600} loading="lazy" decoding="async" aria-hidden />}
                       {item.featured && <span className={styles.badge}>Izdvojeno</span>}
                       {item.href ? (
                         <Link href={item.href} className={styles.cover} aria-label={`Pogledaj proizvod: ${item.name}`}>
