@@ -274,7 +274,7 @@
 .stageTools { display: flex; align-items: center; gap: 10px; margin-top: 8px; font-size: 11px; font-variant-numeric: tabular-nums; }
 .stageTools > button:not(.stageCta) { display: grid; place-items: center; width: 30px; height: 30px; border: 1px solid rgb(255 255 255 / 0.45); border-radius: 50%; color: #fff; transition: background 0.2s, color 0.2s; }
 .stageTools > button:not(.stageCta):hover { background: #fff; color: var(--cobalt); }
-.stageCta { margin-left: auto; min-height: 34px; padding: 0 14px; border-radius: 99px; background: #fff; color: var(--navy); font-size: 12px; font-weight: 600; transition: background 0.2s, color 0.2s; }
+.stageCta { flex: none; margin-left: auto; min-height: 34px; white-space: nowrap; padding: 0 14px; border-radius: 99px; background: #fff; color: var(--navy); font-size: 12px; font-weight: 600; transition: background 0.2s, color 0.2s; }
 .stageCta:hover { background: var(--navy); color: #fff; }
 .stageList { display: grid; align-content: center; }
 .stageList button { display: grid; grid-template-columns: 76px minmax(0, 1fr) auto; align-items: center; gap: 12px; width: 100%; min-height: 40px; padding: 0 12px; color: #fff; font-size: 13px; text-align: left; transition: background 0.2s, color 0.2s; }
