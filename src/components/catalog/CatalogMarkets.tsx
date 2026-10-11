@@ -313,10 +313,10 @@ export default function CatalogMarkets({ variant = 'page' }: { variant?: 'page' 
             </article>
           ))}
 
-          {/* Posljednja kartica: pitch i poziv. Ostale grupe sa starog sajta firme (fasade, hidroizolacija,
+          {/* Posljednja kartica (samo na prodavnici): pitch i poziv. Ostale grupe sa starog sajta firme (fasade, hidroizolacija,
               cement, željezo) i programi predstavljeni na Danu otvorenih vrata (dimnjački i cijevni sistemi,
               opločnici, sinterovani kamen) nemaju potvrđen lager, pa idu kao upit, ne kao lista artikala. */}
-          <article data-card className={`${styles.card} ${styles.cardLast}`} data-ink="light">
+          {!strip && <article data-card className={`${styles.card} ${styles.cardLast}`} data-ink="light">
             <div className={styles.lastInner}>
               <p className={styles.lastLabel}>Ostali program · po upitu</p>
               <h2 className={styles.lastTitle}>Ne vidite šta vam treba?</h2>
@@ -335,7 +335,7 @@ export default function CatalogMarkets({ variant = 'page' }: { variant?: 'page' 
                 </a>
               </div>
             </div>
-          </article>
+          </article>}
         </div>
 
         <span data-blob className={styles.blob} aria-hidden>

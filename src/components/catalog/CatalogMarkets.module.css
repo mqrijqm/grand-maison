@@ -473,3 +473,73 @@
     display: none;
   }
 }
+
+/* ——— Početna (strip): male kartice koje se listaju, centrirane u zakačenoj sekciji ——— */
+.strip .track {
+  top: calc(50% - min(31svh, 290px));
+  height: min(62svh, 580px);
+}
+.strip .card {
+  width: clamp(250px, 23vw, 360px);
+  margin-right: clamp(12px, 1.4vw, 22px);
+  /* Panel zadrži bar 200 px za naslov i opis. */
+  grid-template-rows: min(var(--img), calc(100% - 200px)) minmax(0, 1fr);
+}
+.strip .panel {
+  gap: 0 14px;
+  padding: clamp(16px, 1.4vw, 22px);
+}
+.strip .cardTitle {
+  font-size: clamp(18px, min(1.5vw, 3.4vh), 26px);
+}
+.strip .count {
+  margin-top: 6px;
+  font-size: 12px;
+}
+.strip .cardDesc {
+  margin-top: 8px;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+.strip .cardSub {
+  font-size: 13px;
+}
+.strip .plus {
+  width: 38px;
+  height: 38px;
+}
+.strip .plus svg {
+  width: 14px;
+  height: 14px;
+}
+.strip .subs {
+  grid-template-columns: 1fr;
+}
+.strip .subs a {
+  padding: 7px 0 8px;
+  font-size: 13px;
+}
+.strip .blob {
+  width: 96px;
+  height: 96px;
+  font-size: 14px;
+}
+@media (max-width: 899px), (prefers-reduced-motion: reduce) {
+  .strip .track {
+    top: auto;
+    height: auto;
+    gap: 12px;
+    padding-inline: 20px;
+  }
+  .strip .card {
+    --img: 56%;
+    width: 68vw;
+    height: min(64svh, 480px);
+    margin-right: 0;
+  }
+}
+/* Krem panel (Izolacija) na krem podlozi početne: tanak okvir drži ivicu kartice. */
+.strip .card {
+  outline: 1px solid rgb(27 36 54 / 0.12);
+  outline-offset: -1px;
+}

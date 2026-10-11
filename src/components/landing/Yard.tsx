@@ -6,11 +6,8 @@ import styles from './ClosingSections.module.css'
 const PHOTOS = [
   { photo: '/stovariste/yard.webp', blue: '/stovariste/yard-blue-v2.webp', label: 'Stovarište', alt: 'Pregled stovarišta Grand Company u Banjoj Luci' },
   { photo: '/stovariste/shop.webp', blue: '/stovariste/shop-blue-v2.webp', label: 'Prodaja', alt: 'Prodajni objekat Grand Company na lokaciji stovarišta' },
-  // Dron snimci firme; Codex samo izrezao (bez strelica slajdera), očistio šum, izoštrio i napravio plavu verziju.
-  { photo: '/stovariste/yard-aerial.webp', blue: '/stovariste/yard-aerial-blue.webp', label: 'Stovarište iz vazduha', alt: 'Palete građevinskog materijala na stovarištu Grand Company, snimak iz vazduha' },
-  { photo: '/stovariste/yard-topdown.webp', blue: '/stovariste/yard-topdown-blue.webp', label: 'Utovar', alt: 'Kamion i viljuškar između paleta na stovarištu Grand Company, snimak odozgo' },
 ]
-// Četiri fotografije stovarišta (dva reda) od ivice do ivice, odmah ispod plave sekcije recenzija (bez naslova).
+// Dvije fotografije stovarišta od ivice do ivice, odmah ispod plave sekcije recenzija (bez naslova).
 export default function Yard() {
   return (
     <section id="stovariste" className={`${styles.section} ${styles.yardBleed}`} aria-label="Prodaja i stovarište u Banjoj Luci">
