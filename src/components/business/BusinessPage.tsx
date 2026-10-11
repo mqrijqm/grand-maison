@@ -8,17 +8,14 @@ import { gsap, useGSAP } from '@/lib/gsap'
 import { useMediaMotion } from '@/lib/media'
 import { MQ } from '@/lib/motion'
 import { revealChars } from '@/lib/reveal'
-import BizProblems from './BizProblems'
-import BizReality from './BizReality'
 import PartnerSteps from './PartnerSteps'
 import PortalTour from './PortalTour'
 import Showcase from './portal/Showcase'
 import WhoSplit from './WhoSplit'
 import styles from './Business.module.css'
 
-// /za-firme: predloženi B2B portal Grand Company-ja. Stranica prvo govori o problemima (kupca i prodaje),
-// pa tek onda pokazuje portal, gdje svaki problem ima svoj ekran: heroj, problemi, portal (demo), koraci,
-// ekran po ekran, šta je ovo danas a šta treba za pravi B2B, kome je namijenjeno, završni poziv.
+// /za-firme: predloženi B2B portal Grand Company-ja: heroj, portal (demo), koraci, ekran po ekran,
+// kome je namijenjeno, završni poziv.
 
 export default function BusinessPage() {
   const root = useRef<HTMLDivElement>(null)
@@ -47,19 +44,14 @@ export default function BusinessPage() {
             Manje poziva i nijedan izgubljen upit. Firma naručuje po svom cjenovniku, prati isporuke i vidi svoj dug i limit.
           </p>
           <div data-up data-delay="0.25" className={styles.heroActions}>
-            <Cta href="#problemi" solid>
-              Koji problemi nestaju
+            <Cta href="#portal" solid>
+              Istražite B2B portal
             </Cta>
-            <Cta href="#portal">Isprobajte portal</Cta>
+            <Cta href="/upit-za-izvodjace?vrsta=saradnja">Zatražite poslovni nalog</Cta>
           </div>
         </header>
 
-        <BizProblems />
-
         <section id="portal" className={`gutter scroll-mt-24 ${styles.portalBlock}`} aria-label="B2B portal, interaktivni prikaz">
-          <p className={styles.portalHint}>
-            <b>Isprobajte portal.</b> Svaki problem iznad ima svoj ekran. Lijevo u meniju promijenite ulogu (vlasnik, šef, majstor, računovodstvo) i vidite šta ko smije; Admin je pogled prodaje Grand Company-ja. Demo podaci.
-          </p>
           <Showcase light />
         </section>
       </div>
@@ -71,9 +63,6 @@ export default function BusinessPage() {
       <section id="biz-explain" className={styles.explainBlock} aria-label="Portal, ekran po ekran">
         <PortalTour />
       </section>
-
-      {/* Iskreno: šta je portal danas (prezentacija) i šta treba za pravi B2B */}
-      <BizReality />
 
       {/* Za koga: raspored kao "Šta gradite?" na početnoj */}
       <WhoSplit />

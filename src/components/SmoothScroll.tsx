@@ -1,6 +1,7 @@
 'use client'
 
 import { ReactLenis, useLenis } from 'lenis/react'
+import { usePathname } from 'next/navigation'
 import { useEffect } from 'react'
 import { gsap, ScrollTrigger } from '@/lib/gsap'
 
@@ -28,6 +29,21 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
 
 function ScrollSync() {
   const lenis = useLenis()
+  const pathname = usePathname()
+
+  // Nova stranica uvijek kreće od vrha. Bez ovoga, klik na link dok skrol još klizi (npr. u footeru)
+  // ostavi Lenis da nastavi ka starom cilju, pa se nova stranica otvori na dnu. Linkovi sa sidrom
+  // (#artikli i sl.) sami skroluju na svoje mjesto.
+  useEffect(() => {
+    if (!lenis || window.location.hash) return
+    lenis.scrollTo(0, { immediate: true, force: true })
+    window.scrollTo(0, 0)
+    const id = requestAnimationFrame(() => {
+      lenis.scrollTo(0, { immediate: true, force: true })
+      window.scrollTo(0, 0)
+    })
+    return () => cancelAnimationFrame(id)
+  }, [pathname, lenis])
 
   // Ručno vraćanje pozicije sprečava kasni skok kad se stranica hidrira.
   // Ne pomjeramo korisnika na vrh: možda je već počeo da skroluje.
