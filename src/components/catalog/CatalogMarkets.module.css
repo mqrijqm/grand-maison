@@ -128,7 +128,8 @@
   position: relative;
   flex: none;
   display: grid;
-  grid-template-rows: var(--img) 1fr;
+  /* Panel uvijek zadrži bar 230 px za naslov i podnaslov (nizak prozor laptopa), fotografija uzima ostatak. */
+  grid-template-rows: min(var(--img), calc(100% - 230px)) minmax(0, 1fr);
   width: 53.5vw;
   height: 100%;
   overflow: hidden;
@@ -238,7 +239,7 @@
   margin: 0;
   font-family: var(--font-text), 'Helvetica Neue', Arial, sans-serif;
   font-weight: 400;
-  font-size: clamp(36px, 4.4vw, 76px);
+  font-size: clamp(30px, min(4.4vw, 7.5vh), 76px);
   line-height: 1;
   letter-spacing: -0.035em;
   text-transform: none;
@@ -335,6 +336,15 @@
   text-transform: none;
   pointer-events: none;
   transform: scale(0);
+}
+
+/* Nizak ekran (laptop sa trakama browsera): manji panel, manji krug "+" */
+@media (max-height: 760px) and (min-width: 900px) {
+  .panel { padding: 18px 24px; }
+  .plus { width: 48px; height: 48px; }
+  .subs a { padding: 7px 0 8px; font-size: 14px; }
+  .count { margin-top: 8px; }
+  .statement { font-size: clamp(32px, min(4.4vw, 8vh), 76px); }
 }
 
 /* ——— Telefon i tablet: uvod preko ekrana, kartice se listaju prstom ——— */

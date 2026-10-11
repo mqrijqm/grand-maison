@@ -3,7 +3,8 @@
 
 .top { position: relative; display: grid; gap: 56px; padding-top: clamp(40px, 8vh, 110px); padding-bottom: clamp(56px, 10vh, 120px); }
 .titleBlock { position: relative; z-index: 1; }
-.title { margin-top: 0; font-size: clamp(44px, 9.5vw, 160px); line-height: 0.82; letter-spacing: -0.04em; }
+/* Ista veličina kao "Nabavka za vašu firmu" na /za-firme. */
+.title { margin-top: 0; font-size: clamp(44px, 6vw, 112px); line-height: 0.92; letter-spacing: -0.035em; }
 .lead { margin-top: 36px; max-width: 40ch; font-size: 14px; line-height: 1.7; opacity: 0.75; text-transform: none; }
 
 /* Dvije ravne fotografije: veća lijevo, manja desno i spuštena */
@@ -18,8 +19,8 @@
 .row:hover { color: var(--cobalt); padding-left: 14px; }
 .rowNumber { font-size: 10px; letter-spacing: 0.12em; color: var(--cobalt); }
 .rowLabel { opacity: 0.5; }
-.rowValue { grid-column: 2; font-family: var(--font-heavy), Arial, sans-serif; font-weight: 700; font-size: clamp(26px, 5.6vw, 92px); line-height: 1; letter-spacing: -0.03em; text-transform: none; overflow-wrap: anywhere; }
-.rowEmail { font-size: clamp(20px, 4.4vw, 76px); overflow-wrap: normal; }
+.rowValue { grid-column: 2; font-family: var(--font-heavy), Arial, sans-serif; font-weight: 700; font-size: clamp(24px, 4.4vw, 80px); line-height: 1; letter-spacing: -0.03em; text-transform: none; overflow-wrap: anywhere; }
+.rowEmail { font-size: clamp(20px, 3.6vw, 64px); overflow-wrap: normal; }
 .rowArrow { position: absolute; right: 0; top: 50%; font-size: clamp(20px, 2.4vw, 36px); transform: translateY(-50%); opacity: 0; transition: opacity 0.3s, transform 0.4s; }
 .row:hover .rowArrow { opacity: 1; transform: translate(-6px, -50%); }
 
