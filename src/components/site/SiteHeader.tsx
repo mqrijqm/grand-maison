@@ -159,28 +159,50 @@ export default function SiteHeader({ variant }: { variant: 'inner' | 'overlay' |
         </div>
       </header>
 
-      {/* Meni preko cijelog ekrana (tri crte): sekcije centrirane, odvojene linijama */}
+      {/* Meni preko cijelog ekrana (tri crte): jarka kobalt podloga iznad navbara, stavke lijevo
+          poravnate i odvojene linijama, na dnu iste CTA radnje kao na desktopu. */}
       <div ref={menu} id="site-menu" className={`menu ${open ? 'is-open' : ''}`} aria-hidden={!open}>
         <div data-panel className="menu__panel" style={{ clipPath: 'inset(0% 0% 100% 0%)' }}>
+          <div className="menu__head">
+            <Link href="/" className="menu__logo" onClick={() => setOpen(false)} aria-label="Grand Company, početna">
+              <LogoMark className="menu__mark" />
+              <span className="font-hero">Grand Company</span>
+            </Link>
+            <button type="button" className="menu__close" onClick={() => setOpen(false)} aria-label="Zatvori meni">
+              <svg viewBox="0 0 20 20" aria-hidden fill="none" stroke="currentColor" strokeWidth={1.6}>
+                <path d="M4 4l12 12M16 4 4 16" />
+              </svg>
+            </button>
+          </div>
           <nav className="menu__list" aria-label="Meni">
             {MENU.map(([label, href]) => (
-              <Link key={href} data-item href={href} onClick={() => setOpen(false)} className="menu__item">
-                {pw(label)}
+              <Link key={href} data-item href={href} onClick={() => setOpen(false)} className={`menu__item ${active(href) ? 'is-active' : ''}`}>
+                <span>{pw(label)}</span>
+                <svg viewBox="0 0 24 12" aria-hidden fill="none" stroke="currentColor" strokeWidth={1.6}>
+                  <path d="M0 6h22M17 1l5 5-5 5" />
+                </svg>
               </Link>
             ))}
           </nav>
           <div data-item className="menu__foot">
-            <Link href="/upit-za-izvodjace" onClick={() => setOpen(false)} className="nav__buy nav__buy--big">
+            <Link href="/upit-za-izvodjace" onClick={() => setOpen(false)} className="menu__cta menu__cta--buy">
               Zatraži ponudu
+              <svg viewBox="0 0 24 12" aria-hidden fill="none" stroke="currentColor" strokeWidth={1.6}>
+                <path d="M0 6h22M17 1l5 5-5 5" />
+              </svg>
             </Link>
             <button
               type="button"
-              className="menu__tel"
+              className="menu__cta menu__cta--login"
               onClick={() => {
                 setOpen(false)
                 setLogin(true)
               }}
             >
+              <svg viewBox="0 0 16 16" aria-hidden fill="none" stroke="currentColor" strokeWidth={1.4}>
+                <rect x="3" y="7" width="10" height="7" />
+                <path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" />
+              </svg>
               B2B prijava
             </button>
             <a href="tel:+38765516696" className="menu__tel">

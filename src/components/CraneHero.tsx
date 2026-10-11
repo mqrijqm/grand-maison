@@ -125,7 +125,7 @@ export default function CraneHero() {
           {/* Prvi kadar je slika iste scene: kran se vidi odmah, a WebGL se meko pojavi preko nje. */}
           <figure className="crane-viewport">
             <picture className="crane-fallback">
-              <source media="(max-width: 599px)" srcSet="/crane/hero-fallback-390.webp" />
+              <source media="(max-width: 599px)" srcSet="/crane/hero-fallback-780.webp" />
               <source media="(max-width: 1023px)" srcSet="/crane/hero-fallback-768.webp" />
               <source media="(min-width: 1920px)" srcSet="/crane/hero-fallback-2560.webp" />
               <img src="/crane/hero-fallback-1440.webp" alt="" width={1440} height={900} fetchPriority="high" decoding="async" />

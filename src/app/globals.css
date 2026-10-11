@@ -1723,7 +1723,8 @@ footer li + li {
 }
 /* Recenzije se nastavljaju odmah na "Izbor je Vaš!", a stovarište odmah na recenzije. */
 .home-flow > #recenzije,
-.home-flow > #stovariste {
+.home-flow > #stovariste,
+.home-flow > .pin-spacer:has(> #recenzije) {
   margin-top: 0;
 }
 
@@ -2530,4 +2531,130 @@ html[data-hero-dark] .nav .nav__bar {
   background: #fff !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
+}
+
+
+/* ——— Meni (tri crte): cijeli ekran, jarka kobalt, iznad navbara ——— */
+.menu {
+  z-index: 420;
+}
+.menu__panel {
+  justify-content: flex-start !important;
+  padding: calc(var(--nav-inset, 8px) + 6px) 20px 24px !important;
+  background: var(--cobalt) !important;
+  color: #fff;
+  overflow-y: auto;
+}
+.menu__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--nav-h);
+  margin-bottom: 4vh;
+}
+.menu__logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  color: #fff;
+  font-size: 17px;
+  text-transform: uppercase;
+}
+.menu__mark {
+  height: 20px;
+  width: auto;
+}
+.menu__close {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1.5px solid rgb(255 255 255 / 0.6);
+  color: #fff;
+}
+.menu__close svg {
+  width: 18px;
+  height: 18px;
+}
+.menu__list {
+  border-top: 1px solid rgb(255 255 255 / 0.28) !important;
+}
+.menu__item {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 2px 14px !important;
+  border-bottom: 1px solid rgb(255 255 255 / 0.28) !important;
+  text-align: left !important;
+  font-size: clamp(19px, 5.4vw, 26px) !important;
+  color: #fff;
+}
+.menu__item svg {
+  width: 22px;
+  height: 12px;
+  opacity: 0.6;
+  transition: transform 0.3s, opacity 0.3s;
+}
+.menu__item:hover svg,
+.menu__item.is-active svg {
+  transform: translateX(4px);
+  opacity: 1;
+}
+.menu__foot {
+  margin-top: auto !important;
+  padding-top: 5vh;
+  align-items: stretch !important;
+  gap: 10px !important;
+}
+.menu__cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 54px;
+  padding: 0 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.menu__cta svg {
+  width: 22px;
+  height: 12px;
+}
+.menu__cta--buy {
+  background: var(--ochre, #bd9446);
+  color: #fff;
+}
+.menu__cta--login {
+  justify-content: flex-start;
+  border: 1.5px solid rgb(255 255 255 / 0.7);
+  color: #fff;
+}
+.menu__cta--login svg {
+  width: 15px;
+  height: 15px;
+}
+.menu__tel {
+  align-self: flex-start;
+  margin-top: 6px;
+  color: #fff;
+  opacity: 0.75 !important;
+}
+
+/* ——— Navbar na telefonu, početna: znak čeka u sredini trake dok veliki naslov ne sleti uz njega ——— */
+@media (max-width: 899px) {
+  html:not([data-wm-docked]) .nav--home .nav__mark {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ——— Footer na telefonu: manji linkovi ——— */
+@media (max-width: 767px) {
+  footer nav a {
+    font-size: 19px !important;
+    line-height: 1.35 !important;
+  }
 }

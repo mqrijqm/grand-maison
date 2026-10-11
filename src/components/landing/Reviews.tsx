@@ -29,14 +29,18 @@ export default function Reviews() {
         const { reduce } = ctx.conditions as { reduce: boolean }
         revealChars(el.querySelector('[data-head]')!, reduce, 'top 80%')
       })
-      // Desktop: traka citata klizi ulijevo dok sekcija prolazi kroz ekran (bez pina).
-      mm.add('(min-width: 900px) and (prefers-reduced-motion: no-preference)', () => {
+      // Sekcija se zakači, a vertikalni skrol vodi traku ulijevo sve do posljednje kartice (i na telefonu).
+      mm.add('(prefers-reduced-motion: no-preference)', () => {
         const track = el.querySelector<HTMLElement>('[data-track]')!
         const distance = () => Math.max(0, track.scrollWidth - el.clientWidth)
         gsap.fromTo(
           track,
-          { x: () => distance() * 0.25 },
-          { x: () => -distance(), ease: 'none', scrollTrigger: { trigger: el, start: 'top bottom', end: 'bottom top', scrub: 0.6, invalidateOnRefresh: true } },
+          { x: 0 },
+          {
+            x: () => -distance(),
+            ease: 'none',
+            scrollTrigger: { trigger: el, start: 'top top', end: () => `+=${distance()}`, pin: true, scrub: 0.6, anticipatePin: 1, invalidateOnRefresh: true },
+          },
         )
       })
     },

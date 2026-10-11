@@ -355,7 +355,10 @@
   margin-top: 9vh;
   padding-inline: 20px;
 }
-@media (max-width: 899px) {
+.trackWrap {
+  overflow: hidden;
+}
+@media (prefers-reduced-motion: reduce) {
   .trackWrap {
     overflow-x: auto;
     scroll-snap-type: x mandatory;
@@ -432,4 +435,22 @@
   text-decoration: underline;
   text-underline-offset: 4px;
   opacity: 0.8;
+}
+
+/* Telefon: "Izbor je Vaš!" poravnat lijevo kao tekst iznad, i bijeli razmak prije plavih recenzija. */
+@media (max-width: 767px) {
+  .values {
+    padding-bottom: 14vh;
+  }
+  .signoff {
+    margin-top: 9vh;
+    text-align: left;
+  }
+  .reviews {
+    padding-block: 9vh 7vh;
+  }
+  .card {
+    min-height: 240px;
+    width: min(80vw, 340px);
+  }
 }
