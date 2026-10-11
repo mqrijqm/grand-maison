@@ -15,23 +15,23 @@ import styles from './Heritage.module.css'
 // označeni su "po upitu", jer prezentacija ne dokazuje stalan lager. Bilješke desno su samo ono što je
 // potvrđeno izvorom; bez artikala, cijena i stanja (javnog cjenovnika nema).
 // Fotografije su prave (Pexels, izvori u public/stock/credits.json); Codex ih je samo izrezao i ujednačio ton.
-const GROUPS: { name: string; img: string; note?: string }[] = [
-  { name: 'Fasadni sistemi', img: 'fasadni' },
-  { name: 'Termoizolacioni sistemi', img: 'termoizolacioni', note: 'Kamena vuna' },
-  { name: 'Hidroizolacioni sistemi', img: 'hidroizolacioni' },
-  { name: 'Krovni sistemi', img: 'krovni', note: 'Tondach crijep i krovni elementi' },
-  { name: 'Dimnjački sistemi', img: 'dimnjacki', note: 'Po upitu' },
-  { name: 'Blokovi', img: 'blokovi', note: 'Porotherm blokovi od opeke' },
-  { name: 'Suha gradnja', img: 'suha-gradnja', note: 'Sistemi za pregradne zidove i plafone' },
-  { name: 'Keramička ljepila', img: 'keramicka-ljepila' },
-  { name: 'Mašinski malteri', img: 'masinski-malteri', note: 'Baumalt malteri' },
-  { name: 'Cementi', img: 'cementi' },
-  { name: 'Željezo', img: 'zeljezo' },
-  { name: 'Cijevni sistemi', img: 'cijevni', note: 'Po upitu' },
-  { name: 'Opločnici', img: 'oplocnici', note: 'Po upitu' },
-  { name: 'Sinterovani kamen', img: 'sinterovani-kamen', note: 'Po upitu' },
-  { name: 'Drvni program', img: 'drvni-program', note: 'Registrovana djelatnost · po upitu' },
-  { name: 'Sanitarna oprema', img: 'sanitarna-oprema', note: 'Registrovana djelatnost · po upitu' },
+const GROUPS: { name: string; img: string; note?: string; href?: string }[] = [
+  { name: 'Fasadni sistemi', img: 'fasadni', href: '/upit-za-izvodjace?program=ostali-program' },
+  { name: 'Termoizolacioni sistemi', img: 'termoizolacioni', note: 'Kamena vuna', href: '/prodavnica?kategorija=izolacija#artikli' },
+  { name: 'Hidroizolacioni sistemi', img: 'hidroizolacioni', href: '/upit-za-izvodjace?program=ostali-program' },
+  { name: 'Krovni sistemi', img: 'krovni', note: 'Tondach crijep i krovni elementi', href: '/prodavnica?kategorija=krovni-sistemi#artikli' },
+  { name: 'Dimnjački sistemi', img: 'dimnjacki', note: 'Po upitu', href: '/upit-za-izvodjace?program=ostali-program' },
+  { name: 'Blokovi', img: 'blokovi', note: 'Porotherm blokovi od opeke', href: '/prodavnica?kategorija=zidni-blokovi#artikli' },
+  { name: 'Suha gradnja', img: 'suha-gradnja', note: 'Sistemi za pregradne zidove i plafone', href: '/prodavnica?kategorija=suha-gradnja#artikli' },
+  { name: 'Keramička ljepila', img: 'keramicka-ljepila', href: '/prodavnica?kategorija=malteri-ljepila&q=ljepilo#artikli' },
+  { name: 'Mašinski malteri', img: 'masinski-malteri', note: 'Baumalt malteri', href: '/prodavnica?kategorija=malteri-ljepila&q=malter#artikli' },
+  { name: 'Cementi', img: 'cementi', href: '/upit-za-izvodjace?program=ostali-program' },
+  { name: 'Željezo', img: 'zeljezo', href: '/upit-za-izvodjace?program=ostali-program' },
+  { name: 'Cijevni sistemi', img: 'cijevni', note: 'Po upitu', href: '/upit-za-izvodjace?program=ostali-program' },
+  { name: 'Opločnici', img: 'oplocnici', note: 'Po upitu', href: '/upit-za-izvodjace?program=ostali-program' },
+  { name: 'Sinterovani kamen', img: 'sinterovani-kamen', note: 'Po upitu', href: '/upit-za-izvodjace?program=ostali-program' },
+  { name: 'Drvni program', img: 'drvni-program', note: 'Registrovana djelatnost · po upitu', href: '/upit-za-izvodjace?program=drvni-program' },
+  { name: 'Sanitarna oprema', img: 'sanitarna-oprema', note: 'Registrovana djelatnost · po upitu', href: '/upit-za-izvodjace?program=sanitarna-oprema' },
 ]
 const src = (img: string) => `/assortment/${img}.webp`
 
@@ -131,6 +131,7 @@ export default function AssortmentIndex() {
               <span className={`display ${styles.name}`}>{g.name}</span>
               <span className={styles.note}>{g.note ?? ''}</span>
               <img className={styles.thumb} src={src(g.img)} alt="" width={800} height={800} loading="lazy" decoding="async" />
+              {g.href && <Link href={g.href} className={styles.rowLink} aria-label={`${g.name}: ${g.href.startsWith('/prodavnica') ? 'artikli u katalogu' : 'pošaljite upit'}`} />}
             </li>
           ))}
         </ol>

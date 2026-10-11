@@ -56,7 +56,7 @@ export default function UsesSplit() {
         <Cta href="/upit-za-izvodjace" solid>Opišite šta gradite</Cta>
       </div>
     </div>
-    <BlueWipe from="right" className="text-bg [--art-fill:var(--navy)] [--signal:var(--accent)]">
+    <BlueWipe from="right" ambient className="text-bg [--art-fill:var(--navy)] [--signal:var(--accent)]">
       {WORKS.map((work,i)=><article id={`radovi-${work.id}`} key={work.id} data-use className={`scroll-mt-24 ${styles.row} md:!min-h-[72dvh]`}>
         <div>
           <p className="label text-bg/65">{String(i+1).padStart(2,'0')} / 04</p>

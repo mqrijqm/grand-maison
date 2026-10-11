@@ -7,7 +7,6 @@ import { useMediaMotion } from '@/lib/media'
 import { EASE, MQ } from '@/lib/motion'
 import { revealChars, revealLines } from '@/lib/reveal'
 import Cta from '@/components/ui/Cta'
-import { COMPANY as GC } from '@/gc/gc'
 import styles from './Heritage.module.css'
 
 // "Kvalitet na prvom mjestu!" — tekst doslovno sa stare stranice "O nama" (grandcompany.ba,
@@ -57,7 +56,7 @@ const PILLARS = [
   {
     icon: 'headset',
     title: 'Naš tim',
-    text: 'Tim edukovanih i posvećenih profesionalaca u stanju je izvršiti analizu svih Vaših potreba i na te potrebe odgovoriti sa ponudom najboljeg omjera cijene i kvaliteta.',
+    text: 'Edukovan i posvećen tim analizira vaše potrebe i nudi najbolji omjer cijene i kvaliteta.',
   },
 ] as const
 
@@ -117,10 +116,6 @@ export default function Values() {
           </div>
           <div data-up className="grid gap-5">
             <p className={styles.qualityBody}>
-              Zato se trudimo da sav građevinski materijal koji imamo u veleprodaji i maloprodaji bude u skladu sa našom
-              poslovnom politikom, koja definiše taj kvalitet.
-            </p>
-            <p className={styles.qualityBody}>
               Izbor je vaš, a mi se trudimo da Vam pomognemo u izboru najboljeg što tržište nudi. Korisnim savjetima
               našeg tima potrudićemo se da Vam olakšamo izbor pravog materijala za vaše potrebe.
             </p>
@@ -143,9 +138,6 @@ export default function Values() {
                 <Cta href="/upit-za-izvodjace" solid>
                   Pošaljite upit
                 </Cta>
-                <a href={GC.phoneLandlineHref} className={styles.dryPhone}>
-                  ili pozovite {GC.phoneLandline}
-                </a>
               </div>
             </div>
           </div>

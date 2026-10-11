@@ -63,7 +63,8 @@ export default function SquareDissolve({ className = '', color = 'var(--bg)', ti
           let e = k.f * Math.min(1, Math.max(0, (p - k.d) / 0.3))
           // Ciklus ~1 s; gore kvadratići potpuno nestaju i vraćaju se, prema dnu disanje slabi do nule,
           // da donji redovi ostanu puni i ne otvaraju plave procjepe iznad krem trake.
-          if (live) e *= 1 - (0.95 - 0.6 * k.f) * (1 - Math.min(1, k.t / 0.45)) * (0.5 + 0.5 * Math.sin(time * 6.2 + k.ph))
+          // Disanje kroz cijeli mozaik (talas od ~1,8 s); utihne tek tamo gdje krem preliv sve pokrije.
+          if (live) e *= 1 - (0.75 - 0.35 * k.f) * (1 - Math.min(1, Math.max(0, (k.t - 0.55) / 0.2))) * (0.5 + 0.5 * Math.sin(time * 3.4 + k.ph))
           if (e <= 0.02) continue
           const size = CELL * e
           const off = (CELL - size) / 2

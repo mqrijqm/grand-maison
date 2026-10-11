@@ -17,12 +17,14 @@ type Props = {
   className?: string
   fillClassName?: string
   contentClassName?: string
+  /** Živa plava pozadina: svjetliji kvadratići tiho trepere i putuju talasom dok je sekcija u ekranu. */
+  ambient?: boolean
 }
 
 const CELL = 18
 const GAP = 3
 
-export default function BlueWipe({ children, from, className = '', fillClassName = 'bg-navy', contentClassName = '' }: Props) {
+export default function BlueWipe({ children, from, className = '', fillClassName = 'bg-navy', contentClassName = '', ambient = false }: Props) {
   const root = useRef<HTMLDivElement>(null)
 
   useGSAP(
@@ -95,7 +97,59 @@ export default function BlueWipe({ children, from, className = '', fillClassName
         tl.to(content, { autoAlpha: 1, y: 0, ease: 'power3.out', duration: 0.5 }, 0.75)
         const ro = new ResizeObserver(draw)
         ro.observe(el)
+
+        // Živi mozaik preko pune plave: platno veličine ekrana prati vidljivi dio kolone, crta samo dok
+        // je sekcija u ekranu i plavo je puno (gsap.ticker), na telefonu rjeđe ćelije.
+        const amb = el.querySelector<HTMLCanvasElement>('[data-wipe-ambient]')
+        let stopAmbient = () => {}
+        if (ambient && amb) {
+          const g = amb.getContext('2d')!
+          const coarse = window.matchMedia('(pointer: coarse)').matches
+          const cell = coarse ? 22 : 18
+          let grid: { x: number; y: number; ph: number }[] = []
+          let gk = ''
+          const tick = (time: number) => {
+            const r = el.getBoundingClientRect()
+            const vh = window.innerHeight
+            const w = el.clientWidth
+            const h = Math.min(vh, r.height)
+            const top = Math.min(Math.max(0, -r.top), Math.max(0, r.height - h))
+            amb.style.transform = `translateY(${top}px)`
+            const k = `${w}x${h}`
+            if (k !== gk) {
+              gk = k
+              amb.width = w
+              amb.height = h
+              amb.style.height = `${h}px`
+              let seed = 3
+              const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647)
+              grid = []
+              for (let c = 0; c * (cell + GAP) < w; c++)
+                for (let rr = 0; rr * (cell + GAP) < h; rr++) grid.push({ x: c * (cell + GAP), y: rr * (cell + GAP), ph: c * 0.28 - rr * 0.36 + rnd() * 2.4 })
+            }
+            g.clearRect(0, 0, w, h)
+            if (state.p < 1) return
+            g.fillStyle = '#ffffff'
+            for (const q of grid) {
+              const s = Math.sin(time * 1.5 + q.ph)
+              if (s < 0.55) continue
+              const i = (s - 0.55) / 0.45
+              const size = cell * (0.35 + 0.65 * i)
+              const off = (cell - size) / 2
+              g.globalAlpha = 0.05 + 0.13 * i
+              g.fillRect(q.x + off, q.y + off, size, size)
+            }
+            g.globalAlpha = 1
+          }
+          const on = (yes: boolean) => (yes ? gsap.ticker.add(tick) : gsap.ticker.remove(tick))
+          const st = ScrollTrigger.create({ trigger: el, start: 'top bottom', end: 'bottom top', onToggle: (self) => on(self.isActive) })
+          stopAmbient = () => {
+            on(false)
+            st.kill()
+          }
+        }
         return () => {
+          stopAmbient()
           ro.disconnect()
           fill.style.opacity = ''
           canvas.style.opacity = '0'
@@ -125,6 +179,7 @@ export default function BlueWipe({ children, from, className = '', fillClassName
     <div ref={root} className={`${css.wrap} relative ${className}`}>
       <div data-wipe-fill aria-hidden className={`${css.fill} ${fillClassName}`} />
       <canvas data-wipe-canvas aria-hidden className={css.canvas} />
+      {ambient && <canvas data-wipe-ambient aria-hidden className={css.ambient} />}
       <div data-wipe-content className={`${css.content} ${contentClassName}`}>
         {children}
       </div>

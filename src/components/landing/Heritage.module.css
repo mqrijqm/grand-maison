@@ -484,3 +484,17 @@
     padding-bottom: 32vh;
   }
 }
+
+/* "Izbor je Vaš!" manji (oko pola prethodne veličine) */
+.signoff {
+  font-size: clamp(44px, 8vw, 150px);
+}
+/* Red indeksa asortimana je link (katalog ili upit) preko cijelog reda */
+.row {
+  position: relative;
+}
+.rowLink {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+}
