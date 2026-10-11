@@ -27,7 +27,8 @@ import {
   type Offer,
   type Order,
 } from '@/lib/b2b-demo'
-import { AdminView, NotificationsView, PaymentSeg, SaldoCard, notesFor, stockLine, type Payment } from '@/components/portal/extra-views'
+import { AdminView, CreditCard, NotificationsView, PaymentSeg, ReorderCard, RoleSwitch, SALES_START, SaldoCard, TeamView, can, creditState, firmAmount, firmPrice, kmd, notesFor, otherPrice, roleLabel, stockLine, type Payment, type Role, type SalesEvent } from '@/components/portal/extra-views'
+import x from '@/components/portal/extra.module.css'
 import s from './Showcase.module.css'
 
 // Interaktivni prikaz predloženog B2B portala (demo). Sve je lokalno stanje u browseru:
@@ -35,7 +36,7 @@ import s from './Showcase.module.css'
 // Fokus je na naručivanju materijala, ne na analitici. Dodaci (demo, jasno označeni): zalihe po lokaciji,
 // saldo i otvorene stavke, plaćanje odgodom ili avansom, obavještenja sa primjerom mejla i admin za prodaju.
 
-type View = 'pregled' | 'materijali' | 'ponude' | 'narudzbe' | 'gradilista' | 'dokumenti' | 'obavjestenja' | 'admin'
+type View = 'pregled' | 'materijali' | 'ponude' | 'narudzbe' | 'gradilista' | 'dokumenti' | 'obavjestenja' | 'tim' | 'admin'
 const NAV: { id: View; label: string; icon: string }[] = [
   { id: 'pregled', label: 'Pregled', icon: 'pregled' },
   { id: 'materijali', label: 'Materijali', icon: 'brza' },
@@ -44,12 +45,13 @@ const NAV: { id: View; label: string; icon: string }[] = [
   { id: 'gradilista', label: 'Gradilišta', icon: 'gradilista' },
   { id: 'dokumenti', label: 'Dokumenti', icon: 'dokumenti' },
   { id: 'obavjestenja', label: 'Obavještenja', icon: 'bell' },
+  { id: 'tim', label: 'Tim i prava', icon: 'tim' },
   { id: 'admin', label: 'Admin (prodaja)', icon: 'admin' },
 ]
 const GROUPS_NAV: { label: string; ids: View[] }[] = [
   { label: 'Nabavka', ids: ['pregled', 'materijali', 'ponude', 'narudzbe'] },
   { label: 'Projekti', ids: ['gradilista'] },
-  { label: 'Nalog', ids: ['dokumenti', 'obavjestenja'] },
+  { label: 'Nalog', ids: ['dokumenti', 'obavjestenja', 'tim'] },
   { label: 'Grand Company', ids: ['admin'] },
 ]
 type Feed = { t: string; kind: string; text: string; meta: string }
@@ -59,9 +61,16 @@ const CAPTION: Record<View, [string, string]> = {
   ponude: ['Ponude', 'Ponude koje prodaja pripremi po vašem upitu. Provjerite stavke i potvrdite.'],
   narudzbe: ['Narudžbe', 'Status svake narudžbe i dogovorena dostava ili preuzimanje.'],
   gradilista: ['Gradilišta', 'Upiti, ponude i narudžbe razvrstani po mjestu isporuke.'],
-  dokumenti: ['Dokumenti', 'Saldo i otvorene stavke, ponude, otpremnice i fakture, na jednom mjestu.'],
+  dokumenti: ['Dokumenti i dug', 'Koliko dugujete, koliki je limit i koje fakture treba platiti. Sve izvezete u Excel jednim klikom.'],
+  tim: ['Tim i prava', 'Ko u firmi šta smije: majstor šalje upit, šef potvrđuje, računovodstvo vidi fakture, vlasnik sve.'],
   obavjestenja: ['Obavještenja', 'Narudžbe, promjene statusa i fakture pred dospijećem; isto stiže i e-poštom.'],
   admin: ['Admin · Grand Company', 'Pogled prodaje: firme na odobrenju, cjenovnici po klijentu i narudžbe svih klijenata.'],
+}
+const ROLE_VIEWS: Record<Role, View[]> = {
+  vlasnik: ['pregled', 'materijali', 'ponude', 'narudzbe', 'gradilista', 'dokumenti', 'obavjestenja', 'tim', 'admin'],
+  sef: ['pregled', 'materijali', 'ponude', 'narudzbe', 'gradilista', 'obavjestenja', 'tim', 'admin'],
+  majstor: ['pregled', 'materijali', 'ponude', 'narudzbe', 'gradilista', 'obavjestenja', 'tim', 'admin'],
+  racunovodstvo: ['pregled', 'narudzbe', 'dokumenti', 'obavjestenja', 'tim', 'admin'],
 }
 const statusKind = (o: Order) => (o.step >= 4 ? 'done' : o.step === 3 ? 'ready' : 'prep')
 const orderStatus = (o: Order) => (o.step === 3 ? (o.mode === 'Preuzimanje' ? 'Spremno za preuzimanje' : 'Na putu ka gradilištu') : o.step === 4 ? (o.mode === 'Preuzimanje' ? 'Preuzeto' : 'Isporučeno') : STEPS[o.step])
@@ -80,6 +89,8 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
   const [draftSite, setDraftSite] = useState('a')
   const [mode, setMode] = useState<'Dostava' | 'Preuzimanje'>('Dostava')
   const [payment, setPayment] = useState<Payment>('Odgoda')
+  const [role, setRole] = useState<Role>('vlasnik')
+  const [sales, setSales] = useState<SalesEvent[]>(SALES_START)
   const [offers, setOffers] = useState<Offer[]>(OFFERS)
   const [orders, setOrders] = useState<Order[]>(ORDERS)
   const [offerSel, setOfferSel] = useState(OFFERS[0].no)
@@ -106,7 +117,10 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
   useEffect(() => {
     const on = (e: Event) => {
       const v = (e as CustomEvent<View>).detail
-      if (NAV.some((n) => n.id === v)) setView(v)
+      if (NAV.some((n) => n.id === v)) {
+        setRole('vlasnik')
+        setView(v)
+      }
     }
     window.addEventListener('gc-portal', on)
     return () => window.removeEventListener('gc-portal', on)
@@ -208,7 +222,18 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
     timers.current.push(setTimeout(() => setToast((t) => (t === text ? null : t)), 3200))
   }
   const log = (text: string, kind = 'ponude', meta = 'simulacija') => setActivity((a) => [{ t: 'sad', kind, text, meta }, ...a].slice(0, 5))
-  const go = (v: View) => setView(v)
+  const go = (v: View) => {
+    if (!ROLE_VIEWS[role].includes(v)) {
+      say(`Uloga ${roleLabel(role)} nema pristup ovom ekranu (demo prava)`)
+      return
+    }
+    setView(v)
+  }
+  const switchRole = (r: Role) => {
+    setRole(r)
+    if (!ROLE_VIEWS[r].includes(view)) setView('pregled')
+    say(`Prijavljeni kao: ${roleLabel(r)}`)
+  }
 
   const addLine = (sku: string, qty: number) => {
     setDraft((d) => (d.some((l) => l.sku === sku) ? d.map((l) => (l.sku === sku ? { ...l, qty: l.qty + qty } : l)) : [...d, { sku, qty }]))
@@ -229,6 +254,7 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
     setDraft([])
     mark('sent')
     log('Upit poslat prodaji', 'ponude', `${site(draftSite).name} · ${draft.length} stavki · simulacija`)
+    setSales((e) => [{ id: `u-${no}`, t: 'sad', title: `Novi upit ${no}: ${FIRM.name}`, meta: `${site(draftSite).name} · ${draft.length} stavki · ${payment.toLowerCase()} · poslao: ${roleLabel(role)}`, channels: ['SMS', 'Mejl', 'Portal'], urgent: true }, ...e])
     say('Simulacija: upit je kod prodaje. U demu se ništa ne šalje.')
     go('ponude')
     // Simulacija: prodaja priprema ponudu.
@@ -325,10 +351,11 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
               <span className={s.avatar}>{FIRM.short}</span>
               <span>
                 <b>{FIRM.name}</b>
-                <i>{FIRM.user}</i>
+                <i>{roleLabel(role)}</i>
               </span>
               <em className={s.demoTag}>Demo</em>
             </div>
+            <RoleSwitch role={role} onChange={switchRole} />
             <nav className={s.nav} aria-label="Portal (demo)">
               {GROUPS_NAV.map((g) => (
                 <div key={g.label} className={s.navGroup}>
@@ -336,7 +363,7 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
                   {NAV.filter((n) => g.ids.includes(n.id)).map((n) => {
                     const count = n.id === 'ponude' ? pending.length : n.id === 'narudzbe' ? active.length : n.id === 'gradilista' ? SITES.length : n.id === 'materijali' ? draft.length : n.id === 'obavjestenja' ? notes.length : 0
                     return (
-                      <button key={n.id} type="button" aria-current={view === n.id || undefined} onClick={() => go(n.id)}>
+                      <button key={n.id} type="button" aria-current={view === n.id || undefined} className={ROLE_VIEWS[role].includes(n.id) ? undefined : x.locked} title={ROLE_VIEWS[role].includes(n.id) ? undefined : `Nije dozvoljeno za ulogu ${roleLabel(role)}`} onClick={() => go(n.id)}>
                         <Icon name={n.icon} />
                         <span>{n.label}</span>
                         {count > 0 && <em>{count}</em>}
@@ -416,6 +443,8 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
               {view === 'pregled' && (
                 // Pregled: samo ono što čeka odluku. Plava scena (ponuda) je iznad; ispod narudžbe u toku i tok.
                 <div className={s.cols}>
+                  {can(role, 'fakture') && <CreditCard orders={orders} onDocs={() => go('dokumenti')} />}
+                  {can(role, 'upit') && <ReorderCard orders={orders} onReorder={(o) => loadLines(o.lines, `Narudžba ${o.no}`)} />}
                   <section className={s.card}>
                     <h4>Narudžbe u toku</h4>
                     <ul className={s.rows}>
@@ -504,6 +533,11 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
                                     <b>{m.name}</b>
                                     <i>{m.sku}</i>
                                     <i>{stockLine(m.sku)}</i>
+                                    {can(role, 'cijene') && (
+                                      <i className={x.price}>
+                                        Vaša cijena {kmd(firmPrice(m.sku))}/{m.unit} · druga firma {kmd(otherPrice(m.sku))}
+                                      </i>
+                                    )}
                                   </span>
                                   <em>{has ? `✓ ${has.toLocaleString('de-DE')} ${m.unit}` : '+ Dodaj'}</em>
                                 </button>
@@ -589,8 +623,20 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
                         <b>{(weight(draft) / 1000).toLocaleString('de-DE', { maximumFractionDigits: 1 })} t</b>
                       </p>
                     )}
+                    {can(role, 'cijene') && draft.length > 0 && (
+                      <p className={s.weight}>
+                        <span>Vaš iznos (cjenovnik firme, demo)</span>
+                        <b>{kmd(firmAmount(draft))}</b>
+                      </p>
+                    )}
                     <PaymentSeg value={payment} onChange={setPayment} />
-                    <button type="button" data-t="send" className={`${s.primary} ${s.wide}`} disabled={!draft.length} onClick={send}>
+                    {payment === 'Odgoda' && can(role, 'cijene') && firmAmount(draft) > creditState(orders).free && draft.length > 0 && (
+                      <p className={x.limitWarn}>
+                        Upit prelazi slobodan limit ({kmd(creditState(orders).free)}). Prodaja će tražiti avans ili uplatu dospjelih faktura prije isporuke.
+                      </p>
+                    )}
+                    {!can(role, 'cijene') && <p className={x.lockNote}>Kao {roleLabel(role).toLowerCase()} šaljete upit bez cijena; cijene i ponudu vidi šef ili vlasnik.</p>}
+                    <button type="button" data-t="send" className={`${s.primary} ${s.wide}`} disabled={!draft.length || !can(role, 'upit')} onClick={send}>
                       Pošalji upit (demo) <Icon name="arrow" />
                     </button>
                     <p className={s.fine}>Cijene i rok dobijate u ponudi prodaje. U demu se upit ne šalje.</p>
@@ -644,7 +690,7 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
                             <tr>
                               <th>Artikal</th>
                               <th>Količina</th>
-                              <th>Iznos (primjer)</th>
+                              <th>{can(role, 'cijene') ? 'Vaša cijena (demo)' : 'Iznos'}</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -657,22 +703,26 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
                                 <td>
                                   {l.qty} {unit(l.sku)}
                                 </td>
-                                <td>Na upit</td>
+                                <td>{can(role, 'cijene') ? kmd(firmPrice(l.sku) * l.qty) : 'skriveno za ulogu'}</td>
                               </tr>
                             ))}
                           </tbody>
                           <tfoot>
                             <tr>
                               <td colSpan={2}>Ukupno</td>
-                              <td>Cijena na upit</td>
+                              <td>{can(role, 'cijene') ? kmd(firmAmount(offer.lines)) : '—'}</td>
                             </tr>
                           </tfoot>
                         </table>
                         <div className={s.actions}>
                           {offer.status === 'Čeka potvrdu' ? (
-                            <button type="button" data-t="confirm" className={s.primary} onClick={() => confirm(offer)}>
-                              Potvrdi ponudu (demo) <Icon name="check" />
-                            </button>
+                            can(role, 'potvrda') ? (
+                              <button type="button" data-t="confirm" className={s.primary} onClick={() => confirm(offer)}>
+                                Potvrdi ponudu (demo) <Icon name="check" />
+                              </button>
+                            ) : (
+                              <p className={x.lockNote}>Ponudu potvrđuje šef gradilišta ili vlasnik. Vi je vidite, ali ne možete potvrditi.</p>
+                            )
                           ) : (
                             <button type="button" className={s.primary} onClick={() => go('narudzbe')}>
                               Pratite narudžbu <Icon name="arrow" />
@@ -747,9 +797,11 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
                           Prikaži sljedeći status (demo)
                         </button>
                       )}
-                      <button type="button" data-t="reorder" className={s.primary} onClick={() => loadLines(order.lines, `Narudžba ${order.no}`)}>
-                        <Icon name="repeat" /> Ponovi narudžbu
-                      </button>
+                      {can(role, 'upit') && (
+                        <button type="button" data-t="reorder" className={s.primary} onClick={() => loadLines(order.lines, `Narudžba ${order.no}`)}>
+                          <Icon name="repeat" /> Ponovi narudžbu
+                        </button>
+                      )}
                     </div>
                   </section>
                 </div>
@@ -800,7 +852,7 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
               {view === 'dokumenti' && (
                 <div className={s.split}>
                   <div className={s.tools}>
-                  <SaldoCard />
+                  <SaldoCard orders={orders} />
                   <section className={s.card}>
                     <h4>Dokumenti</h4>
                     <ul className={s.rows}>
@@ -837,7 +889,8 @@ export default function Showcase({ tour, light, steps: showSteps = true }: { tou
                 </div>
               )}
               {view === 'obavjestenja' && <NotificationsView notes={notes} onOpen={(v) => go(v as View)} />}
-              {view === 'admin' && <AdminView orders={orders} advance={advance} />}
+              {view === 'tim' && <TeamView role={role} onRole={switchRole} />}
+              {view === 'admin' && <AdminView orders={orders} advance={advance} events={sales} />}
             </div>
           </main>
         </div>

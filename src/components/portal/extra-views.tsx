@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import Icon from '@/components/portal/Icon'
 import { PRODUCT_MAP } from '@/lib/shop'
-import { FIRM, STEPS, amount, km, site, type Order } from '@/lib/b2b-demo'
+import { FIRM, STEPS, amount, km, name, site, unit, type Line, type Order } from '@/lib/b2b-demo'
 import s from '@/components/business/portal/Showcase.module.css'
 import x from './extra.module.css'
 
@@ -41,11 +41,183 @@ export const stockLine = (sku: string) => {
 /* ——— Saldo i otvorene stavke ——— */
 type Invoice = { no: string; ref: string; days: number; value: number }
 const INVOICES: Invoice[] = [
-  { no: 'IF-26-00744', ref: 'Kuća C', days: 41, value: 1985 },
-  { no: 'IF-26-00862', ref: 'Lamela A', days: 24, value: 7240 },
-  { no: 'IF-26-00901', ref: 'Lamela A', days: 12, value: 4110 },
+  { no: 'IF-26-00744', ref: 'Kuća C', days: 41, value: 12985 },
+  { no: 'IF-26-00862', ref: 'Lamela A', days: 24, value: 17240 },
+  { no: 'IF-26-00901', ref: 'Lamela A', days: 12, value: 13110 },
 ]
-export function SaldoCard() {
+/** Plaćene fakture ove godine (za "potrošnja ove godine" i izvoz). */
+const PAID_2026 = 186400
+
+/* ——— Cijene po firmi (demo cjenovnici) ——— */
+// Ista ploča, različita cijena: firma vidi SVOJU cijenu iz cjenovnika (demo: DEMO GRADNJA je Nivo 2, -15 %).
+export const FIRM_TIER = { name: 'Nivo 2', discount: 0.15 }
+const OTHER_TIER = { name: 'Nivo 1', discount: 0.1 }
+const r2 = (n: number) => Math.round(n * 100) / 100
+export const firmPrice = (sku: string) => r2((PRODUCT_MAP[sku]?.price ?? 0) * (1 - FIRM_TIER.discount))
+export const otherPrice = (sku: string) => r2((PRODUCT_MAP[sku]?.price ?? 0) * (1 - OTHER_TIER.discount))
+export const firmAmount = (lines: Line[]) => Math.round(lines.reduce((t, l) => t + firmPrice(l.sku) * l.qty, 0))
+export const kmd = (n: number) => `${n.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} KM`
+
+/* ——— Kreditni limit i dug ——— */
+export const LIMIT = 50000
+export function creditState(orders: Order[]) {
+  const invoices = INVOICES.reduce((t, i) => t + i.value, 0)
+  const open = orders.filter((o) => o.step < 4).reduce((t, o) => t + firmAmount(o.lines), 0)
+  const used = invoices + open
+  return { invoices, open, used, free: Math.max(0, LIMIT - used) }
+}
+export function CreditCard({ orders, onDocs }: { orders: Order[]; onDocs: () => void }) {
+  const c = creditState(orders)
+  const pctUsed = Math.min(100, (c.used / LIMIT) * 100)
+  return (
+    <section className={`${s.card} ${x.credit}`}>
+      <div className={x.notesHead}>
+        <h4>Kreditni limit</h4>
+        <span className={s.chip}>Demo</span>
+      </div>
+      <p className={x.creditFree}>
+        Imate još <b>{km(c.free)}</b> limita
+      </p>
+      <div className={x.bar} role="img" aria-label={`Iskorišteno ${km(c.used)} od ${km(LIMIT)}`}>
+        <i style={{ width: `${(c.invoices / LIMIT) * 100}%` }} />
+        <i data-k="open" style={{ width: `${Math.max(0, pctUsed - (c.invoices / LIMIT) * 100)}%` }} />
+      </div>
+      <dl className={x.legend}>
+        <div>
+          <dt>
+            <i />
+            Neplaćene fakture
+          </dt>
+          <dd>{km(c.invoices)}</dd>
+        </div>
+        <div>
+          <dt>
+            <i data-k="open" />
+            Narudžbe u toku
+          </dt>
+          <dd>{km(c.open)}</dd>
+        </div>
+        <div>
+          <dt>Odobreni limit</dt>
+          <dd>{km(LIMIT)}</dd>
+        </div>
+      </dl>
+      <button type="button" className={s.ghost} onClick={onDocs}>
+        Fakture i rokovi <Icon name="arrow" />
+      </button>
+    </section>
+  )
+}
+
+/* ——— Ponovi prošlu narudžbu ——— */
+export function ReorderCard({ orders, onReorder }: { orders: Order[]; onReorder: (o: Order) => void }) {
+  const past = orders.filter((o) => o.step >= 4).slice(0, 2)
+  return (
+    <section className={s.card}>
+      <h4>Naručujete isto kao prošli put?</h4>
+      <ul className={s.rows}>
+        {past.map((o) => (
+          <li key={o.no}>
+            <span>
+              <b>{o.no}</b>
+              <i>
+                {site(o.site).name} · {o.lines.length} stavki · {o.slot}
+              </i>
+            </span>
+            <button type="button" className={s.primary} onClick={() => onReorder(o)}>
+              <Icon name="repeat" /> Ponovi
+            </button>
+          </li>
+        ))}
+      </ul>
+      <p className={s.fine}>Stavke idu u upit: promijenite količinu i pošaljite. 30 sekundi umjesto poziva.</p>
+    </section>
+  )
+}
+
+/* ——— Ko u firmi šta smije ——— */
+export type Role = 'vlasnik' | 'sef' | 'majstor' | 'racunovodstvo'
+export const ROLES: { id: Role; label: string; who: string }[] = [
+  { id: 'vlasnik', label: 'Vlasnik', who: 'Demo vlasnik' },
+  { id: 'sef', label: 'Šef gradilišta', who: 'Demo šef · Lamela A' },
+  { id: 'majstor', label: 'Majstor', who: 'Demo majstor · Lamela A' },
+  { id: 'racunovodstvo', label: 'Računovodstvo', who: 'Demo računovodstvo' },
+]
+export const RIGHTS: { key: string; label: string; roles: Role[] }[] = [
+  { key: 'upit', label: 'Šalje upit za materijal', roles: ['vlasnik', 'sef', 'majstor'] },
+  { key: 'cijene', label: 'Vidi cijene firme', roles: ['vlasnik', 'sef', 'racunovodstvo'] },
+  { key: 'potvrda', label: 'Potvrđuje ponudu', roles: ['vlasnik', 'sef'] },
+  { key: 'status', label: 'Prati narudžbe i isporuke', roles: ['vlasnik', 'sef', 'majstor', 'racunovodstvo'] },
+  { key: 'fakture', label: 'Vidi fakture, dug i limit', roles: ['vlasnik', 'racunovodstvo'] },
+  { key: 'tim', label: 'Dodaje korisnike i prava', roles: ['vlasnik'] },
+]
+export const can = (role: Role, key: string) => !!RIGHTS.find((r) => r.key === key)?.roles.includes(role)
+export const roleLabel = (role: Role) => ROLES.find((r) => r.id === role)?.label ?? role
+
+export function RoleSwitch({ role, onChange }: { role: Role; onChange: (r: Role) => void }) {
+  return (
+    <label className={x.roleSwitch}>
+      <span>Prijavljeni kao</span>
+      <select value={role} onChange={(e) => onChange(e.target.value as Role)} aria-label="Uloga korisnika (demo)">
+        {ROLES.map((r) => (
+          <option key={r.id} value={r.id}>
+            {r.label}
+          </option>
+        ))}
+      </select>
+    </label>
+  )
+}
+
+export function TeamView({ role, onRole }: { role: Role; onRole: (r: Role) => void }) {
+  return (
+    <section className={`${s.card} ${x.team}`}>
+      <div className={x.notesHead}>
+        <h4>Ko u firmi šta smije</h4>
+        <span className={s.chip}>Demo</span>
+      </div>
+      <div className={x.matrix} role="table" aria-label="Prava po ulogama">
+        <div role="row" className={x.mRow}>
+          <span role="columnheader" />
+          {ROLES.map((r) => (
+            <button key={r.id} type="button" aria-pressed={role === r.id} onClick={() => onRole(r.id)} title={`Prebaci na: ${r.label}`}>
+              {r.label}
+            </button>
+          ))}
+        </div>
+        {RIGHTS.map((right) => (
+          <div key={right.key} role="row" className={x.mRow}>
+            <span role="rowheader">{right.label}</span>
+            {ROLES.map((r) => (
+              <span key={r.id} role="cell" data-on={right.roles.includes(r.id) || undefined} data-me={role === r.id || undefined}>
+                {right.roles.includes(r.id) ? <Icon name="check" /> : '—'}
+              </span>
+            ))}
+          </div>
+        ))}
+      </div>
+      <p className={s.fine}>Kliknite ulogu iznad kolone ili je promijenite lijevo u meniju: portal odmah pokazuje samo ono što ta uloga smije (npr. majstor šalje upit, ali ne vidi cijene i ne potvrđuje ponudu).</p>
+    </section>
+  )
+}
+
+/* ——— Izvoz u Excel (CSV) ——— */
+export function exportCsv(orders: Order[]) {
+  const rows = [
+    ['Vrsta', 'Broj', 'Gradilište / referenca', 'Datum', 'Iznos (KM)', 'Status'],
+    ...INVOICES.map((i) => ['Faktura', i.no, i.ref, fmt(new Date(TODAY.getTime() - i.days * DAY)), String(i.value), 'Otvorena']),
+    ...orders.map((o) => ['Narudžba', o.no, site(o.site).name, fmt(new Date(TODAY.getTime() - o.days * DAY)), String(firmAmount(o.lines)), STEPS[o.step]]),
+    ...orders.flatMap((o) => o.lines.map((l) => ['Stavka', o.no, `${name(l.sku)} (${l.sku})`, '', String(Math.round(firmPrice(l.sku) * l.qty)), `${l.qty} ${unit(l.sku)}`])),
+  ]
+  const csv = '\ufeff' + rows.map((r) => r.map((c) => `"${c.replace(/"/g, '""')}"`).join(';')).join('\r\n')
+  const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }))
+  const a = document.createElement('a')
+  a.href = url
+  a.download = 'grand-company-nabavka-2026-demo.csv'
+  a.click()
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
+}
+export function SaldoCard({ orders = [] }: { orders?: Order[] }) {
   const items = INVOICES.map((i) => {
     const issued = new Date(TODAY.getTime() - i.days * DAY)
     const due = new Date(issued.getTime() + PAY_DAYS * DAY)
@@ -53,9 +225,15 @@ export function SaldoCard() {
   }).sort((a, b) => a.left - b.left)
   const total = items.reduce((t, i) => t + i.value, 0)
   const late = items.filter((i) => i.left < 0).reduce((t, i) => t + i.value, 0)
+  const c = creditState(orders)
   return (
     <section className={`${s.card} ${x.saldo}`}>
-      <h4>Saldo i otvorene stavke</h4>
+      <div className={x.notesHead}>
+        <h4>Saldo i otvorene stavke</h4>
+        <button type="button" className={s.ghost} onClick={() => exportCsv(orders)}>
+          <Icon name="down" /> Izvezi u Excel
+        </button>
+      </div>
       <div className={x.kpis}>
         <div>
           <span>Saldo</span>
@@ -66,8 +244,12 @@ export function SaldoCard() {
           <b>{km(late)}</b>
         </div>
         <div>
-          <span>Valuta</span>
-          <b>{PAY_DAYS} dana</b>
+          <span>Ostalo limita</span>
+          <b>{km(c.free)}</b>
+        </div>
+        <div>
+          <span>Potrošnja 2026.</span>
+          <b>{km(PAID_2026 + total)}</b>
         </div>
       </div>
       <ul className={s.rows}>
@@ -221,8 +403,17 @@ const TIERS: [string, number][] = [
 ]
 type Client = { id: string; name: string; tier: string; limit: number; days: number; avans: boolean }
 
-export function AdminView({ orders, advance }: { orders: Order[]; advance: (o: Order) => void }) {
-  const [tab, setTab] = useState<'firme' | 'cjenovnici' | 'narudzbe'>('firme')
+/** Obavještenje prodavcu u Grand Company-ju: kanal (SMS, mejl, portal) i šta treba uraditi. */
+export type SalesEvent = { id: string; t: string; title: string; meta: string; channels: string[]; urgent?: boolean }
+export const SALES_START: SalesEvent[] = [
+  { id: 's1', t: '09:12', title: 'Novi upit: DEMO GRADNJA d.o.o.', meta: 'Lamela A · 5 stavki · odgovor do 12:00', channels: ['SMS', 'Mejl'], urgent: true },
+  { id: 's2', t: '08:40', title: 'Ponuda P-26-0142 ističe za 2 dana', meta: 'DEMO GRADNJA · podsjetnik prodavcu', channels: ['Mejl', 'Portal'] },
+  { id: 's3', t: 'juče', title: 'Firma traži odobrenje naloga', meta: 'Demo Instalacije d.o.o. · JIB 4400000000011', channels: ['Portal'] },
+  { id: 's4', t: 'juče', title: 'Limit skoro iskorišten', meta: 'DEMO GRADNJA · ostalo manje od 5 % limita · provjeriti prije isporuke', channels: ['Mejl'] },
+]
+
+export function AdminView({ orders, advance, events = SALES_START }: { orders: Order[]; advance: (o: Order) => void; events?: SalesEvent[] }) {
+  const [tab, setTab] = useState<'prodaja' | 'firme' | 'cjenovnici' | 'narudzbe'>('prodaja')
   const [pending, setPending] = useState<Firm[]>(PENDING)
   const [decided, setDecided] = useState<Record<string, 'Odobrena' | 'Odbijena'>>({})
   const [clients, setClients] = useState<Client[]>([
@@ -266,6 +457,7 @@ export function AdminView({ orders, advance }: { orders: Order[]; advance: (o: O
       <div className={s.chips} role="tablist">
         {(
           [
+            ['prodaja', `Obavještenja prodaji (${events.length})`],
             ['firme', `Firme na odobrenju (${waiting})`],
             ['cjenovnici', 'Cjenovnici po klijentu'],
             ['narudzbe', 'Narudžbe svih klijenata'],
@@ -276,6 +468,28 @@ export function AdminView({ orders, advance }: { orders: Order[]; advance: (o: O
           </button>
         ))}
       </div>
+
+      {tab === 'prodaja' && (
+        <>
+          <ul className={s.rows}>
+            {events.map((e) => (
+              <li key={e.id} className={x.salesRow} data-urgent={e.urgent || undefined}>
+                <time className={s.time}>{e.t}</time>
+                <span>
+                  <b>{e.title}</b>
+                  <i>{e.meta}</i>
+                </span>
+                <span className={x.channels}>
+                  {e.channels.map((c) => (
+                    <em key={c}>{c}</em>
+                  ))}
+                </span>
+              </li>
+            ))}
+          </ul>
+          <p className={s.fine}>Kad firma pošalje upit, prodavac odmah dobija SMS i mejl; prije isteka ponude dobija podsjetnik. Upit se ne gubi u sandučetu. Pošaljite upit u Materijalima i pojaviće se ovdje (simulacija).</p>
+        </>
+      )}
 
       {tab === 'firme' && (
         <>
