@@ -1,7 +1,8 @@
 'use client'
 
 import { useRef } from 'react'
-import { PARTNER_TIERS } from '@/gc/gc'
+import { PARTNER_TIERS, PARTNER_TIERS_EN } from '@/gc/gc'
+import { useLang } from '@/lib/i18n'
 import { gsap, ScrollTrigger, useGSAP } from '@/lib/gsap'
 import { MQ } from '@/lib/motion'
 import { useScrollTo } from '@/lib/useScrollTo'
@@ -15,6 +16,7 @@ const OFFSET = ['md:mt-0', 'md:mt-[10dvh]', 'md:mt-[3dvh]', 'md:mt-[13dvh]']
 
 export default function Pricing() {
   const list = useRef<HTMLUListElement>(null)
+  const { t, lang } = useLang()
   const scrollTo = useScrollTo()
 
   useGSAP(
@@ -59,18 +61,19 @@ export default function Pricing() {
   return (
     <section id="cijene" className="overflow-x-clip pb-[16dvh] pt-[16dvh]">
       <div className="gutter">
-        <SectionHead no="07" label="Partneri" meta={`${PARTNER_TIERS.length} nivoa`} />
+        <SectionHead no="07" label={t('Partneri', 'Partners')} meta={t(`${PARTNER_TIERS.length} nivoa`, `${PARTNER_TIERS.length} levels`)} />
       </div>
 
       <ul
         ref={list}
         className="mt-[12dvh] flex flex-col gap-6 px-5 md:flex-row md:items-start md:gap-[2vw] md:px-0 md:pl-[12vw]"
       >
-        {PARTNER_TIERS.map((t, i) => {
+        {PARTNER_TIERS.map((tierSr, i) => {
+          const tier = lang === 'en' ? PARTNER_TIERS_EN[i] : tierSr
           const dark = i === PARTNER_TIERS.length - 1
           return (
             <li
-              key={t.name}
+              key={tierSr.name}
               data-tier
               className={`flex min-h-[52dvh] flex-col justify-between gap-10 border-2 border-ink p-6 md:w-[20vw] md:shrink-0 ${
                 dark ? 'bg-ink text-bg' : ''
@@ -78,19 +81,19 @@ export default function Pricing() {
             >
               <p className="flex justify-between text-micro uppercase">
                 <span className="tabular-nums">0{i + 1}</span>
-                <span>{i === 0 ? 'Bez ugovora' : 'Ugovor'}</span>
+                <span>{i === 0 ? t('Bez ugovora', 'No contract') : t('Ugovor', 'Contract')}</span>
               </p>
 
               <div>
                 <h3 className="text-[clamp(24px,2vw,40px)] leading-[0.94] uppercase [overflow-wrap:anywhere]">
-                  {t.name}
+                  {tier.name}
                 </h3>
                 <p className="mt-4 text-[clamp(18px,1.7vw,32px)] leading-[1.02] tabular-nums uppercase">
-                  Rabat {t.rebate}
+                  {t('Rabat', 'Discount')} {tier.rebate}
                 </p>
-                <p className="mt-3 text-micro uppercase opacity-60">{t.who}</p>
+                <p className="mt-3 text-micro uppercase opacity-60">{tier.who}</p>
                 <ul className="mt-6 border-t border-current/25">
-                  {[t.limit, t.days].map((pt) => (
+                  {[tier.limit, tier.days].map((pt) => (
                     <li key={pt} className="border-b border-current/25 py-2.5 text-micro uppercase">
                       {pt}
                     </li>
@@ -103,7 +106,7 @@ export default function Pricing() {
                     dark ? 'hover:bg-bg hover:text-ink' : 'hover:bg-ink hover:text-bg'
                   }`}
                 >
-                  <span>{i === 0 ? 'Zatražite ponudu' : 'Zatražite ugovor'}</span>
+                  <span>{i === 0 ? t('Zatražite ponudu', 'Request a quote') : t('Zatražite ugovor', 'Request a contract')}</span>
                   <span aria-hidden>→</span>
                 </button>
               </div>

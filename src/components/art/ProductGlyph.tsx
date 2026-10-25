@@ -1,5 +1,6 @@
 import { box, iso, line, poly, prism, type Proj, type V3 } from '@/components/landing/iso'
 import type { Product } from '@/lib/shop'
+import { useLang } from '@/lib/i18n'
 
 export type GlyphKind =
   | 'board' | 'stud' | 'track' | 'ceiling' | 'slab' | 'roll'
@@ -244,8 +245,9 @@ function drawing(product: Product, kind: GlyphKind) {
 }
 
 export default function ProductGlyph({ product, kind = glyphKind(product), className = '', title }: Props) {
+  const { t } = useLang()
   const parts = drawing(product, kind)
-  const label = title ?? `${product.name} — linijski crtež`
+  const label = title ?? t(`${product.name} — linijski crtež`, `${product.name} — line drawing`)
   return (
     <svg
       viewBox={pathBounds(parts)}

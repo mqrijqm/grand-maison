@@ -19,6 +19,9 @@ export function cartMassKg(cart: Record<string, number>) {
 
 export const tons = (kg: number) => (kg / 1000).toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 
+export const tonsL = (kg: number, lang: 'sr' | 'en' = 'sr') =>
+  (kg / 1000).toLocaleString(lang === 'en' ? 'en-US' : 'de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+
 /** Cijena dostave za zonu i način. Standardna je besplatna preko FREE_DELIVERY_OVER KM. Kran = prevoz + rad dizalice. */
 export function deliveryCost(zoneId: string, method: DeliveryMethod, goodsTotal: number) {
   const z = DELIVERY_ZONES.find((x) => x.id === zoneId) ?? DELIVERY_ZONES[0]

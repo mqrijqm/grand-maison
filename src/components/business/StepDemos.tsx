@@ -6,7 +6,8 @@ import type { IntroDemo } from '@/lib/business'
 import ProductGlyph from '@/components/art/ProductGlyph'
 import Icon from '@/components/portal/Icon'
 import LogoMark from '@/components/site/LogoMark'
-import { FIRM as PORTAL_FIRM, SITES } from '@/lib/b2b-demo'
+import { FIRM as PORTAL_FIRM, firmUserL, nameL, siteL, unitL } from '@/lib/b2b-demo'
+import { useLang } from '@/lib/i18n'
 import { PRODUCT_MAP } from '@/lib/shop'
 import ps from './portal/Showcase.module.css'
 import styles from './StepDemos.module.css'
@@ -25,6 +26,7 @@ const ORDER: [string, string][] = [
   ['PRF-075', '90'],
 ]
 const TRACK = ['Primljena', 'Potvrđena', 'U pripremi', 'Na putu', 'Isporučena']
+const TRACK_EN = ['Received', 'Confirmed', 'In preparation', 'On the way', 'Delivered']
 
 // Kucanje teksta znak po znak.
 function type(tl: gsap.core.Timeline, el: HTMLElement, text: string, at?: gsap.Position) {
@@ -178,6 +180,7 @@ const finalLogin = (q: (sel: string) => HTMLElement) => {
 
 // Isti prozor za prijavu kao "B2B prijava" u navbaru (LoginModal), sa istim poljima.
 function LoginDemo() {
+  const { t } = useLang()
   const root = useDemo(buildLogin, finalLogin)
   return (
     <div ref={root} className={styles.demo}>
@@ -186,46 +189,46 @@ function LoginDemo() {
         <p className={styles.mBrand}>
           Grand Company <span>Portal</span>
         </p>
-        <p className={styles.mTitle}>Prijava na nalog firme</p>
+        <p className={styles.mTitle}>{t('Prijava na nalog firme', 'Sign in to your company account')}</p>
         <span className={styles.mField} data-f="firm">
-          <span>Firma ili JIB</span>
+          <span>{t('Firma ili JIB', 'Company or tax ID')}</span>
           <b>
             <em data-type data-t="firm" />
             <i className={styles.caret} />
-            <u className={styles.ph}>npr. DEMO GRADNJA d.o.o.</u>
+            <u className={styles.ph}>{t('npr. DEMO GRADNJA d.o.o.', 'e.g. DEMO GRADNJA d.o.o.')}</u>
           </b>
         </span>
         <span className={styles.mField} data-f="email">
-          <span>E-mail</span>
+          <span>{t('E-mail', 'Email')}</span>
           <b>
             <em data-type data-t="email" />
             <i className={styles.caret} />
-            <u className={styles.ph}>nabavka@firma.ba</u>
+            <u className={styles.ph}>{t('nabavka@firma.ba', 'procurement@company.ba')}</u>
           </b>
         </span>
         <span className={styles.mField} data-f="pass">
-          <span>Lozinka</span>
+          <span>{t('Lozinka', 'Password')}</span>
           <b>
             <em data-type data-t="pass" />
             <i className={styles.caret} />
-            <s className={styles.show}>Prikaži</s>
+            <s className={styles.show}>{t('Prikaži', 'Show')}</s>
           </b>
         </span>
         <span className={styles.mRow}>
           <span className={styles.mCheck}>
-            <i>✓</i>Zapamti me na ovom uređaju
+            <i>✓</i>{t('Zapamti me na ovom uređaju', 'Remember me on this device')}
           </span>
-          <span className={styles.mLink}>Zaboravljena lozinka?</span>
+          <span className={styles.mLink}>{t('Zaboravljena lozinka?', 'Forgot your password?')}</span>
         </span>
         <span className={styles.mSubmit} data-b="login">
-          Prijava
+          {t('Prijava', 'Sign in')}
         </span>
         <span className={styles.mFoot}>
-          Nemate nalog? <span className={styles.mLink}>Zatražite poslovni nalog</span>
+          {t('Nemate nalog?', 'No account?')} <span className={styles.mLink}>{t('Zatražite poslovni nalog', 'Request a business account')}</span>
         </span>
         <div className={styles.ok} data-show data-s="ok">
           <span className={styles.check}>✓</span>
-          <p className={styles.h}>Dobro došli</p>
+          <p className={styles.h}>{t('Dobro došli', 'Welcome')}</p>
           <p className={styles.muted}>DEMO GRADNJA d.o.o.</p>
         </div>
       </div>
@@ -233,24 +236,24 @@ function LoginDemo() {
       <div className={styles.dash} data-show data-s="dash">
         <div className={styles.dashTop} data-dash-item>
           <span>
-            <span className={styles.muted}>Dobro došli</span>
+            <span className={styles.muted}>{t('Dobro došli', 'Welcome')}</span>
             <b className={styles.dashFirm}>DEMO GRADNJA d.o.o.</b>
           </span>
-          <span className={styles.dashBadge}>Demo nalog</span>
+          <span className={styles.dashBadge}>{t('Demo nalog', 'Demo account')}</span>
         </div>
         <div className={styles.dashHero} data-dash-item>
-          <span className={styles.dashHeroLabel}>Ponuda P-26-0142 čeka vašu potvrdu</span>
-          <b className={styles.dashHeroNum}>5 stavki</b>
+          <span className={styles.dashHeroLabel}>{t('Ponuda P-26-0142 čeka vašu potvrdu', 'Offer P-26-0142 awaits your confirmation')}</span>
+          <b className={styles.dashHeroNum}>{t('5 stavki', '5 items')}</b>
           <i className={styles.meter}>
             <em data-bar />
           </i>
-          <span className={styles.dashHeroBtn}>Pregledaj ponudu →</span>
+          <span className={styles.dashHeroBtn}>{t('Pregledaj ponudu →', 'Review offer →')}</span>
         </div>
         <div className={styles.dashKpis}>
           {[
-            ['1', 'Ponuda čeka'],
-            ['2', 'Narudžbe u toku'],
-            ['3', 'Sačuvane liste'],
+            ['1', t('Ponuda čeka', 'Offer pending')],
+            ['2', t('Narudžbe u toku', 'Orders in progress')],
+            ['3', t('Sačuvane liste', 'Saved lists')],
           ].map(([n, l]) => (
             <span key={l} className={styles.dashKpi} data-dash-item>
               <b>{n}</b>
@@ -259,19 +262,19 @@ function LoginDemo() {
           ))}
         </div>
         <div className={styles.dashList} data-dash-item>
-          <span className={styles.muted}>Narudžbe u toku</span>
+          <span className={styles.muted}>{t('Narudžbe u toku', 'Orders in progress')}</span>
           <p>
             <span>GC-26-04477</span>
-            <span className={styles.chip}>Na putu ka gradilištu</span>
+            <span className={styles.chip}>{t('Na putu ka gradilištu', 'On the way to the site')}</span>
           </p>
           <p>
             <span>GC-26-04480</span>
-            <span className={styles.chipSoft}>U pripremi</span>
+            <span className={styles.chipSoft}>{t('U pripremi', 'In preparation')}</span>
           </p>
         </div>
         <div className={styles.dashQuick} data-dash-item>
-          <span className={styles.muted}>Brzi unos</span>
-          <span className={styles.fakeInput}>Šifra, npr. GKP-001</span>
+          <span className={styles.muted}>{t('Brzi unos', 'Quick entry')}</span>
+          <span className={styles.fakeInput}>{t('Šifra, npr. GKP-001', 'Code, e.g. GKP-001')}</span>
         </div>
       </div>
       <Cursor />
@@ -281,13 +284,14 @@ function LoginDemo() {
 
 // Okvir pravog portala (isti CSS modul kao Showcase): hrom sa adresom, tamna bočna traka sa aktivnom
 // stavkom, zaglavlje ekrana i sadržaj. Scena se umanji da stane u karticu (vidi fit u useDemo).
-const PORTAL_NAV: { id: string; label: string; icon: string; count?: number }[] = [
-  { id: 'pregled', label: 'Pregled', icon: 'pregled' },
-  { id: 'materijali', label: 'Materijali', icon: 'brza', count: 2 },
-  { id: 'ponude', label: 'Ponude', icon: 'ponude', count: 1 },
-  { id: 'narudzbe', label: 'Narudžbe', icon: 'narudzbe', count: 2 },
+const PORTAL_NAV: { id: string; label: string; en: string; icon: string; count?: number }[] = [
+  { id: 'pregled', label: 'Pregled', en: 'Overview', icon: 'pregled' },
+  { id: 'materijali', label: 'Materijali', en: 'Materials', icon: 'brza', count: 2 },
+  { id: 'ponude', label: 'Ponude', en: 'Offers', icon: 'ponude', count: 1 },
+  { id: 'narudzbe', label: 'Narudžbe', en: 'Orders', icon: 'narudzbe', count: 2 },
 ]
 function PortalFrame({ view, title, sub, children }: { view: string; title: string; sub: string; children: React.ReactNode }) {
+  const { t, lang } = useLang()
   return (
     <div className={`${ps.wrap} ${ps.window} ${styles.portal}`}>
       <div className={ps.chrome} aria-hidden>
@@ -297,7 +301,7 @@ function PortalFrame({ view, title, sub, children }: { view: string; title: stri
           <i />
         </span>
         <span className={ps.url}>portal.grandcompany.ba/{view}</span>
-        <span className={ps.demo}>Demo podaci</span>
+        <span className={ps.demo}>{t('Demo podaci', 'Demo data')}</span>
       </div>
       <div className={`${ps.body} ${styles.portalBody}`}>
         <aside className={ps.side}>
@@ -309,16 +313,16 @@ function PortalFrame({ view, title, sub, children }: { view: string; title: stri
             <span className={ps.avatar}>{PORTAL_FIRM.short}</span>
             <span>
               <b>{PORTAL_FIRM.name}</b>
-              <i>{PORTAL_FIRM.user}</i>
+              <i>{firmUserL(lang)}</i>
             </span>
           </div>
           <nav className={ps.nav} aria-hidden>
             <div className={ps.navGroup}>
-              <span className={ps.navLabel}>Nabavka</span>
+              <span className={ps.navLabel}>{t('Nabavka', 'Procurement')}</span>
               {PORTAL_NAV.map((n) => (
                 <button key={n.id} type="button" tabIndex={-1} aria-current={n.id === view || undefined}>
                   <Icon name={n.icon} />
-                  <span>{n.label}</span>
+                  <span>{t(n.label, n.en)}</span>
                   {n.count ? <em>{n.count}</em> : null}
                 </button>
               ))}
@@ -369,15 +373,17 @@ const finalOrder = (q: (sel: string) => HTMLElement) => {
 }
 
 function OrderDemo() {
+  const { t, lang } = useLang()
   const root = useDemo(buildOrder, finalOrder)
+  const site0 = siteL('a', lang)
   return (
     <div ref={root} className={styles.demo}>
-      <PortalFrame view="materijali" title="Materijali i brza narudžba" sub="Odaberite artikle, upišite količine i pošaljite jedan upit za više proizvoda.">
+      <PortalFrame view="materijali" title={t('Materijali i brza narudžba', 'Materials and quick order')} sub={t('Odaberite artikle, upišite količine i pošaljite jedan upit za više proizvoda.', 'Pick items, enter quantities and send a single inquiry for several products.')}>
         <div className={ps.split}>
           <section className={ps.card}>
-            <h4>Dodajte materijal</h4>
+            <h4>{t('Dodajte materijal', 'Add material')}</h4>
             <div className={ps.finder}>
-              <span className={ps.groupSelect}>Sve grupe</span>
+              <span className={ps.groupSelect}>{t('Sve grupe', 'All groups')}</span>
               <span className={`${ps.search} ${styles.pSearch}`} data-f="q">
                 <Icon name="search" />
                 <span>
@@ -393,41 +399,41 @@ function OrderDemo() {
                     {PRODUCT_MAP[sku] && <ProductGlyph product={PRODUCT_MAP[sku]} kind={sku.startsWith('GKP-') ? 'board' : undefined} />}
                   </span>
                   <span className={ps.resName}>
-                    <b>{PRODUCT_MAP[sku]?.name}</b>
+                    <b>{nameL(sku, lang)}</b>
                     <i>{sku}</i>
                   </span>
-                  <em>+ Dodaj</em>
+                  <em>{t('+ Dodaj', '+ Add')}</em>
                 </li>
               ))}
             </ul>
-            <p className={ps.fine}>Količinu mijenjate u upitu desno.</p>
+            <p className={ps.fine}>{t('Količinu mijenjate u upitu desno.', 'You change the quantity in the inquiry on the right.')}</p>
           </section>
           <aside className={`${ps.card} ${ps.request}`}>
-            <h4>Vaš upit</h4>
+            <h4>{t('Vaš upit', 'Your inquiry')}</h4>
             <span className={`${ps.field} ${styles.pField}`}>
-              <span>Gradilište</span>
-              <b>{SITES[0].name}</b>
+              <span>{t('Gradilište', 'Construction site')}</span>
+              <b>{site0.name}</b>
             </span>
             <ul className={ps.lines}>
               {ORDER.map(([sku], i) => (
                 <li key={sku} data-show data-s={`line${i}`}>
                   <span>
-                    <b>{PRODUCT_MAP[sku]?.name}</b>
+                    <b>{nameL(sku, lang)}</b>
                     <i>{sku}</i>
                   </span>
                   <span className={styles.pQty} data-f={`qty${i}`}>
                     <em data-type data-t={`qty${i}`} />
                     <i className={styles.caret} />
-                    <small>{PRODUCT_MAP[sku]?.unit}</small>
+                    <small>{unitL(sku, lang)}</small>
                   </span>
                 </li>
               ))}
             </ul>
             <span className={`${ps.primary} ${ps.wide}`} data-b="send">
-              Pošalji upit (demo) <Icon name="arrow" />
+              {t('Pošalji upit (demo)', 'Send inquiry (demo)')} <Icon name="arrow" />
             </span>
             <span className={styles.pToast} data-show data-s="sent">
-              ✓ Upit je poslat prodaji
+              {t('✓ Upit je poslat prodaji', '✓ Inquiry sent to sales')}
             </span>
           </aside>
         </div>
@@ -464,10 +470,13 @@ const finalTrack = (q: (sel: string) => HTMLElement) => {
 }
 
 function TrackDemo() {
+  const { t, lang } = useLang()
   const root = useDemo(buildTrack, finalTrack)
+  const site0 = siteL('a', lang)
+  const site2 = siteL('c', lang)
   return (
     <div ref={root} className={styles.demo}>
-      <PortalFrame view="ponude" title="Ponude" sub="Ponude koje prodaja pripremi po vašem upitu. Provjerite stavke i potvrdite.">
+      <PortalFrame view="ponude" title={t('Ponude', 'Offers')} sub={t('Ponude koje prodaja pripremi po vašem upitu. Provjerite stavke i potvrdite.', 'Offers that sales prepares from your inquiry. Check the line items and confirm.')}>
         <div className={ps.split} data-root>
           <section className={ps.card}>
             <ul className={ps.pick}>
@@ -475,11 +484,11 @@ function TrackDemo() {
                 <button type="button" tabIndex={-1} aria-pressed="true">
                   <span>
                     <b>P-26-0142</b>
-                    <i>{SITES[0].name} · 5 stavki</i>
+                    <i>{site0.name} · {t('5 stavki', '5 items')}</i>
                   </span>
                   <span className={`${ps.chip} ${styles.pChip}`} data-k="act" data-chip>
-                    <span className={styles.idle}>Čeka potvrdu</span>
-                    <span className={styles.done}>Potvrđena</span>
+                    <span className={styles.idle}>{t('Čeka potvrdu', 'Awaiting confirmation')}</span>
+                    <span className={styles.done}>{t('Potvrđena', 'Confirmed')}</span>
                   </span>
                 </button>
               </li>
@@ -487,10 +496,10 @@ function TrackDemo() {
                 <button type="button" tabIndex={-1}>
                   <span>
                     <b>P-26-0131</b>
-                    <i>{SITES[2].name} · 3 stavke</i>
+                    <i>{site2.name} · {t('3 stavke', '3 items')}</i>
                   </span>
                   <span className={ps.chip} data-k="done">
-                    Potvrđena
+                    {t('Potvrđena', 'Confirmed')}
                   </span>
                 </button>
               </li>
@@ -499,40 +508,40 @@ function TrackDemo() {
           <section className={`${ps.card} ${ps.detail}`}>
             <div className={ps.detailHead}>
               <span>
-                <span className={ps.kicker}>Ponuda P-26-0142</span>
-                <b>{SITES[0].phase}</b>
-                <i>{SITES[0].name} · važi 14 dana</i>
+                <span className={ps.kicker}>{t('Ponuda P-26-0142', 'Offer P-26-0142')}</span>
+                <b>{site0.phase}</b>
+                <i>{site0.name} · {t('važi 14 dana', 'valid for 14 days')}</i>
               </span>
             </div>
             <ul className={ps.lines}>
               {OFFER_LINES.map(([sku, qty]) => (
                 <li key={sku}>
                   <span>
-                    <b>{PRODUCT_MAP[sku]?.name}</b>
+                    <b>{nameL(sku, lang)}</b>
                     <i>
-                      {sku} · {qty} {PRODUCT_MAP[sku]?.unit}
+                      {sku} · {qty} {unitL(sku, lang)}
                     </i>
                   </span>
-                  <span className={styles.pPrice}>Na upit</span>
+                  <span className={styles.pPrice}>{t('Na upit', 'On request')}</span>
                 </li>
               ))}
             </ul>
             <span className={`${ps.primary} ${styles.pAccept}`} data-b="accept">
-              <span className={styles.idle}>Potvrdi ponudu (demo) ✓</span>
-              <span className={styles.done}>Ponuda potvrđena ✓</span>
+              <span className={styles.idle}>{t('Potvrdi ponudu (demo) ✓', 'Confirm offer (demo) ✓')}</span>
+              <span className={styles.done}>{t('Ponuda potvrđena ✓', 'Offer confirmed ✓')}</span>
             </span>
             <div className={styles.pProgress} data-show data-s="progress">
               <ol className={styles.track}>
-                {TRACK.map((t, i) => (
-                  <li key={t} data-k={i}>
+                {TRACK.map((label, i) => (
+                  <li key={label} data-k={i}>
                     <i />
-                    <span>{t}</span>
+                    <span>{lang === 'en' ? TRACK_EN[i] : label}</span>
                   </li>
                 ))}
               </ol>
               <div className={styles.slot} data-show data-s="slot">
-                <span>Dostava · {SITES[0].name}</span>
-                <b>Sutra, 07–09h</b>
+                <span>{t('Dostava', 'Delivery')} · {site0.name}</span>
+                <b>{t('Sutra, 07–09h', 'Tomorrow, 07:00–09:00')}</b>
               </div>
             </div>
           </section>

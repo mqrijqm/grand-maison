@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { MQ } from '@/lib/motion'
 import { revealChars, revealLines } from '@/lib/reveal'
+import { useLang } from '@/lib/i18n'
 
 // Zaglavlje sekcije: linija sa brojem, labelom i metom. Ako se zadaju `title`/`lead`,
 // ispod linije ide veliki naslov koji izranja slovo po slovo i kratak uvod.
@@ -12,6 +13,8 @@ type Props = { no: string; label: string; meta?: string; title?: string; lead?: 
 
 export default function SectionHead({ no, label, meta, title, lead }: Props) {
   const root = useRef<HTMLElement>(null)
+  // Naslov i uvod se dijele (SplitText) jednom po jeziku: element se remontira (key) pa se podjela ponovi.
+  const { lang } = useLang()
 
   useGSAP(
     () => {
@@ -25,7 +28,7 @@ export default function SectionHead({ no, label, meta, title, lead }: Props) {
         if (para) revealLines(para, reduce, 'top 92%')
       })
     },
-    { scope: root },
+    { scope: root, dependencies: [lang], revertOnUpdate: true },
   )
 
   return (
@@ -37,11 +40,11 @@ export default function SectionHead({ no, label, meta, title, lead }: Props) {
       </div>
       {title && (
         <div className="mt-[7dvh] grid gap-6 md:grid-cols-12 md:items-end">
-          <h2 data-title className="invisible text-title uppercase md:col-span-8">
+          <h2 key={`t-${lang}`} data-title className="invisible text-title uppercase md:col-span-8">
             {title}
           </h2>
           {lead && (
-            <p data-lead className="invisible text-small uppercase md:col-span-3 md:col-start-10">
+            <p key={`l-${lang}`} data-lead className="invisible text-small uppercase md:col-span-3 md:col-start-10">
               {lead}
             </p>
           )}

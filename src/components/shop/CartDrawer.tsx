@@ -4,15 +4,16 @@ import { useEffect, useRef } from 'react'
 import { useLenis } from 'lenis/react'
 import { useRouter } from 'next/navigation'
 import { cartCount, cartLines, closeCart, removeFromCart, setQty, useShop } from '@/lib/cart'
-import { artikala, qtyLabel } from '@/lib/shop'
+import { artikala, qtyLabelL } from '@/lib/shop'
+import { useLang } from '@/lib/i18n'
 import ProductImage from './ProductImage'
 import { useScrollTo } from '@/lib/useScrollTo'
 import Cta from '@/components/ui/Cta'
 import Price from '@/components/b2b/Price'
 import { buildQuote } from '@/components/b2b/quote'
-import { METHOD_LABEL, setPrefs, useDeliveryPrefs } from '@/components/b2b/prefs'
+import { METHOD_LABEL, METHOD_LABEL_EN, setPrefs, useDeliveryPrefs } from '@/components/b2b/prefs'
 import { usePortalPartner } from '@/lib/portal'
-import { tons, type DeliveryMethod } from '@/lib/logistics'
+import { tonsL, type DeliveryMethod } from '@/lib/logistics'
 
 const FOCUSABLE = 'button:not(:disabled), a[href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
 
@@ -22,6 +23,8 @@ const FOCUSABLE = 'button:not(:disabled), a[href], input, select, textarea, [tab
 // Nalazi se IZVAN prodavnice u DOM-u, jer značka i marquee iz landinga
 // stoje na višem sloju od cijele prodavnice, a ladica mora biti iznad njih.
 export default function CartDrawer() {
+  const { t, lang } = useLang()
+  const methodLabel = lang === 'en' ? METHOD_LABEL_EN : METHOD_LABEL
   const { cart, cartOpen } = useShop()
   const lenis = useLenis()
   const scrollTo = useScrollTo()
@@ -85,7 +88,7 @@ export default function CartDrawer() {
         ref={panel}
         role="dialog"
         aria-modal="true"
-        aria-label="Korpa"
+        aria-label={t('Korpa', 'Basket')}
         inert={!cartOpen}
         className={`absolute right-0 top-0 flex h-dvh w-full flex-col bg-bg text-ink transition-[transform,visibility] duration-700 [transition-timing-function:var(--ease-io)] sm:w-[480px] ${
           cartOpen ? 'visible translate-x-0' : 'invisible translate-x-full'
@@ -93,20 +96,20 @@ export default function CartDrawer() {
       >
         <div className="flex items-baseline justify-between px-6 pb-6 pt-7 md:px-8">
           <h2 className="flex items-baseline gap-3 leading-none">
-            <span className="font-pretty text-[36px]">Korpa</span> <span className="text-[12.5px] text-ink/45 tabular-nums">({count})</span>
+            <span className="font-pretty text-[36px]">{t('Korpa', 'Basket')}</span> <span className="text-[12.5px] text-ink/45 tabular-nums">({count})</span>
           </h2>
           <button data-close type="button" onClick={closeCart} className="ulink text-[12.5px]">
-            Zatvori
+            {t('Zatvori', 'Close')}
           </button>
         </div>
 
         <div data-lenis-prevent className="flex-1 overflow-y-auto overscroll-contain px-6 md:px-8">
           {lines.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-5 pb-16 text-center">
-              <p className="font-pretty text-[clamp(30px,3vw,44px)] leading-[1.05]">Korpa je prazna.</p>
-              <p className="max-w-[30ch] text-[12.5px] text-ink/60">Dodajte artikle iz prodavnice, pa pošaljite upit za ponudu.</p>
+              <p className="font-pretty text-[clamp(30px,3vw,44px)] leading-[1.05]">{t('Korpa je prazna.', 'Your basket is empty.')}</p>
+              <p className="max-w-[30ch] text-[12.5px] text-ink/60">{t('Dodajte artikle iz prodavnice, pa pošaljite upit za ponudu.', 'Add items from the shop, then send an enquiry for a quote.')}</p>
               <Cta onClick={toShop} className="mt-4">
-                Prodavnica
+                {t('Prodavnica', 'Shop')}
               </Cta>
             </div>
           ) : (
@@ -120,7 +123,7 @@ export default function CartDrawer() {
                   )}
                   <div className="flex min-w-0 flex-1 flex-col justify-between gap-3">
                     <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1.5">
-                      <p className="min-w-[12ch] flex-1 text-[12.5px] leading-[1.25]">{l.name}</p>
+                      <p className="min-w-[12ch] flex-1 text-[12.5px] leading-[1.25]">{lang === 'en' ? (l.nameEn ?? l.name) : l.name}</p>
                       <p className="ml-auto text-right text-[12.5px]">
                         <Price value={l.price} qty={l.qty} className="justify-end" />
                       </p>
@@ -129,16 +132,16 @@ export default function CartDrawer() {
                       <div className="flex items-center border border-ink/20">
                         <button
                           type="button"
-                          aria-label={`Smanji količinu: ${l.name}`}
+                          aria-label={`${t('Smanji količinu', 'Decrease quantity')}: ${lang === 'en' ? (l.nameEn ?? l.name) : l.name}`}
                           onClick={() => setQty(l.key, l.qty - l.step)}
                           className="grid size-8 place-items-center transition-colors hover:text-signal"
                         >
                           −
                         </button>
-                        <span className="min-w-14 text-center tabular-nums">{qtyLabel(l.qty, l.unit)}</span>
+                        <span className="min-w-14 text-center tabular-nums">{qtyLabelL(l.qty, l.unit, lang)}</span>
                         <button
                           type="button"
-                          aria-label={`Povećaj količinu: ${l.name}`}
+                          aria-label={`${t('Povećaj količinu', 'Increase quantity')}: ${lang === 'en' ? (l.nameEn ?? l.name) : l.name}`}
                           onClick={() => setQty(l.key, l.qty + l.step)}
                           className="grid size-8 place-items-center transition-colors hover:text-signal"
                         >
@@ -146,7 +149,7 @@ export default function CartDrawer() {
                         </button>
                       </div>
                       <button type="button" onClick={() => removeFromCart(l.key)} className="ulink text-ink/55 hover:text-ink">
-                        Ukloni
+                        {t('Ukloni', 'Remove')}
                       </button>
                     </div>
                   </div>
@@ -156,12 +159,12 @@ export default function CartDrawer() {
           )}
 
           {lines.length > 0 && (
-            <section className="border-b border-ink/15 py-6" aria-label="Isporuka">
+            <section className="border-b border-ink/15 py-6" aria-label={t('Isporuka', 'Delivery')}>
               <div className="flex items-baseline justify-between text-[11px]">
-                <span className="opacity-60">Isporuka</span>
-                <span className="tabular-nums opacity-60">Masa tereta {tons(q.kg)} t</span>
+                <span className="opacity-60">{t('Isporuka', 'Delivery')}</span>
+                <span className="tabular-nums opacity-60">{t('Masa tereta', 'Load weight')} {tonsL(q.kg, lang)} t</span>
               </div>
-              <div className="mt-3 grid gap-2" role="radiogroup" aria-label="Način isporuke">
+              <div className="mt-3 grid gap-2" role="radiogroup" aria-label={t('Način isporuke', 'Delivery method')}>
                 {(['preuzimanje', 'standard'] as DeliveryMethod[]).map((m) => (
                   <button
                     key={m}
@@ -174,14 +177,14 @@ export default function CartDrawer() {
                     }`}
                   >
                     <span>
-                      {METHOD_LABEL[m]}
+                      {methodLabel[m]}
                     </span>
                     <span className={`size-3 rounded-full border ${prefs.method === m ? 'border-ink bg-ink' : 'border-ink/40'}`} />
                   </button>
                 ))}
               </div>
               {prefs.method !== 'preuzimanje' && (
-                <p className="mt-4 text-[10.5px] opacity-80">Dostava samo na teritoriji grada Banja Luka.</p>
+                <p className="mt-4 text-[10.5px] opacity-80">{t('Dostava samo na teritoriji grada Banja Luka.', 'Delivery within the city of Banja Luka only.')}</p>
               )}
             </section>
           )}
@@ -191,24 +194,24 @@ export default function CartDrawer() {
           <div className="border-t border-ink/15 px-6 pb-7 pt-5 md:px-8">
             <dl className="grid gap-1.5 text-[11.5px]">
               <div className="flex justify-between opacity-80">
-                <dt>{artikala(count)}</dt>
-                <dd>Cijena na upit</dd>
+                <dt>{artikala(count, lang)}</dt>
+                <dd>{t('Cijena na upit', 'Price on request')}</dd>
               </div>
               <div className="flex justify-between opacity-80">
-                <dt>{METHOD_LABEL[prefs.method]}</dt>
-                <dd>{prefs.method === 'preuzimanje' ? 'Nenada Kostića 151' : 'Banja Luka · na upit'}</dd>
+                <dt>{methodLabel[prefs.method]}</dt>
+                <dd>{prefs.method === 'preuzimanje' ? 'Nenada Kostića 151' : t('Banja Luka · na upit', 'Banja Luka · on request')}</dd>
               </div>
             </dl>
             <p className="mt-3 border-t border-ink/15 pt-3 text-[11.5px] leading-[1.5] opacity-70">
-              Javnog cjenovnika nema. Pošaljite upit, a prodaja vam javlja cijenu, dostupnost i termin dostave.
+              {t('Javnog cjenovnika nema. Pošaljite upit, a prodaja vam javlja cijenu, dostupnost i termin dostave.', 'There is no public price list. Send an enquiry and sales will get back to you with the price, availability and delivery date.')}
             </p>
             <div className="mt-5 flex flex-wrap items-center justify-center gap-3">
               <Cta solid onClick={() => go('ponuda')}>
-                Upit
+                {t('Upit', 'Enquiry')}
               </Cta>
             </div>
             <button type="button" onClick={closeCart} className="ulink mx-auto mt-4 block text-[11px] opacity-70">
-              Nastavi kupovinu
+              {t('Nastavi kupovinu', 'Continue shopping')}
             </button>
           </div>
         )}

@@ -6,7 +6,8 @@ import Link from 'next/link'
 import { pw } from '@/components/ui/Pw'
 import { addToCart, toggleSaved, useShop } from '@/lib/cart'
 import Price from '@/components/b2b/Price'
-import { categoryName, defaultQty, type Product } from '@/lib/shop'
+import { categoryName, defaultQty, pName, type Product } from '@/lib/shop'
+import { useLang } from '@/lib/i18n'
 
 type Props = { product: Product; view?: 'grid' | 'list'; size?: 'md' | 'lg'; priority?: boolean; stacked?: boolean }
 
@@ -14,19 +15,21 @@ type Props = { product: Product; view?: 'grid' | 'list'; size?: 'md' | 'lg'; pri
 // Na hover se slika približi, a odozdo izađe kapsula "Dodaj u korpu"; kursor kaže "Pogledaj".
 export default function ProductCard({ product, view = 'grid', priority, stacked }: Props) {
   const { saved } = useShop()
+  const { t, lang } = useLang()
+  const name = pName(product, lang)
   const isSaved = saved.includes(product.id)
   const href = `/prodavnica/${product.sku}`
 
   if (view === 'list') {
     return (
       <article data-flip-id={product.id} className="group grid grid-cols-[88px_1fr_auto] items-center gap-5 border-t border-ink/15 py-4">
-        <Link href={href} className="shot block aspect-[4/5]" data-cursor="Pogledaj">
+        <Link href={href} className="shot block aspect-[4/5]" data-cursor={t('Pogledaj', 'View')}>
           <img decoding="async" src={product.image} alt="" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
         </Link>
         <div>
-          <p className="label opacity-50">{categoryName(product.category)}</p>
+          <p className="label opacity-50">{categoryName(product.category, lang)}</p>
           <Link href={href} className="font-pretty mt-1 block text-[clamp(19px,1.5vw,24px)] leading-[1.1]">
-            {pw(product.name)}
+            {pw(name)}
           </Link>
         </div>
         <div className="flex items-center gap-5">
@@ -37,7 +40,7 @@ export default function ProductCard({ product, view = 'grid', priority, stacked 
             type="button"
             onClick={() => addToCart(product.id, defaultQty(product))}
             className="grid size-11 place-items-center rounded-full border border-ink/30 text-lg transition-colors hover:border-signal hover:bg-signal hover:text-bg"
-            aria-label={`Dodaj u korpu: ${product.name}`}
+            aria-label={`${t('Dodaj u korpu', 'Add to basket')}: ${name}`}
           >
             +
           </button>
@@ -49,10 +52,10 @@ export default function ProductCard({ product, view = 'grid', priority, stacked 
   return (
     <article data-flip-id={product.id} className="group flex flex-col">
       <div className="relative">
-        <Link href={href} className="shot block aspect-[4/5]" data-cursor="Pogledaj" data-float>
+        <Link href={href} className="shot block aspect-[4/5]" data-cursor={t('Pogledaj', 'View')} data-float>
           <img decoding="async"
             src={product.image}
-            alt={product.name}
+            alt={name}
             loading={priority ? 'eager' : 'lazy'}
             className="absolute inset-0 h-full w-full object-cover"
           />
@@ -60,7 +63,7 @@ export default function ProductCard({ product, view = 'grid', priority, stacked 
 
         <button
           type="button"
-          aria-label={isSaved ? 'Ukloni iz sačuvanih' : 'Sačuvaj'}
+          aria-label={isSaved ? t('Ukloni iz sačuvanih', 'Remove from saved') : t('Sačuvaj', 'Save')}
           aria-pressed={isSaved}
           onClick={() => toggleSaved(product.id)}
           className="absolute right-3 top-3 grid size-10 place-items-center rounded-full text-ink/70 transition-colors hover:text-signal"
@@ -74,13 +77,13 @@ export default function ProductCard({ product, view = 'grid', priority, stacked 
           onClick={() => addToCart(product.id, defaultQty(product))}
           className="absolute inset-x-3 bottom-3 flex min-h-11 translate-y-3 items-center justify-center gap-2 rounded-full bg-ink text-[14px] text-bg opacity-0 transition-[opacity,transform,background-color] duration-500 ease-[var(--ease-out)] hover:bg-signal focus-visible:translate-y-0 focus-visible:opacity-100 group-hover:translate-y-0 group-hover:opacity-100 max-md:hidden"
         >
-          Dodaj u korpu
+          {t('Dodaj u korpu', 'Add to basket')}
         </button>
       </div>
 
       <div className={`flex flex-col gap-1 pt-3 sm:pt-4 ${stacked ? '' : 'sm:flex-row sm:items-start sm:justify-between sm:gap-4'}`}>
         <Link href={href} className="min-w-0 font-pretty text-[clamp(19px,1.45vw,24px)] leading-[1.1] [overflow-wrap:anywhere]">
-          {pw(product.name)}
+          {pw(name)}
         </Link>
         <p className="shrink-0 text-[14px] sm:pt-[2px] sm:text-[12.5px]">
           <Price value={product.price} />

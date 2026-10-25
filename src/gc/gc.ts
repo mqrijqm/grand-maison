@@ -160,3 +160,14 @@ export function plural(n: number, one: string, few: string, many: string) {
   if (d10 >= 2 && d10 <= 4 && (d100 < 12 || d100 > 14)) return few
   return many
 }
+
+// ——— English parallel text (additive; Serbian above stays the source of truth) ———
+export {
+  CATEGORIES_EN, PRODUCTS_EN, UNIT_EN, PACKNAME_EN, BRAND_EN, PARTNER_TIERS_EN, WALL_SYSTEMS_EN,
+  ORDER_STEPS_EN, FAQ_EN, BRAND_NOTES_EN, DELIVERY_ZONES_EN, STOCK_LABEL_EN,
+} from './gc-en'
+export type { Lang } from './gc-en'
+
+const km2en = new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+/** Price in KM, formatted for the given language (en: 1,234.50 KM). */
+export const kmL = (n: number, lang: 'sr' | 'en') => (lang === 'en' ? `${km2en.format(n)} KM` : km(n))

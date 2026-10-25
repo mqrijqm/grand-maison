@@ -1,5 +1,7 @@
 import { ARTICLE_COPY, PROGRAM_ITEMS } from '@/lib/catalog-copy'
-import { CATEGORIES, PRODUCTS, USES, type Product } from '@/lib/shop'
+import { ARTICLE_COPY_EN, PROGRAM_ITEMS_EN } from '@/lib/catalog-copy-en'
+import { CATEGORIES, PRODUCTS, USES, categoryName, pDesc, pName, pSpec, workName, type Product } from '@/lib/shop'
+import { UNIT_EN } from '@/gc/gc'
 
 // Jedinstven spisak artikala za katalog po proizvođačima (po uzoru na mtponos.studioblink.ba/asortiman):
 // provjereni proizvođači (Tondach, Porotherm, Baumalt) sa artiklima sa njihovih zvaničnih stranica, i grupa
@@ -14,6 +16,8 @@ export type Brand = {
   logo?: string
   logoRatio?: number
   text: string
+  nameEn?: string
+  textEn?: string
 }
 
 export const BRANDS: Brand[] = [
@@ -22,23 +26,28 @@ export const BRANDS: Brand[] = [
     name: 'Tondach',
     logo: '/brands/tondach.svg',
     text: 'Glineni crijep i sistemska oprema za kose krovove iz programa Wienerberger: Continental, Traditon, Twiston, Planoton, Contiton, Veneton i Biber. Grand Company je na Wienerbergerovoj listi prodajnih mjesta; dostupnost modela potvrđuje prodaja.',
+    textEn: 'Clay roof tiles and system accessories for pitched roofs from the Wienerberger range: Continental, Traditon, Twiston, Planoton, Contiton, Veneton and Biber. Grand Company is on Wienerberger’s list of points of sale; sales confirms the availability of each model.',
   },
   {
     id: 'porotherm',
     name: 'Porotherm',
     logo: '/brands/porotherm.svg',
     text: 'Opeka Wienerberger za nosive, spoljne i pregradne zidove, od deset do pedeset centimetara. Profi blokovi se zidaju ljepilom Dryfix.extra. Dostupnost modela potvrđuje prodaja.',
+    textEn: 'Wienerberger clay blocks for load-bearing, external and partition walls, from ten to fifty centimetres. Profi blocks are laid with Dryfix.extra adhesive. Sales confirms the availability of each model.',
   },
   {
     id: 'baumalt',
     name: 'Baumalt',
     logo: '/brands/baumalt.svg',
     text: 'Mašinski malteri, ljepila za keramiku i dekorativni malteri za fasadu. Grand Company je na Baumaltovoj listi prodajnih lokacija za Banju Luku.',
+    textEn: 'Machine-applied plasters, tile adhesives and decorative facade renders. Grand Company is on Baumalt’s list of points of sale for Banja Luka.',
   },
   {
     id: 'ostalo',
     name: 'Suha gradnja i izolacija',
+    nameEn: 'Drywall and insulation',
     text: 'Sistem suhe gradnje i kamena vuna (javni listinzi firme). Artikli ispod su primjeri iz tih sistema: proizvođača, model i dostupnost potvrđuje prodaja.',
+    textEn: 'Drywall system and stone wool (the company’s public listings). The items below are examples from those systems: sales confirms the manufacturer, model and availability.',
   },
 ]
 
@@ -47,6 +56,13 @@ export const CATEGORY_NAMES: Record<string, string> = {
   'zidni-blokovi': 'Zidni sistemi',
   'malteri-ljepila': 'Građevinska hemija',
   ...Object.fromEntries(CATEGORIES.map((c) => [c.id, c.name])),
+}
+
+export const CATEGORY_NAMES_EN: Record<string, string> = {
+  'krovni-sistemi': 'Roofing systems',
+  'zidni-blokovi': 'Wall systems',
+  'malteri-ljepila': 'Construction chemicals',
+  ...Object.fromEntries(CATEGORIES.map((c) => [c.id, categoryName(c.id, 'en')])),
 }
 
 export type CatalogItem = {
@@ -70,6 +86,8 @@ export type CatalogItem = {
   source?: string
   product?: Product
   featured: boolean
+  /** English parallel text (additive) */
+  en: { brandName: string; code: string; name: string; spec: string; lead: string; uses: string[]; unit: string }
 }
 
 const BRAND_OF: Record<string, BrandId> = { Tondach: 'tondach', Porotherm: 'porotherm', Baumalt: 'baumalt' }
@@ -108,6 +126,15 @@ const programItems: CatalogItem[] = PROGRAM_ITEMS.map((item) => {
     hover: projectOf(item.id, item.brand, item.image),
     source: item.source,
     featured: false,
+    en: {
+      brandName: item.brand,
+      code: (PROGRAM_ITEMS_EN[item.id]?.name ?? item.name).replace(new RegExp(`^${item.brand}\\s+`), ''),
+      name: PROGRAM_ITEMS_EN[item.id]?.name ?? item.name,
+      spec: PROGRAM_ITEMS_EN[item.id]?.spec ?? item.spec,
+      lead: PROGRAM_ITEMS_EN[item.id]?.lead ?? item.lead,
+      uses: PROGRAM_ITEMS_EN[item.id]?.uses ?? item.uses,
+      unit: UNIT_EN[item.unit] ?? item.unit,
+    },
   }
 })
 
@@ -128,6 +155,15 @@ const stockItems: CatalogItem[] = PRODUCTS.map((p) => ({
   href: `/prodavnica/${p.sku}`,
   product: p,
   featured: !!p.featured,
+  en: {
+    brandName: 'Drywall and insulation',
+    code: pName(p, 'en'),
+    name: pName(p, 'en'),
+    spec: pSpec(p, 'en'),
+    lead: ARTICLE_COPY_EN[p.sku]?.lead ?? pDesc(p, 'en'),
+    uses: p.uses.map((u) => workName(u, 'en')),
+    unit: UNIT_EN[p.unit] ?? p.unit,
+  },
 }))
 
 export const CATALOG_ITEMS: CatalogItem[] = [...programItems, ...stockItems]

@@ -1,4 +1,5 @@
 import { PRODUCT_MAP, PRODUCTS } from './shop'
+import type { Lang } from './i18n'
 
 // Demo podaci za interaktivni prikaz predloženog B2B portala na /za-firme.
 // Izmišljena firma i gradilišta. Artikli su iz kataloga sajta (naziv, šifra, jedinica, pakovanje).
@@ -32,7 +33,7 @@ export const GROUPS = [
 export const MATERIALS = PRODUCTS.map((p) => ({ sku: p.id, name: p.name, unit: p.unit, spec: p.spec, group: p.category, pack: p.pack }))
 
 export type OfferStatus = 'Čeka potvrdu' | 'Potvrđena' | 'Kod prodaje'
-export type Offer = { no: string; site: string; title: string; lines: Line[]; status: OfferStatus; validDays: number; days: number; demo?: boolean }
+export type Offer = { no: string; site: string; title: string; lines: Line[]; status: OfferStatus; validDays: number; days: number; demo?: boolean; titleEn?: string }
 export const OFFERS: Offer[] = [
   {
     no: 'P-26-0142',
@@ -107,3 +108,94 @@ export const packs = (l: Line) => {
 }
 /** Termini dostave koje kupac predlaže; potvrđuje ih prodaja (demo). */
 export const SLOTS = ['Sutra, 07–09h', 'Sutra, 10–12h', 'Prekosutra, 07–09h', 'Prekosutra, 12–14h']
+
+// ——— English (additive): the Serbian values above stay as they are and double as lookup keys. ———
+
+const SITES_EN: Record<string, { name: string; address: string; lead: string; phase: string; short: string }> = {
+  a: { name: 'Lamela A, residential building', address: 'Banja Luka, demo address 1', lead: 'Demo site supervisor 1', phase: 'Partition walls, floor 3', short: 'Lamela A' },
+  b: { name: 'Office space B', address: 'Banja Luka, demo address 2', lead: 'Demo site supervisor 2', phase: 'Suspended ceilings', short: 'Office B' },
+  c: { name: 'Family house C', address: 'Banja Luka, demo', lead: 'Demo site supervisor 3', phase: 'Roof and insulation', short: 'House C' },
+}
+/** Site with texts in the chosen language. */
+export const siteL = (id: string, lang: Lang): Site => {
+  const s = site(id)
+  const e = lang === 'en' ? SITES_EN[s.id] : undefined
+  return e ? { id: s.id, name: e.name, address: e.address, lead: e.lead, phase: e.phase } : s
+}
+
+const NAME_EN: Record<string, string> = {
+  'GKP-001': 'Plasterboard GKB 12.5 mm',
+  'GKP-002': 'Moisture-resistant plasterboard GKBI 12.5 mm',
+  'GKP-003': 'Fire-resistant plasterboard GKF 12.5 mm',
+  'GKP-004': 'High-strength plasterboard 12.5 mm',
+  'PRF-075': 'Galvanized wall stud CW 75',
+  'PRF-UW75': 'Galvanized guide track UW 75',
+  'PRF-CD60': 'Galvanized ceiling profile CD 60/27',
+  'PRF-UD28': 'Galvanized perimeter profile UD 28/27',
+  'ISO-001': 'Stone wool board 50 mm',
+  'ISO-002': 'Stone wool board 100 mm',
+  'CHM-001': 'Gypsum jointing compound',
+  'CHM-002': 'Gypsum filling compound',
+  'ACC-001': 'Self-drilling screws 3.5 × 25 mm',
+  'ACC-003': 'Fibreglass jointing tape',
+  'ACC-006': 'Direct hanger for CD profile 120 mm',
+}
+export const nameL = (sku: string, lang: Lang) => (lang === 'en' && NAME_EN[sku]) || name(sku)
+const UNIT_EN: Record<string, string> = { kom: 'pcs', kut: 'box', pak: 'pack' }
+export const unitText = (u: string, lang: Lang) => (lang === 'en' ? UNIT_EN[u] ?? u : u)
+export const unitL = (sku: string, lang: Lang) => unitText(unit(sku), lang)
+/** Currency in the chosen language: "1.234 KM" (sr) / "1,234 KM" (en). */
+export const kmL = (n: number, lang: Lang) => `${n.toLocaleString(lang === 'en' ? 'en-US' : 'de-DE')} KM`
+export const dateAgoL = (days: number, lang: Lang) =>
+  lang === 'en' ? new Date(2026, 9, 10 - days).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : dateAgo(days)
+/** Pack count, e.g. "48 boards" / "48 ploča". */
+export const packsL = (l: Line, lang: Lang) => {
+  if (lang !== 'en') return packs(l)
+  const p = PRODUCT_MAP[l.sku]?.pack
+  if (!p) return ''
+  const n = Math.ceil(l.qty / p.size - 1e-9)
+  const w = p.name === 'ploča' ? 'board' : p.name === 'rolna' ? 'roll' : p.name
+  return `${n} ${w}${n === 1 ? '' : 's'}`
+}
+
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+/** Delivery slot / status text ("Sutra, 07–09h", "Isporučeno 27.09.", ...) in English. */
+export const slotL = (s: string, lang: Lang) => {
+  if (lang !== 'en') return s
+  return s
+    .replace('(prijedlog, potvrđuje prodaja)', '(proposal, to be confirmed by sales)')
+    .replace('Termin preuzimanja dogovara prodaja', 'Collection time arranged by sales')
+    .replace('Završeno danas', 'Completed today')
+    .replace(/(Isporučeno|Preuzeto) (\d\d)\.(\d\d)\./, (_, w, d, m) => `${w === 'Isporučeno' ? 'Delivered' : 'Collected'} ${MONTHS[+m - 1]} ${+d}`)
+    .replace('Prekosutra, ', 'Day after tomorrow, ')
+    .replace('Sutra, ', 'Tomorrow, ')
+    .replace('Danas, ', 'Today, ')
+    .replace(/(\d\d)–(\d\d)h/g, '$1:00–$2:00')
+}
+export const modeL = (m: Order['mode'], lang: Lang) => (lang === 'en' ? (m === 'Dostava' ? 'Delivery' : 'Collection') : m)
+export const offerStatusL = (s: OfferStatus, lang: Lang): string =>
+  lang === 'en' ? { 'Čeka potvrdu': 'Awaiting confirmation', 'Potvrđena': 'Confirmed', 'Kod prodaje': 'With sales' }[s] : s
+export const stepL = (s: string, lang: Lang) =>
+  lang === 'en' ? (({ Primljena: 'Received', 'Potvrđena': 'Confirmed', 'U pripremi': 'In preparation', Spremna: 'Ready', 'Isporučena': 'Delivered' }) as Record<string, string>)[s] ?? s : s
+export const groupL = (id: string, label: string, lang: Lang) =>
+  lang === 'en' ? (({ 'suha-gradnja': 'Drywall', izolacija: 'Insulation', veziva: 'Compounds and adhesives', oprema: 'Accessories' }) as Record<string, string>)[id] ?? label : label
+
+const OFFER_TITLE_EN: Record<string, string> = { 'P-26-0142': 'Partition walls, floor 3', 'P-26-0131': 'Attic insulation' }
+export const offerTitleL = (o: Offer, lang: Lang) => (lang === 'en' ? o.titleEn ?? OFFER_TITLE_EN[o.no] ?? o.title : o.title)
+const LIST_EN: Record<string, string> = { l1: 'Partition wall 100 mm, standard apartment', l2: 'Suspended ceiling, office', l3: 'Bathroom, moisture-resistant boards' }
+export const listNameL = (l: { id: string; name: string }, lang: Lang) => (lang === 'en' ? LIST_EN[l.id] ?? l.name : l.name)
+const DOC_EN: Record<string, { kind: string; title: string; ref: string }> = {
+  d1: { kind: 'Offer', title: 'Offer P-26-0142', ref: 'Lamela A' },
+  d2: { kind: 'Delivery note', title: 'Delivery note for GC-26-04402', ref: 'Lamela A' },
+  d3: { kind: 'Invoice', title: 'Invoice for GC-26-04402', ref: 'Lamela A' },
+  d4: { kind: 'Delivery note', title: 'Delivery note for GC-26-04371', ref: 'House C' },
+  d5: { kind: 'Data sheet', title: 'Plasterboard GKB', ref: 'GKP-001' },
+}
+export const docL = (d: Doc, lang: Lang) => (lang === 'en' && DOC_EN[d.id]) || { kind: d.kind as string, title: d.title, ref: d.ref }
+const USER_EN: Record<string, { name: string; role: string }> = {
+  DN: { name: 'Demo procurement', role: 'Procurement · sends inquiries and confirms offers' },
+  P1: { name: 'Demo site supervisor 1', role: 'Site supervisor · Lamela A' },
+  RA: { name: 'Demo accounting', role: 'Document access' },
+}
+export const userL = (u: (typeof USERS)[number], lang: Lang) => (lang === 'en' && USER_EN[u.initials]) || { name: u.name, role: u.role }
+export const firmUserL = (lang: Lang) => (lang === 'en' ? 'Demo procurement' : FIRM.user)

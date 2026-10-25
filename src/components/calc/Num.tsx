@@ -2,15 +2,17 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from '@/lib/gsap'
+import { useLang } from '@/lib/i18n'
 
 // Broj koji se "zakotrlja" do nove vrijednosti kad se unos promijeni. React iscrta samo početnu
 // vrijednost; dalje tekst piše GSAP, pa nema sukoba između React-a i animacije.
 // Uz prefers-reduced-motion broj se samo zamijeni.
 
-const fmt = (n: number, d: number) =>
-  n.toLocaleString('de-DE', { minimumFractionDigits: d, maximumFractionDigits: d })
+const fmt = (n: number, d: number, lang: 'sr' | 'en' = 'sr') =>
+  n.toLocaleString(lang === 'en' ? 'en-US' : 'de-DE', { minimumFractionDigits: d, maximumFractionDigits: d })
 
 export default function Num({ value, decimals = 0, className }: { value: number; decimals?: number; className?: string }) {
+  const { lang } = useLang()
   const ref = useRef<HTMLSpanElement>(null)
   const cur = useRef({ v: value })
   const [first] = useState(value)
@@ -25,17 +27,17 @@ export default function Num({ value, decimals = 0, className }: { value: number;
       duration: reduce ? 0 : 0.7,
       ease: 'power3.out',
       onUpdate: () => {
-        el.textContent = fmt(decimals ? o.v : Math.round(o.v), decimals)
+        el.textContent = fmt(decimals ? o.v : Math.round(o.v), decimals, lang)
       },
     })
     return () => {
       t.kill()
     }
-  }, [value, decimals])
+  }, [value, decimals, lang])
 
   return (
     <span ref={ref} className={className}>
-      {fmt(first, decimals)}
+      {fmt(first, decimals, lang)}
     </span>
   )
 }

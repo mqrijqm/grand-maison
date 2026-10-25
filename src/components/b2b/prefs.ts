@@ -60,3 +60,8 @@ export const METHOD_LABEL: Record<DeliveryMethod, string> = {
   standard: 'Dostava na adresu',
   kran: 'Kamion sa kranom',
 }
+export const METHOD_LABEL_EN: Record<DeliveryMethod, string> = {
+  preuzimanje: 'Pickup at the yard',
+  standard: 'Delivery to address',
+  kran: 'Truck with crane',
+}

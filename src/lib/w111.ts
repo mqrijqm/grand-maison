@@ -20,6 +20,8 @@ type Norm = {
   unit: string
   pack: number
   packName: string
+  labelEn: string
+  packNameEn: string
   /** Opciono: ne ulazi u proračun ako nije uključeno (vuna, bandaž traka) */
   optional?: 'wool' | 'tape'
 }
@@ -27,18 +29,18 @@ type Norm = {
 // Ploča se bira (GKB, GKBI, GKF, tvrda); ostalo je fiksno iz kataloga.
 // Normativi su po m² zida (obje strane zajedno), prije rezerve za otpad.
 export const NORMS: Norm[] = [
-  { key: 'board', label: 'Gips-kartonska ploča 12,5 mm', sku: 'GKP-001', perM2: { single: 2, double: 4 }, unit: 'm²', pack: 2.5, packName: 'ploča' },
-  { key: 'cw', label: 'Zidni profil CW 75', sku: 'PRF-075', perM2: { single: 2, double: 2 }, unit: 'm', pack: 3, packName: 'kom (3 m)' },
-  { key: 'uw', label: 'Vodeći profil UW 75', sku: 'PRF-UW75', perM2: { single: 0.7, double: 0.7 }, unit: 'm', pack: 4, packName: 'kom (4 m)' },
-  { key: 'wool', label: 'Kamena vuna 50 mm', sku: 'ISO-001', perM2: { single: 1, double: 1 }, unit: 'm²', pack: 0.6, packName: 'ploča', optional: 'wool' },
+  { key: 'board', label: 'Gips-kartonska ploča 12,5 mm', labelEn: 'Plasterboard 12.5 mm', sku: 'GKP-001', perM2: { single: 2, double: 4 }, unit: 'm²', pack: 2.5, packName: 'ploča', packNameEn: 'board' },
+  { key: 'cw', label: 'Zidni profil CW 75', labelEn: 'Wall stud CW 75', sku: 'PRF-075', perM2: { single: 2, double: 2 }, unit: 'm', pack: 3, packName: 'kom (3 m)', packNameEn: 'pcs (3 m)' },
+  { key: 'uw', label: 'Vodeći profil UW 75', labelEn: 'Track UW 75', sku: 'PRF-UW75', perM2: { single: 0.7, double: 0.7 }, unit: 'm', pack: 4, packName: 'kom (4 m)', packNameEn: 'pcs (4 m)' },
+  { key: 'wool', label: 'Kamena vuna 50 mm', labelEn: 'Stone wool 50 mm', sku: 'ISO-001', perM2: { single: 1, double: 1 }, unit: 'm²', pack: 0.6, packName: 'ploča', packNameEn: 'slab', optional: 'wool' },
   // 0,5 kg/m² Uniflott za standardni W111 (Knauf tabela). Dvostruka obloga ima dvostruku dužinu
   // spojeva, pa je norma udvostručena — orijentaciono.
-  { key: 'filler', label: 'Masa za spojeve', sku: 'CHM-001', perM2: { single: 0.5, double: 1 }, unit: 'kg', pack: 5, packName: 'vreća 5 kg' },
-  { key: 'screws', label: 'Samourezni vijci', sku: 'ACC-001', perM2: { single: 30, double: 50 }, unit: 'kom', pack: 1000, packName: 'kutija' },
+  { key: 'filler', label: 'Masa za spojeve', labelEn: 'Jointing compound', sku: 'CHM-001', perM2: { single: 0.5, double: 1 }, unit: 'kg', pack: 5, packName: 'vreća 5 kg', packNameEn: '5 kg bag' },
+  { key: 'screws', label: 'Samourezni vijci', labelEn: 'Self-tapping screws', sku: 'ACC-001', perM2: { single: 30, double: 50 }, unit: 'kom', pack: 1000, packName: 'kutija', packNameEn: 'box' },
   // Bandaž traka NIJE standardni dio W111 uz Uniflott: tvornički rubovi ploča se mogu obrađivati
   // bez trake, a traka ide prema detalju — naročito na rezanim i poprečnim spojevima. Zato je
   // uključujemo samo po izboru.
-  { key: 'tape', label: 'Bandaž traka za spojeve', sku: 'ACC-003', perM2: { single: 1.6, double: 1.6 }, unit: 'm', pack: 25, packName: 'rolna 25 m', optional: 'tape' },
+  { key: 'tape', label: 'Bandaž traka za spojeve', labelEn: 'Jointing tape', sku: 'ACC-003', perM2: { single: 1.6, double: 1.6 }, unit: 'm', pack: 25, packName: 'rolna 25 m', packNameEn: '25 m roll', optional: 'tape' },
 ]
 
 export type W111Line = {
@@ -51,6 +53,8 @@ export type W111Line = {
   /** broj pakovanja koja se kupuju */
   packs: number
   packName: string
+  labelEn: string
+  packNameEn: string
   /** količina za korpu, u jedinici artikla iz kataloga */
   cartQty: number
 }
@@ -66,11 +70,13 @@ export function calcW111Area(area: number, cladding: Cladding, plateSku: string,
     return {
       key: n.key,
       label: n.label,
+      labelEn: n.labelEn,
       sku: n.key === 'board' ? plateSku : n.sku,
       need,
       unit: n.unit,
       packs,
       packName: n.packName,
+      packNameEn: n.packNameEn,
       cartQty: byArea ? Math.round(packs * n.pack * 100) / 100 : packs,
     }
   })

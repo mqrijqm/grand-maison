@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
+import { useLang } from '@/lib/i18n'
 import Showcase from '@/components/business/portal/Showcase'
 import { gsap, useGSAP } from '@/lib/gsap'
 import s from '@/components/portal/Portal.module.css'
@@ -9,6 +10,7 @@ import s from '@/components/portal/Portal.module.css'
 // Na ulazu je iste širine kao blokovi iznad; sekcija se zakači, a portal se centriran u ekranu
 // smanji i odmakne od ivica.
 export default function ForBusiness() {
+  const { t } = useLang()
   const root = useRef<HTMLElement>(null)
   useGSAP(
     () => {
@@ -21,7 +23,7 @@ export default function ForBusiness() {
     { scope: root },
   )
   return (
-    <section ref={root} id="za-firme" aria-label="B2B portal, interaktivni prikaz" className={s.forBiz}>
+    <section ref={root} id="za-firme" aria-label={t('B2B portal, interaktivni prikaz', 'B2B portal, interactive preview')} className={s.forBiz}>
       <div className={s.forBizInner}>
         <div data-zoom className={s.forBizFrame}>
           <Showcase light steps={false} />

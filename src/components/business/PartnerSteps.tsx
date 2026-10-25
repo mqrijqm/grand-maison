@@ -3,7 +3,8 @@
 import { useRef } from 'react'
 import { openRegistration } from '@/lib/login-events'
 import Cta from '@/components/ui/Cta'
-import { PORTAL_INTRO_STEPS } from '@/lib/business'
+import { PORTAL_INTRO_STEPS, PORTAL_INTRO_STEPS_EN } from '@/lib/business'
+import { useLang } from '@/lib/i18n'
 import { gsap, useGSAP } from '@/lib/gsap'
 import StepDemo from './StepDemos'
 import styles from './Business.module.css'
@@ -17,6 +18,7 @@ const TOTAL = PORTAL_INTRO_STEPS.length
 // (`.page`) iz krem u plavu i nazad kad se stigne do dashboard koraka ispod. Telefon i reduced motion:
 // sekcija je sama plava, a kartice se prevlače prstom (hs-viewport).
 export default function PartnerSteps() {
+  const { t, lang } = useLang()
   const root = useRef<HTMLElement>(null)
 
   useGSAP(
@@ -70,24 +72,26 @@ export default function PartnerSteps() {
   return (
     <section ref={root} className={styles.partner} aria-labelledby="biz-partner">
       <div className={`gutter ${styles.partnerHead}`}>
-        <h2 id="biz-partner" data-head className={`display invisible ${styles.partnerTitle}`}>
-          Vi ste firma i želite da koristite usluge Grand Company-ja?
+        <h2 key={lang} id="biz-partner" data-head className={`display invisible ${styles.partnerTitle}`}>
+          {t('Vi ste firma i želite da koristite usluge Grand Company-ja?', 'Are you a business that wants to use Grand Company’s services?')}
         </h2>
         {/* Brojač prati skrol samo na desktopu; na telefonu se kartice prevlače. */}
         <p className={styles.partnerHint}>
           <span className={styles.partnerCount}>
-            Korak <span data-count>01</span> / {pad(TOTAL)}
+            {t('Korak', 'Step')} <span data-count>01</span> / {pad(TOTAL)}
           </span>
-          <span className={styles.partnerSwipe}>{pad(TOTAL)} koraka · prevucite</span>
+          <span className={styles.partnerSwipe}>{t(`${pad(TOTAL)} koraka · prevucite`, `${pad(TOTAL)} steps · swipe`)}</span>
         </p>
       </div>
       <div className="hs-viewport">
         <ol data-track className={styles.partnerTrack}>
-          {PORTAL_INTRO_STEPS.map((s, i) => (
-            <li key={s.title} className={styles.partnerPair}>
+          {PORTAL_INTRO_STEPS.map((sr, i) => {
+            const s = lang === 'en' ? { ...sr, ...PORTAL_INTRO_STEPS_EN[i] } : sr
+            return (
+            <li key={sr.title} className={styles.partnerPair}>
               <div className={styles.partnerCard}>
                 <span aria-hidden className={styles.partnerNum}>{pad(i + 1)}</span>
-                <p className={`label ${styles.partnerLabel}`}>Korak {pad(i + 1)}</p>
+                <p className={`label ${styles.partnerLabel}`}>{t('Korak', 'Step')} {pad(i + 1)}</p>
                 <h3 className={styles.partnerCardTitle}>{s.title}</h3>
                 <p className={styles.partnerText}>{s.text}</p>
                 <ul className={styles.partnerPoints}>
@@ -100,10 +104,11 @@ export default function PartnerSteps() {
                 <StepDemo demo={s.demo} />
               </div>
             </li>
-          ))}
+            )
+          })}
           <li className={styles.partnerEnd}>
-            <p>Firma još nema nalog? Pošaljite zahtjev, a prodaja otvara nalog i javlja vam se.</p>
-            <Cta onClick={openRegistration}>Zatražite nalog za firmu</Cta>
+            <p>{t('Firma još nema nalog? Pošaljite zahtjev, a prodaja otvara nalog i javlja vam se.', 'Your company doesn’t have an account yet? Send a request and sales will open one and get in touch.')}</p>
+            <Cta onClick={openRegistration}>{t('Zatražite nalog za firmu', 'Request a company account')}</Cta>
           </li>
         </ol>
       </div>

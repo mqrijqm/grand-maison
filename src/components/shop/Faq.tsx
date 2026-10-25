@@ -2,18 +2,22 @@
 
 import { useState } from 'react'
 import { ScrollTrigger } from '@/lib/gsap'
-import { FAQ } from '@/gc/gc'
+import { FAQ, FAQ_EN } from '@/gc/gc'
+import { useLang } from '@/lib/i18n'
 import SectionHead from './SectionHead'
 
 // Pitanja i odgovori iz kataloga Grand Company (HOME_FAQ).
-const QA = FAQ.map(([q, a]) => ({ q, a }))
+const QA_SR = FAQ.map(([q, a]) => ({ q, a }))
+const QA_EN = FAQ_EN.map(([q, a]) => ({ q, a }))
 
 export default function Faq() {
+  const { t, lang } = useLang()
+  const QA = lang === 'en' ? QA_EN : QA_SR
   const [open, setOpen] = useState<number | null>(0)
 
   return (
     <section id="pitanja" data-spy className="gutter scroll-mt-[var(--bar)] py-[14dvh]">
-      <SectionHead no="09" label="Pitanja" title="Česta pitanja" meta={`${QA.length} odgovora`} />
+      <SectionHead no="09" label={t('Pitanja', 'FAQ')} title={t('Česta pitanja', 'Frequently asked questions')} meta={t(`${QA.length} odgovora`, `${QA.length} answers`)} />
 
       <div className="mt-[8dvh] border-b-2 border-ink md:ml-[33.33%]">
         {QA.map(({ q, a }, i) => {

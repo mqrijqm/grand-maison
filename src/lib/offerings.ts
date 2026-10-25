@@ -66,3 +66,56 @@ export const OFFERINGS = [
     href: '/upit-za-izvodjace?program=ostali-program', cta: 'Pošaljite upit', mode: 'Po upitu',
   },
 ] as const
+
+// English counterparts, keyed by OFFERINGS[].id (additive; Serbian data above is unchanged).
+export const OFFERINGS_EN: Record<string, { name: string; keywords: string[]; description: string; alt: string; cta: string; mode: string }> = {
+  'suha-gradnja': {
+    name: 'Drywall systems',
+    keywords: ['Boards', 'Profiles', 'Accessories'],
+    description: 'Boards, profiles and accessories for partition walls, ceilings and linings.',
+    alt: 'Stacked plasterboard in a warehouse — drywall range',
+    cta: 'View drywall', mode: 'Catalogue',
+  },
+  izolacija: {
+    name: 'Insulation',
+    keywords: ['Thermal', 'Acoustic', 'Application'],
+    description: 'Thermal and acoustic insulation materials, matched to where they are installed.',
+    alt: 'Stacked stone wool slabs in open packaging — insulation',
+    cta: 'View insulation', mode: 'Catalogue',
+  },
+  'zidni-krovni': {
+    name: 'Wall and roof range',
+    keywords: [],
+    description: 'Send us your specification and we will check the range and availability.',
+    alt: 'Pallet of clay roof tiles — wall and roof range',
+    cta: 'Send a specification', mode: 'On request',
+  },
+  veziva: {
+    name: 'Construction chemicals and binders',
+    keywords: ['Adhesives', 'Compounds', 'Binders'],
+    description: 'Adhesives, compounds and binders for preparation, bonding and finishing.',
+    alt: 'Stacked bags of cement and binders — construction chemicals',
+    cta: 'View chemicals and binders', mode: 'Catalogue',
+  },
+  'drvni-program': {
+    name: 'Timber range',
+    keywords: [],
+    description: 'Range overview and enquiry for material, dimensions and required quantities.',
+    alt: 'Stacked sawn timber — timber range',
+    cta: 'View timber range', mode: 'On request',
+  },
+  'sanitarna-oprema': {
+    name: 'Sanitaryware',
+    keywords: [],
+    description: 'Sanitary range overview and quotation tailored to the needs of the space.',
+    alt: 'White ceramic toilet and bidet in a bathroom — sanitary range',
+    cta: 'View sanitary range', mode: 'On request',
+  },
+  'ostali-program': {
+    name: 'Other ranges',
+    keywords: [],
+    description: 'Chimney and pipe systems, waterproofing, pavers and sintered stone, on request.',
+    alt: 'Chimney on a tiled roof — chimney systems',
+    cta: 'Send an enquiry', mode: 'On request',
+  },
+}

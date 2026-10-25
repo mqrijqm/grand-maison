@@ -7,8 +7,10 @@ import Price from '@/components/b2b/Price'
 import { type ProgramItem } from '@/lib/catalog-copy'
 import { inquiryHref, inquiryLines, toggleInquiryItem, useCatalogInquiry } from '@/lib/catalog-inquiry'
 import { gsap, useGSAP } from '@/lib/gsap'
-import { CATEGORIES, USES, categoryName, type Product } from '@/lib/shop'
-import { PROGRAM_IDS, PROGRAM_NAMES, useCatalogFilters, type CatalogSort } from './catalog-filters'
+import { CATEGORIES, USES, categoryName, pName, unitL, workName, type Product } from '@/lib/shop'
+import { PROGRAM_ITEMS_EN } from '@/lib/catalog-copy-en'
+import { useLang } from '@/lib/i18n'
+import { PROGRAM_IDS, PROGRAM_NAMES, PROGRAM_NAMES_EN, useCatalogFilters, type CatalogSort } from './catalog-filters'
 import styles from './CatalogShop.module.css'
 
 // Katalog kao web-prodavnica: jarko plavi vrh sa pretragom i kategorijama (iza veliki prozirni kvadrati),
@@ -16,14 +18,14 @@ import styles from './CatalogShop.module.css'
 
 
 const CHIPS = [
-  { id: 'sve', name: 'Sve' },
-  ...CATEGORIES.map((c) => ({ id: c.id as string, name: c.name })),
-  ...PROGRAM_IDS.map((id) => ({ id: id as string, name: PROGRAM_NAMES[id] })),
+  { id: 'sve', name: 'Sve', en: 'All' },
+  ...CATEGORIES.map((c) => ({ id: c.id as string, name: c.name, en: categoryName(c.id, 'en') })),
+  ...PROGRAM_IDS.map((id) => ({ id: id as string, name: PROGRAM_NAMES[id], en: PROGRAM_NAMES_EN[id] })),
 ]
 
-const SORTS: { id: CatalogSort; label: string }[] = [
-  { id: 'preporuceno', label: 'Preporučeno' },
-  { id: 'naziv', label: 'Naziv A–Ž' },
+const SORTS: { id: CatalogSort; label: string; en: string }[] = [
+  { id: 'preporuceno', label: 'Preporučeno', en: 'Recommended' },
+  { id: 'naziv', label: 'Naziv A–Ž', en: 'Name A–Z' },
 ]
 
 // Veliki prozirni kvadrati iza plavog vrha: [lijevo %, gore %, veličina vw, prozirnost, brzina]
@@ -38,24 +40,26 @@ const SQUARES: [number, number, number, number, number][] = [
 
 function Card({ product, index }: { product: Product; index: number }) {
   const selection = useCatalogInquiry()
+  const { t, lang } = useLang()
+  const name = pName(product, lang)
   const on = !!selection[product.sku]
   return (
     <li className={styles.card}>
-      <Link href={`/prodavnica/${product.sku}`} className={styles.photo} data-cursor="Detalji">
-        <img src={product.image} alt={product.name} width={900} height={1125} loading={index < 8 ? 'eager' : 'lazy'} decoding="async" />
+      <Link href={`/prodavnica/${product.sku}`} className={styles.photo} data-cursor={t('Detalji', 'Details')}>
+        <img src={product.image} alt={name} width={900} height={1125} loading={index < 8 ? 'eager' : 'lazy'} decoding="async" />
       </Link>
       <div className={styles.info}>
         <p className={styles.meta}>
-          <span>{categoryName(product.category)}</span>
+          <span>{categoryName(product.category, lang)}</span>
           <span>{product.sku}</span>
         </p>
         <h3 className={styles.name}>
-          <Link href={`/prodavnica/${product.sku}`}>{product.name}</Link>
+          <Link href={`/prodavnica/${product.sku}`}>{name}</Link>
         </h3>
         <div className={styles.buy}>
           <Price value={product.price} unit={product.unit} className={styles.price} />
-          <button type="button" className={styles.add} aria-pressed={on} aria-label={`${on ? 'Ukloni iz upita' : 'Dodaj u upit'}: ${product.name}`} onClick={() => toggleInquiryItem(product)}>
-            {on ? 'U upitu ✓' : 'U upit +'}
+          <button type="button" className={styles.add} aria-pressed={on} aria-label={`${on ? t('Ukloni iz upita', 'Remove from enquiry') : t('Dodaj u upit', 'Add to enquiry')}: ${name}`} onClick={() => toggleInquiryItem(product)}>
+            {on ? t('U upitu ✓', 'In enquiry ✓') : t('U upit +', 'Enquire +')}
           </button>
         </div>
       </div>
@@ -65,26 +69,31 @@ function Card({ product, index }: { product: Product; index: number }) {
 
 // Artikal provjerenog proizvođača po upitu: link vodi na formu sa već upisanim nazivom artikla.
 function ProgramCard({ item }: { item: ProgramItem }) {
+  const { t, lang } = useLang()
+  const en = lang === 'en'
+  const e = PROGRAM_ITEMS_EN[item.id]
+  const itemName = en ? (e?.name ?? item.name) : item.name
+  const programName = en ? PROGRAM_NAMES_EN[item.program] : PROGRAM_NAMES[item.program]
   const href = `/upit-za-izvodjace?naziv=${encodeURIComponent(item.name)}${item.program === 'malteri-ljepila' ? '' : '&program=zidni-krovni'}`
   return (
     <li className={styles.card}>
       <Link href={href} className={styles.photo}>
-        <img src={item.image} alt={`${item.name} (${PROGRAM_NAMES[item.program]})`} width={900} height={1125} loading="lazy" decoding="async" />
+        <img src={item.image} alt={`${itemName} (${programName})`} width={900} height={1125} loading="lazy" decoding="async" />
         <span className={styles.badge}>{item.brand}</span>
       </Link>
       <div className={styles.info}>
         <p className={styles.meta}>
-          <span>{PROGRAM_NAMES[item.program]}</span>
-          <span>{item.unit}</span>
+          <span>{programName}</span>
+          <span>{unitL(item.unit, lang)}</span>
         </p>
         <h3 className={styles.name}>
-          <Link href={href}>{item.name}</Link>
+          <Link href={href}>{itemName}</Link>
         </h3>
-        <p className={styles.spec}>{item.spec}</p>
+        <p className={styles.spec}>{en ? (e?.spec ?? item.spec) : item.spec}</p>
         <div className={styles.buy}>
-          <span className={styles.price}>Cijena na upit</span>
+          <span className={styles.price}>{t('Cijena na upit', 'Price on request')}</span>
           <Link className={styles.add} href={href}>
-            Upit ↗
+            {t('Upit ↗', 'Enquire ↗')}
           </Link>
         </div>
       </div>
@@ -93,6 +102,7 @@ function ProgramCard({ item }: { item: ProgramItem }) {
 }
 
 export default function CatalogShop({ compact = false }: { compact?: boolean }) {
+  const { t, lang } = useLang()
   const root = useRef<HTMLDivElement>(null)
   const { q, cat, use, sort, list, programs, filtered, update, reset } = useCatalogFilters()
   const selection = useCatalogInquiry()
@@ -134,43 +144,43 @@ export default function CatalogShop({ compact = false }: { compact?: boolean }) 
           ))}
         </div>}
         <div className={`gutter ${styles.heroInner}`}>
-          <p className="label">Grand Company / Katalog</p>
-          {compact ? <h2 className={`display ${styles.titleCompact}`}>Svi artikli</h2> : <h1 className={`display ${styles.title}`}>Asortiman</h1>}
+          <p className="label">{t('Grand Company / Katalog', 'Grand Company / Catalogue')}</p>
+          {compact ? <h2 className={`display ${styles.titleCompact}`}>{t('Svi artikli', 'All items')}</h2> : <h1 className={`display ${styles.title}`}>{t('Asortiman', 'Range')}</h1>}
           <label className={styles.search}>
             <svg viewBox="0 0 20 20" aria-hidden fill="none" stroke="currentColor" strokeWidth={1.6}>
               <circle cx="9" cy="9" r="6" />
               <path d="m13.5 13.5 4 4" />
             </svg>
-            <input type="search" value={q} onChange={(e) => update({ q: e.target.value })} placeholder="Naziv, šifra ili dimenzija" aria-label="Pretraga artikala" />
+            <input type="search" value={q} onChange={(e) => update({ q: e.target.value })} placeholder={t('Naziv, šifra ili dimenzija', 'Name, code or dimensions')} aria-label={t('Pretraga artikala', 'Search items')} />
             {q && (
-              <button type="button" onClick={() => update({ q: '' })} aria-label="Obriši pretragu">
+              <button type="button" onClick={() => update({ q: '' })} aria-label={t('Obriši pretragu', 'Clear search')}>
                 ×
               </button>
             )}
           </label>
-          <div className={styles.chips} role="group" aria-label="Kategorije">
+          <div className={styles.chips} role="group" aria-label={t('Kategorije', 'Categories')}>
             {CHIPS.map((c) => (
               <button key={c.id} type="button" aria-pressed={cat === c.id} onClick={() => update({ kategorija: c.id }, true)}>
-                {c.name}
+                {lang === 'en' ? c.en : c.name}
               </button>
             ))}
           </div>
         </div>
       </header>
 
-      <section id="artikli" className={`gutter scroll-mt-24 ${styles.shop}`} aria-label="Artikli">
+      <section id="artikli" className={`gutter scroll-mt-24 ${styles.shop}`} aria-label={t('Artikli', 'Items')}>
         <div className={styles.toolbar}>
           <p className={styles.count} aria-live="polite">
-            {total} {total === 1 ? 'artikal' : 'artikala'}
+            {total} {lang === 'en' ? (total === 1 ? 'item' : 'items') : total === 1 ? 'artikal' : 'artikala'}
             {filtered && (
               <button type="button" onClick={reset}>
-                Poništi filtere
+                {t('Poništi filtere', 'Clear filters')}
               </button>
             )}
           </p>
           <div className={styles.selects}>
-            {select('Namjena', use, 'namjena', [['sve', 'Sve namjene'], ...USES.map((u): [string, string] => [u.id, u.name])])}
-            {select('Sortiranje', sort, 'sortiranje', SORTS.map((s): [string, string] => [s.id, s.label]))}
+            {select(t('Namjena', 'Application'), use, 'namjena', [['sve', t('Sve namjene', 'All applications')], ...USES.map((u): [string, string] => [u.id, workName(u.id, lang)])])}
+            {select(t('Sortiranje', 'Sorting'), sort, 'sortiranje', SORTS.map((s): [string, string] => [s.id, lang === 'en' ? s.en : s.label]))}
           </div>
         </div>
 
@@ -185,9 +195,9 @@ export default function CatalogShop({ compact = false }: { compact?: boolean }) 
           </ul>
         ) : (
           <div className={styles.empty}>
-            <p>Nema artikala za ove filtere.</p>
+            <p>{t('Nema artikala za ove filtere.', 'No items match these filters.')}</p>
             <button type="button" onClick={reset}>
-              Poništi filtere
+              {t('Poništi filtere', 'Clear filters')}
             </button>
           </div>
         )}
@@ -196,9 +206,9 @@ export default function CatalogShop({ compact = false }: { compact?: boolean }) 
       {picked > 0 && (
         <div className={styles.tray} role="status">
           <span>
-            U upitu: {picked} {picked === 1 ? 'artikal' : 'artikla'}
+            {t('U upitu', 'In enquiry')}: {picked} {lang === 'en' ? (picked === 1 ? 'item' : 'items') : picked === 1 ? 'artikal' : 'artikla'}
           </span>
-          <Link href={inquiryHref(selection)}>Pošaljite upit →</Link>
+          <Link href={inquiryHref(selection)}>{t('Pošaljite upit →', 'Send enquiry →')}</Link>
         </div>
       )}
     </div>

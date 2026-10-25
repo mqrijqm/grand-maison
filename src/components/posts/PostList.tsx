@@ -6,9 +6,13 @@ import Link from 'next/link'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { POST_TAGS, postDate, postPhoto, type Post } from '@/lib/posts'
 import { pw } from '@/components/ui/Pw'
+import { useLang } from '@/lib/i18n'
+import { localizePost, postDateEn, tagLabel } from '@/lib/posts-en'
 
 // Filter po temi (tihi tekstualni izbor u sredini) i mreža objava sa crtežom na polju boje papira.
-export default function PostList({ posts }: { posts: Post[] }) {
+export default function PostList({ posts: source }: { posts: Post[] }) {
+  const { t, lang } = useLang()
+  const posts = source.map((post) => localizePost(post, lang))
   const search = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
@@ -26,7 +30,7 @@ export default function PostList({ posts }: { posts: Post[] }) {
 
   return (
     <section className="mt-[18dvh]">
-      <div role="tablist" aria-label="Tema" className="flex flex-wrap justify-center gap-x-8 gap-y-3 px-5 text-[12.5px] max-md:gap-x-6 max-md:pl-8 max-md:flex-nowrap max-md:justify-start max-md:overflow-x-auto max-md:[scrollbar-width:none] max-md:[&::-webkit-scrollbar]:hidden max-md:[&>*]:shrink-0 max-md:[&>*]:whitespace-nowrap max-md:[&>*]:min-h-10">
+      <div role="tablist" aria-label={t('Tema', 'Topic')} className="flex flex-wrap justify-center gap-x-8 gap-y-3 px-5 text-[12.5px] max-md:gap-x-6 max-md:pl-8 max-md:flex-nowrap max-md:justify-start max-md:overflow-x-auto max-md:[scrollbar-width:none] max-md:[&::-webkit-scrollbar]:hidden max-md:[&>*]:shrink-0 max-md:[&>*]:whitespace-nowrap max-md:[&>*]:min-h-10">
         {tags.map((item) => {
           const on = tag === item
           return (
@@ -39,7 +43,7 @@ export default function PostList({ posts }: { posts: Post[] }) {
               className={`relative flex items-center gap-2 transition-colors ${on ? 'italic text-ink' : 'text-ink/50 hover:text-ink'}`}
             >
               <span className={`size-1.5 rounded-full bg-signal transition-transform duration-500 ${on ? 'scale-100' : 'scale-0'}`} aria-hidden />
-              {item === 'sve' ? 'Sve teme' : item}
+              {item === 'sve' ? t('Sve teme', 'All topics') : tagLabel(item as Post['tag'], lang)}
             </button>
           )
         })}
@@ -48,7 +52,7 @@ export default function PostList({ posts }: { posts: Post[] }) {
       <div className="mt-[8dvh] grid gap-x-8 gap-y-20 px-5 md:grid-cols-2 md:px-10 xl:grid-cols-3">
         {shown.map((post) => (
           <article key={post.slug} className="group">
-            <Link href={`/vodici/${post.slug}`} className="block" data-cursor="Čitaj">
+            <Link href={`/vodici/${post.slug}`} className="block" data-cursor={t('Čitaj', 'Read')}>
               <div className="relative aspect-[4/3] overflow-hidden bg-plate">
                 <img decoding="async"
                   src={postPhoto(post.slug)}
@@ -58,17 +62,17 @@ export default function PostList({ posts }: { posts: Post[] }) {
                 />
               </div>
               <p className="mt-6 text-[14px] text-ink/50">
-                {post.tag} · {post.read} min
+                {tagLabel(post.tag, lang)} · {post.read} min
               </p>
               <h2 className="font-pretty mt-2 max-w-[22ch] text-[clamp(26px,2.2vw,36px)] leading-[1.1] transition-colors duration-500 group-hover:text-signal">
                 {pw(post.title)}
               </h2>
-              <p className="sr-only">{postDate(post.date)}</p>
+              <p className="sr-only">{lang === 'en' ? postDateEn(post.date) : postDate(post.date)}</p>
             </Link>
           </article>
         ))}
       </div>
-      {!shown.length && <p className="mt-16 text-center text-ink/50">Nema objava za ovu temu.</p>}
+      {!shown.length && <p className="mt-16 text-center text-ink/50">{t('Nema objava za ovu temu.', 'No guides on this topic yet.')}</p>}
     </section>
   )
 }

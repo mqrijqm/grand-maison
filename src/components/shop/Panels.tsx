@@ -3,13 +3,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { useLenis } from 'lenis/react'
 import { closePanel, openCart, openPanel, useShop, type Panel } from '@/lib/cart'
+import { useLang } from '@/lib/i18n'
 import { CompareView, ProductView, SavedView, SearchView } from './panel-views'
 
-const TITLES: Record<NonNullable<Panel>['kind'], string> = {
-  saved: 'Sačuvano',
-  compare: 'Poređenje',
-  search: 'Pretraga',
-  product: 'Brzi pregled',
+const TITLES: Record<NonNullable<Panel>['kind'], [string, string]> = {
+  saved: ['Sačuvano', 'Saved'],
+  compare: ['Poređenje', 'Compare'],
+  search: ['Pretraga', 'Search'],
+  product: ['Brzi pregled', 'Quick view'],
 }
 
 // Široki panel je za tabelu poređenja; ostali su uže trake.
@@ -33,6 +34,7 @@ function View({ panel }: { panel: NonNullable<Panel> }) {
 // Sloj je iznad fiksne značke i marqueea iz landinga (z-500 i z-200), isto kao ladica korpe.
 export default function Panels() {
   const { panel, toast } = useShop()
+  const { t } = useLang()
   const lenis = useLenis()
   const [shown, setShown] = useState<NonNullable<Panel> | null>(null)
   const [entered, setEntered] = useState(false)
@@ -84,7 +86,7 @@ export default function Panels() {
           tabIndex={-1}
           role="dialog"
           aria-modal="true"
-          aria-label={TITLES[shown.kind]}
+          aria-label={t(...TITLES[shown.kind])}
           className={`fixed inset-y-0 right-0 z-[620] h-dvh bg-bg outline-none transition-transform duration-700 [transition-timing-function:var(--ease-io)] ${
             entered ? 'translate-x-0' : 'translate-x-full'
           }`}

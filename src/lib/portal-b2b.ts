@@ -1,5 +1,7 @@
 import { CATEGORIES, PRODUCT_MAP, PRODUCTS, type Product } from './shop'
 import { DOCS, ORDERS, SITES, type Line, type Order } from './portal-demo'
+import type { Lang } from './i18n'
+import { PRODUCT_EN, numLocale, uName } from './portal-i18n'
 
 // B2B logika demo portala: neto cijene, jedinice mjere, kreditni okvir, statusi narudžbi i pretraga.
 // Uslovi su DEMO, uzeti iz partnerske skale sajta (Nivo 2: 15 %, okvir 30.000 KM, valuta 60 dana).
@@ -32,17 +34,18 @@ const PALLET: Record<string, number> = {
   'CHM-002': 40, 'CHM-003': 48, 'CHM-004': 48,
 }
 export type Uom = { id: string; label: string; factor: number }
-const n2 = (n: number) => n.toLocaleString('de-DE', { maximumFractionDigits: 2 })
+const n2 = (n: number, lang: Lang = 'sr') => n.toLocaleString(numLocale(lang), { maximumFractionDigits: 2 })
 
 /** Jedinice u kojima kupac može naručiti; factor = koliko osnovnih jedinica je jedna ova. */
-export function uoms(sku: string): Uom[] {
+export function uoms(sku: string, lang: Lang = 'sr'): Uom[] {
   const p = PRODUCT_MAP[sku]
   if (!p) return []
-  const list: Uom[] = [{ id: p.unit, label: p.unit, factor: 1 }]
-  if (p.pack) list.push({ id: p.pack.name, label: `${p.pack.name} (${n2(p.pack.size)} ${p.unit})`, factor: p.pack.size })
+  const u = uName(p.unit, lang)
+  const list: Uom[] = [{ id: p.unit, label: u, factor: 1 }]
+  if (p.pack) list.push({ id: p.pack.name, label: `${uName(p.pack.name, lang)} (${n2(p.pack.size, lang)} ${u})`, factor: p.pack.size })
   const bag = /Vreća (\d+) kg/.exec(p.spec)
-  if (bag) list.push({ id: 'kg', label: `kg (vreća ${bag[1]} kg)`, factor: 1 / Number(bag[1]) })
-  if (PALLET[sku]) list.push({ id: 'paleta', label: `paleta (${n2(PALLET[sku])} ${p.unit})`, factor: PALLET[sku] })
+  if (bag) list.push({ id: 'kg', label: lang === 'en' ? `kg (${bag[1]} kg bag)` : `kg (vreća ${bag[1]} kg)`, factor: 1 / Number(bag[1]) })
+  if (PALLET[sku]) list.push({ id: 'paleta', label: `${lang === 'en' ? 'pallet' : 'paleta'} (${n2(PALLET[sku], lang)} ${u})`, factor: PALLET[sku] })
   return list
 }
 export const toBase = (sku: string, qty: number, uom?: string) => {
@@ -93,6 +96,14 @@ const SYNONYMS: Record<string, string[]> = {
   glet: ['masa'], gletmasa: ['masa'], ispuna: ['masa'], fugomasa: ['fugovanje'], fuga: ['fugovanje'],
   lijepak: ['ljepilo'], ljepak: ['ljepilo'], mrezica: ['armiranje'], armatura: ['armiranje'],
   bandaz: ['bandaz'], traka: ['traka'], ovjes: ['ovjes'], visilica: ['ovjes'], hanger: ['ovjes'],
+  // engleski nazivi (portal na engleskom)
+  plasterboard: ['gips-kartonska'], drywall: ['gips-kartonska'], gypsum: ['gips'], sheetrock: ['gips-kartonska'], stud: ['cw'], track: ['uw'],
+  screws: ['vijci'], screw: ['vijci'], rockwool: ['kamena'], insulation: ['kamena'], tape: ['traka'], hangers: ['ovjes'], compound: ['masa'], filler: ['masa'],
+}
+// Prikaz "prepoznato" na engleskom: ciljni pojam iz rječnika sinonima.
+const TARGET_EN: Record<string, string> = {
+  'gips-kartonska': 'plasterboard', gips: 'gypsum', gkbi: 'GKBI', gkf: 'GKF', cw: 'CW', uw: 'UW', cd: 'CD', ud: 'UD', kamena: 'stone wool', vuna: 'wool', eps: 'EPS',
+  vijci: 'screws', samourezni: 'self-drilling', masa: 'compound', fugovanje: 'jointing', ljepilo: 'adhesive', armiranje: 'reinforcing', bandaz: 'tape', traka: 'tape', ovjes: 'hanger', grafitni: 'graphite',
 }
 function lev(a: string, b: string) {
   if (Math.abs(a.length - b.length) > 2) return 3
@@ -109,17 +120,18 @@ function lev(a: string, b: string) {
   return d[b.length]
 }
 const HAY = PRODUCTS.map((p) => {
-  const text = fold(`${p.sku} ${p.name} ${p.spec} ${p.brand} ${CATEGORIES.find((c) => c.id === p.category)?.label ?? ''}`)
+  const en = PRODUCT_EN[p.sku]
+  const text = fold(`${p.sku} ${p.name} ${p.spec} ${p.brand} ${CATEGORIES.find((c) => c.id === p.category)?.label ?? ''} ${en ? `${en.name} ${en.spec}` : ''}`)
   return { p, text, words: text.split(/[^a-z0-9,.-]+/).filter((w) => w.length > 1) }
 })
 
 export type Hit = { product: Product; fuzzy: boolean }
 /** Svaka riječ upita mora pogoditi: tačno, preko sinonima ili sa 1–2 slova greške. */
-export function searchProducts(query: string): { hits: Hit[]; understood: string[] } {
+export function searchProducts(query: string, lang: Lang = 'sr'): { hits: Hit[]; understood: string[] } {
   const tokens = fold(query).split(/\s+/).filter((t) => t.length > 1)
   if (!tokens.length) return { hits: PRODUCTS.map((product) => ({ product, fuzzy: false })), understood: [] }
   const understood: string[] = []
-  tokens.forEach((t) => SYNONYMS[t] && understood.push(`${t} → ${SYNONYMS[t].join(', ')}`))
+  tokens.forEach((t) => SYNONYMS[t] && understood.push(`${t} → ${SYNONYMS[t].map((x) => (lang === 'en' ? TARGET_EN[x] ?? x : x)).join(', ')}`))
   const hits: Hit[] = []
   for (const h of HAY) {
     let fuzzy = false

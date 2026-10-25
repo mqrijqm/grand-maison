@@ -9,6 +9,8 @@ import { EASE, MQ } from '@/lib/motion'
 import { pw } from '@/components/ui/Pw'
 import { LOGIN_EVENT, type LoginMode } from '@/lib/login-events'
 import LoginModal from './LoginModal'
+import LangToggle from './LangToggle'
+import { useLang } from '@/lib/i18n'
 import LogoMark from './LogoMark'
 
 // Navbar cijelog sajta: linkovi lijevo, logo (znak + GRAND COMPANY) u sredini, desno crveni
@@ -21,12 +23,12 @@ import LogoMark from './LogoMark'
 // variant="inner": traka je na vrhu i logo se vidi odmah.
 
 const LINKS = [
-  ['Asortiman', '/prodavnica'],
-  ['Za firme', '/za-firme'],
-  ['Kontakt', '/kontakt'],
+  ['Asortiman', '/prodavnica', 'Range'],
+  ['Za firme', '/za-firme', 'For business'],
+  ['Kontakt', '/kontakt', 'Contact'],
 ] as const
 
-const MENU = [['Početna', '/'], ...LINKS, ['Kalkulator', '/kalkulator'], ['Vodiči', '/vodici']] as const
+const MENU = [['Početna', '/', 'Home'], ...LINKS, ['Kalkulator', '/kalkulator', 'Calculator'], ['Vodiči', '/vodici', 'Guides']] as const
 
 function CartIcon() {
   return (
@@ -57,6 +59,7 @@ export default function SiteHeader({ variant }: { variant: 'inner' | 'overlay' |
     window.addEventListener(LOGIN_EVENT, on)
     return () => window.removeEventListener(LOGIN_EVENT, on)
   }, [openLoginModal])
+  const { t } = useLang()
   const pathname = usePathname()
   const { cart } = useShop()
   const count = cartCount(cart)
@@ -119,10 +122,10 @@ export default function SiteHeader({ variant }: { variant: 'inner' | 'overlay' |
           {/* lijevo: linkovi (desktop) / tri crte (telefon) */}
           <div className="nav__side">
             <ul className="nav__links">
-              {LINKS.map(([label, href]) => (
+              {LINKS.map(([label, href, en]) => (
                 <li key={href}>
                   <Link href={href} className={`nav__link ${active(href) ? 'is-active' : ''}`}>
-                    <span>{label}</span>
+                    <span>{t(label, en)}</span>
                   </Link>
                 </li>
               ))}
@@ -133,7 +136,7 @@ export default function SiteHeader({ variant }: { variant: 'inner' | 'overlay' |
               onClick={() => setOpen((v) => !v)}
               aria-expanded={open}
               aria-controls="site-menu"
-              aria-label={open ? 'Zatvori meni' : 'Otvori meni'}
+              aria-label={open ? t('Zatvori meni', 'Close menu') : t('Otvori meni', 'Open menu')}
             >
               <i />
               <i />
@@ -142,7 +145,7 @@ export default function SiteHeader({ variant }: { variant: 'inner' | 'overlay' |
           </div>
 
           {/* sredina: logo */}
-          <Link href="/" className="nav__logo" aria-label="Grand Company, početna" onClick={() => setOpen(false)}>
+          <Link href="/" className="nav__logo" aria-label={t('Grand Company, početna', 'Grand Company, home')} onClick={() => setOpen(false)}>
             <LogoMark className="nav__mark" />
             <span data-nav-word className="nav__word font-hero">
               Grand Company
@@ -152,19 +155,20 @@ export default function SiteHeader({ variant }: { variant: 'inner' | 'overlay' |
           {/* desno: Kupuj + korpa */}
           <div className="nav__side nav__side--end">
             <Link href="/upit-za-izvodjace" className="nav__buy">
-              Zatraži ponudu
+              {t('Zatraži ponudu', 'Request a quote')}
               <svg viewBox="0 0 24 12" className="nav__buy-arrow" fill="none" stroke="currentColor" strokeWidth={1.6} aria-hidden>
                 <path d="M0 6h22M17 1l5 5-5 5" />
               </svg>
             </Link>
+            <LangToggle className="nav__lang" />
             <button type="button" onClick={() => openLoginModal('login')} className="nav__login" aria-haspopup="dialog">
               <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth={1.4} aria-hidden>
                 <rect x="3" y="7" width="10" height="7" />
                 <path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" />
               </svg>
-              <span>B2B prijava</span>
+              <span>{t('B2B prijava', 'B2B login')}</span>
             </button>
-            <button type="button" onClick={openCart} className="nav__cart" aria-label={`Korpa, ${count} artikala`}>
+            <button type="button" onClick={openCart} className="nav__cart" aria-label={t(`Korpa, ${count} artikala`, `Cart, ${count} ${count === 1 ? 'item' : 'items'}`)}>
               <span className="nav__cart-bg" aria-hidden />
               <CartIcon />
               {count > 0 && <span className="nav__cart-count">{count}</span>}
@@ -178,20 +182,21 @@ export default function SiteHeader({ variant }: { variant: 'inner' | 'overlay' |
       <div ref={menu} id="site-menu" className={`menu ${open ? 'is-open' : ''}`} aria-hidden={!open}>
         <div data-panel className="menu__panel" style={{ clipPath: 'inset(0% 0% 100% 0%)' }}>
           <div className="menu__head">
-            <Link href="/" className="menu__logo" onClick={() => setOpen(false)} aria-label="Grand Company, početna">
+            <Link href="/" className="menu__logo" onClick={() => setOpen(false)} aria-label={t('Grand Company, početna', 'Grand Company, home')}>
               <LogoMark className="menu__mark" />
               <span className="font-hero">Grand Company</span>
             </Link>
-            <button type="button" className="menu__close" onClick={() => setOpen(false)} aria-label="Zatvori meni">
+            <LangToggle className="menu__lang" />
+            <button type="button" className="menu__close" onClick={() => setOpen(false)} aria-label={t('Zatvori meni', 'Close menu')}>
               <svg viewBox="0 0 20 20" aria-hidden fill="none" stroke="currentColor" strokeWidth={1.6}>
                 <path d="M4 4l12 12M16 4 4 16" />
               </svg>
             </button>
           </div>
-          <nav className="menu__list" aria-label="Meni">
-            {MENU.map(([label, href]) => (
+          <nav className="menu__list" aria-label={t('Meni', 'Menu')}>
+            {MENU.map(([label, href, en]) => (
               <Link key={href} data-item href={href} onClick={() => setOpen(false)} className={`menu__item ${active(href) ? 'is-active' : ''}`}>
-                <span>{pw(label)}</span>
+                <span>{pw(t(label, en))}</span>
                 <svg viewBox="0 0 24 12" aria-hidden fill="none" stroke="currentColor" strokeWidth={1.6}>
                   <path d="M0 6h22M17 1l5 5-5 5" />
                 </svg>
@@ -200,7 +205,7 @@ export default function SiteHeader({ variant }: { variant: 'inner' | 'overlay' |
           </nav>
           <div data-item className="menu__foot">
             <Link href="/upit-za-izvodjace" onClick={() => setOpen(false)} className="menu__cta menu__cta--buy">
-              Zatraži ponudu
+              {t('Zatraži ponudu', 'Request a quote')}
               <svg viewBox="0 0 24 12" aria-hidden fill="none" stroke="currentColor" strokeWidth={1.6}>
                 <path d="M0 6h22M17 1l5 5-5 5" />
               </svg>
@@ -217,7 +222,7 @@ export default function SiteHeader({ variant }: { variant: 'inner' | 'overlay' |
                 <rect x="3" y="7" width="10" height="7" />
                 <path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2" />
               </svg>
-              B2B prijava
+              {t('B2B prijava', 'B2B login')}
             </button>
             <a href="tel:+38765516696" className="menu__tel">
               065 516-696

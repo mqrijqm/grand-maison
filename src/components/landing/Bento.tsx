@@ -3,7 +3,8 @@
 /* eslint-disable @next/next/no-img-element -- editorijalna fotografija iz /public, već u WebP */
 
 import Link from 'next/link'
-import { useRef } from 'react'
+import { useRef, type ReactNode } from 'react'
+import { useLang } from '@/lib/i18n'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { useMediaMotion } from '@/lib/media'
 import { EASE, MQ } from '@/lib/motion'
@@ -20,7 +21,7 @@ const Arrow = ({ className = '' }: { className?: string }) => (
   </span>
 )
 
-const Tag = ({ children, tone }: { children: string; tone: 'blue' | 'dark' | 'photo' }) => (
+const Tag = ({ children, tone }: { children: ReactNode; tone: 'blue' | 'dark' | 'photo' }) => (
   <span
     className={`inline-flex min-h-8 items-center px-3.5 text-[11px] font-medium uppercase tracking-[0.1em] ${
       tone === 'blue' ? 'bg-white/15' : tone === 'dark' ? 'bg-white/12' : 'bg-[#3a3a3a]/85 backdrop-blur'
@@ -31,6 +32,7 @@ const Tag = ({ children, tone }: { children: string; tone: 'blue' | 'dark' | 'ph
 )
 
 export default function Bento() {
+  const { t } = useLang()
   const root = useRef<HTMLElement>(null)
   useMediaMotion(root)
 
@@ -64,37 +66,45 @@ export default function Bento() {
           </span>
         </h2>
         <p className="max-w-[340px] text-[12.5px] leading-[1.55] text-ink/75 md:mb-[1.2vw] md:mr-[2vw]">
-          Za građevinske firme i izvođače: pregled asortimana i upit na jednom mjestu. Cijene i uslove saradnje
-          dogovarate sa prodajom, a dostavu po Banjoj Luci prema lokaciji i vrsti robe.
+          {t(
+            'Za građevinske firme i izvođače: pregled asortimana i upit na jednom mjestu. Cijene i uslove saradnje dogovarate sa prodajom, a dostavu po Banjoj Luci prema lokaciji i vrsti robe.',
+            'For construction companies and contractors: browse the range and send an enquiry in one place. Prices and terms of cooperation are agreed with our sales team, and delivery across Banja Luka depends on location and type of goods.',
+          )}
         </p>
       </div>
 
       <div className="mt-2.5 grid gap-2.5 md:grid-cols-[1fr_1fr_2fr]">
         {/* Plava kartica: rabatna skala */}
         <Link href="/za-firme" data-bento className="group flex min-h-[300px] flex-col bg-cobalt p-7 text-white md:min-h-[400px]" data-cursor="Portal">
-          <span className="label">Cijene za firme</span>
-          <span className="display mt-auto text-[clamp(34px,3vw,52px)]">Na upit</span>
+          <span className="label">{t('Cijene za firme', 'Business pricing')}</span>
+          <span className="display mt-auto text-[clamp(34px,3vw,52px)]">{t('Na upit', 'On request')}</span>
           <span className="mt-4 flex flex-wrap gap-1.5">
-            <Tag tone="blue">Veleprodaja</Tag>
-            <Tag tone="blue">Izvođači</Tag>
-            <Tag tone="blue">Firme</Tag>
+            <Tag tone="blue">{t('Veleprodaja', 'Wholesale')}</Tag>
+            <Tag tone="blue">{t('Izvođači', 'Contractors')}</Tag>
+            <Tag tone="blue">{t('Firme', 'Companies')}</Tag>
           </span>
           <span className="mb-6 mt-auto max-w-[260px] pt-8 text-[12px] leading-[1.5] opacity-85">
-            Pošaljite šta vam treba i u kojoj količini. Prodaja vam šalje ponudu sa cijenom za vašu narudžbu.
+            {t(
+              'Pošaljite šta vam treba i u kojoj količini. Prodaja vam šalje ponudu sa cijenom za vašu narudžbu.',
+              'Tell us what you need and in what quantity. Our sales team sends you a quote with the price for your order.',
+            )}
           </span>
           <Arrow className="bg-white text-cobalt" />
         </Link>
 
         {/* Tamna kartica: kreditni limit i valuta */}
         <Link href="/za-firme" data-bento className="group flex min-h-[300px] flex-col bg-char p-7 text-white md:min-h-[400px]" data-cursor="Portal">
-          <span className="label">Uslovi plaćanja</span>
-          <span className="display mt-auto text-[clamp(34px,3vw,52px)]">Po dogovoru</span>
+          <span className="label">{t('Uslovi plaćanja', 'Payment terms')}</span>
+          <span className="display mt-auto text-[clamp(34px,3vw,52px)]">{t('Po dogovoru', 'By arrangement')}</span>
           <span className="mt-4 flex flex-wrap gap-1.5">
-            <Tag tone="dark">Ponuda</Tag>
-            <Tag tone="dark">Predračun</Tag>
+            <Tag tone="dark">{t('Ponuda', 'Quote')}</Tag>
+            <Tag tone="dark">{t('Predračun', 'Pro forma')}</Tag>
           </span>
           <span className="mb-6 mt-auto max-w-[260px] pt-8 text-[12px] leading-[1.5] opacity-85">
-            Način i rok plaćanja dogovarate direktno sa prodajom, prema vrsti i obimu saradnje.
+            {t(
+              'Način i rok plaćanja dogovarate direktno sa prodajom, prema vrsti i obimu saradnje.',
+              'Payment method and terms are agreed directly with our sales team, depending on the type and scale of cooperation.',
+            )}
           </span>
           <Arrow className="bg-white text-[#1e1e1e]" />
         </Link>
@@ -102,17 +112,17 @@ export default function Bento() {
         {/* Fotografija + svijetli panel: Pantheon ERP zalihe */}
         <Link href="/prodavnica" data-bento className="group flex min-h-[300px] flex-col overflow-hidden bg-[#d9d9d9] text-ink md:min-h-[400px]" data-cursor="Katalog">
           <div data-parallax="6" className="relative h-[220px] overflow-hidden bg-[#111] md:h-[54%]">
-            <img decoding="async" loading="lazy" src="/editorial/bento-mono.webp" alt="Pocinčani profili na regalima skladišta" className="absolute inset-0 h-full w-full object-cover" />
-            <span className="label absolute left-7 top-7 text-white">Stovarište</span>
+            <img decoding="async" loading="lazy" src="/editorial/bento-mono.webp" alt={t('Pocinčani profili na regalima skladišta', 'Galvanised profiles on warehouse shelving')} className="absolute inset-0 h-full w-full object-cover" />
+            <span className="label absolute left-7 top-7 text-white">{t('Stovarište', 'The yard')}</span>
             <span className="absolute right-6 top-6 flex gap-1.5 text-white max-md:left-7 max-md:right-auto max-md:top-14">
-              <Tag tone="photo">Zalihe</Tag>
-              <Tag tone="photo">Predračun</Tag>
-              <Tag tone="photo">Fakture</Tag>
+              <Tag tone="photo">{t('Zalihe', 'Stock')}</Tag>
+              <Tag tone="photo">{t('Predračun', 'Pro forma')}</Tag>
+              <Tag tone="photo">{t('Fakture', 'Invoices')}</Tag>
             </span>
           </div>
           <div className="flex flex-1 flex-col p-7">
             <p className="font-pretty max-w-[600px] text-[clamp(20px,1.7vw,28px)] leading-[1.15]">
-              Vidite šta je u ponudi — prije nego krenete na gradilište.
+              {t('Vidite šta je u ponudi — prije nego krenete na gradilište.', 'See what is on offer — before you head to the site.')}
             </p>
             <Arrow className="mt-auto bg-ink pt-0 text-white" />
           </div>

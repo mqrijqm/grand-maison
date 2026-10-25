@@ -3,12 +3,14 @@
 import { useRef } from 'react'
 import { gsap, ScrollTrigger, useGSAP } from '@/lib/gsap'
 import { MQ } from '@/lib/motion'
+import { useLang } from '@/lib/i18n'
 import { revealChars, revealLines, revealMedia } from '@/lib/reveal'
 
 // Naše fotografije se smjenjuju dok se skrola, jedna po usluzi: prodavnica, kran, stovarište, tabla.
 const LAYERS = ['/photos/prodavnica.webp', '/photos/kran-utovar.webp', '/photos/stovariste-pregled.webp', '/photos/tabla.webp']
 
 export default function Services() {
+  const { t, lang } = useLang()
   const root = useRef<HTMLElement>(null)
 
   useGSAP(
@@ -40,7 +42,7 @@ export default function Services() {
         })
       })
     },
-    { scope: root },
+    { scope: root, dependencies: [lang] },
   )
 
   return (
@@ -67,18 +69,19 @@ export default function Services() {
           </div>
         </div>
 
-        <p data-caption className="invisible text-[18px] uppercase leading-none">
-          Šta nudimo
+        <p key={lang} data-caption className="invisible text-[18px] uppercase leading-none">
+          {t('Šta nudimo', 'What we offer')}
         </p>
 
         <p
+          key={lang}
           data-para
           className="para invisible mt-[5dvh] w-full text-[clamp(20px,2.6vw,48px)] uppercase leading-none"
         >
-          Prodaja Knauf sistema suhe gradnje, izolacije, veziva i pribora, na veliko i malo. — Istovar
-          kranom: vlastiti kamioni spuštaju paletu na etažu ili skelu. — Partnerski program za izvođače:
-          rabat, kreditni limit i valuta do 90 dana. — Stručni savjet pri izboru sistema i obračunu
-          materijala. — U Banjoj Luci od 2012. godine.
+          {t(
+            'Prodaja Knauf sistema suhe gradnje, izolacije, veziva i pribora, na veliko i malo. — Istovar kranom: vlastiti kamioni spuštaju paletu na etažu ili skelu. — Partnerski program za izvođače: rabat, kreditni limit i valuta do 90 dana. — Stručni savjet pri izboru sistema i obračunu materijala. — U Banjoj Luci od 2012. godine.',
+            'Wholesale and retail of Knauf drywall systems, insulation, binders and accessories. — Crane unloading: our own trucks lower the pallet onto the floor or scaffold. — Partner programme for contractors: discounts, credit limit and payment terms of up to 90 days. — Expert advice on choosing systems and calculating materials. — In Banja Luka since 2012.',
+          )}
         </p>
       </div>
     </section>

@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react'
 import { gsap, useGSAP } from '@/lib/gsap'
+import { useLang } from '@/lib/i18n'
 import TourWindow, { type TourStep } from './TourWindow'
 import styles from './Business.module.css'
 
@@ -9,16 +10,17 @@ import styles from './Business.module.css'
 // centriran, a koraci su vodoravna traka iznad njega. Skrol vodi traku ulijevo i bira aktivni korak;
 // prozor pokaže taj korak (kursor kuca, bira, klikne). Telefon i reduced motion: bez kačenja,
 // traka se prevlači prstom, a klik na korak ga bira.
-const STEPS: { tour: TourStep; title: string; text: string }[] = [
-  { tour: 'pregled', title: 'Pregled', text: 'Ponuda koja čeka odluku i njene stavke.' },
-  { tour: 'materijali', title: 'Materijal po šifri', text: 'Šifra ili naziv, pa u upit.' },
-  { tour: 'upit', title: 'Upit za gradilište', text: 'Gradilište, dostava, slanje.' },
-  { tour: 'ponude', title: 'Ponuda', text: 'Provjerite stavke i potvrdite.' },
-  { tour: 'narudzbe', title: 'Narudžba', text: 'Status do isporuke.' },
-  { tour: 'gradilista', title: 'Gradilišta', text: 'Sve po mjestu isporuke.' },
+const STEPS: { tour: TourStep; title: string; text: string; en: { title: string; text: string } }[] = [
+  { tour: 'pregled', title: 'Pregled', text: 'Ponuda koja čeka odluku i njene stavke.', en: { title: 'Overview', text: 'The offer awaiting your decision and its line items.' } },
+  { tour: 'materijali', title: 'Materijal po šifri', text: 'Šifra ili naziv, pa u upit.', en: { title: 'Materials by code', text: 'Code or name, then into the inquiry.' } },
+  { tour: 'upit', title: 'Upit za gradilište', text: 'Gradilište, dostava, slanje.', en: { title: 'Site inquiry', text: 'Site, delivery, send.' } },
+  { tour: 'ponude', title: 'Ponuda', text: 'Provjerite stavke i potvrdite.', en: { title: 'Offer', text: 'Check the line items and confirm.' } },
+  { tour: 'narudzbe', title: 'Narudžba', text: 'Status do isporuke.', en: { title: 'Order', text: 'Status through to delivery.' } },
+  { tour: 'gradilista', title: 'Gradilišta', text: 'Sve po mjestu isporuke.', en: { title: 'Sites', text: 'Everything by delivery location.' } },
 ]
 
 export default function PortalTour() {
+  const { t, lang } = useLang()
   const root = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(0)
 
@@ -62,7 +64,7 @@ export default function PortalTour() {
   return (
     <div ref={root} className={styles.tour}>
       <div className={styles.tourHead}>
-        <p className={`label ${styles.kicker}`}>Portal, ekran po ekran</p>
+        <p className={`label ${styles.kicker}`}>{t('Portal, ekran po ekran', 'The portal, screen by screen')}</p>
         <p className={styles.tourCount}>
           {String(active + 1).padStart(2, '0')} / {String(STEPS.length).padStart(2, '0')}
         </p>
@@ -74,8 +76,8 @@ export default function PortalTour() {
               <button type="button" className={styles.tourStep} data-on={i === active || undefined} onClick={() => setActive(i)}>
                 <span className={styles.tourNum}>{String(i + 1).padStart(2, '0')}</span>
                 <span>
-                  <b>{s.title}</b>
-                  <i>{s.text}</i>
+                  <b>{lang === 'en' ? s.en.title : s.title}</b>
+                  <i>{lang === 'en' ? s.en.text : s.text}</i>
                 </span>
               </button>
             </li>

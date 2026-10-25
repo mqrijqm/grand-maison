@@ -86,3 +86,68 @@ export const PORTAL_INTRO_STEPS: { demo: IntroDemo; title: string; text: string;
 ]
 
 
+// ——— English (additive): parallel arrays, same order as the Serbian ones above. ———
+export const CAPABILITIES_EN: { title: string; text: string }[] = [
+  { title: 'Business account', text: 'One view of your company’s inquiries, offers and orders.' },
+  { title: 'Fast material ordering', text: 'Pick items, enter quantities and send one inquiry for several products at once.' },
+  { title: 'Offers in one place', text: 'Review offers from sales, check the line items and confirm the right one.' },
+  { title: 'Orders and deliveries', text: 'Check order status and the available details on agreed delivery or collection.' },
+  { title: 'Repeat purchasing', text: 'Use earlier orders and saved lists as the starting point for a new inquiry.' },
+]
+export const SECONDARY_EN: { title: string; text: string }[] = [
+  { title: 'Multiple users per company', text: 'Procurement, site supervisors and accounting, each with their own access.' },
+  { title: 'By construction site', text: 'Inquiries and orders sorted by delivery location.' },
+  { title: 'Documents with orders', text: 'Offers, delivery notes and invoices in one place.' },
+]
+export const JOURNEY_EN: { title: string; text: string }[] = [
+  { title: 'Choose materials', text: 'Search by code or name, or start from a material group.' },
+  { title: 'Send an inquiry', text: 'Several items in one inquiry, for the selected construction site.' },
+  { title: 'Review and confirm the offer', text: 'Sales prepares an offer with line items and a validity period.' },
+  { title: 'Track the order', text: 'Status and agreed delivery, or collection at the yard.' },
+]
+export const AUDIENCES_EN: { label: string; title: string; text: string; points: string[]; alt: string }[] = [
+  {
+    label: 'Contractors',
+    title: 'Construction companies and contractors',
+    text: 'Materials for multiple sites on a single account, organised by construction phase.',
+    points: ['Orders per construction site', 'Scheduled delivery to the site address'],
+    alt: 'Facade scaffolding beside a residential building under construction',
+  },
+  {
+    label: 'Subcontractors',
+    title: 'Specialist subcontractors',
+    text: 'Drywall, insulation and construction chemicals for recurring work.',
+    points: ['Saved lists for standard jobs', 'Collection at the yard'],
+    alt: 'A worker, seen from behind, lining a wall with plasterboard',
+  },
+  {
+    label: 'Investors',
+    title: 'Investors and project owners',
+    text: 'A consolidated offer per building and a clear view of what was ordered and delivered.',
+    points: ['Consolidated offers', 'Documents with every order'],
+    alt: 'House under construction with scaffolding',
+  },
+]
+export const BENEFITS_EN: { title: string; text: string }[] = [
+  { title: 'Repeat purchasing', text: 'A past order or list becomes a new inquiry.' },
+  { title: 'Orders per site', text: 'Every inquiry tied to a delivery location.' },
+  { title: 'Consolidated offers', text: 'Multiple items, one offer from sales.' },
+  { title: 'Scheduled delivery', text: 'Delivery or collection as agreed.' },
+]
+export const PORTAL_INTRO_STEPS_EN: { title: string; text: string; points: string[] }[] = [
+  {
+    title: 'Sign in to your company account',
+    text: 'Your company account is opened by Grand Company sales. After signing in you see your dashboard right away: credit limit, orders in progress and quick code entry.',
+    points: ['No ads, just your procurement', 'Access from computer and phone'],
+  },
+  {
+    title: 'Order by code',
+    text: 'Code, Tab, quantity, Enter, and you are on a new line. Drag a bill of quantities from Excel or CSV into the table. The inquiry goes straight to sales.',
+    points: ['Codes are checked instantly', 'Unknown codes are marked in red'],
+  },
+  {
+    title: 'Track the offer and delivery',
+    text: 'Sales sends an offer, you accept it, and you follow the order through to “On the way to the site” or “Ready for collection”.',
+    points: ['Delivery slot at the construction site', 'Invoices and delivery notes in one place'],
+  },
+]

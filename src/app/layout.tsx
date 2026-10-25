@@ -6,6 +6,8 @@ import SmoothScroll from "@/components/SmoothScroll";
 import ImageWarmup from "@/components/ImageWarmup";
 import Splash from "@/components/Splash";
 import Cursor from "@/components/Cursor";
+import { LangProvider } from "@/lib/i18n";
+import DocTitle from "@/components/DocTitle";
 
 // Jedan serif za cijeli sajt (editorijalni stil, srodan tankom serifu iz herosa).
 // Varijabilan sa osom optičke veličine: na 14px su crte deblje i čitljive, na 140px tanke i elegantne.
@@ -127,12 +129,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: HERO_BOOT }} />
       </head>
       <body>
+        <LangProvider>
+        <DocTitle />
         <SmoothScroll>
           {children}
           {/* Uvodni splash stoji iznad sajta dok se ne odigra (i ne skrola se dok traje). */}
           <Splash />
           <Cursor />
         </SmoothScroll>
+        </LangProvider>
         <ImageWarmup />
       </body>
     </html>

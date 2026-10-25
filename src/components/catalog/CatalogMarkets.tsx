@@ -7,6 +7,7 @@ import { useRef, useState } from 'react'
 import { COMPANY as GC } from '@/gc/gc'
 import { SHOW_DRYWALL_CALC } from '@/lib/flags'
 import { gsap, useGSAP } from '@/lib/gsap'
+import { useLang } from '@/lib/i18n'
 import styles from './CatalogMarkets.module.css'
 
 // Uvod kataloga po uzoru na lpas.com: tamna fotografija stovarišta preko cijelog ekrana, a skrol
@@ -30,7 +31,8 @@ type Market = {
   img: string
   bg: string
   ink: 'light' | 'dark'
-  links?: { label: string; href: string }[]
+  links?: { label: string; labelEn: string; href: string }[]
+  en: { title: string; sub: string; desc: string }
 }
 
 const MARKETS: Market[] = [
@@ -44,11 +46,12 @@ const MARKETS: Market[] = [
     bg: '#bd9446',
     ink: 'dark',
     links: [
-      { label: 'Gips-kartonske ploče', href: '/prodavnica?kategorija=suha-gradnja&q=plo%C4%8Da#artikli' },
-      { label: 'Profili', href: '/prodavnica?kategorija=suha-gradnja&q=profil#artikli' },
-      { label: 'Pribor', href: '/prodavnica?kategorija=oprema#artikli' },
-      ...(SHOW_DRYWALL_CALC ? [{ label: 'Kalkulator za zid', href: '/kalkulator' }] : []),
+      { label: 'Gips-kartonske ploče', labelEn: 'Plasterboard', href: '/prodavnica?kategorija=suha-gradnja&q=plo%C4%8Da#artikli' },
+      { label: 'Profili', labelEn: 'Profiles', href: '/prodavnica?kategorija=suha-gradnja&q=profil#artikli' },
+      { label: 'Pribor', labelEn: 'Accessories', href: '/prodavnica?kategorija=oprema#artikli' },
+      ...(SHOW_DRYWALL_CALC ? [{ label: 'Kalkulator za zid', labelEn: 'Wall calculator', href: '/kalkulator' }] : []),
     ],
+    en: { title: 'Drywall', sub: 'Boards, profiles and accessories', desc: 'Plasterboard, galvanised profiles and accessories for partition walls and suspended ceilings.' },
   },
   {
     id: 'izolacija',
@@ -59,7 +62,8 @@ const MARKETS: Market[] = [
     img: '/markets/izolacija.webp',
     bg: '#f4f1ec',
     ink: 'dark',
-    links: [{ label: 'Kamena vuna', href: '/prodavnica?kategorija=izolacija#artikli' }],
+    links: [{ label: 'Kamena vuna', labelEn: 'Stone wool', href: '/prodavnica?kategorija=izolacija#artikli' }],
+    en: { title: 'Insulation', sub: 'Stone wool slabs', desc: 'Stone wool slabs for thermal and acoustic insulation of walls, attics and roofs.' },
   },
   {
     id: 'krovni',
@@ -71,10 +75,11 @@ const MARKETS: Market[] = [
     bg: '#1b2436',
     ink: 'light',
     links: [
-      { label: 'Tondach crijep', href: '/prodavnica?kategorija=krovni-sistemi#artikli' },
-      { label: 'Kalkulatori za krov', href: '/kalkulator' },
-      { label: 'Upit za krovni program', href: '/upit-za-izvodjace?program=zidni-krovni' },
+      { label: 'Tondach crijep', labelEn: 'Tondach roof tiles', href: '/prodavnica?kategorija=krovni-sistemi#artikli' },
+      { label: 'Kalkulatori za krov', labelEn: 'Roof calculators', href: '/kalkulator' },
+      { label: 'Upit za krovni program', labelEn: 'Roofing range enquiry', href: '/upit-za-izvodjace?program=zidni-krovni' },
     ],
+    en: { title: 'Roofing systems', sub: 'Tondach roof tiles, Wienerberger', desc: 'Clay roof tiles and system accessories for pitched roofs: Continental, Traditon, Twiston, Planoton and other models.' },
   },
   {
     id: 'blokovi',
@@ -86,10 +91,11 @@ const MARKETS: Market[] = [
     bg: '#b46c44',
     ink: 'light',
     links: [
-      { label: 'Porotherm blokovi', href: '/prodavnica?kategorija=zidni-blokovi#artikli' },
-      { label: 'Kalkulatori za zid', href: '/kalkulator' },
-      { label: 'Upit za zidni program', href: '/upit-za-izvodjace?program=zidni-krovni' },
+      { label: 'Porotherm blokovi', labelEn: 'Porotherm blocks', href: '/prodavnica?kategorija=zidni-blokovi#artikli' },
+      { label: 'Kalkulatori za zid', labelEn: 'Wall calculators', href: '/kalkulator' },
+      { label: 'Upit za zidni program', labelEn: 'Wall range enquiry', href: '/upit-za-izvodjace?program=zidni-krovni' },
     ],
+    en: { title: 'Wall systems', sub: 'Porotherm, Wienerberger', desc: 'Clay blocks for load-bearing, external and partition walls, 10 to 50 cm thick, plus blocks filled with stone wool.' },
   },
   {
     id: 'malteri',
@@ -101,9 +107,10 @@ const MARKETS: Market[] = [
     bg: '#3156ea',
     ink: 'light',
     links: [
-      { label: 'Baumalt malteri i ljepila', href: '/prodavnica?kategorija=malteri-ljepila#artikli' },
-      { label: 'Gipsane mase', href: '/prodavnica?kategorija=veziva#artikli' },
+      { label: 'Baumalt malteri i ljepila', labelEn: 'Baumalt plasters and adhesives', href: '/prodavnica?kategorija=malteri-ljepila#artikli' },
+      { label: 'Gipsane mase', labelEn: 'Plaster compounds', href: '/prodavnica?kategorija=veziva#artikli' },
     ],
+    en: { title: 'Construction chemicals', sub: 'Baumalt and plaster compounds', desc: 'Baumalt plasters, tile adhesives and decorative renders, plus plaster jointing compounds.' },
   },
 ]
 
@@ -126,6 +133,8 @@ const Chevron = () => (
 
 /** strip: samo traka kartica (bez uvoda sa fotografijom stovarišta), npr. na početnoj ispod naslova. */
 export default function CatalogMarkets({ variant = 'page' }: { variant?: 'page' | 'strip' }) {
+  const { t, lang } = useLang()
+  const en = lang === 'en'
   const strip = variant === 'strip'
   const root = useRef<HTMLElement>(null)
   const [open, setOpen] = useState<string | null>(null)
@@ -228,7 +237,7 @@ export default function CatalogMarkets({ variant = 'page' }: { variant?: 'page' 
   )
 
   return (
-    <section ref={root} className={`${styles.root} ${strip ? styles.strip : ''}`} aria-label="Kategorije kataloga">
+    <section ref={root} className={`${styles.root} ${strip ? styles.strip : ''}`} aria-label={t('Kategorije kataloga', 'Catalogue categories')}>
       <div data-stage className={styles.stage}>
         {/* ——— Uvod ——— */}
         {!strip && <div className={styles.intro}>
@@ -241,10 +250,10 @@ export default function CatalogMarkets({ variant = 'page' }: { variant?: 'page' 
           </div>
           <div data-intro-text className={styles.introText}>
             <div className={styles.meta}>
-              <span data-meta>Grand Company · Katalog</span>
-              <span data-meta>Stovarište, veleprodaja i maloprodaja</span>
+              <span data-meta>{t('Grand Company · Katalog', 'Grand Company · Catalogue')}</span>
+              <span data-meta>{t('Stovarište, veleprodaja i maloprodaja', 'Building materials yard, wholesale and retail')}</span>
               <span data-meta className={styles.metaScroll}>
-                Skrolujte
+                {t('Skrolujte', 'Scroll')}
                 <span className={styles.metaArrow} aria-hidden>
                   <Chevron />
                 </span>
@@ -252,15 +261,15 @@ export default function CatalogMarkets({ variant = 'page' }: { variant?: 'page' 
             </div>
             <h1 className={styles.statement}>
               <span className={styles.lineMask}>
-                <span data-line>Građevinski materijal</span>
+                <span data-line>{t('Građevinski materijal', 'Building materials')}</span>
               </span>
               <span className={styles.lineMask}>
-                <span data-line>sa stovarišta u</span>
+                <span data-line>{t('sa stovarišta u', 'from our yard in')}</span>
               </span>
               <span className={styles.lineMask}>
                 <span data-line>
-                  Banjoj Luci
-                  <a href="#artikli" className={styles.statementBtn} aria-label="Na artikle">
+                  {t('Banjoj Luci', 'Banja Luka')}
+                  <a href="#artikli" className={styles.statementBtn} aria-label={t('Na artikle', 'To the items')}>
                     <Chevron />
                   </a>
                 </span>
@@ -279,14 +288,14 @@ export default function CatalogMarkets({ variant = 'page' }: { variant?: 'page' 
               data-ink={m.ink}
               data-open={open === m.id || undefined}
             >
-              <Link href={m.href} data-img-link className={styles.cardImage} aria-label={`Pogledajte: ${m.title}`}>
+              <Link href={m.href} data-img-link className={styles.cardImage} aria-label={`${t('Pogledajte', 'View')}: ${en ? m.en.title : m.title}`}>
                 <img data-img src={m.img} alt="" width={1280} height={1024} loading={i < 2 ? 'eager' : 'lazy'} decoding="async" />
               </Link>
               {/* Boja je na panelu (ne na kartici): GSAP piše --img na karticu, pa joj ne dira ostale stilove. */}
               <div className={styles.panel} style={{ '--panel': m.bg } as React.CSSProperties}>
                 {strip ? (
                   // Početna: kvadrat sa strelicom vodi pravo na katalog filtriran na ovu kategoriju (bez podkategorija).
-                  <Link href={m.href} className={styles.plus} aria-label={`${m.title}: artikli u katalogu`}>
+                  <Link href={m.href} className={styles.plus} aria-label={`${en ? m.en.title : m.title}: ${t('artikli u katalogu', 'items in the catalogue')}`}>
                     <Arrow />
                   </Link>
                 ) : (
@@ -295,7 +304,7 @@ export default function CatalogMarkets({ variant = 'page' }: { variant?: 'page' 
                     type="button"
                     className={styles.plus}
                     aria-expanded={open === m.id}
-                    aria-label={`${open === m.id ? 'Zatvori' : 'Otvori'} podkategorije: ${m.title}`}
+                    aria-label={`${open === m.id ? t('Zatvori podkategorije', 'Close subcategories') : t('Otvori podkategorije', 'Open subcategories')}: ${en ? m.en.title : m.title}`}
                     onClick={() => setOpen((o) => (o === m.id ? null : m.id))}
                   >
                     <Plus />
@@ -305,7 +314,7 @@ export default function CatalogMarkets({ variant = 'page' }: { variant?: 'page' 
                       {m.links.map((l) => (
                         <li key={l.label}>
                           <Link href={l.href} tabIndex={open === m.id ? 0 : -1}>
-                            {l.label}
+                            {en ? l.labelEn : l.label}
                             <Chevron />
                           </Link>
                         </li>
@@ -316,13 +325,13 @@ export default function CatalogMarkets({ variant = 'page' }: { variant?: 'page' 
                 )}
                 {/* Naslov je na vrhu panela (odmah ispod fotografije), da se vidi na svakoj visini ekrana. */}
                 <div className={styles.panelHead}>
-                  <h2 className={styles.cardTitle}>{m.title}</h2>
+                  <h2 className={styles.cardTitle}>{en ? m.en.title : m.title}</h2>
                   <p className={styles.count}>
                     {i + 1} / {MARKETS.length}
                   </p>
-                  <p className={styles.cardDesc}>{m.desc}</p>
+                  <p className={styles.cardDesc}>{en ? m.en.desc : m.desc}</p>
                 </div>
-                <p className={styles.cardSub}>{m.sub}</p>
+                <p className={styles.cardSub}>{en ? m.en.sub : m.sub}</p>
               </div>
             </article>
           ))}
@@ -332,20 +341,21 @@ export default function CatalogMarkets({ variant = 'page' }: { variant?: 'page' 
               opločnici, sinterovani kamen) nemaju potvrđen lager, pa idu kao upit, ne kao lista artikala. */}
           {!strip && <article data-card className={`${styles.card} ${styles.cardLast}`} data-ink="light">
             <div className={styles.lastInner}>
-              <p className={styles.lastLabel}>Ostali program · po upitu</p>
-              <h2 className={styles.lastTitle}>Ne vidite šta vam treba?</h2>
+              <p className={styles.lastLabel}>{t('Ostali program · po upitu', 'Other range · on request')}</p>
+              <h2 className={styles.lastTitle}>{t('Ne vidite šta vam treba?', 'Can’t see what you need?')}</h2>
               <p className={styles.lastText}>
-                Hidroizolacija, dimnjački sistemi, drvni program i sanitarna oprema, kao i cijevni sistemi, opločnici,
-                sinterovani kamen, fasadni sistemi, cementi i željezo: pošaljite upit sa količinama.
-                Prodaja vam javlja dostupnost, cijenu i termin preuzimanja ili dostave po Banjoj Luci.
+                {t(
+                  'Hidroizolacija, dimnjački sistemi, drvni program i sanitarna oprema, kao i cijevni sistemi, opločnici, sinterovani kamen, fasadni sistemi, cementi i željezo: pošaljite upit sa količinama. Prodaja vam javlja dostupnost, cijenu i termin preuzimanja ili dostave po Banjoj Luci.',
+                  'Waterproofing, chimney systems, timber and sanitaryware, as well as pipe systems, paving, sintered stone, facade systems, cements and steel: send an enquiry with quantities. Sales will confirm availability, price and the date for pickup or delivery within Banja Luka.',
+                )}
               </p>
               <div className={styles.lastActions}>
                 <Link href="/upit-za-izvodjace" className={styles.lastBtn}>
-                  Pošaljite upit
+                  {t('Pošaljite upit', 'Send an enquiry')}
                   <Chevron />
                 </Link>
                 <a href={GC.phoneLandlineHref} className={styles.lastPhone}>
-                  ili pozovite {GC.phoneLandline}
+                  {t('ili pozovite', 'or call')} {GC.phoneLandline}
                 </a>
               </div>
             </div>
@@ -353,7 +363,7 @@ export default function CatalogMarkets({ variant = 'page' }: { variant?: 'page' 
         </div>
 
         <span data-blob className={styles.blob} aria-hidden>
-          Pogledaj
+          {t('Pogledaj', 'View')}
         </span>
       </div>
     </section>

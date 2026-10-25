@@ -1,7 +1,7 @@
 'use client'
 
 import { useSyncExternalStore } from 'react'
-import { PRODUCTS, defaultQty, qtyLabel, type Product } from './shop'
+import { PRODUCTS, defaultQty, pName, pSpec, qtyLabelL, type Lang, type Product } from './shop'
 
 type Selection = Record<string, number>
 const EMPTY: Selection = {}
@@ -67,7 +67,7 @@ export function inquiryHref(items: Selection) {
   const encoded = inquiryLines(items).map(({ product, qty }) => `${product.sku}:${qty}`).join(',')
   return encoded ? `/upit-za-izvodjace?${new URLSearchParams({ materijal: encoded })}` : '/upit-za-izvodjace'
 }
-export function inquiryTextFromQuery(query: URLSearchParams) {
+export function inquiryTextFromQuery(query: URLSearchParams, lang: Lang = 'sr') {
   const entries: Selection = {}
   const encoded = (query.get('materijal') || query.get('spisak') || '').slice(0, 3000)
   encoded.split(',').forEach(entry => {
@@ -77,5 +77,5 @@ export function inquiryTextFromQuery(query: URLSearchParams) {
   })
   const single = productBySku.get(query.get('artikal') || '')
   if (single && !encoded) entries[single.sku] = inquiryQty(query.get('kolicina')) ?? defaultQty(single)
-  return inquiryLines(entries).map(({ product, qty }) => `${product.name}\n${product.spec}\nKoličina: ${qtyLabel(qty, product.unit)} · Šifra: ${product.sku}`).join('\n\n')
+  return inquiryLines(entries).map(({ product, qty }) => `${pName(product, lang)}\n${pSpec(product, lang)}\n${lang === 'en' ? 'Quantity' : 'Količina'}: ${qtyLabelL(qty, product.unit, lang)} · ${lang === 'en' ? 'Code' : 'Šifra'}: ${product.sku}`).join('\n\n')
 }

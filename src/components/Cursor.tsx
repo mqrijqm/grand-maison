@@ -2,12 +2,24 @@
 
 import { useEffect, useRef } from 'react'
 import { gsap } from '@/lib/gsap'
+import { useLang } from '@/lib/i18n'
+
+// Riječi iz data-cursor atributa (srpski) → engleski, kad je izabran EN.
+const EN: Record<string, string> = {
+  Detalji: 'Details', Katalog: 'Catalogue', Mapa: 'Map', Pogledaj: 'View', Portal: 'Portal', 'Čitaj': 'Read',
+  Otvori: 'Open', Saznaj: 'Learn more', Poziv: 'Call', Ponuda: 'Quote', Upit: 'Enquiry', Dodaj: 'Add',
+}
 
 // Prilagođeni kursor: cinober iskra (znak iz logotipa) koja prati miš sa blagim kašnjenjem i
 // polako se okreće. Iznad elementa sa `data-cursor="Riječ"` pretvori se u "sječivo" (isti oblik
 // kao CTA dugmad) sa tom riječju. Na dodirnim ekranima se ne prikazuje (CSS), a uz
 // reduced-motion prati miš bez kašnjenja.
 export default function Cursor() {
+  const { lang } = useLang()
+  const langRef = useRef(lang)
+  useEffect(() => {
+    langRef.current = lang
+  }, [lang])
   const root = useRef<HTMLDivElement>(null)
   const label = useRef<HTMLSpanElement>(null)
 
@@ -38,7 +50,7 @@ export default function Cursor() {
       // je uobičajeno "sječivo" sa riječju.
       const plate = target?.getAttribute('data-cursor-plate')
       const text = plate || target?.getAttribute('data-cursor')
-      if (text) label.current!.textContent = text
+      if (text) label.current!.textContent = langRef.current === 'en' ? (EN[text] ?? text) : text
       el.toggleAttribute('data-big', !!text)
       el.toggleAttribute('data-cursor-plate', !!plate)
     }

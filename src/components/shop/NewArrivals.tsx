@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import { useShop } from '@/lib/cart'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { MQ } from '@/lib/motion'
+import { useLang } from '@/lib/i18n'
 import { FEATURED } from '@/lib/shop'
 import ProductCard from './ProductCard'
 import SectionHead from './SectionHead'
@@ -16,6 +17,7 @@ const pad = (n: number) => String(n).padStart(2, '0')
 export default function NewArrivals() {
   const root = useRef<HTMLDivElement>(null)
   const { cart, saved, compare } = useShop()
+  const { t } = useLang()
 
   useGSAP(
     () => {
@@ -63,10 +65,10 @@ export default function NewArrivals() {
         <div className="gutter">
           <SectionHead
             no="02"
-            label="Najčešće birano"
-            title="Najčešće birano"
-            lead="Artikli koji najčešće idu u narudžbe. Prevucite ili skrolajte da vidite sve."
-            meta={`${NEW.length} artikala`}
+            label={t('Najčešće birano', 'Most popular')}
+            title={t('Najčešće birano', 'Most popular')}
+            lead={t('Artikli koji najčešće idu u narudžbe. Prevucite ili skrolajte da vidite sve.', 'The items that go into orders most often. Swipe or scroll to see them all.')}
+            meta={t(`${NEW.length} artikala`, `${NEW.length} items`)}
           />
         </div>
 

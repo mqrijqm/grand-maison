@@ -5,7 +5,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import Cta from '@/components/ui/Cta'
 import { addToCart, notify, openCart } from '@/lib/cart'
-import { PRODUCT_MAP, plural, shotOf } from '@/lib/shop'
+import { PRODUCT_MAP, pName, plural, shotOf } from '@/lib/shop'
+import { useLang } from '@/lib/i18n'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { MQ } from '@/lib/motion'
 import { revealChars } from '@/lib/reveal'
@@ -17,20 +18,23 @@ import styles from './Calc.module.css'
 // koje sam bira — uključi/isključi, izabere vrstu ploče i vune, i po želji promijeni količinu.
 // Preporučene količine računa lib/w111 (orijentaciono, +5 % rezerve); prodaja ih potvrđuje.
 
-const nf = (n: number, d = 2) => n.toLocaleString('de-DE', { maximumFractionDigits: d })
+const nfL = (n: number, d = 2, lang: 'sr' | 'en' = 'sr') => n.toLocaleString(lang === 'en' ? 'en-US' : 'de-DE', { maximumFractionDigits: d })
 const clampDim = (n: number, min: number) => Math.min(30, Math.max(min, Math.round(n * 10) / 10))
 
-type Dim = { key: 'len' | 'height'; label: string; min: number }
+type Dim = { key: 'len' | 'height'; label: string; en: string; min: number }
 const DIMS: Dim[] = [
-  { key: 'len', label: 'Dužina zida', min: 0.5 },
-  { key: 'height', label: 'Visina zida', min: 1 },
+  { key: 'len', label: 'Dužina zida', en: 'Wall length', min: 0.5 },
+  { key: 'height', label: 'Visina zida', en: 'Wall height', min: 1 },
 ]
 
-type Variant = { sku: string; label: string }
+type Variant = { sku: string; label: string; en: string }
 type Row = {
   key: string
   units: [string, string, string]
   hint: string
+  hintEn: string
+  /** jednina i množina na engleskom */
+  unitsEn: [string, string]
   variants?: Variant[]
   /** uključeno na početku */
   on: boolean
@@ -38,61 +42,71 @@ type Row = {
 
 // Redovi u redoslijedu ugradnje. Vrste su artikli iz kataloga sajta (demo šifre).
 const ROWS: Row[] = [
-  { key: 'cw', units: ['stub', 'stuba', 'stubova'], hint: 'Dužina 3 m, ide svakih 62,5 cm', on: true },
-  { key: 'uw', units: ['vodilica', 'vodilice', 'vodilica'], hint: 'Za pod i plafon, dužina 4 m', on: true },
+  { key: 'cw', units: ['stub', 'stuba', 'stubova'], unitsEn: ['stud', 'studs'], hint: 'Dužina 3 m, ide svakih 62,5 cm', hintEn: '3 m long, one every 62.5 cm', on: true },
+  { key: 'uw', units: ['vodilica', 'vodilice', 'vodilica'], unitsEn: ['track', 'tracks'], hint: 'Za pod i plafon, dužina 4 m', hintEn: 'For the floor and ceiling, 4 m long', on: true },
   {
     key: 'board',
     units: ['ploča', 'ploče', 'ploča'],
+    unitsEn: ['board', 'boards'],
     hint: '1,25 × 2 m, debljina 12,5 mm',
+    hintEn: '1.25 × 2 m, 12.5 mm thick',
     on: true,
     variants: [
-      { sku: 'GKP-001', label: 'Obična (GKB)' },
-      { sku: 'GKP-002', label: 'Za kupatilo (GKBI)' },
-      { sku: 'GKP-003', label: 'Vatrootporna (GKF)' },
-      { sku: 'GKP-004', label: 'Tvrda' },
+      { sku: 'GKP-001', label: 'Obična (GKB)', en: 'Standard (GKB)' },
+      { sku: 'GKP-002', label: 'Za kupatilo (GKBI)', en: 'Bathroom (GKBI)' },
+      { sku: 'GKP-003', label: 'Vatrootporna (GKF)', en: 'Fire-rated (GKF)' },
+      { sku: 'GKP-004', label: 'Tvrda', en: 'Hard' },
     ],
   },
   {
     key: 'wool',
     units: ['ploča', 'ploče', 'ploča'],
+    unitsEn: ['slab', 'slabs'],
     hint: 'Ide u zid, za zvučnu izolaciju',
+    hintEn: 'Goes inside the wall, for sound insulation',
     on: true,
     variants: [
-      { sku: 'ISO-001', label: 'Kamena vuna 50 mm' },
-      { sku: 'ISO-002', label: 'Kamena vuna 100 mm' },
+      { sku: 'ISO-001', label: 'Kamena vuna 50 mm', en: 'Stone wool 50 mm' },
+      { sku: 'ISO-002', label: 'Kamena vuna 100 mm', en: 'Stone wool 100 mm' },
     ],
   },
-  { key: 'filler', units: ['vreća', 'vreće', 'vreća'], hint: 'Vreća 5 kg', on: true },
-  { key: 'screws', units: ['kutija', 'kutije', 'kutija'], hint: '1.000 komada u kutiji', on: true },
-  { key: 'tape', units: ['rolna', 'rolne', 'rolni'], hint: 'Rolna 25 m, po potrebi', on: false },
+  { key: 'filler', units: ['vreća', 'vreće', 'vreća'], unitsEn: ['bag', 'bags'], hint: 'Vreća 5 kg', hintEn: '5 kg bag', on: true },
+  { key: 'screws', units: ['kutija', 'kutije', 'kutija'], unitsEn: ['box', 'boxes'], hint: '1.000 komada u kutiji', hintEn: '1,000 pieces per box', on: true },
+  { key: 'tape', units: ['rolna', 'rolne', 'rolni'], unitsEn: ['roll', 'rolls'], hint: 'Rolna 25 m, po potrebi', hintEn: '25 m roll, as needed', on: false },
 ]
 
 const NORM = Object.fromEntries(NORMS.map((n) => [n.key, n]))
 
 // Izbor materijala kao u web-prodavnici: kategorija, filter i pretraga, pa padajuća lista artikala.
 type Cat = 'profili' | 'ploce' | 'izolacija' | 'pribor'
-const CATS: { id: Cat; label: string }[] = [
-  { id: 'profili', label: 'Profili' },
-  { id: 'ploce', label: 'Ploče' },
-  { id: 'izolacija', label: 'Izolacija' },
-  { id: 'pribor', label: 'Spojevi i pribor' },
+const CATS: { id: Cat; label: string; en: string }[] = [
+  { id: 'profili', label: 'Profili', en: 'Profiles' },
+  { id: 'ploce', label: 'Ploče', en: 'Boards' },
+  { id: 'izolacija', label: 'Izolacija', en: 'Insulation' },
+  { id: 'pribor', label: 'Spojevi i pribor', en: 'Joints and accessories' },
 ]
 const CAT_OF: Record<string, Cat> = { cw: 'profili', uw: 'profili', board: 'ploce', wool: 'izolacija', filler: 'pribor', screws: 'pribor', tape: 'pribor' }
 /** Bez ovih zid ne može; ostalo je po želji. */
 const NEEDED = new Set(['cw', 'uw', 'board', 'filler', 'screws'])
 type Need = 'sve' | 'potrebno' | 'dodatno'
-const NEEDS: { id: Need; label: string }[] = [
-  { id: 'sve', label: 'Svi artikli' },
-  { id: 'potrebno', label: 'Potrebno za zid' },
-  { id: 'dodatno', label: 'Dodatno' },
+const NEEDS: { id: Need; label: string; en: string }[] = [
+  { id: 'sve', label: 'Svi artikli', en: 'All items' },
+  { id: 'potrebno', label: 'Potrebno za zid', en: 'Needed for the wall' },
+  { id: 'dodatno', label: 'Dodatno', en: 'Extras' },
 ]
 // Svaka vrsta (npr. četiri ploče) je zaseban artikal u listi; u spisku može biti jedna po redu.
 const CHOICES = ROWS.flatMap((r) => (r.variants ?? [{ sku: NORM[r.key].sku, label: '' }]).map((v) => ({ key: r.key, sku: v.sku, cat: CAT_OF[r.key] })))
-const nameOf = (sku: string, key: string) => PRODUCT_MAP[sku]?.name ?? NORM[key].label
+const nameOf = (sku: string, key: string, lang: 'sr' | 'en' = 'sr') =>
+  PRODUCT_MAP[sku] ? pName(PRODUCT_MAP[sku], lang) : lang === 'en' ? NORM[key].labelEn : NORM[key].label
 const norm = (t: string) => t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'dj')
 
 /** `embedded`: ista tabla kao sekcija početne (h2, sidro #kalkulator, ulaz na skrol). */
 export default function WallCalculator({ embedded = false }: { embedded?: boolean }) {
+  const { t, lang } = useLang()
+  const en = lang === 'en'
+  const nf = (n: number, d = 2) => nfL(n, d, lang)
+  // Naziv jedinice u ispravnom broju i jeziku
+  const pl = (n: number, r: Row) => (en ? (n === 1 ? r.unitsEn[0] : r.unitsEn[1]) : plural(n, ...r.units))
   const root = useRef<HTMLElement>(null)
   const [dims, setDims] = useState({ len: 4, height: 2.6 })
   const [text, setText] = useState({ len: '4', height: '2,6' })
@@ -107,6 +121,13 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
     const lines = calcW111Area(area, double ? 'double' : 'single', variant.board, { wool: true, tape: true, waste: WASTE_DEFAULT })
     return Object.fromEntries(lines.map((l) => [l.key, l]))
   }, [area, double, variant.board])
+
+  // Decimalni zarez / tačka u poljima mjera prati jezik.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- tekst polja se osvježava pri promjeni jezika
+    setText({ len: nfL(dims.len, 1, lang), height: nfL(dims.height, 1, lang) })
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- samo pri promjeni jezika
+  }, [lang])
 
   const qtyOf = (key: string) => over[key] ?? rec[key]?.packs ?? 0
   const skuOf = (key: string) => variant[key] ?? rec[key]?.sku ?? NORM[key].sku
@@ -144,7 +165,7 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
     (c) =>
       (cat === 'sve' || c.cat === cat) &&
       (need === 'sve' || (need === 'potrebno') === NEEDED.has(c.key)) &&
-      words.every((w) => norm(`${c.sku} ${nameOf(c.sku, c.key)} ${PRODUCT_MAP[c.sku]?.spec ?? ''}`).includes(w)),
+      words.every((w) => norm(`${c.sku} ${nameOf(c.sku, c.key)} ${nameOf(c.sku, c.key, 'en')} ${PRODUCT_MAP[c.sku]?.spec ?? ''}`).includes(w)),
   )
   const inList = (c: (typeof CHOICES)[number]) => !!on[c.key] && skuOf(c.key) === c.sku
   const pick = (c: (typeof CHOICES)[number]) => {
@@ -163,7 +184,8 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
         revealChars(el.querySelector('[data-head]')!, reduce, embedded ? 'top 80%' : 'top 95%')
       })
     },
-    { scope: root },
+    // Naslov se dijeli (SplitText) jednom po jeziku: element se remontira (key), pa se podjela ponovi.
+    { scope: root, dependencies: [lang], revertOnUpdate: true },
   )
 
   const addAll = () => {
@@ -174,7 +196,12 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
       const byArea = r.key === 'board' || r.key === 'wool'
       addToCart(skuOf(r.key), byArea ? Math.round(packs * NORM[r.key].pack * 100) / 100 : packs)
     })
-    notify(`Zid ${nf(area)} m²: ${chosen.length} ${plural(chosen.length, 'artikal', 'artikla', 'artikala')} dodato u upit`, { label: 'Korpa', open: 'cart' })
+    notify(
+      en
+        ? `Wall ${nf(area)} m²: ${chosen.length} ${chosen.length === 1 ? 'item' : 'items'} added to enquiry`
+        : `Zid ${nf(area)} m²: ${chosen.length} ${plural(chosen.length, 'artikal', 'artikla', 'artikala')} dodato u upit`,
+      { label: en ? 'Basket' : 'Korpa', open: 'cart' },
+    )
     openCart()
   }
 
@@ -192,39 +219,39 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
   // Spojevi ploča: ploča je široka 1,25 m, pa spoj ide na svakih 1,25 m dužine.
   const seams = onWall('board') ? Array.from({ length: Math.max(0, Math.ceil(dims.len / 1.25) - 1) }, (_, i) => (((i + 1) * 1.25) / dims.len) * 100) : []
   const drawn = ROWS.filter((r) => onWall(r.key) && ['cw', 'uw', 'board', 'wool'].includes(r.key)).map(
-    (r) => `${qtyOf(r.key)} ${plural(qtyOf(r.key), ...r.units)}${r.key === 'wool' ? ' vune' : ''}`,
+    (r) => (en ? `${qtyOf(r.key)} ${r.key === 'wool' ? 'wool ' : ''}${pl(qtyOf(r.key), r)}` : `${qtyOf(r.key)} ${pl(qtyOf(r.key), r)}${r.key === 'wool' ? ' vune' : ''}`),
   )
 
   return (
     <section ref={root} id={embedded ? 'kalkulator' : undefined} aria-labelledby="calc-title" className={styles.page}>
       <div className={styles.card}>
         <header className={styles.head}>
-          <p className={`label ${styles.kicker}`}>Kalkulator · pregradni zid</p>
-          <Heading id="calc-title" data-head className={`display invisible ${styles.title}`}>
-            Koliko materijala vam treba?
+          <p className={`label ${styles.kicker}`}>{t('Kalkulator · pregradni zid', 'Calculator · partition wall')}</p>
+          <Heading key={`h-${lang}`} id="calc-title" data-head className={`display invisible ${styles.title}`}>
+            {t('Koliko materijala vam treba?', 'How much material do you need?')}
           </Heading>
-          <p className={styles.sub}>Mjere zida, pa materijal. Količine računamo mi.</p>
+          <p className={styles.sub}>{t('Mjere zida, pa materijal. Količine računamo mi.', 'Wall dimensions first, then material. We work out the quantities.')}</p>
         </header>
 
         <div className={styles.body}>
           {/* ——— 1. Vaš zid ——— */}
           <div className={styles.input}>
-            <p className={styles.step}>Vaš zid</p>
+            <p className={styles.step}>{t('Vaš zid', 'Your wall')}</p>
             <div className={styles.dims}>
               {DIMS.map((d) => (
                 <div key={d.key} className={styles.dim}>
                   <label htmlFor={`calc-${d.key}`} className={styles.dimLabel}>
-                    {d.label}
+                    {en ? d.en : d.label}
                   </label>
                   <div className={styles.stepper}>
-                    <button type="button" onClick={() => setDim(d.key, dims[d.key] - 0.1)} aria-label={`${d.label}: manje`}>
+                    <button type="button" onClick={() => setDim(d.key, dims[d.key] - 0.1)} aria-label={`${en ? d.en : d.label}: ${t('manje', 'less')}`}>
                       −
                     </button>
                     <span className={styles.field}>
                       <input id={`calc-${d.key}`} value={text[d.key]} onChange={(e) => typeDim(d.key, e.target.value)} onBlur={() => setDim(d.key, dims[d.key])} inputMode="decimal" />
                       <i>m</i>
                     </span>
-                    <button type="button" onClick={() => setDim(d.key, dims[d.key] + 0.1)} aria-label={`${d.label}: više`}>
+                    <button type="button" onClick={() => setDim(d.key, dims[d.key] + 0.1)} aria-label={`${en ? d.en : d.label}: ${t('više', 'more')}`}>
                       +
                     </button>
                   </div>
@@ -243,8 +270,8 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
               />
               <span className={styles.switch} aria-hidden />
               <span>
-                <b>Dvije ploče sa svake strane</b>
-                <i>Jači i tiši zid</i>
+                <b>{t('Dvije ploče sa svake strane', 'Two boards on each side')}</b>
+                <i>{t('Jači i tiši zid', 'A stronger, quieter wall')}</i>
               </span>
             </label>
 
@@ -274,10 +301,10 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
                 </div>
               </div>
               <p className={styles.drawn} aria-live="polite">
-                {drawn.length ? `Na crtežu: ${drawn.join(' · ')}` : 'Dodajte materijal u spisak, pa se pojavi na crtežu.'}
+                {drawn.length ? `${t('Na crtežu', 'In the drawing')}: ${drawn.join(' · ')}` : t('Dodajte materijal u spisak, pa se pojavi na crtežu.', 'Add material to the list and it will appear in the drawing.')}
               </p>
               <figcaption className={styles.area}>
-                <span className="label">Površina zida</span>
+                <span className="label">{t('Površina zida', 'Wall area')}</span>
                 <b>
                   <Num value={area} decimals={2} /> m²
                 </b>
@@ -287,10 +314,10 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
 
           {/* ——— 2. Materijal ——— */}
           <div className={styles.result}>
-            <p className={styles.step}>Materijal</p>
+            <p className={styles.step}>{t('Materijal', 'Material')}</p>
             <div ref={picker} className={styles.picker}>
-              <div className={styles.cats} role="group" aria-label="Kategorija">
-                {[{ id: 'sve' as const, label: 'Sve' }, ...CATS].map((c) => (
+              <div className={styles.cats} role="group" aria-label={t('Kategorija', 'Category')}>
+                {[{ id: 'sve' as const, label: 'Sve', en: 'All' }, ...CATS].map((c) => (
                   <button
                     key={c.id}
                     type="button"
@@ -300,7 +327,7 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
                       setOpenList(true)
                     }}
                   >
-                    {c.label}
+                    {en ? c.en : c.label}
                   </button>
                 ))}
               </div>
@@ -323,17 +350,17 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
                       }
                       if (e.key === 'Escape') setOpenList(false)
                     }}
-                    placeholder="Traži po nazivu ili šifri"
-                    aria-label="Traži materijal"
+                    placeholder={t('Traži po nazivu ili šifri', 'Search by name or code')}
+                    aria-label={t('Traži materijal', 'Search material')}
                     aria-expanded={openList}
                     role="combobox"
                     aria-controls="calc-options"
                   />
                 </label>
-                <select className={styles.filter} value={need} onChange={(e) => (setNeed(e.target.value as Need), setOpenList(true))} aria-label="Filter">
+                <select className={styles.filter} value={need} onChange={(e) => (setNeed(e.target.value as Need), setOpenList(true))} aria-label={t('Filter', 'Filter')}>
                   {NEEDS.map((n) => (
                     <option key={n.id} value={n.id}>
-                      {n.label}
+                      {en ? n.en : n.label}
                     </option>
                   ))}
                 </select>
@@ -342,14 +369,14 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
                 <div className={styles.drop}>
                   <p className={styles.dropHead}>
                     <span>
-                      {options.length} {plural(options.length, 'artikal', 'artikla', 'artikala')}
+                      {options.length} {en ? (options.length === 1 ? 'item' : 'items') : plural(options.length, 'artikal', 'artikla', 'artikala')}
                     </span>
                     <button type="button" onClick={() => setOpenList(false)}>
-                      Zatvori
+                      {t('Zatvori', 'Close')}
                     </button>
                   </p>
                   <ul id="calc-options" role="listbox" className={styles.options}>
-                    {options.length === 0 && <li className={styles.optEmpty}>Nema artikala za ovaj izbor.</li>}
+                    {options.length === 0 && <li className={styles.optEmpty}>{t('Nema artikala za ovaj izbor.', 'No items for this selection.')}</li>}
                     {options.map((c) => {
                       const added = inList(c)
                       const swap = !added && !!on[c.key]
@@ -358,12 +385,12 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
                           <button type="button" disabled={added} onClick={() => pick(c)}>
                             <img src={shotOf(c.sku)} alt="" width={600} height={600} loading="lazy" decoding="async" />
                             <span>
-                              <b>{nameOf(c.sku, c.key)}</b>
+                              <b>{nameOf(c.sku, c.key, lang)}</b>
                               <i>
-                                {c.sku} · {CATS.find((x) => x.id === c.cat)!.label}
+                                {c.sku} · {en ? CATS.find((x) => x.id === c.cat)!.en : CATS.find((x) => x.id === c.cat)!.label}
                               </i>
                             </span>
-                            <em>{added ? 'U spisku' : swap ? 'Zamijeni' : 'Dodaj'}</em>
+                            <em>{added ? t('U spisku', 'In list') : swap ? t('Zamijeni', 'Replace') : t('Dodaj', 'Add')}</em>
                           </button>
                         </li>
                       )
@@ -375,46 +402,46 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
 
             <div className={styles.sheet}>
               <p className={styles.sheetHead}>
-                <span>Vaš spisak</span>
-                <span>Količina</span>
+                <span>{t('Vaš spisak', 'Your list')}</span>
+                <span>{t('Količina', 'Quantity')}</span>
               </p>
               {chosenRows.length === 0 ? (
                 <div className={styles.sheetEmpty}>
-                  <p>Izaberite artikle iz liste iznad.</p>
+                  <p>{t('Izaberite artikle iz liste iznad.', 'Choose items from the list above.')}</p>
                   <button type="button" onClick={addNeeded}>
-                    Dodaj sve potrebno za zid
+                    {t('Dodaj sve potrebno za zid', 'Add everything needed for the wall')}
                   </button>
                 </div>
               ) : (
                 CATS.filter((c) => chosenRows.some((r) => CAT_OF[r.key] === c.id)).map((c) => (
                   <div key={c.id} className={styles.group}>
-                    <p className={styles.groupName}>{c.label}</p>
+                    <p className={styles.groupName}>{en ? c.en : c.label}</p>
                     {chosenRows
                       .filter((r) => CAT_OF[r.key] === c.id)
                       .map((r) => {
                         const sku = skuOf(r.key)
                         const q = qtyOf(r.key)
-                        const name = nameOf(sku, r.key)
+                        const name = nameOf(sku, r.key, lang)
                         return (
                           <div key={r.key} className={styles.line}>
                             <span className={styles.what}>
                               <b>{name}</b>
                               <i>
-                                {sku} · {r.hint}
+                                {sku} · {en ? r.hintEn : r.hint}
                               </i>
                             </span>
                             <span className={styles.qtyBox}>
-                              <button type="button" onClick={() => setQty(r.key, q - 1)} aria-label={`${name}: manje`}>
+                              <button type="button" onClick={() => setQty(r.key, q - 1)} aria-label={`${name}: ${t('manje', 'less')}`}>
                                 −
                               </button>
                               <span className={styles.qty}>
-                                {q} {plural(q, ...r.units)}
+                                {q} {pl(q, r)}
                               </span>
-                              <button type="button" onClick={() => setQty(r.key, q + 1)} aria-label={`${name}: više`}>
+                              <button type="button" onClick={() => setQty(r.key, q + 1)} aria-label={`${name}: ${t('više', 'more')}`}>
                                 +
                               </button>
                             </span>
-                            <button type="button" className={styles.remove} onClick={() => setOn((st) => ({ ...st, [r.key]: false }))} aria-label={`Ukloni: ${name}`}>
+                            <button type="button" className={styles.remove} onClick={() => setOn((st) => ({ ...st, [r.key]: false }))} aria-label={`${t('Ukloni', 'Remove')}: ${name}`}>
                               ×
                             </button>
                           </div>
@@ -426,9 +453,9 @@ export default function WallCalculator({ embedded = false }: { embedded?: boolea
             </div>
             <div className={styles.cta}>
               <Cta onClick={addAll} solid>
-                {`Dodaj izabrano u upit (${chosen.length})`}
+                {t(`Dodaj izabrano u upit (${chosen.length})`, `Add selected to enquiry (${chosen.length})`)}
               </Cta>
-              <p className={styles.note}>Preporučena količina je okvirna, sa {Math.round(WASTE_DEFAULT * 100)} % viška za rezanje. Tačnu količinu i cijenu potvrđuje prodaja.</p>
+              <p className={styles.note}>{t(`Preporučena količina je okvirna, sa ${Math.round(WASTE_DEFAULT * 100)} % viška za rezanje. Tačnu količinu i cijenu potvrđuje prodaja.`, `The recommended quantity is indicative, with ${Math.round(WASTE_DEFAULT * 100)}% extra for cutting. Sales confirms the exact quantity and price.`)}</p>
             </div>
           </div>
         </div>

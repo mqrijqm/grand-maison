@@ -106,3 +106,27 @@ export function parseText(input: string): TextPart[] {
   if (last < input.length) parts.push({ text: input.slice(last), kind: 'plain' })
   return parts
 }
+
+// ---- English counterparts (additive; Serbian values above are unchanged) ----
+export const COMPANY_EN = {
+  country: 'Bosnia and Herzegovina',
+}
+export const HOURS_EN: { days: string; time: string }[] = [{ days: 'Yard and sales', time: '07:00–16:00' }]
+export const HOURS_SHORT_EN = 'Opening hours 07:00–16:00'
+export const TERMS_EN = {
+  currency: 'KM',
+  deliveryDays: 'by arrangement, after the order is confirmed',
+  deliveryZone: 'the Banja Luka city area',
+}
+export const LABELS_EN: Record<string, string> = {
+  sjediste: 'registered office',
+  direktor: 'director',
+  jib: 'JIB',
+  pdv: 'VAT number',
+  registracija: 'registration',
+  racun: 'bank account',
+  email: 'e-mail',
+  telefon: 'phone',
+  web: 'website',
+  rokOdustanka: 'withdrawal period',
+}

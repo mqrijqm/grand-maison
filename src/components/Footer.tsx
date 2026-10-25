@@ -5,43 +5,44 @@ import Link from 'next/link'
 import { useRef } from 'react'
 import FooterDots from '@/components/FooterDots'
 import { COMPANY } from '@/gc/gc'
-import { HOURS_SHORT } from '@/lib/company'
+import { HOURS_SHORT, HOURS_SHORT_EN } from '@/lib/company'
+import { useLang } from '@/lib/i18n'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { EASE, MQ, fitFontSize } from '@/lib/motion'
 import { revealChars } from '@/lib/reveal'
 
-type Item = { label: string; href: string; external?: boolean }
+type Item = { label: string; en: string; href: string; external?: boolean }
 
 // Tri kolone krupnih linkova sa puno praznog prostora (kao na referenci).
-const COLS: { title: string; items: Item[] }[] = [
+const COLS: { title: string; titleEn: string; items: Item[] }[] = [
   {
-    title: 'Navigacija',
+    title: 'Navigacija', titleEn: 'Navigation',
     items: [
-      { label: 'Asortiman', href: '/prodavnica' },
-      { label: 'Za firme', href: '/za-firme' },
-      { label: 'Dostava', href: '/dostava' },
-      { label: 'Zatraži ponudu', href: '/upit-za-izvodjace' },
-      { label: 'Kalkulator', href: '/kalkulator' },
-      { label: 'Vodiči', href: '/vodici' },
+      { label: 'Asortiman', en: 'Range', href: '/prodavnica' },
+      { label: 'Za firme', en: 'For business', href: '/za-firme' },
+      { label: 'Dostava', en: 'Delivery', href: '/dostava' },
+      { label: 'Zatraži ponudu', en: 'Request a quote', href: '/upit-za-izvodjace' },
+      { label: 'Kalkulator', en: 'Calculator', href: '/kalkulator' },
+      { label: 'Vodiči', en: 'Guides', href: '/vodici' },
     ],
   },
   {
-    title: 'Kupovina',
+    title: 'Kupovina', titleEn: 'Shopping',
     items: [
-      { label: 'Povrat robe', href: '/povrat-robe' },
-      { label: 'Načini plaćanja', href: '/nacini-placanja' },
-      { label: 'Uslovi kupovine', href: '/uslovi-kupovine' },
-      { label: 'Privatnost', href: '/politika-privatnosti' },
-      { label: 'Sve politike', href: '/sve-politike' },
+      { label: 'Povrat robe', en: 'Returns', href: '/povrat-robe' },
+      { label: 'Načini plaćanja', en: 'Payment methods', href: '/nacini-placanja' },
+      { label: 'Uslovi kupovine', en: 'Terms of purchase', href: '/uslovi-kupovine' },
+      { label: 'Privatnost', en: 'Privacy', href: '/politika-privatnosti' },
+      { label: 'Sve politike', en: 'All policies', href: '/sve-politike' },
     ],
   },
   {
-    title: 'Kontakt',
+    title: 'Kontakt', titleEn: 'Contact',
     items: [
-      { label: 'Pozovite', href: COMPANY.phoneLandlineHref, external: true },
-      { label: 'Pišite', href: `mailto:${COMPANY.emailInfo}`, external: true },
-      { label: 'Viber / WhatsApp', href: COMPANY.phoneMobileHref, external: true },
-      { label: 'Stovarište na mapi', href: MAPS_URL, external: true },
+      { label: 'Pozovite', en: 'Call us', href: COMPANY.phoneLandlineHref, external: true },
+      { label: 'Pišite', en: 'Write to us', href: `mailto:${COMPANY.emailInfo}`, external: true },
+      { label: 'Viber / WhatsApp', en: 'Viber / WhatsApp', href: COMPANY.phoneMobileHref, external: true },
+      { label: 'Stovarište na mapi', en: 'Yard on the map', href: MAPS_URL, external: true },
     ],
   },
 ]
@@ -51,6 +52,7 @@ const COLS: { title: string; items: Item[] }[] = [
 // (FooterDots), gore tri kolone linkova, pa veliki wordmark preko cijele širine, a dolje lijevo
 // podaci firme i desno polje sa potpisom studija Blink.
 export default function Footer() {
+  const { t } = useLang()
   const root = useRef<HTMLElement>(null)
 
   useGSAP(
@@ -100,18 +102,18 @@ export default function Footer() {
         {/* Tri kolone linkova */}
         <div className="grid gap-12 px-5 pt-[14vh] sm:grid-cols-2 md:grid-cols-12 md:px-8">
           {COLS.map((c, i) => (
-            <nav key={c.title} data-col aria-label={c.title} className={i === 2 ? 'md:col-span-4 md:col-start-9' : 'md:col-span-4'}>
-              <p className="mb-5 text-[10.5px] tracking-[0.14em] opacity-45">({c.title})</p>
+            <nav key={c.title} data-col aria-label={t(c.title, c.titleEn)} className={i === 2 ? 'md:col-span-4 md:col-start-9' : 'md:col-span-4'}>
+              <p className="mb-5 text-[10.5px] tracking-[0.14em] opacity-45">({t(c.title, c.titleEn)})</p>
               <ul className="flex flex-col">
                 {c.items.map((it) => (
                   <li key={it.label}>
                     {it.external ? (
                       <a href={it.href} {...(it.href.startsWith('http') ? { target: '_blank', rel: 'noopener noreferrer' } : {})} className="foot-link">
-                        {it.label}
+                        {t(it.label, it.en)}
                       </a>
                     ) : (
                       <Link href={it.href} className="foot-link">
-                        {it.label}
+                        {t(it.label, it.en)}
                       </Link>
                     )}
                   </li>
@@ -133,7 +135,7 @@ export default function Footer() {
           <p className="max-w-[78ch] text-[11px] leading-[1.8] opacity-55">
             {COMPANY.address} · {COMPANY.phoneLandline} · {COMPANY.phoneLandline2} · {COMPANY.phoneMobile}
             <br />
-            {COMPANY.emailInfo} · {HOURS_SHORT} · Od {COMPANY.founded}.
+            {COMPANY.emailInfo} · {t(HOURS_SHORT, HOURS_SHORT_EN)} · {t('Od', 'Since')} {COMPANY.founded}.
           </p>
 
         </div>

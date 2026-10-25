@@ -4,6 +4,7 @@
 
 import Link from 'next/link'
 import { useRef } from 'react'
+import { useLang } from '@/lib/i18n'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { useMediaMotion } from '@/lib/media'
 import { EASE, MQ } from '@/lib/motion'
@@ -15,28 +16,33 @@ import styles from './Heritage.module.css'
 // označeni su "po upitu", jer prezentacija ne dokazuje stalan lager. Bilješke desno su samo ono što je
 // potvrđeno izvorom; bez artikala, cijena i stanja (javnog cjenovnika nema).
 // Fotografije su prave (Pexels, izvori u public/stock/credits.json); Codex ih je samo izrezao i ujednačio ton.
-const GROUPS: { name: string; img: string; note?: string; href?: string }[] = [
-  { name: 'Fasadni sistemi', img: 'fasadni', href: '/upit-za-izvodjace?program=ostali-program' },
-  { name: 'Termoizolacioni sistemi', img: 'termoizolacioni', note: 'Kamena vuna', href: '/prodavnica?kategorija=izolacija#artikli' },
-  { name: 'Hidroizolacioni sistemi', img: 'hidroizolacioni', href: '/upit-za-izvodjace?program=ostali-program' },
-  { name: 'Krovni sistemi', img: 'krovni', note: 'Tondach crijep i krovni elementi', href: '/prodavnica?kategorija=krovni-sistemi#artikli' },
-  { name: 'Dimnjački sistemi', img: 'dimnjacki', note: 'Po upitu', href: '/upit-za-izvodjace?program=ostali-program' },
-  { name: 'Blokovi', img: 'blokovi', note: 'Porotherm blokovi od opeke', href: '/prodavnica?kategorija=zidni-blokovi#artikli' },
-  { name: 'Suha gradnja', img: 'suha-gradnja', note: 'Sistemi za pregradne zidove i plafone', href: '/prodavnica?kategorija=suha-gradnja#artikli' },
-  { name: 'Keramička ljepila', img: 'keramicka-ljepila', href: '/prodavnica?kategorija=malteri-ljepila&q=ljepilo#artikli' },
-  { name: 'Mašinski malteri', img: 'masinski-malteri', note: 'Baumalt malteri', href: '/prodavnica?kategorija=malteri-ljepila&q=malter#artikli' },
-  { name: 'Cementi', img: 'cementi', href: '/upit-za-izvodjace?program=ostali-program' },
-  { name: 'Željezo', img: 'zeljezo', href: '/upit-za-izvodjace?program=ostali-program' },
-  { name: 'Cijevni sistemi', img: 'cijevni', note: 'Po upitu', href: '/upit-za-izvodjace?program=ostali-program' },
-  { name: 'Opločnici', img: 'oplocnici', note: 'Po upitu', href: '/upit-za-izvodjace?program=ostali-program' },
-  { name: 'Sinterovani kamen', img: 'sinterovani-kamen', note: 'Po upitu', href: '/upit-za-izvodjace?program=ostali-program' },
-  { name: 'Drvni program', img: 'drvni-program', note: 'Registrovana djelatnost · po upitu', href: '/upit-za-izvodjace?program=drvni-program' },
-  { name: 'Sanitarna oprema', img: 'sanitarna-oprema', note: 'Registrovana djelatnost · po upitu', href: '/upit-za-izvodjace?program=sanitarna-oprema' },
+const GROUPS: { name: string; en: string; img: string; note?: string; noteEn?: string; href?: string }[] = [
+  { name: 'Fasadni sistemi', en: 'Facade systems', img: 'fasadni', href: '/upit-za-izvodjace?program=ostali-program' },
+  { name: 'Termoizolacioni sistemi', en: 'Thermal insulation systems', noteEn: 'Stone wool', img: 'termoizolacioni', note: 'Kamena vuna', href: '/prodavnica?kategorija=izolacija#artikli' },
+  { name: 'Hidroizolacioni sistemi', en: 'Waterproofing systems', img: 'hidroizolacioni', href: '/upit-za-izvodjace?program=ostali-program' },
+  { name: 'Krovni sistemi', en: 'Roofing systems', noteEn: 'Tondach roof tiles and roofing elements', img: 'krovni', note: 'Tondach crijep i krovni elementi', href: '/prodavnica?kategorija=krovni-sistemi#artikli' },
+  { name: 'Dimnjački sistemi', en: 'Chimney systems', noteEn: 'On request', img: 'dimnjacki', note: 'Po upitu', href: '/upit-za-izvodjace?program=ostali-program' },
+  { name: 'Blokovi', en: 'Blocks', noteEn: 'Porotherm clay blocks', img: 'blokovi', note: 'Porotherm blokovi od opeke', href: '/prodavnica?kategorija=zidni-blokovi#artikli' },
+  { name: 'Suha gradnja', en: 'Drywall', noteEn: 'Systems for partition walls and ceilings', img: 'suha-gradnja', note: 'Sistemi za pregradne zidove i plafone', href: '/prodavnica?kategorija=suha-gradnja#artikli' },
+  { name: 'Keramička ljepila', en: 'Tile adhesives', img: 'keramicka-ljepila', href: '/prodavnica?kategorija=malteri-ljepila&q=ljepilo#artikli' },
+  { name: 'Mašinski malteri', en: 'Machine-applied plasters', noteEn: 'Baumalt mortars', img: 'masinski-malteri', note: 'Baumalt malteri', href: '/prodavnica?kategorija=malteri-ljepila&q=malter#artikli' },
+  { name: 'Cementi', en: 'Cements', img: 'cementi', href: '/upit-za-izvodjace?program=ostali-program' },
+  { name: 'Željezo', en: 'Reinforcing steel', img: 'zeljezo', href: '/upit-za-izvodjace?program=ostali-program' },
+  { name: 'Cijevni sistemi', en: 'Pipe systems', noteEn: 'On request', img: 'cijevni', note: 'Po upitu', href: '/upit-za-izvodjace?program=ostali-program' },
+  { name: 'Opločnici', en: 'Pavers', noteEn: 'On request', img: 'oplocnici', note: 'Po upitu', href: '/upit-za-izvodjace?program=ostali-program' },
+  { name: 'Sinterovani kamen', en: 'Sintered stone', noteEn: 'On request', img: 'sinterovani-kamen', note: 'Po upitu', href: '/upit-za-izvodjace?program=ostali-program' },
+  { name: 'Drvni program', en: 'Timber range', noteEn: 'Registered activity · on request', img: 'drvni-program', note: 'Registrovana djelatnost · po upitu', href: '/upit-za-izvodjace?program=drvni-program' },
+  { name: 'Sanitarna oprema', en: 'Sanitaryware', noteEn: 'Registered activity · on request', img: 'sanitarna-oprema', note: 'Registrovana djelatnost · po upitu', href: '/upit-za-izvodjace?program=sanitarna-oprema' },
 ]
 const src = (img: string) => `/assortment/${img}.webp`
 
 // Prodajna mjesta prema javnim listama proizvođača: Baumalt (aktuelna lista partnera), Wienerberger
 // (lista prodajnih mjesta, april 2020 — istorijski dokaz, pa dostupnost modela potvrđuje prodaja).
+const MAKERS_EN = [
+  "Construction chemicals. Grand Company is on Baumalt's list of sales locations for Banja Luka.",
+  "Roof tiles and roofing systems from the Wienerberger group. Listed among Wienerberger's points of sale (2020).",
+  "Clay wall blocks from the Wienerberger group. Listed among Wienerberger's points of sale (2020).",
+]
 const MAKERS = [
   { name: 'Baumalt', text: 'Građevinska hemija. Grand Company je na Baumaltovoj listi prodajnih lokacija za Banju Luku.', href: '/prodavnica?brend=baumalt#artikli' },
   { name: 'Tondach', text: 'Crijep i krovni sistemi grupe Wienerberger. Na Wienerbergerovoj listi prodajnih mjesta (2020).', href: '/prodavnica?brend=tondach#artikli' },
@@ -44,6 +50,7 @@ const MAKERS = [
 ]
 
 export default function AssortmentIndex() {
+  const { t } = useLang()
   const root = useRef<HTMLElement>(null)
   useMediaMotion(root)
 
@@ -116,10 +123,10 @@ export default function AssortmentIndex() {
   )
 
   return (
-    <section ref={root} id="asortiman-grupe" aria-label="Asortiman" className={styles.index}>
+    <section ref={root} id="asortiman-grupe" aria-label={t('Asortiman', 'Range')} className={styles.index}>
       <div className={`gutter ${styles.indexHead}`}>
         <p data-up className="label opacity-60">
-          Asortiman
+          {t('Asortiman', 'Range')}
         </p>
       </div>
 
@@ -128,10 +135,10 @@ export default function AssortmentIndex() {
           {GROUPS.map((g, i) => (
             <li key={g.name} data-row className={styles.row}>
               <span className={styles.num}>{String(i + 1).padStart(2, '0')}</span>
-              <span className={`display ${styles.name}`}>{g.name}</span>
-              <span className={styles.note}>{g.note ?? ''}</span>
+              <span className={`display ${styles.name}`}>{t(g.name, g.en)}</span>
+              <span className={styles.note}>{t(g.note ?? '', g.noteEn ?? '')}</span>
               <img className={styles.thumb} src={src(g.img)} alt="" width={800} height={800} loading="lazy" decoding="async" />
-              {g.href && <Link href={g.href} className={styles.rowLink} aria-label={`${g.name}: ${g.href.startsWith('/prodavnica') ? 'artikli u katalogu' : 'pošaljite upit'}`} />}
+              {g.href && <Link href={g.href} className={styles.rowLink} aria-label={`${t(g.name, g.en)}: ${g.href.startsWith('/prodavnica') ? t('artikli u katalogu', 'products in the catalogue') : t('pošaljite upit', 'send an enquiry')}`} />}
             </li>
           ))}
         </ol>
@@ -145,19 +152,22 @@ export default function AssortmentIndex() {
 
       <div className={`gutter ${styles.makers}`}>
         <div data-up>
-          <p className="label opacity-60">Proizvođači</p>
+          <p className="label opacity-60">{t('Proizvođači', 'Manufacturers')}</p>
           <p className={`mt-4 max-w-[34ch] ${styles.indexLead}`}>
-            Grand Company je na listama prodajnih mjesta ovih proizvođača. Dostupnost pojedinih modela potvrđuje prodaja.
+            {t(
+              'Grand Company je na listama prodajnih mjesta ovih proizvođača. Dostupnost pojedinih modela potvrđuje prodaja.',
+              "Grand Company is listed among these manufacturers' points of sale. Our sales team confirms the availability of individual models.",
+            )}
           </p>
         </div>
         <div>
           <div className={styles.makerList}>
-            {MAKERS.map((m) => (
-              <Link key={m.name} href={m.href} data-up className={styles.maker} aria-label={`${m.name}: artikli u asortimanu`}>
+            {MAKERS.map((m, mi) => (
+              <Link key={m.name} href={m.href} data-up className={styles.maker} aria-label={`${m.name}: ${t('artikli u asortimanu', 'products in the range')}`}>
                 <h3 className={`display ${styles.makerName}`}>{m.name}</h3>
-                <p className={styles.makerText}>{m.text}</p>
+                <p className={styles.makerText}>{t(m.text, MAKERS_EN[mi])}</p>
                 <span className={styles.makerGo}>
-                  Asortiman
+                  {t('Asortiman', 'Range')}
                   <svg viewBox="0 0 24 12" aria-hidden fill="none" stroke="currentColor" strokeWidth={1.6}>
                     <path d="M0 6h22M17 1l5 5-5 5" />
                   </svg>

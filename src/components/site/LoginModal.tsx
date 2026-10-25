@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useId, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { useLang } from '@/lib/i18n'
 import s from './LoginModal.module.css'
 
 // Prijava u B2B portal (navbar). Isti izgled kao scena "Prijavite se na nalog firme" na /za-firme,
@@ -23,6 +24,7 @@ const readReg = (): Registration | null => {
 }
 
 export default function LoginModal({ open, onClose, initialMode = 'login' }: { open: boolean; onClose: () => void; initialMode?: 'login' | 'register' }) {
+  const { t, lang } = useLang()
   const router = useRouter()
   const id = useId()
   const first = useRef<HTMLInputElement>(null)
@@ -40,7 +42,7 @@ export default function LoginModal({ open, onClose, initialMode = 'login' }: { o
 
   useEffect(() => {
     if (!open) return
-    const t = setTimeout(() => {
+    const tm = setTimeout(() => {
       setPending(readReg())
       first.current?.focus()
     }, 60)
@@ -48,7 +50,7 @@ export default function LoginModal({ open, onClose, initialMode = 'login' }: { o
     window.addEventListener('keydown', onKey)
     document.documentElement.style.overflow = 'hidden'
     return () => {
-      clearTimeout(t)
+      clearTimeout(tm)
       window.removeEventListener('keydown', onKey)
       document.documentElement.style.overflow = ''
     }
@@ -58,9 +60,9 @@ export default function LoginModal({ open, onClose, initialMode = 'login' }: { o
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!firm.trim()) return setError('Upišite naziv firme ili JIB.')
-    if (!/^\S+@\S+\.\S+$/.test(email)) return setError('Upišite ispravnu e-mail adresu.')
-    if (pass.length < 6) return setError('Lozinka ima najmanje 6 znakova.')
+    if (!firm.trim()) return setError(t('Upišite naziv firme ili JIB.', 'Enter the company name or JIB.'))
+    if (!/^\S+@\S+\.\S+$/.test(email)) return setError(t('Upišite ispravnu e-mail adresu.', 'Enter a valid e-mail address.'))
+    if (pass.length < 6) return setError(t('Lozinka ima najmanje 6 znakova.', 'The password must be at least 6 characters.'))
     setError('')
     setDone(true)
   }
@@ -73,12 +75,12 @@ export default function LoginModal({ open, onClose, initialMode = 'login' }: { o
     e.preventDefault()
     const jib = reg.jib.replace(/\s/g, '')
     const pdv = reg.pdv.replace(/\s/g, '')
-    if (reg.name.trim().length < 2) return setRegError('Upišite naziv firme.')
-    if (!/^\d{13}$/.test(jib)) return setRegError('JIB ima 13 cifara.')
-    if (pdv && !/^\d{12}$/.test(pdv)) return setRegError('PDV broj ima 12 cifara (ili ostavite prazno ako firma nije u sistemu PDV-a).')
-    if (reg.person.trim().length < 2) return setRegError('Upišite ime i prezime kontakt osobe.')
-    if (!/^\S+@\S+\.\S+$/.test(reg.email)) return setRegError('Upišite ispravnu e-mail adresu.')
-    if (reg.phone.replace(/\D/g, '').length < 6) return setRegError('Upišite broj telefona.')
+    if (reg.name.trim().length < 2) return setRegError(t('Upišite naziv firme.', 'Enter the company name.'))
+    if (!/^\d{13}$/.test(jib)) return setRegError(t('JIB ima 13 cifara.', 'The JIB has 13 digits.'))
+    if (pdv && !/^\d{12}$/.test(pdv)) return setRegError(t('PDV broj ima 12 cifara (ili ostavite prazno ako firma nije u sistemu PDV-a).', 'The VAT number has 12 digits (or leave it empty if the company is not VAT-registered).'))
+    if (reg.person.trim().length < 2) return setRegError(t('Upišite ime i prezime kontakt osobe.', "Enter the contact person's first and last name."))
+    if (!/^\S+@\S+\.\S+$/.test(reg.email)) return setRegError(t('Upišite ispravnu e-mail adresu.', 'Enter a valid e-mail address.'))
+    if (reg.phone.replace(/\D/g, '').length < 6) return setRegError(t('Upišite broj telefona.', 'Enter a phone number.'))
     setRegError('')
     const next: Registration = { ...reg, jib, pdv, sent: new Date().toISOString() }
     try {
@@ -97,7 +99,7 @@ export default function LoginModal({ open, onClose, initialMode = 'login' }: { o
   return createPortal(
     <div className={s.backdrop} onMouseDown={(e) => e.target === e.currentTarget && onClose()}>
       <div className={s.dialog} role="dialog" aria-modal="true" aria-labelledby={`${id}-t`}>
-        <button type="button" className={s.close} onClick={onClose} aria-label="Zatvori prijavu">
+        <button type="button" className={s.close} onClick={onClose} aria-label={t('Zatvori prijavu', 'Close login')}>
           ×
         </button>
         <p className={s.brand}>
@@ -106,25 +108,25 @@ export default function LoginModal({ open, onClose, initialMode = 'login' }: { o
         {mode === 'register' && pending ? (
           <div className={s.form} aria-live="polite">
             <h2 id={`${id}-t`} className={s.title}>
-              {pending.status === 'approved' ? 'Nalog je odobren' : pending.status === 'rejected' ? 'Zahtjev nije odobren' : 'Zahtjev čeka odobrenje'}
+              {pending.status === 'approved' ? t('Nalog je odobren', 'Account approved') : pending.status === 'rejected' ? t('Zahtjev nije odobren', 'Request not approved') : t('Zahtjev čeka odobrenje', 'Request awaiting approval')}
             </h2>
             <ol className={s.steps}>
               <li data-state="done">
-                <b>Zahtjev poslat</b>
-                <span>{new Date(pending.sent).toLocaleDateString('sr-Latn-BA')}</span>
+                <b>{t('Zahtjev poslat', 'Request sent')}</b>
+                <span>{new Date(pending.sent).toLocaleDateString(lang === 'en' ? 'en-GB' : 'sr-Latn-BA')}</span>
               </li>
               <li data-state={pending.status ? 'done' : 'now'}>
-                <b>{pending.status === 'rejected' ? 'Odbijeno' : pending.status === 'approved' ? 'Odobreno' : 'Čeka odobrenje'}</b>
-                <span>{pending.status === 'rejected' ? 'Prodaja vam se javlja telefonom' : 'Prodaja provjerava podatke firme'}</span>
+                <b>{pending.status === 'rejected' ? t('Odbijeno', 'Declined') : pending.status === 'approved' ? t('Odobreno', 'Approved') : t('Čeka odobrenje', 'Awaiting approval')}</b>
+                <span>{pending.status === 'rejected' ? t('Prodaja vam se javlja telefonom', 'Our sales team will call you') : t('Prodaja provjerava podatke firme', 'Our sales team is verifying the company details')}</span>
               </li>
               <li data-state={pending.status === 'approved' ? 'now' : 'next'}>
-                <b>Nalog aktivan</b>
-                <span>Vidite cijene i naručujete</span>
+                <b>{t('Nalog aktivan', 'Account active')}</b>
+                <span>{t('Vidite cijene i naručujete', 'See prices and place orders')}</span>
               </li>
             </ol>
             <dl className={s.summary}>
               <div>
-                <dt>Firma</dt>
+                <dt>{t('Firma', 'Company')}</dt>
                 <dd>{pending.name}</dd>
               </div>
               <div>
@@ -132,57 +134,60 @@ export default function LoginModal({ open, onClose, initialMode = 'login' }: { o
                 <dd>{pending.jib}</dd>
               </div>
               <div>
-                <dt>PDV broj</dt>
-                <dd>{pending.pdv || 'nije u sistemu PDV-a'}</dd>
+                <dt>{t('PDV broj', 'VAT number')}</dt>
+                <dd>{pending.pdv || t('nije u sistemu PDV-a', 'not VAT-registered')}</dd>
               </div>
               <div>
-                <dt>Kontakt</dt>
+                <dt>{t('Kontakt', 'Contact')}</dt>
                 <dd>
                   {pending.person} · {pending.email} · {pending.phone}
                 </dd>
               </div>
             </dl>
             <p className={s.note}>
-              Prodaja ručno odobrava svaku firmu prije nego što vidi cijene i uslove. Kad je nalog aktivan, javljamo vam se e-poštom. Demo: zahtjev je sačuvan samo u ovom browseru i nije poslat.
+              {t(
+                'Prodaja ručno odobrava svaku firmu prije nego što vidi cijene i uslove. Kad je nalog aktivan, javljamo vam se e-poštom. Demo: zahtjev je sačuvan samo u ovom browseru i nije poslat.',
+                'Our sales team approves every company manually before it can see prices and terms. Once the account is active, we will contact you by e-mail. Demo: the request is saved only in this browser and has not been sent.',
+              )}
             </p>
             <button type="button" className={s.submit} onClick={() => setMode('login')}>
-              Na prijavu
+              {t('Na prijavu', 'Go to login')}
             </button>
             <button type="button" className={s.link} onClick={cancelRegistration}>
-              Povuci zahtjev i počni ponovo
+              {t('Povuci zahtjev i počni ponovo', 'Withdraw the request and start over')}
             </button>
           </div>
         ) : mode === 'register' ? (
           <form className={s.form} onSubmit={register} noValidate>
             <h2 id={`${id}-t`} className={s.title}>
-              Registracija firme
+              {t('Registracija firme', 'Company registration')}
             </h2>
-            <p className={s.lead}>Pošaljite podatke firme. Prodaja odobrava nalog prije nego što vidite cijene.</p>
+            <p className={s.lead}>{t('Pošaljite podatke firme. Prodaja odobrava nalog prije nego što vidite cijene.', 'Send your company details. Our sales team approves the account before you can see prices.')}</p>
             <label className={s.field}>
-              <span>Naziv firme</span>
-              <input {...field('name')} autoComplete="organization" placeholder="npr. DEMO GRADNJA d.o.o." />
+              <span>{t('Naziv firme', 'Company name')}</span>
+              <input {...field('name')} autoComplete="organization" placeholder={t('npr. DEMO GRADNJA d.o.o.', 'e.g. DEMO GRADNJA d.o.o.')} />
             </label>
             <div className={s.pair}>
               <label className={s.field}>
                 <span>JIB</span>
-                <input {...field('jib')} inputMode="numeric" placeholder="13 cifara" maxLength={15} />
+                <input {...field('jib')} inputMode="numeric" placeholder={t('13 cifara', '13 digits')} maxLength={15} />
               </label>
               <label className={s.field}>
-                <span>PDV broj</span>
-                <input {...field('pdv')} inputMode="numeric" placeholder="12 cifara" maxLength={14} />
+                <span>{t('PDV broj', 'VAT number')}</span>
+                <input {...field('pdv')} inputMode="numeric" placeholder={t('12 cifara', '12 digits')} maxLength={14} />
               </label>
             </div>
             <label className={s.field}>
-              <span>Kontakt osoba</span>
-              <input {...field('person')} autoComplete="name" placeholder="Ime i prezime" />
+              <span>{t('Kontakt osoba', 'Contact person')}</span>
+              <input {...field('person')} autoComplete="name" placeholder={t('Ime i prezime', 'First and last name')} />
             </label>
             <div className={s.pair}>
               <label className={s.field}>
-                <span>E-mail</span>
+                <span>{t('E-mail', 'E-mail')}</span>
                 <input type="email" {...field('email')} autoComplete="email" placeholder="nabavka@firma.ba" />
               </label>
               <label className={s.field}>
-                <span>Telefon</span>
+                <span>{t('Telefon', 'Phone')}</span>
                 <input type="tel" {...field('phone')} autoComplete="tel" placeholder="065 …" />
               </label>
             </div>
@@ -192,44 +197,44 @@ export default function LoginModal({ open, onClose, initialMode = 'login' }: { o
               </p>
             )}
             <button type="submit" className={s.submit}>
-              Pošalji zahtjev
+              {t('Pošalji zahtjev', 'Send request')}
             </button>
             <p className={s.foot}>
-              Firma već ima nalog?{' '}
+              {t('Firma već ima nalog?', 'Already have a company account?')}{' '}
               <button type="button" className={s.link} onClick={() => setMode('login')}>
-                Prijava
+                {t('Prijava', 'Log in')}
               </button>
             </p>
           </form>
         ) : !done ? (
           <form className={s.form} onSubmit={submit} noValidate>
             <h2 id={`${id}-t`} className={s.title}>
-              Prijava na nalog firme
+              {t('Prijava na nalog firme', 'Log in to your company account')}
             </h2>
             <label className={s.field}>
-              <span>Firma ili JIB</span>
-              <input ref={first} value={firm} onChange={(e) => setFirm(e.target.value)} autoComplete="organization" placeholder="npr. DEMO GRADNJA d.o.o." />
+              <span>{t('Firma ili JIB', 'Company or JIB')}</span>
+              <input ref={first} value={firm} onChange={(e) => setFirm(e.target.value)} autoComplete="organization" placeholder={t('npr. DEMO GRADNJA d.o.o.', 'e.g. DEMO GRADNJA d.o.o.')} />
             </label>
             <label className={s.field}>
-              <span>E-mail</span>
+              <span>{t('E-mail', 'E-mail')}</span>
               <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="username" placeholder="nabavka@firma.ba" />
             </label>
             <label className={s.field}>
-              <span>Lozinka</span>
+              <span>{t('Lozinka', 'Password')}</span>
               <span className={s.pass}>
                 <input type={show ? 'text' : 'password'} value={pass} onChange={(e) => setPass(e.target.value)} autoComplete="current-password" />
-                <button type="button" onClick={() => setShow((v) => !v)} aria-label={show ? 'Sakrij lozinku' : 'Prikaži lozinku'}>
-                  {show ? 'Sakrij' : 'Prikaži'}
+                <button type="button" onClick={() => setShow((v) => !v)} aria-label={show ? t('Sakrij lozinku', 'Hide password') : t('Prikaži lozinku', 'Show password')}>
+                  {show ? t('Sakrij', 'Hide') : t('Prikaži', 'Show')}
                 </button>
               </span>
             </label>
             <div className={s.row}>
               <label className={s.check}>
                 <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
-                Zapamti me na ovom uređaju
+                {t('Zapamti me na ovom uređaju', 'Remember me on this device')}
               </label>
               <Link href="/kontakt" onClick={onClose} className={s.link}>
-                Zaboravljena lozinka?
+                {t('Zaboravljena lozinka?', 'Forgot your password?')}
               </Link>
             </div>
             {error && (
@@ -238,22 +243,25 @@ export default function LoginModal({ open, onClose, initialMode = 'login' }: { o
               </p>
             )}
             <button type="submit" className={s.submit}>
-              Prijava
+              {t('Prijava', 'Log in')}
             </button>
             <p className={s.foot}>
-              {pending ? 'Vaš zahtjev za nalog čeka odobrenje. ' : 'Nemate nalog? '}
+              {pending ? t('Vaš zahtjev za nalog čeka odobrenje. ', 'Your account request is awaiting approval. ') : t('Nemate nalog? ', 'No account yet? ')}
               <button type="button" className={s.link} onClick={() => setMode('register')}>
-                {pending ? 'Pogledajte status' : 'Registrujte firmu'}
+                {pending ? t('Pogledajte status', 'View status') : t('Registrujte firmu', 'Register your company')}
               </button>
             </p>
           </form>
         ) : (
           <div className={s.form} aria-live="polite">
             <h2 id={`${id}-t`} className={s.title}>
-              Portal je u pripremi
+              {t('Portal je u pripremi', 'The portal is coming soon')}
             </h2>
             <p className={s.note}>
-              B2B portal je trenutno interaktivni prikaz, prava prijava još nije aktivna. Vaši podaci nisu poslati. Pogledajte kako portal radi na primjeru demo firme.
+              {t(
+                'B2B portal je trenutno interaktivni prikaz, prava prijava još nije aktivna. Vaši podaci nisu poslati. Pogledajte kako portal radi na primjeru demo firme.',
+                'The B2B portal is currently an interactive preview; real login is not active yet. Your details have not been sent. See how the portal works using a demo company.',
+              )}
             </p>
             <button
               type="button"
@@ -264,7 +272,7 @@ export default function LoginModal({ open, onClose, initialMode = 'login' }: { o
                 router.push('/za-firme#portal')
               }}
             >
-              Otvori prikaz portala
+              {t('Otvori prikaz portala', 'Open the portal preview')}
             </button>
             <button
               type="button"
@@ -274,7 +282,7 @@ export default function LoginModal({ open, onClose, initialMode = 'login' }: { o
                 setMode('register')
               }}
             >
-              Zatražite poslovni nalog
+              {t('Zatražite poslovni nalog', 'Request a business account')}
             </button>
           </div>
         )}

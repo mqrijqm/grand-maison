@@ -3,7 +3,10 @@
 import { useEffect, useState } from 'react'
 import Icon from '@/components/portal/Icon'
 import { PRODUCT_MAP } from '@/lib/shop'
-import { FIRM, STEPS, amount, km, name, site, unit, type Line, type Order } from '@/lib/b2b-demo'
+import { FIRM, STEPS, amount, km as kmSr, site, type Line, type Order } from '@/lib/b2b-demo'
+import type { Lang } from '@/lib/i18n'
+import { dateLocale, numLocale, pName, tr, uName } from '@/lib/portal-i18n'
+import { useFmt } from './useFmt'
 import s from '@/components/business/portal/Showcase.module.css'
 import x from './extra.module.css'
 
@@ -15,7 +18,8 @@ import x from './extra.module.css'
 /** "Danas" u demo podacima portala. */
 const TODAY = new Date(2026, 9, 10)
 const DAY = 86400000
-const fmt = (d: Date) => d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })
+const fmt = (d: Date, lang: Lang = 'sr') => d.toLocaleDateString(dateLocale(lang), { day: '2-digit', month: '2-digit', year: 'numeric' })
+const dmy = (str: string, lang: Lang) => (lang === 'en' ? str.replace(/^(\d+)\.(\d+)\.(\d+)$/, (_, d, m, y) => `${d.padStart(2, '0')}/${m.padStart(2, '0')}/${y}`) : str)
 const PAY_DAYS = 30
 
 /* ——— Zalihe po lokaciji (demo) ——— */
@@ -30,11 +34,12 @@ export function stockOf(sku: string): StockLoc | null {
   const day = 12 + (h % 9)
   return { yard, hall, incoming: h % 3 === 0 ? null : { qty: Math.max(1, Math.round(p.stock * (0.3 + (h % 5) / 10))), date: `${day}.10.` } }
 }
-export const stockLine = (sku: string) => {
+export const stockLine = (sku: string, lang: Lang = 'sr') => {
   const st = stockOf(sku)
   if (!st) return ''
-  const u = PRODUCT_MAP[sku]?.unit ?? ''
-  const n = (v: number) => v.toLocaleString('de-DE', { maximumFractionDigits: 1 })
+  const u = uName(PRODUCT_MAP[sku]?.unit ?? '', lang)
+  const n = (v: number) => v.toLocaleString(numLocale(lang), { maximumFractionDigits: 1 })
+  if (lang === 'en') return `Yard ${n(st.yard)} · Hall ${n(st.hall)} ${u}${st.incoming ? ` · arriving ${n(st.incoming.qty)} ${u} ${st.incoming.date.replace(/^(\d+)\.10\.$/, '$1 Oct')}` : ''}`
   return `Stovarište ${n(st.yard)} · Hala ${n(st.hall)} ${u}${st.incoming ? ` · stiže ${n(st.incoming.qty)} ${u} ${st.incoming.date}` : ''}`
 }
 
@@ -56,7 +61,7 @@ const r2 = (n: number) => Math.round(n * 100) / 100
 export const firmPrice = (sku: string) => r2((PRODUCT_MAP[sku]?.price ?? 0) * (1 - FIRM_TIER.discount))
 export const otherPrice = (sku: string) => r2((PRODUCT_MAP[sku]?.price ?? 0) * (1 - OTHER_TIER.discount))
 export const firmAmount = (lines: Line[]) => Math.round(lines.reduce((t, l) => t + firmPrice(l.sku) * l.qty, 0))
-export const kmd = (n: number) => `${n.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} KM`
+export const kmd = (n: number, lang: Lang = 'sr') => `${n.toLocaleString(numLocale(lang), { minimumFractionDigits: 2, maximumFractionDigits: 2 })} KM`
 
 /* ——— Kreditni limit i dug ——— */
 export const LIMIT = 50000
@@ -67,18 +72,19 @@ export function creditState(orders: Order[]) {
   return { invoices, open, used, free: Math.max(0, LIMIT - used) }
 }
 export function CreditCard({ orders, onDocs }: { orders: Order[]; onDocs: () => void }) {
+  const { t, km0: km } = useFmt()
   const c = creditState(orders)
   const pctUsed = Math.min(100, (c.used / LIMIT) * 100)
   return (
     <section className={`${s.card} ${x.credit}`}>
       <div className={x.notesHead}>
-        <h4>Kreditni limit</h4>
+        <h4>{t('Kreditni limit', 'Credit limit')}</h4>
         <span className={s.chip}>Demo</span>
       </div>
       <p className={x.creditFree}>
-        Imate još <b>{km(c.free)}</b> limita
+        {t('Imate još', 'You still have')} <b>{km(c.free)}</b> {t('limita', 'of credit limit')}
       </p>
-      <div className={x.bar} role="img" aria-label={`Iskorišteno ${km(c.used)} od ${km(LIMIT)}`}>
+      <div className={x.bar} role="img" aria-label={t(`Iskorišteno ${km(c.used)} od ${km(LIMIT)}`, `${km(c.used)} of ${km(LIMIT)} used`)}>
         <i style={{ width: `${(c.invoices / LIMIT) * 100}%` }} />
         <i data-k="open" style={{ width: `${Math.max(0, pctUsed - (c.invoices / LIMIT) * 100)}%` }} />
       </div>
@@ -86,24 +92,24 @@ export function CreditCard({ orders, onDocs }: { orders: Order[]; onDocs: () => 
         <div>
           <dt>
             <i />
-            Neplaćene fakture
+            {t('Neplaćene fakture', 'Unpaid invoices')}
           </dt>
           <dd>{km(c.invoices)}</dd>
         </div>
         <div>
           <dt>
             <i data-k="open" />
-            Narudžbe u toku
+            {t('Narudžbe u toku', 'Orders in progress')}
           </dt>
           <dd>{km(c.open)}</dd>
         </div>
         <div>
-          <dt>Odobreni limit</dt>
+          <dt>{t('Odobreni limit', 'Approved limit')}</dt>
           <dd>{km(LIMIT)}</dd>
         </div>
       </dl>
       <button type="button" className={s.ghost} onClick={onDocs}>
-        Fakture i rokovi <Icon name="arrow" />
+        {t('Fakture i rokovi', 'Invoices and due dates')} <Icon name="arrow" />
       </button>
     </section>
   )
@@ -111,26 +117,27 @@ export function CreditCard({ orders, onDocs }: { orders: Order[]; onDocs: () => 
 
 /* ——— Ponovi prošlu narudžbu ——— */
 export function ReorderCard({ orders, onReorder }: { orders: Order[]; onReorder: (o: Order) => void }) {
+  const { t, L } = useFmt()
   const past = orders.filter((o) => o.step >= 4).slice(0, 2)
   return (
     <section className={s.card}>
-      <h4>Naručujete isto kao prošli put?</h4>
+      <h4>{t('Naručujete isto kao prošli put?', 'Ordering the same as last time?')}</h4>
       <ul className={s.rows}>
         {past.map((o) => (
           <li key={o.no}>
             <span>
               <b>{o.no}</b>
               <i>
-                {site(o.site).name} · {o.lines.length} stavki · {o.slot}
+                {L(site(o.site).name)} · {t(`${o.lines.length} stavki`, `${o.lines.length} ${o.lines.length === 1 ? 'item' : 'items'}`)} · {L(o.slot)}
               </i>
             </span>
             <button type="button" className={s.primary} onClick={() => onReorder(o)}>
-              <Icon name="repeat" /> Ponovi
+              <Icon name="repeat" /> {t('Ponovi', 'Repeat')}
             </button>
           </li>
         ))}
       </ul>
-      <p className={s.fine}>Stavke idu u upit: promijenite količinu i pošaljite. 30 sekundi umjesto poziva.</p>
+      <p className={s.fine}>{t('Stavke idu u upit: promijenite količinu i pošaljite. 30 sekundi umjesto poziva.', 'Items go into an inquiry: change the quantity and send it. 30 seconds instead of a phone call.')}</p>
     </section>
   )
 }
@@ -152,16 +159,17 @@ export const RIGHTS: { key: string; label: string; roles: Role[] }[] = [
   { key: 'tim', label: 'Dodaje korisnike i prava', roles: ['vlasnik'] },
 ]
 export const can = (role: Role, key: string) => !!RIGHTS.find((r) => r.key === key)?.roles.includes(role)
-export const roleLabel = (role: Role) => ROLES.find((r) => r.id === role)?.label ?? role
+export const roleLabel = (role: Role, lang: Lang = 'sr') => tr(ROLES.find((r) => r.id === role)?.label ?? role, lang)
 
 export function RoleSwitch({ role, onChange }: { role: Role; onChange: (r: Role) => void }) {
+  const { t, L } = useFmt()
   return (
     <label className={x.roleSwitch}>
-      <span>Prijavljeni kao</span>
-      <select value={role} onChange={(e) => onChange(e.target.value as Role)} aria-label="Uloga korisnika (demo)">
+      <span>{t('Prijavljeni kao', 'Signed in as')}</span>
+      <select value={role} onChange={(e) => onChange(e.target.value as Role)} aria-label={t('Uloga korisnika (demo)', 'User role (demo)')}>
         {ROLES.map((r) => (
           <option key={r.id} value={r.id}>
-            {r.label}
+            {L(r.label)}
           </option>
         ))}
       </select>
@@ -170,24 +178,25 @@ export function RoleSwitch({ role, onChange }: { role: Role; onChange: (r: Role)
 }
 
 export function TeamView({ role, onRole }: { role: Role; onRole: (r: Role) => void }) {
+  const { t, L } = useFmt()
   return (
     <section className={`${s.card} ${x.team}`}>
       <div className={x.notesHead}>
-        <h4>Ko u firmi šta smije</h4>
+        <h4>{t('Ko u firmi šta smije', 'Who can do what in the company')}</h4>
         <span className={s.chip}>Demo</span>
       </div>
-      <div className={x.matrix} role="table" aria-label="Prava po ulogama">
+      <div className={x.matrix} role="table" aria-label={t('Prava po ulogama', 'Permissions by role')}>
         <div role="row" className={x.mRow}>
           <span role="columnheader" />
           {ROLES.map((r) => (
-            <button key={r.id} type="button" aria-pressed={role === r.id} onClick={() => onRole(r.id)} title={`Prebaci na: ${r.label}`}>
-              {r.label}
+            <button key={r.id} type="button" aria-pressed={role === r.id} onClick={() => onRole(r.id)} title={`${t('Prebaci na', 'Switch to')}: ${L(r.label)}`}>
+              {L(r.label)}
             </button>
           ))}
         </div>
         {RIGHTS.map((right) => (
           <div key={right.key} role="row" className={x.mRow}>
-            <span role="rowheader">{right.label}</span>
+            <span role="rowheader">{L(right.label)}</span>
             {ROLES.map((r) => (
               <span key={r.id} role="cell" data-on={right.roles.includes(r.id) || undefined} data-me={role === r.id || undefined}>
                 {right.roles.includes(r.id) ? <Icon name="check" /> : '—'}
@@ -196,28 +205,30 @@ export function TeamView({ role, onRole }: { role: Role; onRole: (r: Role) => vo
           </div>
         ))}
       </div>
-      <p className={s.fine}>Kliknite ulogu iznad kolone ili je promijenite lijevo u meniju: portal odmah pokazuje samo ono što ta uloga smije (npr. majstor šalje upit, ali ne vidi cijene i ne potvrđuje ponudu).</p>
+      <p className={s.fine}>{t('Kliknite ulogu iznad kolone ili je promijenite lijevo u meniju: portal odmah pokazuje samo ono što ta uloga smije (npr. majstor šalje upit, ali ne vidi cijene i ne potvrđuje ponudu).', 'Click a role above a column or change it in the menu on the left: the portal immediately shows only what that role is allowed to do (e.g. a tradesperson sends an inquiry but cannot see prices or confirm a quote).')}</p>
     </section>
   )
 }
 
 /* ——— Izvoz u Excel (CSV) ——— */
-export function exportCsv(orders: Order[]) {
+export function exportCsv(orders: Order[], lang: Lang = 'sr') {
+  const L = (v: string) => tr(v, lang)
   const rows = [
-    ['Vrsta', 'Broj', 'Gradilište / referenca', 'Datum', 'Iznos (KM)', 'Status'],
-    ...INVOICES.map((i) => ['Faktura', i.no, i.ref, fmt(new Date(TODAY.getTime() - i.days * DAY)), String(i.value), 'Otvorena']),
-    ...orders.map((o) => ['Narudžba', o.no, site(o.site).name, fmt(new Date(TODAY.getTime() - o.days * DAY)), String(firmAmount(o.lines)), STEPS[o.step]]),
-    ...orders.flatMap((o) => o.lines.map((l) => ['Stavka', o.no, `${name(l.sku)} (${l.sku})`, '', String(Math.round(firmPrice(l.sku) * l.qty)), `${l.qty} ${unit(l.sku)}`])),
+    lang === 'en' ? ['Type', 'Number', 'Site / reference', 'Date', 'Amount (KM)', 'Status'] : ['Vrsta', 'Broj', 'Gradilište / referenca', 'Datum', 'Iznos (KM)', 'Status'],
+    ...INVOICES.map((i) => [L('Faktura'), i.no, L(i.ref), fmt(new Date(TODAY.getTime() - i.days * DAY), lang), String(i.value), L('Otvorena')]),
+    ...orders.map((o) => [L('Narudžba'), o.no, L(site(o.site).name), fmt(new Date(TODAY.getTime() - o.days * DAY), lang), String(firmAmount(o.lines)), L(STEPS[o.step])]),
+    ...orders.flatMap((o) => o.lines.map((l) => [lang === 'en' ? 'Line item' : 'Stavka', o.no, `${pName(l.sku, PRODUCT_MAP[l.sku]?.name ?? l.sku, lang)} (${l.sku})`, '', String(Math.round(firmPrice(l.sku) * l.qty)), `${l.qty} ${uName(PRODUCT_MAP[l.sku]?.unit ?? '', lang)}`])),
   ]
   const csv = '\ufeff' + rows.map((r) => r.map((c) => `"${c.replace(/"/g, '""')}"`).join(';')).join('\r\n')
   const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }))
   const a = document.createElement('a')
   a.href = url
-  a.download = 'grand-company-nabavka-2026-demo.csv'
+  a.download = lang === 'en' ? 'grand-company-procurement-2026-demo.csv' : 'grand-company-nabavka-2026-demo.csv'
   a.click()
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 export function SaldoCard({ orders = [] }: { orders?: Order[] }) {
+  const { t, lang, L, km0: km } = useFmt()
   const items = INVOICES.map((i) => {
     const issued = new Date(TODAY.getTime() - i.days * DAY)
     const due = new Date(issued.getTime() + PAY_DAYS * DAY)
@@ -229,26 +240,26 @@ export function SaldoCard({ orders = [] }: { orders?: Order[] }) {
   return (
     <section className={`${s.card} ${x.saldo}`}>
       <div className={x.notesHead}>
-        <h4>Saldo i otvorene stavke</h4>
-        <button type="button" className={s.ghost} onClick={() => exportCsv(orders)}>
-          <Icon name="down" /> Izvezi u Excel
+        <h4>{t('Saldo i otvorene stavke', 'Balance and open items')}</h4>
+        <button type="button" className={s.ghost} onClick={() => exportCsv(orders, lang)}>
+          <Icon name="down" /> {t('Izvezi u Excel', 'Export to Excel')}
         </button>
       </div>
       <div className={x.kpis}>
         <div>
-          <span>Saldo</span>
+          <span>{t('Saldo', 'Balance')}</span>
           <b>{km(total)}</b>
         </div>
         <div data-warn={late > 0 || undefined}>
-          <span>Dospjelo</span>
+          <span>{t('Dospjelo', 'Overdue')}</span>
           <b>{km(late)}</b>
         </div>
         <div>
-          <span>Ostalo limita</span>
+          <span>{t('Ostalo limita', 'Limit left')}</span>
           <b>{km(c.free)}</b>
         </div>
         <div>
-          <span>Potrošnja 2026.</span>
+          <span>{t('Potrošnja 2026.', 'Spend 2026')}</span>
           <b>{km(PAID_2026 + total)}</b>
         </div>
       </div>
@@ -258,17 +269,17 @@ export function SaldoCard({ orders = [] }: { orders?: Order[] }) {
             <span>
               <b>{i.no}</b>
               <i>
-                {i.ref} · izdata {fmt(i.issued)} · rok {fmt(i.due)}
+                {L(i.ref)} · {t('izdata', 'issued')} {fmt(i.issued, lang)} · {t('rok', 'due')} {fmt(i.due, lang)}
               </i>
             </span>
             <b className={x.num}>{km(i.value)}</b>
             <span className={`${s.chip} ${x.dueChip}`} data-k={i.left < 0 ? 'late' : i.left <= 7 ? 'act' : undefined}>
-              {i.left < 0 ? `kasni ${-i.left} d` : `još ${i.left} d`}
+              {i.left < 0 ? t(`kasni ${-i.left} d`, `${-i.left} d overdue`) : t(`još ${i.left} d`, `${i.left} d left`)}
             </span>
           </li>
         ))}
       </ul>
-      <p className={s.fine}>Demo fakture. U produkciji saldo i otvorene stavke dolaze iz knjigovodstva Grand Company-ja.</p>
+      <p className={s.fine}>{t('Demo fakture. U produkciji saldo i otvorene stavke dolaze iz knjigovodstva Grand Company-ja.', 'Demo invoices. In production the balance and open items come from Grand Company\'s accounting.')}</p>
     </section>
   )
 }
@@ -276,17 +287,18 @@ export function SaldoCard({ orders = [] }: { orders?: Order[] }) {
 /* ——— Plaćanje: odgoda ili avans ——— */
 export type Payment = 'Odgoda' | 'Avans'
 export function PaymentSeg({ value, onChange }: { value: Payment; onChange: (p: Payment) => void }) {
+  const { t } = useFmt()
   return (
     <div className={x.pay}>
-      <span className={s.kicker}>Plaćanje</span>
-      <div className={s.seg} role="radiogroup" aria-label="Način plaćanja">
+      <span className={s.kicker}>{t('Plaćanje', 'Payment')}</span>
+      <div className={s.seg} role="radiogroup" aria-label={t('Način plaćanja', 'Payment method')}>
         {(['Odgoda', 'Avans'] as const).map((p) => (
           <button key={p} type="button" role="radio" aria-checked={value === p} onClick={() => onChange(p)}>
-            {p === 'Odgoda' ? `Odgoda ${PAY_DAYS} dana` : 'Avans (predračun)'}
+            {p === 'Odgoda' ? t(`Odgoda ${PAY_DAYS} dana`, `Deferred ${PAY_DAYS} days`) : t('Avans (predračun)', 'Advance (pro forma invoice)')}
           </button>
         ))}
       </div>
-      <p className={s.fine}>{value === 'Avans' ? 'Predračun stiže e-poštom; roba se izdaje po uplati.' : 'U okviru dogovorenog kreditnog limita (demo).'}</p>
+      <p className={s.fine}>{value === 'Avans' ? t('Predračun stiže e-poštom; roba se izdaje po uplati.', 'The pro forma invoice arrives by email; goods are released on payment.') : t('U okviru dogovorenog kreditnog limita (demo).', 'Within the agreed credit limit (demo).')}</p>
     </div>
   )
 }
@@ -300,9 +312,14 @@ export function notesFor(orders: Order[], pendingOffers: number): Note[] {
   const active = orders.filter((o) => o.step < 4)
   if (active[0]) out.push({ id: `o-${active[0].no}`, title: `Narudžba ${active[0].no} je potvrđena`, meta: `${site(active[0].site).name} · ${active[0].mode}`, mail: 'narudzba', view: 'narudzbe' })
   active.slice(1, 3).forEach((o) => out.push({ id: `s-${o.no}`, title: `${o.no}: ${STEPS[o.step].toLowerCase()}`, meta: `${site(o.site).name} · ${o.slot}`, mail: 'status', view: 'narudzbe' }))
-  out.push({ id: 'f-744', title: 'Faktura IF-26-00744 kasni 11 dana', meta: `${km(1985)} · Kuća C`, mail: 'faktura', view: 'dokumenti' })
-  out.push({ id: 'f-862', title: 'Faktura IF-26-00862 dospijeva za 6 dana', meta: `${km(7240)} · Lamela A`, mail: 'faktura', view: 'dokumenti' })
+  out.push({ id: 'f-744', title: 'Faktura IF-26-00744 kasni 11 dana', meta: `${kmSr(1985)} · Kuća C`, mail: 'faktura', view: 'dokumenti' })
+  out.push({ id: 'f-862', title: 'Faktura IF-26-00862 dospijeva za 6 dana', meta: `${kmSr(7240)} · Lamela A`, mail: 'faktura', view: 'dokumenti' })
   return out
+}
+const MAILS_EN: Record<Mail, (n: Note) => string[]> = {
+  narudzba: (n) => [`${tr(n.title, 'en')} and goes into preparation at the warehouse.`, `Site and method: ${tr(n.meta, 'en')}.`, 'Track the status in the portal, under Orders.'],
+  status: (n) => [`${tr(n.title, 'en')}.`, `Site and time slot: ${tr(n.meta, 'en')}.`],
+  faktura: (n) => [`${tr(n.title, 'en')} (${tr(n.meta, 'en')}).`, 'Download the invoice and the balance of open items in the portal, under Documents. If the payment has already been made, please disregard this message.'],
 }
 const MAILS: Record<Mail, { tab: string; body: (n: Note) => string[] }> = {
   narudzba: { tab: 'Narudžba potvrđena', body: (n) => [`${n.title} i ulazi u pripremu na stovarištu.`, `Gradilište i način: ${n.meta}.`, 'Status pratite u portalu, u meniju Narudžbe.'] },
@@ -310,6 +327,7 @@ const MAILS: Record<Mail, { tab: string; body: (n: Note) => string[] }> = {
   faktura: { tab: 'Faktura dospijeva', body: (n) => [`${n.title} (${n.meta}).`, 'Fakturu i saldo otvorenih stavki preuzimate u portalu, u meniju Dokumenti. Ako je uplata izvršena, zanemarite ovu poruku.'] },
 }
 export function NotificationsView({ notes, onOpen }: { notes: Note[]; onOpen: (view: string) => void }) {
+  const { t, lang, L } = useFmt()
   const [read, setRead] = useState<string[]>([])
   const firstMail = notes.find((n) => n.mail) ?? null
   const [mail, setMail] = useState<Note | null>(firstMail)
@@ -318,9 +336,9 @@ export function NotificationsView({ notes, onOpen }: { notes: Note[]; onOpen: (v
     <div className={s.split}>
       <section className={s.card}>
         <div className={x.notesHead}>
-          <h4>Obavještenja</h4>
+          <h4>{t('Obavještenja', 'Notifications')}</h4>
           <button type="button" className={s.ghost} onClick={() => setRead(notes.map((n) => n.id))}>
-            Označi sve kao pročitano
+            {t('Označi sve kao pročitano', 'Mark all as read')}
           </button>
         </div>
         <ul className={s.rows}>
@@ -335,52 +353,52 @@ export function NotificationsView({ notes, onOpen }: { notes: Note[]; onOpen: (v
                 }}
               >
                 <span>
-                  <b>{n.title}</b>
-                  <i>{n.meta}</i>
+                  <b>{L(n.title)}</b>
+                  <i>{L(n.meta)}</i>
                 </span>
               </button>
               {n.mail && (
                 <button type="button" className={s.ghost} aria-pressed={mail?.id === n.id} onClick={() => setMail(n)}>
-                  Mejl
+                  {t('Mejl', 'Email')}
                 </button>
               )}
             </li>
           ))}
         </ul>
-        <p className={s.fine}>Ista obavještenja stižu e-poštom: potvrda narudžbe, promjena statusa, faktura pred dospijećem.</p>
+        <p className={s.fine}>{t('Ista obavještenja stižu e-poštom: potvrda narudžbe, promjena statusa, faktura pred dospijećem.', 'The same notifications arrive by email: order confirmation, status changes, an invoice nearing its due date.')}</p>
       </section>
       {mail && mail.mail && (
-        <aside className={`${s.card} ${x.mail}`} aria-label="Primjer mejla">
+        <aside className={`${s.card} ${x.mail}`} aria-label={t('Primjer mejla', 'Sample email')}>
           <div className={s.chips}>
             {kinds.map((k) => (
               <button key={k.id} type="button" role="tab" aria-selected={k.mail === mail.mail} onClick={() => setMail(k)}>
-                {MAILS[k.mail!].tab}
+                {L(MAILS[k.mail!].tab)}
               </button>
             ))}
           </div>
           <dl className={x.mailHead}>
             <div>
-              <dt>Od</dt>
+              <dt>{t('Od', 'From')}</dt>
               <dd>Grand Company Portal</dd>
             </div>
             <div>
-              <dt>Za</dt>
-              <dd>{FIRM.user}, {FIRM.name}</dd>
+              <dt>{t('Za', 'To')}</dt>
+              <dd>{L(FIRM.user)}, {FIRM.name}</dd>
             </div>
             <div>
-              <dt>Naslov</dt>
+              <dt>{t('Naslov', 'Subject')}</dt>
               <dd>
-                <b>{mail.title}</b>
+                <b>{L(mail.title)}</b>
               </dd>
             </div>
           </dl>
           <div className={x.mailBody}>
-            <p>Poštovani,</p>
-            {MAILS[mail.mail].body(mail).map((p, i) => (
+            <p>{t('Poštovani,', 'Dear customer,')}</p>
+            {(lang === 'en' ? MAILS_EN[mail.mail](mail) : MAILS[mail.mail].body(mail)).map((p, i) => (
               <p key={i}>{p}</p>
             ))}
-            <span className={x.mailBtn}>Otvori u portalu</span>
-            <p className={s.fine}>Grand Company d.o.o. · Nenada Kostića 151, Banja Luka · 051 388-995. Primjer mejla; demo ne šalje poruke.</p>
+            <span className={x.mailBtn}>{t('Otvori u portalu', 'Open in portal')}</span>
+            <p className={s.fine}>{t('Grand Company d.o.o. · Nenada Kostića 151, Banja Luka · 051 388-995. Primjer mejla; demo ne šalje poruke.', 'Grand Company d.o.o. · Nenada Kostića 151, Banja Luka · 051 388-995. Sample email; the demo does not send messages.')}</p>
           </div>
         </aside>
       )}
@@ -413,6 +431,7 @@ export const SALES_START: SalesEvent[] = [
 ]
 
 export function AdminView({ orders, advance, events = SALES_START }: { orders: Order[]; advance: (o: Order) => void; events?: SalesEvent[] }) {
+  const { t, lang, L, km0: km } = useFmt()
   const [tab, setTab] = useState<'prodaja' | 'firme' | 'cjenovnici' | 'narudzbe'>('prodaja')
   const [pending, setPending] = useState<Firm[]>(PENDING)
   const [decided, setDecided] = useState<Record<string, 'Odobrena' | 'Odbijena'>>({})
@@ -457,10 +476,10 @@ export function AdminView({ orders, advance, events = SALES_START }: { orders: O
       <div className={s.chips} role="tablist">
         {(
           [
-            ['prodaja', `Obavještenja prodaji (${events.length})`],
-            ['firme', `Firme na odobrenju (${waiting})`],
-            ['cjenovnici', 'Cjenovnici po klijentu'],
-            ['narudzbe', 'Narudžbe svih klijenata'],
+            ['prodaja', t(`Obavještenja prodaji (${events.length})`, `Sales notifications (${events.length})`)],
+            ['firme', t(`Firme na odobrenju (${waiting})`, `Companies awaiting approval (${waiting})`)],
+            ['cjenovnici', t('Cjenovnici po klijentu', 'Price lists per client')],
+            ['narudzbe', t('Narudžbe svih klijenata', 'Orders of all clients')],
           ] as const
         ).map(([id, label]) => (
           <button key={id} type="button" role="tab" aria-selected={tab === id} onClick={() => setTab(id)}>
@@ -474,20 +493,20 @@ export function AdminView({ orders, advance, events = SALES_START }: { orders: O
           <ul className={s.rows}>
             {events.map((e) => (
               <li key={e.id} className={x.salesRow} data-urgent={e.urgent || undefined}>
-                <time className={s.time}>{e.t}</time>
+                <time className={s.time}>{L(e.t)}</time>
                 <span>
-                  <b>{e.title}</b>
-                  <i>{e.meta}</i>
+                  <b>{L(e.title)}</b>
+                  <i>{L(e.meta)}</i>
                 </span>
                 <span className={x.channels}>
                   {e.channels.map((c) => (
-                    <em key={c}>{c}</em>
+                    <em key={c}>{L(c)}</em>
                   ))}
                 </span>
               </li>
             ))}
           </ul>
-          <p className={s.fine}>Kad firma pošalje upit, prodavac odmah dobija SMS i mejl; prije isteka ponude dobija podsjetnik. Upit se ne gubi u sandučetu. Pošaljite upit u Materijalima i pojaviće se ovdje (simulacija).</p>
+          <p className={s.fine}>{t('Kad firma pošalje upit, prodavac odmah dobija SMS i mejl; prije isteka ponude dobija podsjetnik. Upit se ne gubi u sandučetu. Pošaljite upit u Materijalima i pojaviće se ovdje (simulacija).', 'When a company sends an inquiry, the sales rep instantly gets an SMS and an email, and a reminder before a quote expires. No inquiry gets lost in an inbox. Send an inquiry under Materials and it will appear here (simulation).')}</p>
         </>
       )}
 
@@ -499,30 +518,30 @@ export function AdminView({ orders, advance, events = SALES_START }: { orders: O
                 <span>
                   <b>
                     {f.name}
-                    {f.mine && <em className={x.fromForm}>iz forme za registraciju</em>}
+                    {f.mine && <em className={x.fromForm}>{t('iz forme za registraciju', 'from the registration form')}</em>}
                   </b>
                   <i>
-                    JIB {f.jib} · PDV {f.pdv || '—'} · {f.contact} · {f.sent}
+                    {lang === 'en' ? 'Tax ID (JIB)' : 'JIB'} {f.jib} · {lang === 'en' ? 'VAT ID' : 'PDV'} {f.pdv || '—'} · {L(f.contact)} · {dmy(f.sent, lang)}
                   </i>
                 </span>
                 {decided[f.id] ? (
                   <span className={s.chip} data-k={decided[f.id] === 'Odobrena' ? 'act' : undefined}>
-                    {decided[f.id]}
+                    {L(decided[f.id])}
                   </span>
                 ) : (
                   <span className={x.actions}>
                     <button type="button" className={s.primary} onClick={() => decide(f, 'Odobrena')}>
-                      Odobri
+                      {t('Odobri', 'Approve')}
                     </button>
                     <button type="button" className={s.ghost} onClick={() => decide(f, 'Odbijena')}>
-                      Odbij
+                      {t('Odbij', 'Reject')}
                     </button>
                   </span>
                 )}
               </li>
             ))}
           </ul>
-          <p className={s.fine}>Firma vidi cijene tek kad je prodaja odobri. Nova firma kreće sa nivoom 1 i avansom dok se ne dogovore uslovi.</p>
+          <p className={s.fine}>{t('Firma vidi cijene tek kad je prodaja odobri. Nova firma kreće sa nivoom 1 i avansom dok se ne dogovore uslovi.', 'A company sees prices only once sales approves it. A new company starts on tier 1 with advance payment until terms are agreed.')}</p>
         </>
       )}
 
@@ -533,39 +552,41 @@ export function AdminView({ orders, advance, events = SALES_START }: { orders: O
               <li key={c.id} className={x.client}>
                 <span>
                   <b>{c.name}</b>
-                  <i>Rabat {TIERS.find((t) => t[0] === c.tier)?.[1] ?? 0} % · limit {km(c.limit)}</i>
+                  <i>{t('Rabat', 'Discount')} {TIERS.find((tt) => tt[0] === c.tier)?.[1] ?? 0} % · {t('limit', 'limit')} {km(c.limit)}</i>
                 </span>
-                <select className={x.select} value={c.tier} onChange={(e) => patch(c.id, { tier: e.target.value })} aria-label={`Cjenovnik: ${c.name}`}>
-                  {TIERS.map(([t]) => (
-                    <option key={t}>{t}</option>
-                  ))}
-                </select>
-                <select className={x.select} value={c.limit} onChange={(e) => patch(c.id, { limit: Number(e.target.value) })} aria-label={`Kreditni limit: ${c.name}`}>
-                  {[0, 5000, 10000, 30000, 50000].map((v) => (
-                    <option key={v} value={v}>
-                      {v ? km(v) : 'bez kredita'}
+                <select className={x.select} value={c.tier} onChange={(e) => patch(c.id, { tier: e.target.value })} aria-label={`${t('Cjenovnik', 'Price list')}: ${c.name}`}>
+                  {TIERS.map(([tn]) => (
+                    <option key={tn} value={tn}>
+                      {L(tn)}
                     </option>
                   ))}
                 </select>
-                <select className={x.select} value={c.days} onChange={(e) => patch(c.id, { days: Number(e.target.value) })} aria-label={`Valuta: ${c.name}`}>
+                <select className={x.select} value={c.limit} onChange={(e) => patch(c.id, { limit: Number(e.target.value) })} aria-label={`${t('Kreditni limit', 'Credit limit')}: ${c.name}`}>
+                  {[0, 5000, 10000, 30000, 50000].map((v) => (
+                    <option key={v} value={v}>
+                      {v ? km(v) : t('bez kredita', 'no credit')}
+                    </option>
+                  ))}
+                </select>
+                <select className={x.select} value={c.days} onChange={(e) => patch(c.id, { days: Number(e.target.value) })} aria-label={`${t('Valuta', 'Payment terms')}: ${c.name}`}>
                   {[0, 15, 30, 60].map((d) => (
                     <option key={d} value={d}>
-                      {d ? `valuta ${d} d` : 'bez odgode'}
+                      {d ? t(`valuta ${d} d`, `terms ${d} d`) : t('bez odgode', 'no deferral')}
                     </option>
                   ))}
                 </select>
                 <span className={s.seg}>
                   <button type="button" role="radio" aria-checked={!c.avans} onClick={() => patch(c.id, { avans: false })}>
-                    Odgoda
+                    {t('Odgoda', 'Deferred')}
                   </button>
                   <button type="button" role="radio" aria-checked={c.avans} onClick={() => patch(c.id, { avans: true })}>
-                    Avans
+                    {t('Avans', 'Advance')}
                   </button>
                 </span>
               </li>
             ))}
           </ul>
-          <p className={s.fine}>Primjer posebnih cjenovnika i uslova po klijentu. Stvarni rabati i limiti Grand Company-ja nisu javni i dogovaraju se ugovorom.</p>
+          <p className={s.fine}>{t('Primjer posebnih cjenovnika i uslova po klijentu. Stvarni rabati i limiti Grand Company-ja nisu javni i dogovaraju se ugovorom.', 'An example of special price lists and terms per client. Actual Grand Company discounts and limits are not public and are agreed by contract.')}</p>
         </>
       )}
 
@@ -577,21 +598,21 @@ export function AdminView({ orders, advance, events = SALES_START }: { orders: O
                 <span>
                   <b>{o.no}</b>
                   <i>
-                    {firm} · {own ? `${site(o.site).name} · ${km(amount(o.lines))}` : 'novi upit'}
+                    {firm} · {own ? `${L(site(o.site).name)} · ${km(amount(o.lines))}` : t('novi upit', 'new inquiry')}
                   </i>
                 </span>
                 <span className={s.chip} data-k={o.step >= 4 ? 'done' : 'act'}>
-                  {STEPS[o.step]}
+                  {L(STEPS[o.step])}
                 </span>
                 {own && (
                   <button type="button" className={s.ghost} disabled={o.step >= 4} onClick={() => advance(o)}>
-                    Sljedeći status <Icon name="arrow" />
+                    {t('Sljedeći status', 'Next status')} <Icon name="arrow" />
                   </button>
                 )}
               </li>
             ))}
           </ul>
-          <p className={s.fine}>Status koji prodaja ovdje pomjeri kupac odmah vidi u Narudžbama i dobija e-poštom.</p>
+          <p className={s.fine}>{t('Status koji prodaja ovdje pomjeri kupac odmah vidi u Narudžbama i dobija e-poštom.', 'A status that sales moves here is instantly visible to the customer under Orders and is also sent by email.')}</p>
         </>
       )}
     </section>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef } from 'react'
+import { useLang } from '@/lib/i18n'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { drawOnScroll } from '@/lib/draw'
 import { useMediaMotion } from '@/lib/media'
@@ -46,21 +47,25 @@ const PILLARS = [
   {
     icon: 'world',
     title: 'Naš pristup',
+    en: { title: 'Our approach', text: 'We are committed to giving our customers the most reliable and the widest range of construction materials.' },
     text: 'Ustrajni smo u tome da svojim kupcima pružimo najpouzdaniju i najširu ponudu građevinskog materijala.',
   },
   {
     icon: 'check',
     title: 'Naše vrijednosti',
+    en: { title: 'Our values', text: 'We build close relationships with our customers, which sets us apart from the competition: we understand their needs and deliver quality solutions.' },
     text: 'Gradimo bliske odnose s kupcima, po čemu smo drugačiji od konkurencije, razumijemo njihove potrebe i pružamo im kvalitetna rješenja.',
   },
   {
     icon: 'headset',
     title: 'Naš tim',
+    en: { title: 'Our team', text: 'A trained and dedicated team analyses your needs and offers the best balance of price and quality.' },
     text: 'Edukovan i posvećen tim analizira vaše potrebe i nudi najbolji omjer cijene i kvaliteta.',
   },
 ] as const
 
 export default function Values() {
+  const { t, lang } = useLang()
   const root = useRef<HTMLElement>(null)
   useMediaMotion(root)
 
@@ -84,14 +89,14 @@ export default function Values() {
         })
       })
     },
-    { scope: root },
+    { scope: root, dependencies: [lang] },
   )
 
   return (
     <section ref={root} id="kvalitet" aria-labelledby="values-title" className={styles.values}>
       <div className="gutter">
-        <h2 id="values-title" data-head className={`display invisible ${styles.valuesTitle}`}>
-          Kvalitet na prvom mjestu!
+        <h2 key={lang} id="values-title" data-head className={`display invisible ${styles.valuesTitle}`}>
+          {t('Kvalitet na prvom mjestu!', 'Quality comes first!')}
         </h2>
 
         <div data-pillars className={styles.pillars}>
@@ -101,23 +106,25 @@ export default function Values() {
                 <Icon kind={p.icon} />
                 <span className="label opacity-60">{String(i + 1).padStart(2, '0')} / 03</span>
               </div>
-              <h3 className={`display ${styles.pillarTitle}`}>{p.title}</h3>
-              <p className={styles.pillarText}>{p.text}</p>
+              <h3 className={`display ${styles.pillarTitle}`}>{t(p.title, p.en.title)}</h3>
+              <p className={styles.pillarText}>{t(p.text, p.en.text)}</p>
             </article>
           ))}
         </div>
 
         <div className={styles.quality}>
           <div>
-            <span className={`label ${styles.qualityLabel}`}>Kvalitet</span>
-            <p data-quote className={`font-pretty ${styles.qualityQuote}`}>
-              U poslovanju naše firme kvalitet je na prvom mjestu.
+            <span className={`label ${styles.qualityLabel}`}>{t('Kvalitet', 'Quality')}</span>
+            <p key={lang} data-quote className={`font-pretty ${styles.qualityQuote}`}>
+              {t('U poslovanju naše firme kvalitet je na prvom mjestu.', 'In how our company does business, quality comes first.')}
             </p>
           </div>
           <div data-up className="grid gap-5">
             <p className={styles.qualityBody}>
-              Izbor je vaš, a mi se trudimo da Vam pomognemo u izboru najboljeg što tržište nudi. Korisnim savjetima
-              našeg tima potrudićemo se da Vam olakšamo izbor pravog materijala za vaše potrebe.
+              {t(
+                'Izbor je vaš, a mi se trudimo da Vam pomognemo u izboru najboljeg što tržište nudi. Korisnim savjetima našeg tima potrudićemo se da Vam olakšamo izbor pravog materijala za vaše potrebe.',
+                'The choice is yours, and we do our best to help you pick the best the market has to offer. With practical advice from our team, we will make it easier to choose the right material for your needs.',
+              )}
             </p>
           </div>
         </div>
@@ -125,26 +132,27 @@ export default function Values() {
         {/* Suha gradnja: skraćeno sa profila firme na moja-djelatnost.ba (segment "Sistem suhe gradnje").
             Formulisano kao savjet i materijal; ugradnja nije potvrđena. */}
         <div data-up className={styles.dry}>
-          <span className={`label ${styles.qualityLabel}`}>Sistem suhe gradnje</span>
+          <span className={`label ${styles.qualityLabel}`}>{t('Sistem suhe gradnje', 'Drywall systems')}</span>
           <div className={styles.dryGrid}>
-            <p className={`font-pretty ${styles.dryTitle}`}>Stručan savjet za suhu gradnju, jedan poziv daleko.</p>
+            <p className={`font-pretty ${styles.dryTitle}`}>{t('Stručan savjet za suhu gradnju, jedan poziv daleko.', 'Expert drywall advice, one call away.')}</p>
             <div className="grid gap-5">
               <p className={styles.qualityBody}>
-                Tim Grand Companyja stalno usavršava znanje i prati novosti u građevinarstvu. Ljubazni su i pristupačni,
-                i rado objašnjavaju izbor ploča, profila i pribora za vaš pregradni zid ili plafon, da proces bude što
-                jednostavniji.
+                {t(
+                  'Tim Grand Companyja stalno usavršava znanje i prati novosti u građevinarstvu. Ljubazni su i pristupačni, i rado objašnjavaju izbor ploča, profila i pribora za vaš pregradni zid ili plafon, da proces bude što jednostavniji.',
+                  'The Grand Company team keeps building its knowledge and follows developments in construction. They are friendly and approachable, and happy to explain the choice of boards, profiles and accessories for your partition wall or ceiling, so the process is as simple as possible.',
+                )}
               </p>
               <div className="flex flex-wrap items-center gap-3">
                 <Cta href="/upit-za-izvodjace" solid>
-                  Pošaljite upit
+                  {t('Pošaljite upit', 'Send an enquiry')}
                 </Cta>
               </div>
             </div>
           </div>
         </div>
 
-        <p data-sign className={`display invisible ${styles.signoff}`} aria-label="Izbor je Vaš!">
-          Izbor je Vaš!
+        <p key={lang} data-sign className={`display invisible ${styles.signoff}`} aria-label={t('Izbor je Vaš!', 'The choice is yours!')}>
+          {t('Izbor je Vaš!', 'The choice is yours!')}
         </p>
       </div>
     </section>

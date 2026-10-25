@@ -4,6 +4,7 @@
 
 import { MAPS_URL } from '@/lib/company'
 import { useRef } from 'react'
+import { useLang } from '@/lib/i18n'
 import Cta from '@/components/ui/Cta'
 import { COMPANY } from '@/gc/gc'
 import { gsap, useGSAP } from '@/lib/gsap'
@@ -15,13 +16,14 @@ import { revealChars } from '@/lib/reveal'
 // Lijevo vlastita fotografija stovarišta iz vazduha, desno podaci u tankim redovima.
 // (Fajl je ranije bio sekcija "Detail" sa fotografijama materijala.)
 
-const HOURS: [string, string][] = [
-  ['Ponedjeljak – petak', '07:00 – 17:00'],
-  ['Subota', '07:00 – 14:00'],
-  ['Nedjelja', 'Neradna'],
+const HOURS: [string, string, string, string][] = [
+  ['Ponedjeljak – petak', '07:00 – 17:00', 'Monday – Friday', '07:00 – 17:00'],
+  ['Subota', '07:00 – 14:00', 'Saturday', '07:00 – 14:00'],
+  ['Nedjelja', 'Neradna', 'Sunday', 'Closed'],
 ]
 
 export default function Detail() {
+  const { t, lang } = useLang()
   const root = useRef<HTMLElement>(null)
   useMediaMotion(root)
 
@@ -33,22 +35,22 @@ export default function Detail() {
         revealChars(root.current!.querySelector('[data-head]')!, reduce, 'top 80%')
       })
     },
-    { scope: root },
+    { scope: root, dependencies: [lang] },
   )
 
   const [street, city] = COMPANY.address.split(', ')
 
   return (
-    <section ref={root} id="stovariste" className="relative z-20 bg-bg py-[16vh]" aria-label="Stovarište i radno vrijeme">
+    <section ref={root} id="stovariste" className="relative z-20 bg-bg py-[16vh]" aria-label={t('Stovarište i radno vrijeme', 'The yard and opening hours')}>
       <div className="mx-auto grid w-[calc(100%-40px)] max-w-[1400px] gap-10 md:grid-cols-[1.25fr_1fr] md:gap-[5vw]">
         <figure data-curtain data-parallax="6" className="relative aspect-[16/10] overflow-hidden bg-plate">
-          <img decoding="async" src="/photos/stovariste-vazduh.webp" alt="Stovarište Grand Company iz vazduha" className="absolute inset-0 h-full w-full object-cover" />
+          <img decoding="async" src="/photos/stovariste-vazduh.webp" alt={t('Stovarište Grand Company iz vazduha', 'Aerial view of the Grand Company yard')} className="absolute inset-0 h-full w-full object-cover" />
         </figure>
 
         <div className="flex flex-col justify-center">
-          <p className="label opacity-60">Sjedište i centralno stovarište</p>
-          <h2 data-head className="display invisible mt-5 text-[clamp(40px,4.6vw,84px)]">
-            Stovarište
+          <p className="label opacity-60">{t('Sjedište i centralno stovarište', 'Headquarters and central yard')}</p>
+          <h2 key={lang} data-head className="display invisible mt-5 text-[clamp(40px,4.6vw,84px)]">
+            {t('Stovarište', 'The yard')}
           </h2>
           <address data-up className="mt-8 not-italic text-[12.5px] leading-[1.7]">
             <a href={MAPS_URL} target="_blank" rel="noopener noreferrer" className="ulink">
@@ -57,22 +59,22 @@ export default function Detail() {
               {city} · Zalužani / Lazarevo
             </a>
             <a href={MAPS_URL} target="_blank" rel="noopener noreferrer" className="mt-2 block text-[11px] opacity-60 hover:opacity-100">
-              Otvori na Google mapi ↗
+              {t('Otvori na Google mapi ↗', 'Open in Google Maps ↗')}
             </a>
           </address>
 
           <dl data-up className="mt-8 border-t border-ink/20 text-[12px]">
-            {HOURS.map(([d, h]) => (
+            {HOURS.map(([d, h, dEn, hEn]) => (
               <div key={d} className="flex justify-between gap-6 border-b border-ink/20 py-3.5">
-                <dt className="opacity-60">{d}</dt>
-                <dd className="tabular-nums">{h}</dd>
+                <dt className="opacity-60">{t(d, dEn)}</dt>
+                <dd className="tabular-nums">{t(h, hEn)}</dd>
               </div>
             ))}
           </dl>
 
           <dl data-up className="mt-8 grid gap-1.5 text-[12px]">
             <div className="flex justify-between gap-6">
-              <dt className="opacity-60">Veleprodaja / skladište</dt>
+              <dt className="opacity-60">{t('Veleprodaja / skladište', 'Wholesale / warehouse')}</dt>
               <dd>
                 <a href={COMPANY.phoneLandlineHref} className="ulink tabular-nums">
                   {COMPANY.phoneLandline}
@@ -80,7 +82,7 @@ export default function Detail() {
               </dd>
             </div>
             <div className="flex justify-between gap-6">
-              <dt className="opacity-60">Mobilni / Viber / WhatsApp</dt>
+              <dt className="opacity-60">{t('Mobilni / Viber / WhatsApp', 'Mobile / Viber / WhatsApp')}</dt>
               <dd>
                 <a href={COMPANY.phoneMobileHref} className="ulink tabular-nums">
                   {COMPANY.phoneMobile}
@@ -91,9 +93,9 @@ export default function Detail() {
 
           <div data-up className="mt-10 flex flex-wrap gap-3">
             <Cta href={COMPANY.phoneLandlineHref} solid>
-              Pozovite
+              {t('Pozovite', 'Call us')}
             </Cta>
-            <Cta href={`mailto:${COMPANY.emailInfo}`}>Pišite</Cta>
+            <Cta href={`mailto:${COMPANY.emailInfo}`}>{t('Pišite', 'Write to us')}</Cta>
           </div>
         </div>
       </div>

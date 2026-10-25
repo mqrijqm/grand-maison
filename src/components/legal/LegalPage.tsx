@@ -1,7 +1,11 @@
+'use client'
+
 import Link from 'next/link'
 import { SITE } from '@/lib/company'
 import { GROUP_LABEL, type LegalBlock, type LegalDoc } from '@/lib/legal-types'
-import { LEGAL_DOCS, legalBySlug } from '@/lib/legal'
+import { legalBySlug } from '@/lib/legal'
+import { GROUP_LABEL_EN, legalDocFor, legalDocsFor } from '@/lib/legal-en'
+import { useLang } from '@/lib/i18n'
 import Cta from '@/components/ui/Cta'
 import { T } from './LegalText'
 import Pw, { pw } from '@/components/ui/Pw'
@@ -14,8 +18,8 @@ import QuoteDesk from '@/components/quote/QuoteDesk'
 const MEASURE = 'mx-auto w-full max-w-[62ch]'
 
 // Stranice sa radnjom: dugme vodi na kontakt u podnožju.
-const CTA: Record<string, { label: string; href: string }> = {
-  'upit-za-izvodjace': { label: 'Upit', href: '/#kontakt' },
+const CTA: Record<string, { label: string; labelEn: string; href: string }> = {
+  'upit-za-izvodjace': { label: 'Upit', labelEn: 'Enquiry', href: '/#kontakt' },
 }
 
 function Block({ b }: { b: LegalBlock }) {
@@ -74,7 +78,10 @@ function Block({ b }: { b: LegalBlock }) {
   }
 }
 
-export default function LegalPage({ doc }: { doc: LegalDoc }) {
+export default function LegalPage({ doc: srDoc }: { doc: LegalDoc }) {
+  const { t, lang } = useLang()
+  const doc = legalDocFor(srDoc, lang)
+  const groupLabel = lang === 'en' ? GROUP_LABEL_EN : GROUP_LABEL
   if (doc.slug === 'upit-za-izvodjace') return <QuoteDesk />
   const cta = CTA[doc.slug]
   const long = doc.sections.length > 4
@@ -82,7 +89,7 @@ export default function LegalPage({ doc }: { doc: LegalDoc }) {
   return (
     <div className="legal-page px-5 pb-[18dvh] pt-[16dvh] md:px-10 md:pt-[20dvh]">
       <header className="text-center">
-        <p className="label text-ink/50">{GROUP_LABEL[doc.group]}</p>
+        <p className="label text-ink/50">{groupLabel[doc.group]}</p>
         <h1 className="display mx-auto mt-6 max-w-[14ch] text-[clamp(44px,7vw,120px)] [hyphens:auto]"><Pw>{doc.title}</Pw></h1>
       </header>
       <p className="mx-auto mt-8 max-w-[46ch] text-center text-[13px] leading-[1.45] text-ink/75">
@@ -91,15 +98,15 @@ export default function LegalPage({ doc }: { doc: LegalDoc }) {
       {cta && (
         <div className="mt-10 flex justify-center">
           <Cta href={cta.href} solid>
-            {cta.label}
+            {t(cta.label, cta.labelEn)}
           </Cta>
         </div>
       )}
 
       <div className="relative mt-[12dvh] md:grid md:grid-cols-[1fr_minmax(0,62ch)_1fr] md:gap-x-12">
         {long && (
-          <nav aria-label="Sadržaj stranice" className="hidden self-start text-[13px] md:sticky md:top-28 md:block md:max-w-[220px]">
-            <p className="label text-ink/45">Sadržaj</p>
+          <nav aria-label={t('Sadržaj stranice', 'Page contents')} className="hidden self-start text-[13px] md:sticky md:top-28 md:block md:max-w-[220px]">
+            <p className="label text-ink/45">{t('Sadržaj', 'Contents')}</p>
             <ul className="mt-4 space-y-2.5 text-ink/70">
               {doc.sections.map((s) => (
                 <li key={s.id}>
@@ -124,15 +131,17 @@ export default function LegalPage({ doc }: { doc: LegalDoc }) {
 
           {SITE.legalDraft && doc.group === 'pravno' && (
             <p className="mt-16 text-[13px] text-ink/45">
-              Nacrt: tekst je predložak i treba ga pregledati pravnik prije objave. Istaknute oznake su podaci koje firma
-              još treba da dopuni.
+              {t(
+                'Nacrt: tekst je predložak i treba ga pregledati pravnik prije objave. Istaknute oznake su podaci koje firma još treba da dopuni.',
+                'Draft: this text is a template and must be reviewed by a lawyer before publication. Highlighted markers are details that the company still needs to complete.',
+              )}
             </p>
           )}
 
           <div className="mt-16 flex flex-wrap items-center justify-between gap-4 border-t border-ink/15 pt-6 text-[14px] text-ink/60">
-            <span>Ažurirano {doc.updated}</span>
+            <span>{t('Ažurirano', 'Updated')} {doc.updated}</span>
             <Link href="/sve-politike" className="ulink text-ink">
-              Sve politike
+              {t('Sve politike', 'All policies')}
             </Link>
           </div>
         </div>
@@ -147,23 +156,28 @@ export default function LegalPage({ doc }: { doc: LegalDoc }) {
 const STACK = ['dostava', 'povrat-robe', 'nacini-placanja', 'uslovi-kupovine', 'politika-privatnosti']
 
 export function PoliciesCombined() {
-  const docs = STACK.map((s) => legalBySlug(s)).filter((d): d is LegalDoc => Boolean(d))
-  const rest = LEGAL_DOCS.filter((d) => !STACK.includes(d.slug))
+  const { t, lang } = useLang()
+  const groupLabel = lang === 'en' ? GROUP_LABEL_EN : GROUP_LABEL
+  const docs = STACK.map((s) => legalBySlug(s)).filter((d): d is LegalDoc => Boolean(d)).map((d) => legalDocFor(d, lang))
+  const rest = legalDocsFor(lang).filter((d) => !STACK.includes(d.slug))
   const num = (i: number) => String(i + 1).padStart(2, '0')
 
   return (
     <div className="px-5 pb-[18dvh] pt-[16dvh] md:px-10 md:pt-[20dvh]">
       <header className="text-center">
-        <p className="label text-ink/50">Informacije</p>
+        <p className="label text-ink/50">{t('Informacije', 'Information')}</p>
         <h1 className="display mx-auto mt-6 max-w-[14ch] text-[clamp(44px,7vw,120px)]">
-          <Pw>Sve politike</Pw>
+          <Pw>{t('Sve politike', 'All policies')}</Pw>
         </h1>
         <p className="mx-auto mt-8 max-w-[46ch] text-[13px] leading-[1.5] text-ink/75">
-          Dostava, povrat robe, načini plaćanja, uslovi kupovine i privatnost — na jednom mjestu, jedna ispod druge.
+          {t(
+            'Dostava, povrat robe, načini plaćanja, uslovi kupovine i privatnost — na jednom mjestu, jedna ispod druge.',
+            'Delivery, returns, payment methods, terms of purchase and privacy — in one place, one below the other.',
+          )}
         </p>
       </header>
 
-      <nav aria-label="Na ovoj stranici" className="mx-auto mt-14 flex max-w-[860px] flex-wrap justify-center gap-x-7 gap-y-3 px-2">
+      <nav aria-label={t('Na ovoj stranici', 'On this page')} className="mx-auto mt-14 flex max-w-[860px] flex-wrap justify-center gap-x-7 gap-y-3 px-2">
         {docs.map((d, i) => (
           <a
             key={d.slug}
@@ -185,22 +199,22 @@ export function PoliciesCombined() {
             className={`scroll-mt-24 ${i > 0 ? 'mt-[16vh] border-t border-ink/10 pt-[10vh]' : ''}`}
           >
             <header className="text-center">
-              <p className="label text-ink/50">{GROUP_LABEL[d.group]}</p>
+              <p className="label text-ink/50">{groupLabel[d.group]}</p>
               <h2 id={`${d.slug}-title`} className="display mx-auto mt-5 max-w-[14ch] text-[clamp(40px,6vw,96px)] [hyphens:auto]">
                 <Pw>{d.title}</Pw>
               </h2>
               <p className="mx-auto mt-6 max-w-[46ch] text-[13px] leading-[1.45] text-ink/75">
                 <T s={d.lead} />
               </p>
-              <p className="mt-4 text-[11px] tracking-[0.08em] text-ink/40">Ažurirano {d.updated}</p>
+              <p className="mt-4 text-[11px] tracking-[0.08em] text-ink/40">{t('Ažurirano', 'Updated')} {d.updated}</p>
             </header>
 
             <div className="legal-copy relative mt-[8vh] md:grid md:grid-cols-[1fr_minmax(0,62ch)_1fr] md:gap-x-12">
               <nav
-                aria-label={`Sadržaj: ${d.title}`}
+                aria-label={`${t('Sadržaj', 'Contents')}: ${d.title}`}
                 className="hidden self-start text-[13px] md:sticky md:top-28 md:col-start-1 md:block md:max-w-[220px]"
               >
-                <p className="label text-ink/45">Sadržaj</p>
+                <p className="label text-ink/45">{t('Sadržaj', 'Contents')}</p>
                 <ul className="mt-4 space-y-2.5 text-ink/70">
                   {d.sections.map((s) => (
                     <li key={s.id}>
@@ -228,7 +242,7 @@ export function PoliciesCombined() {
 
         {rest.length > 0 && (
           <section id="ostalo" className="mt-[16vh] border-t border-ink/10 pt-[10vh]">
-            <h2 className="label text-center text-ink/45">Ostale stranice</h2>
+            <h2 className="label text-center text-ink/45">{t('Ostale stranice', 'Other pages')}</h2>
             <ul className="mx-auto mt-6 max-w-[520px] space-y-3 text-center text-[15px]">
               {rest.map((d) => (
                 <li key={d.slug}>

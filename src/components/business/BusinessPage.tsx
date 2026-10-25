@@ -4,6 +4,7 @@
 
 import { useRef } from 'react'
 import Cta from '@/components/ui/Cta'
+import { useLang } from '@/lib/i18n'
 import { openRegistration } from '@/lib/login-events'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { useMediaMotion } from '@/lib/media'
@@ -19,6 +20,7 @@ import styles from './Business.module.css'
 // kome je namijenjeno, završni poziv.
 
 export default function BusinessPage() {
+  const { t, lang } = useLang()
   const root = useRef<HTMLDivElement>(null)
   useMediaMotion(root)
   useGSAP(
@@ -28,7 +30,8 @@ export default function BusinessPage() {
         root.current!.querySelectorAll('[data-head]').forEach((h) => revealChars(h, reduce, 'top 85%'))
       })
     },
-    { scope: root },
+    // Naslovi se dijele na slova; pri promjeni jezika naslovi se remontiraju (key={lang}) i podjela se ponovo gradi.
+    { scope: root, dependencies: [lang], revertOnUpdate: true },
   )
 
   return (
@@ -37,22 +40,25 @@ export default function BusinessPage() {
           Ispod donje polovine portala plavo se kvadratićima raspe u krem stranicu. */}
       <div className={styles.blue}>
         <header className={`gutter ${styles.hero}`}>
-          <p className={`label ${styles.heroKicker}`}>Grand Company / Za firme</p>
-          <h1 data-head className={`display invisible ${styles.heroTitle}`}>
-            Nabavka za vašu firmu
+          <p className={`label ${styles.heroKicker}`}>{t('Grand Company / Za firme', 'Grand Company / For business')}</p>
+          <h1 key={lang} data-head className={`display invisible ${styles.heroTitle}`}>
+            {t('Nabavka za vašu firmu', 'Procurement for your business')}
           </h1>
           <p data-up className={styles.heroLead}>
-            Manje poziva i nijedan izgubljen upit. Firma naručuje po svom cjenovniku, prati isporuke i vidi svoj dug i limit.
+            {t(
+              'Manje poziva i nijedan izgubljen upit. Firma naručuje po svom cjenovniku, prati isporuke i vidi svoj dug i limit.',
+              'Fewer calls and no lost inquiries. Your company orders from its own price list, tracks deliveries and sees its balance and credit limit.',
+            )}
           </p>
           <div data-up data-delay="0.25" className={styles.heroActions}>
             <Cta href="#portal" solid>
-              Istražite B2B portal
+              {t('Istražite B2B portal', 'Explore the B2B portal')}
             </Cta>
-            <Cta onClick={openRegistration}>Zatražite poslovni nalog</Cta>
+            <Cta onClick={openRegistration}>{t('Zatražite poslovni nalog', 'Request a business account')}</Cta>
           </div>
         </header>
 
-        <section id="portal" className={`gutter scroll-mt-24 ${styles.portalBlock}`} aria-label="B2B portal, interaktivni prikaz">
+        <section id="portal" className={`gutter scroll-mt-24 ${styles.portalBlock}`} aria-label={t('B2B portal, interaktivni prikaz', 'B2B portal, interactive preview')}>
           <Showcase light />
         </section>
       </div>
@@ -61,7 +67,7 @@ export default function BusinessPage() {
       <PartnerSteps />
 
       {/* Portal, ekran po ekran: pravi portal sa kursorom koji pokazuje radnje */}
-      <section id="biz-explain" className={styles.explainBlock} aria-label="Portal, ekran po ekran">
+      <section id="biz-explain" className={styles.explainBlock} aria-label={t('Portal, ekran po ekran', 'The portal, screen by screen')}>
         <PortalTour />
       </section>
 
@@ -72,18 +78,18 @@ export default function BusinessPage() {
       <section className={`gutter ${styles.block}`} aria-labelledby="biz-cta">
         <div className={styles.final}>
           <div>
-            <h2 id="biz-cta" data-head className={`display invisible ${styles.finalTitle}`}>
-              Jednostavnija nabavka za vašu firmu.
+            <h2 key={lang} id="biz-cta" data-head className={`display invisible ${styles.finalTitle}`}>
+              {t('Jednostavnija nabavka za vašu firmu.', 'Simpler procurement for your business.')}
             </h2>
-            <p className={styles.lead}>Pošaljite upit za poslovnu saradnju, prodaja vam se javlja.</p>
+            <p className={styles.lead}>{t('Pošaljite upit za poslovnu saradnju, prodaja vam se javlja.', 'Send a business inquiry and our sales team will get back to you.')}</p>
             <div className={styles.actions}>
               <Cta onClick={openRegistration} solid>
-                Zatražite poslovni nalog
+                {t('Zatražite poslovni nalog', 'Request a business account')}
               </Cta>
             </div>
           </div>
           <div data-curtain className={styles.finalPhoto}>
-            <img src="/editorial/firme/kran.webp" alt="Toranjski kran iznad zgrade u izgradnji" width={1200} height={1500} loading="lazy" decoding="async" />
+            <img src="/editorial/firme/kran.webp" alt={t('Toranjski kran iznad zgrade u izgradnji', 'Tower crane above a building under construction')} width={1200} height={1500} loading="lazy" decoding="async" />
           </div>
         </div>
       </section>

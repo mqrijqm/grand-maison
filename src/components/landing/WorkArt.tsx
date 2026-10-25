@@ -1,3 +1,4 @@
+import { useLang } from '@/lib/i18n'
 import UseArt from './UseArt'
 import { box, line, poly, prism, type Proj, type V3 } from './iso'
 
@@ -38,9 +39,10 @@ function bathroom(): Part[][] {
 }
 
 function Scene({ kind }: { kind: 'zidanje-krov' | 'kupatilo' }) {
+  const { t } = useLang()
   const layers = kind === 'zidanje-krov' ? masonry() : bathroom()
   return <svg className="art w-full" viewBox={kind === 'zidanje-krov' ? '110 65 285 290' : '25 0 395 360'} fill="none" stroke="currentColor" strokeWidth={1.25} strokeLinejoin="miter" strokeLinecap="square" data-axis="z" data-gap={kind === 'zidanje-krov' ? 12 : 0} role="img">
-    <title>{kind === 'zidanje-krov' ? 'Shematski prikaz materijala za zidanje i krov' : 'Shematski prikaz sanitarne keramike u prostoru'}</title>
+    <title>{kind === 'zidanje-krov' ? t('Shematski prikaz materijala za zidanje i krov', 'Schematic of masonry and roofing materials') : t('Shematski prikaz sanitarne keramike u prostoru', 'Schematic of sanitary ceramics in a room')}</title>
     {layers.map((parts, k) => <g key={k} data-layer={k}>{parts.map((p, i) => <g key={i}>
       <path d={p.shape} fill={p.open ? 'none' : 'var(--art-fill)'} data-d={0} />
       {p.edges && <path d={p.edges} data-d={1} />}
@@ -50,7 +52,8 @@ function Scene({ kind }: { kind: 'zidanje-krov' | 'kupatilo' }) {
 }
 
 export default function WorkArt({ kind }: { kind: WorkKind }) {
+  const { t } = useLang()
   return <div data-work-art className="w-full">
-    {kind === 'suha-gradnja' ? <UseArt use="pregradni-zid" className="mx-auto w-full max-w-[470px]" title="Presjek pregradnog zida: ploče, profili i izolacija" /> : kind === 'izolacija' ? <UseArt use="fasada" className="mx-auto w-full max-w-[470px]" title="Shematski prikaz slojeva izolacije zida" /> : <Scene kind={kind} />}
+    {kind === 'suha-gradnja' ? <UseArt use="pregradni-zid" className="mx-auto w-full max-w-[470px]" title={t('Presjek pregradnog zida: ploče, profili i izolacija', 'Cross-section of a partition wall: boards, profiles and insulation')} /> : kind === 'izolacija' ? <UseArt use="fasada" className="mx-auto w-full max-w-[470px]" title={t('Shematski prikaz slojeva izolacije zida', 'Schematic of the layers of wall insulation')} /> : <Scene kind={kind} />}
   </div>
 }

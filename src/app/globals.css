@@ -2664,3 +2664,26 @@ html:has(#artikli) .cursor-spark,
 html:has(#artikli) .cursor-tag {
   border-radius: 0 !important;
 }
+
+/* ——— SR / EN preklopnik ——— */
+.lang { display: inline-flex; align-items: center; }
+.lang__item { display: inline-flex; align-items: center; }
+.lang__item i { width: 1px; height: 11px; background: currentColor; opacity: 0.35; margin-inline: 2px; }
+.lang button {
+  padding: 6px 7px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: inherit;
+  opacity: 0.45;
+  transition: opacity 0.25s;
+}
+.lang button:hover,
+.lang button:focus-visible,
+.lang button.is-on { opacity: 1; }
+.nav__lang { align-self: center; padding-inline: 8px; color: var(--ink); }
+@media (max-width: 1023px) {
+  .nav__lang { display: none; }
+}
+.menu__lang { margin-left: auto; margin-right: 14px; color: #fff; }

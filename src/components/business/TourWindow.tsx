@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Icon from '@/components/portal/Icon'
+import { nameL } from '@/lib/b2b-demo'
+import { useLang } from '@/lib/i18n'
 import s from './TourWindow.module.css'
 
 // Jedan stalni prozor portala za objašnjenje "ekran po ekran". Namjerno svedeno: ostatak ekrana su
@@ -10,27 +12,29 @@ import s from './TourWindow.module.css'
 
 export type TourStep = 'pregled' | 'materijali' | 'upit' | 'ponude' | 'narudzbe' | 'gradilista'
 
-const NAV: { id: TourStep; label: string; icon: string }[] = [
-  { id: 'pregled', label: 'Pregled', icon: 'pregled' },
-  { id: 'materijali', label: 'Materijali', icon: 'brza' },
-  { id: 'upit', label: 'Upit', icon: 'liste' },
-  { id: 'ponude', label: 'Ponude', icon: 'ponude' },
-  { id: 'narudzbe', label: 'Narudžbe', icon: 'narudzbe' },
-  { id: 'gradilista', label: 'Gradilišta', icon: 'gradilista' },
+const NAV: { id: TourStep; label: string; en: string; icon: string }[] = [
+  { id: 'pregled', label: 'Pregled', en: 'Overview', icon: 'pregled' },
+  { id: 'materijali', label: 'Materijali', en: 'Materials', icon: 'brza' },
+  { id: 'upit', label: 'Upit', en: 'Inquiry', icon: 'liste' },
+  { id: 'ponude', label: 'Ponude', en: 'Offers', icon: 'ponude' },
+  { id: 'narudzbe', label: 'Narudžbe', en: 'Orders', icon: 'narudzbe' },
+  { id: 'gradilista', label: 'Gradilišta', en: 'Sites', icon: 'gradilista' },
 ]
 const OFFER = [
-  ['GKP-001', 'Gips-kartonska ploča GKB 12,5 mm', '420 m²'],
-  ['PRF-075', 'Pocinčani zidni profil CW 75', '180 kom'],
-  ['ISO-001', 'Kamena vuna u ploči 50 mm', '380 m²'],
+  ['GKP-001', 'Gips-kartonska ploča GKB 12,5 mm', '420 m²', '420 m²'],
+  ['PRF-075', 'Pocinčani zidni profil CW 75', '180 kom', '180 pcs'],
+  ['ISO-001', 'Kamena vuna u ploči 50 mm', '380 m²', '380 m²'],
 ]
 const TRACK = ['Primljena', 'Potvrđena', 'U pripremi', 'Na putu', 'Isporučena']
+const TRACK_EN = ['Received', 'Confirmed', 'In preparation', 'On the way', 'Delivered']
 const SITES = [
-  ['Lamela A', 'Pregradni zidovi · 2 narudžbe'],
-  ['Poslovni B', 'Spušteni plafoni · 1 ponuda'],
-  ['Kuća C', 'Krov i izolacija · isporučeno'],
+  ['Lamela A', 'Pregradni zidovi · 2 narudžbe', 'Lamela A', 'Partition walls · 2 orders'],
+  ['Poslovni B', 'Spušteni plafoni · 1 ponuda', 'Office B', 'Suspended ceilings · 1 offer'],
+  ['Kuća C', 'Krov i izolacija · isporučeno', 'House C', 'Roof and insulation · delivered'],
 ]
 
 export default function TourWindow({ step }: { step: TourStep }) {
+  const { t, lang } = useLang()
   const win = useRef<HTMLDivElement>(null)
   const cur = useRef<HTMLSpanElement>(null)
   const [press, setPress] = useState(false)
@@ -124,7 +128,7 @@ export default function TourWindow({ step }: { step: TourStep }) {
           {NAV.map((n) => (
             <span key={n.id} className={s.nav} data-on={n.id === step || undefined}>
               <Icon name={n.icon} />
-              {n.label}
+              {t(n.label, n.en)}
               {n.id === 'materijali' && added && <em>1</em>}
             </span>
           ))}
@@ -138,13 +142,13 @@ export default function TourWindow({ step }: { step: TourStep }) {
           <div className={s.focus} key={step}>
             {step === 'pregled' && (
               <div className={s.stage}>
-                <p className={s.kick}>Ponuda P-26-0142 čeka potvrdu</p>
+                <p className={s.kick}>{t('Ponuda P-26-0142 čeka potvrdu', 'Offer P-26-0142 awaiting confirmation')}</p>
                 <ul>
-                  {OFFER.map(([sku, nm, q], i) => (
+                  {OFFER.map(([sku, nm, q, qEn], i) => (
                     <li key={sku} data-t={`row-${i}`} data-on={i === row || undefined}>
                       <span className={s.mono}>{sku}</span>
-                      <span>{nm}</span>
-                      <b>{q}</b>
+                      <span>{lang === 'en' ? nameL(sku, lang) : nm}</span>
+                      <b>{t(q, qEn)}</b>
                     </li>
                   ))}
                 </ul>
@@ -155,16 +159,16 @@ export default function TourWindow({ step }: { step: TourStep }) {
               <div className={s.card}>
                 <span className={s.search} data-t="search" data-on={query ? true : undefined}>
                   <Icon name="search" />
-                  {query || <i>Šifra ili naziv</i>}
+                  {query || <i>{t('Šifra ili naziv', 'Code or name')}</i>}
                   {query && <em className={s.caret} />}
                 </span>
                 <div className={s.result} data-show={query.length >= 5 || undefined}>
                   <span>
-                    <b>Pocinčani zidni profil CW 75</b>
+                    <b>{nameL('PRF-075', lang)}</b>
                     <i>PRF-075 · 3000 × 75 × 50 mm</i>
                   </span>
                   <span className={added ? s.done : s.btn} data-t="add">
-                    {added ? '✓ 10 kom' : 'Dodaj'}
+                    {added ? t('✓ 10 kom', '✓ 10 pcs') : t('Dodaj', 'Add')}
                   </span>
                 </div>
               </div>
@@ -172,16 +176,16 @@ export default function TourWindow({ step }: { step: TourStep }) {
 
             {step === 'upit' && (
               <div className={s.card}>
-                <p className={s.kick}>Gradilište</p>
-                <span className={s.select}>Lamela A, stambeni objekat</span>
+                <p className={s.kick}>{t('Gradilište', 'Construction site')}</p>
+                <span className={s.select}>{t('Lamela A, stambeni objekat', 'Lamela A, residential building')}</span>
                 <div className={s.seg}>
                   <span data-t="mode" data-on={mode === 'Dostava' || undefined}>
-                    Dostava na gradilište
+                    {t('Dostava na gradilište', 'Delivery to the site')}
                   </span>
-                  <span data-on={mode === 'Preuzimanje' || undefined}>Preuzimanje</span>
+                  <span data-on={mode === 'Preuzimanje' || undefined}>{t('Preuzimanje', 'Collection')}</span>
                 </div>
                 <span className={sent ? s.done : s.btn} data-t="send">
-                  {sent ? '✓ Upit poslat prodaji' : 'Pošalji upit'}
+                  {sent ? t('✓ Upit poslat prodaji', '✓ Inquiry sent to sales') : t('Pošalji upit', 'Send inquiry')}
                 </span>
               </div>
             )}
@@ -189,21 +193,21 @@ export default function TourWindow({ step }: { step: TourStep }) {
             {step === 'ponude' && (
               <div className={s.card}>
                 <div className={s.offerHead}>
-                  <b>Ponuda P-26-0142</b>
+                  <b>{t('Ponuda P-26-0142', 'Offer P-26-0142')}</b>
                   <span className={s.chip} data-on={confirmed || undefined}>
-                    {confirmed ? 'Potvrđena' : 'Čeka potvrdu'}
+                    {confirmed ? t('Potvrđena', 'Confirmed') : t('Čeka potvrdu', 'Awaiting confirmation')}
                   </span>
                 </div>
                 <ul className={s.lines} data-t="lines">
-                  {OFFER.map(([sku, nm, q]) => (
+                  {OFFER.map(([sku, nm, q, qEn]) => (
                     <li key={sku}>
-                      <span>{nm}</span>
-                      <b>{q}</b>
+                      <span>{lang === 'en' ? nameL(sku, lang) : nm}</span>
+                      <b>{t(q, qEn)}</b>
                     </li>
                   ))}
                 </ul>
                 <span className={confirmed ? s.done : s.btn} data-t="confirm">
-                  {confirmed ? '✓ Narudžba otvorena' : 'Potvrdi ponudu'}
+                  {confirmed ? t('✓ Narudžba otvorena', '✓ Order opened') : t('Potvrdi ponudu', 'Confirm offer')}
                 </span>
               </div>
             )}
@@ -211,31 +215,31 @@ export default function TourWindow({ step }: { step: TourStep }) {
             {step === 'narudzbe' && (
               <div className={s.card}>
                 <div className={s.offerHead}>
-                  <b>Narudžba GC-26-04512</b>
+                  <b>{t('Narudžba GC-26-04512', 'Order GC-26-04512')}</b>
                   <span className={s.chip} data-on={stage >= 3 || undefined}>
-                    {stage >= 3 ? 'Na putu ka gradilištu' : 'U pripremi'}
+                    {stage >= 3 ? t('Na putu ka gradilištu', 'On the way to the site') : t('U pripremi', 'In preparation')}
                   </span>
                 </div>
                 <ol className={s.track}>
-                  {TRACK.map((t, i) => (
-                    <li key={t} data-done={i <= stage || undefined}>
+                  {TRACK.map((label, i) => (
+                    <li key={label} data-done={i <= stage || undefined}>
                       <i />
-                      <span>{t}</span>
+                      <span>{lang === 'en' ? TRACK_EN[i] : label}</span>
                     </li>
                   ))}
                 </ol>
                 <span className={s.ghost} data-t="next">
-                  Prikaži sljedeći status
+                  {t('Prikaži sljedeći status', 'Show next status')}
                 </span>
               </div>
             )}
 
             {step === 'gradilista' && (
               <div className={s.sites}>
-                {SITES.map(([nm, info], i) => (
+                {SITES.map(([nm, info, nmEn, infoEn], i) => (
                   <div key={nm} className={s.site} data-t={`site-${i}`} data-on={i === site || undefined}>
-                    <b>{nm}</b>
-                    <i>{info}</i>
+                    <b>{t(nm, nmEn)}</b>
+                    <i>{t(info, infoEn)}</i>
                   </div>
                 ))}
               </div>

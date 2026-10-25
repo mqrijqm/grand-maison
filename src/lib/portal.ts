@@ -1,5 +1,7 @@
 import { useSyncExternalStore } from 'react'
 import { DEMO_PARTNERS, PARTNER_TIERS, type FullPartner } from './b2b'
+import type { Lang } from './i18n'
+import { dateLocale, numLocale, tr } from './portal-i18n'
 
 // B2B portal (/portal) — DEMO. Sadržaj prati Blink ponudu (Paket 2: partnerski nalozi, rabatna skala,
 // kreditni limit, odgođeno plaćanje, fakture, praćenje narudžbi, ERP zalihe, admin). Research
@@ -81,7 +83,7 @@ export const portalLogout = () => set(null)
 // ——— Pomoćne ———
 const DAY = 86_400_000
 export const dateFromDaysAgo = (days: number) => new Date(Date.now() - days * DAY)
-export const fmtDate = (d: Date) => d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })
+export const fmtDate = (d: Date, lang: Lang = 'sr') => d.toLocaleDateString(dateLocale(lang), { day: '2-digit', month: '2-digit', year: 'numeric' })
 
 export type InvoiceRow = { no: string; issued: Date; due: Date; amount: number; status: 'Plaćena' | 'Otvorena' | 'Kasni' }
 
@@ -103,17 +105,18 @@ export const ORDER_STEPS = ['Primljena', 'Potvrđena', 'U pripremi', 'Isporučen
 export const orderStep = (status: string) => Math.max(0, ORDER_STEPS.indexOf(status as (typeof ORDER_STEPS)[number]))
 
 /** Faktura kao tekstualni fajl za preuzimanje (demo dokument). */
-export function invoiceFile(p: PortalPartner, row: InvoiceRow) {
-  const km = (n: number) => n.toLocaleString('de-DE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' KM'
+export function invoiceFile(p: PortalPartner, row: InvoiceRow, lang: Lang = 'sr') {
+  const en = lang === 'en'
+  const km = (n: number) => n.toLocaleString(numLocale(lang), { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' KM'
   return [
-    'GRAND COMPANY d.o.o. Banja Luka — DEMO FAKTURA',
-    'Dokument je primjer za prezentaciju B2B portala, nije stvarna faktura.',
+    en ? 'GRAND COMPANY d.o.o. Banja Luka — DEMO INVOICE' : 'GRAND COMPANY d.o.o. Banja Luka — DEMO FAKTURA',
+    en ? 'This document is a sample for presenting the B2B portal, not a real invoice.' : 'Dokument je primjer za prezentaciju B2B portala, nije stvarna faktura.',
     '',
-    `Broj: ${row.no}`,
-    `Kupac: ${p.name}`,
-    `Datum izdavanja: ${fmtDate(row.issued)}`,
-    `Valuta: ${p.paymentDays} dana — dospijeće ${fmtDate(row.due)}`,
-    `Iznos: ${km(row.amount)}`,
-    `Status: ${row.status}`,
+    `${en ? 'Number' : 'Broj'}: ${row.no}`,
+    `${en ? 'Customer' : 'Kupac'}: ${p.name}`,
+    `${en ? 'Issue date' : 'Datum izdavanja'}: ${fmtDate(row.issued, lang)}`,
+    en ? `Terms: ${p.paymentDays} days — due ${fmtDate(row.due, lang)}` : `Valuta: ${p.paymentDays} dana — dospijeće ${fmtDate(row.due)}`,
+    `${en ? 'Amount' : 'Iznos'}: ${km(row.amount)}`,
+    `Status: ${tr(row.status, lang)}`,
   ].join('\r\n')
 }

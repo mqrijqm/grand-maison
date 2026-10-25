@@ -2,6 +2,7 @@
 
 import { useRef } from 'react'
 import { gsap, ScrollTrigger, useGSAP } from '@/lib/gsap'
+import { useLang } from '@/lib/i18n'
 import Dashboard from './Dashboard'
 import s from './Portal.module.css'
 
@@ -36,6 +37,7 @@ function skyline(cols: number, rows: number, seed: number) {
 }
 
 export default function PortalStage({ variant = 'full' }: { variant?: 'full' | 'preview' }) {
+  const { t } = useLang()
   const root = useRef<HTMLDivElement>(null)
   const shot = useRef<HTMLDivElement>(null)
   const cv = useRef<HTMLCanvasElement>(null)
@@ -104,8 +106,8 @@ export default function PortalStage({ variant = 'full' }: { variant?: 'full' | '
   return (
     <div ref={root} className={s.stage} data-variant={variant}>
       <div className={s.coords} aria-hidden>
-        <span>A1 · Nabavka</span>
-        <span>Portal · uživo</span>
+        <span>{t('A1 · Nabavka', 'A1 · Procurement')}</span>
+        <span>{t('Portal · uživo', 'Portal · live')}</span>
       </div>
       <canvas ref={cv} className={s.mosaic} aria-hidden />
       <div ref={shot} className={s.shot}>

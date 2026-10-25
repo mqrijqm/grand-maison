@@ -4,8 +4,10 @@ import { useRef } from 'react'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { EASE, MQ } from '@/lib/motion'
 import { revealLines } from '@/lib/reveal'
+import { useLang } from '@/lib/i18n'
 
 export default function Manifest() {
+  const { t, lang } = useLang()
   const root = useRef<HTMLElement>(null)
 
   useGSAP(
@@ -33,7 +35,7 @@ export default function Manifest() {
         revealLines(el.querySelector('[data-lines]')!, reduce, 'top 72%')
       })
     },
-    { scope: root },
+    { scope: root, dependencies: [lang], revertOnUpdate: true },
   )
 
   return (
@@ -45,17 +47,13 @@ export default function Manifest() {
       >
         <p
           data-lines
+          key={lang}
           className="invisible text-center text-[clamp(14px,1.56vw,28px)] uppercase leading-none"
         >
-          Paleta ne ostaje
-          <br />
-          na ulici.
-          <br />
-          Kamion sa kranom
-          <br />
-          je spušta na etažu
-          <br />
-          ili na skelu.
+          {t(
+            <>Paleta ne ostaje<br />na ulici.<br />Kamion sa kranom<br />je spušta na etažu<br />ili na skelu.</>,
+            <>The pallet never<br />stays in the street.<br />A crane truck<br />lowers it to the floor<br />or onto the scaffold.</>,
+          )}
         </p>
       </div>
     </section>

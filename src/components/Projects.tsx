@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import { gsap, useGSAP } from '@/lib/gsap'
 import { MQ } from '@/lib/motion'
 import { BRAND } from './SiteChrome'
+import { useLang } from '@/lib/i18n'
 import { revealChars, revealLines, revealMedia } from '@/lib/reveal'
 
 // Stovarište i vozni park: samo naše fotografije i činjenice iz podataka firme. Nema izmišljenih projekata.
@@ -12,41 +13,49 @@ type Block =
   | { kind: 'pair'; text: string; photos: [Photo, Photo] }
   | { kind: 'tall'; text: string; photos: [Photo] }
 
-type Photo = { src: string; alt: string }
-type Item = { category: string; side: Photo; blocks: Block[] }
+type Photo = { src: string; alt: string; altEn?: string }
+type Item = { category: string; categoryEn: string; en: string[]; side: Photo; blocks: Block[] }
 
 const ITEMS: Item[] = [
   {
-    category: 'Stovarište',
-    side: { src: '/photos/tabla.webp', alt: 'Tabla Grand Company na ulazu' },
+    category: 'Stovarište', categoryEn: 'The yard',
+    en: [
+      'Our yard in Banja Luka. Boards, profiles, insulation and binders stand on pallets, ready to load.',
+      'Stock levels on the site are read from Pantheon, the same system our sales run on. A forklift loads pallets straight onto the truck.',
+    ],
+    side: { src: '/photos/tabla.webp', alt: 'Tabla Grand Company na ulazu', altEn: 'Grand Company sign at the entrance' },
     blocks: [
       {
         kind: 'wide',
-        photos: [{ src: '/photos/stovariste-pregled.webp', alt: 'Stovarište sa paletama materijala' }],
+        photos: [{ src: '/photos/stovariste-pregled.webp', alt: 'Stovarište sa paletama materijala', altEn: 'Yard with pallets of material' }],
         text: 'Stovarište u Banjoj Luci. Ploče, profili, izolacija i veziva stoje na paletama, spremni za utovar.',
       },
       {
         kind: 'pair',
         photos: [
-          { src: '/photos/stovariste-ulaz.webp', alt: 'Ulaz na stovarište' },
-          { src: '/photos/palete-viljuskar.webp', alt: 'Viljuškar utovaruje palete' },
+          { src: '/photos/stovariste-ulaz.webp', alt: 'Ulaz na stovarište', altEn: 'Yard entrance' },
+          { src: '/photos/palete-viljuskar.webp', alt: 'Viljuškar utovaruje palete', altEn: 'Forklift loading pallets' },
         ],
         text: 'Stanje na sajtu čitamo iz Pantheona, istog sistema iz kojeg radi prodaja. Viljuškar utovara palete direktno na kamion.',
       },
     ],
   },
   {
-    category: 'Vozni park',
-    side: { src: '/photos/stovariste-vazduh.webp', alt: 'Stovarište iz vazduha' },
+    category: 'Vozni park', categoryEn: 'Fleet',
+    en: [
+      'Our own crane trucks lower the pallet onto the floor or scaffold, not the street.',
+      'A shop for smaller quantities and personal pickup. The CE declaration and fire-safety certificate come with the delivery note.',
+    ],
+    side: { src: '/photos/stovariste-vazduh.webp', alt: 'Stovarište iz vazduha', altEn: 'Aerial view of the yard' },
     blocks: [
       {
         kind: 'tall',
-        photos: [{ src: '/photos/kran-utovar.webp', alt: 'Kamion sa kranom pri utovaru' }],
+        photos: [{ src: '/photos/kran-utovar.webp', alt: 'Kamion sa kranom pri utovaru', altEn: 'Crane truck loading' }],
         text: 'Vlastiti kamioni sa kranom spuštaju paletu na etažu ili skelu, ne na ulicu.',
       },
       {
         kind: 'wide',
-        photos: [{ src: '/photos/prodavnica.webp', alt: 'Prodavnica Grand Company' }],
+        photos: [{ src: '/photos/prodavnica.webp', alt: 'Prodavnica Grand Company', altEn: 'Grand Company shop' }],
         text: 'Prodavnica za manje količine i lično preuzimanje. CE deklaracija i protivpožarni atest idu uz otpremnicu.',
       },
     ],
@@ -55,6 +64,7 @@ const ITEMS: Item[] = [
 
 // Fotografija u tri sloja: maska (clip-path), zum, paralaksa.
 function Media({ photo, className = '' }: { photo: Photo; className?: string }) {
+  const { t } = useLang()
   return (
     <div
       data-media
@@ -66,7 +76,7 @@ function Media({ photo, className = '' }: { photo: Photo; className?: string }) 
         <img decoding="async"
           data-par
           src={photo.src}
-          alt={photo.alt}
+          alt={t(photo.alt, photo.altEn ?? photo.alt)}
           loading="lazy"
           className="absolute left-0 top-[-10%] h-[120%] w-full object-cover transition-[filter] duration-500 hover:brightness-95"
         />
@@ -78,18 +88,20 @@ function Media({ photo, className = '' }: { photo: Photo; className?: string }) 
 const TEXT = 'invisible max-w-full text-[clamp(13px,1.25vw,20px)] uppercase leading-[1.05] md:max-w-[71%]'
 
 function Article({ item }: { item: Item }) {
+  const { t, lang } = useLang()
   return (
     <article data-project className="relative z-30 flex flex-col md:flex-row">
       {/* Lijeva kolona ostaje zalijepljena dok se desno mijenjaju slike. */}
       <div className="px-5 pt-[12dvh] md:sticky md:top-0 md:ml-[8.33vw] md:h-dvh md:w-[16.67vw] md:self-start md:px-0 md:pt-[31dvh]">
         <h3
+          key={lang}
           data-title
           className="invisible text-center text-[clamp(18px,1.67vw,30px)] uppercase leading-none"
         >
           {BRAND}
         </h3>
-        <p data-cat className="invisible mt-[34px] text-center text-[clamp(11px,0.97vw,16px)] uppercase leading-none">
-          {item.category}
+        <p key={lang} data-cat className="invisible mt-[34px] text-center text-[clamp(11px,0.97vw,16px)] uppercase leading-none">
+          {t(item.category, item.categoryEn)}
         </p>
         <Media photo={item.side} className="mt-10 hidden aspect-[2/3] w-full md:block" />
       </div>
@@ -105,8 +117,8 @@ function Article({ item }: { item: Item }) {
                 <Media photo={block.photos[1]} className="aspect-[362/471] w-[48%] md:w-[43.1%] md:-translate-y-[15dvh]" />
               </div>
             )}
-            <p data-text className={TEXT}>
-              {block.text}
+            <p key={lang} data-text className={TEXT}>
+              {t(block.text, item.en[i])}
             </p>
           </div>
         ))}
@@ -116,6 +128,7 @@ function Article({ item }: { item: Item }) {
 }
 
 export default function Projects() {
+  const { lang } = useLang()
   const root = useRef<HTMLDivElement>(null)
 
   useGSAP(
@@ -151,7 +164,7 @@ export default function Projects() {
         })
       })
     },
-    { scope: root },
+    { scope: root, dependencies: [lang] },
   )
 
   return (

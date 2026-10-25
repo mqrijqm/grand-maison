@@ -11,8 +11,11 @@ import {
   USES,
   artikala,
   filterProducts,
+  workName,
   type Filters,
 } from '@/lib/shop'
+import { CATEGORIES_EN } from '@/gc/gc'
+import { useLang } from '@/lib/i18n'
 import ProductCard from './ProductCard'
 import SectionHead from './SectionHead'
 
@@ -58,6 +61,7 @@ function Select({
 }
 
 export default function Shop() {
+  const { t, lang } = useLang()
   const { query, category, use, price, sort, onlySaved, saved, cart, compare } = useShop()
 
   const items = useMemo(
@@ -78,30 +82,30 @@ export default function Shop() {
     <section id="prodavnica" data-spy className="gutter scroll-mt-[var(--bar)] py-[14dvh]">
       <SectionHead
         no="03"
-        label="Katalog"
-        title="Cijela ponuda"
-        lead="Knauf suha gradnja, izolacija, veziva i pribor. Cijene u KM sa PDV-om, po jedinici artikla."
+        label={t('Katalog', 'Catalogue')}
+        title={t('Cijela ponuda', 'The full range')}
+        lead={t('Knauf suha gradnja, izolacija, veziva i pribor. Cijene u KM sa PDV-om, po jedinici artikla.', 'Knauf drywall, insulation, binders and accessories. Prices in KM including VAT, per item unit.')}
       />
 
       {/* Pretraga */}
       <div className="mt-[8dvh] flex items-end gap-5 border-b-2 border-ink pb-3">
         <label htmlFor="shop-q" className="shrink-0 pb-1 text-micro uppercase">
-          Traži
+          {t('Traži', 'Search')}
         </label>
         <input
           id="shop-q"
           type="search"
           value={query}
           onChange={(e) => setFilter({ query: e.target.value })}
-          placeholder="Artikal, brend ili šifra"
+          placeholder={t('Artikal, brend ili šifra', 'Item, brand or code')}
           autoComplete="off"
           className="w-full min-w-0 bg-transparent text-lead uppercase outline-none placeholder:text-ink/25"
         />
       </div>
 
       {/* Kategorije */}
-      <div role="group" aria-label="Kategorija" className="mt-6 flex flex-wrap gap-2">
-        {[{ id: 'sve', name: 'Sve' }, ...CATEGORIES].map((c) => {
+      <div role="group" aria-label={t('Kategorija', 'Category')} className="mt-6 flex flex-wrap gap-2">
+        {[{ id: 'sve', name: t('Sve', 'All') }, ...CATEGORIES.map((c) => ({ ...c, name: lang === 'en' ? CATEGORIES_EN[c.id].label : c.name }))].map((c) => {
           const on = category === c.id
           const n = c.id === 'sve' ? PRODUCTS.length : PRODUCTS.filter((p) => p.category === c.id).length
           return (
@@ -123,22 +127,22 @@ export default function Shop() {
       {/* Ostali filteri */}
       <div className="mt-6 grid grid-cols-2 items-end gap-3 md:grid-cols-4 md:gap-[1.5vw]">
         <Select
-          label="Namjena"
+          label={t('Namjena', 'Application')}
           value={use}
           onChange={(v) => setFilter({ use: v as Filters['use'] })}
-          options={[['sve', 'Sve namjene'], ...USES.map((u): [string, string] => [u.id, u.name])]}
+          options={[['sve', t('Sve namjene', 'All applications')], ...USES.map((u): [string, string] => [u.id, workName(u.id, lang)])]}
         />
         <Select
-          label="Cijena"
+          label={t('Cijena', 'Price')}
           value={price}
           onChange={(v) => setFilter({ price: v })}
-          options={[['sve', 'Sve cijene'], ...PRICE_BANDS.map((b): [string, string] => [b.id, b.label])]}
+          options={[['sve', t('Sve cijene', 'All prices')], ...PRICE_BANDS.map((b): [string, string] => [b.id, lang === 'en' ? b.labelEn : b.label])]}
         />
         <Select
-          label="Sortiraj"
+          label={t('Sortiraj', 'Sort by')}
           value={sort}
           onChange={(v) => setFilter({ sort: v as Filters['sort'] })}
-          options={SORTS.map((s): [string, string] => [s.id, s.label])}
+          options={SORTS.map((s): [string, string] => [s.id, lang === 'en' ? s.labelEn : s.label])}
         />
         <div className="col-span-2 flex items-stretch gap-2 md:col-span-1">
           <button
@@ -149,16 +153,16 @@ export default function Shop() {
               onlySaved ? 'bg-ink text-bg' : 'hover:bg-ink hover:text-bg'
             }`}
           >
-            Sačuvano <span className="tabular-nums opacity-60">{saved.length}</span>
+            {t('Sačuvano', 'Saved')} <span className="tabular-nums opacity-60">{saved.length}</span>
           </button>
         </div>
       </div>
 
       <div className="mt-8 flex items-center justify-between text-micro uppercase" aria-live="polite">
-        <p>{artikala(items.length)}</p>
+        <p>{artikala(items.length, lang)}</p>
         {filtered && (
           <button type="button" onClick={() => resetFilters()} className="underline underline-offset-4">
-            Poništi filtere
+            {t('Poništi filtere', 'Clear filters')}
           </button>
         )}
       </div>
@@ -172,13 +176,13 @@ export default function Shop() {
         </div>
       ) : (
         <div className="mt-6 flex min-h-[40dvh] flex-col items-start justify-center gap-6 border-2 border-ink p-6 md:p-[3vw]">
-          <p className="text-lead uppercase">Nema artikala za ove filtere.</p>
+          <p className="text-lead uppercase">{t('Nema artikala za ove filtere.', 'No items match these filters.')}</p>
           <button
             type="button"
             onClick={() => resetFilters()}
             className="border-2 border-ink px-4 py-3 text-micro uppercase transition-colors duration-300 hover:bg-ink hover:text-bg"
           >
-            Poništi filtere
+            {t('Poništi filtere', 'Clear filters')}
           </button>
         </div>
       )}

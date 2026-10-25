@@ -1,6 +1,7 @@
 'use client'
 
 import { Fragment, useEffect, useRef } from 'react'
+import { useLang } from '@/lib/i18n'
 
 declare global {
   interface Window {
@@ -23,30 +24,38 @@ const SCRIPT = '/crane/crane-hero.js'
 // Rečenica koja se na kraju hero-a (kad kamera izađe kroz prozor i vidi se opet nebo)
 // polako ispisuje, slovo po slovo. Skrol je vozi: scena postavlja `--type-p` (0..1) na sekciju,
 // a svako slovo ima svoj prag `--th` i pojavi se (mekano) tačno kad skrol stigne dotle.
-const PHRASE = 'Građevinski materijal za profesionalce. Veleprodaja. Dostava po Banjoj Luci.'
-// Slova se drže u rečima (nowrap), da se reč nikad ne prelomi usred slova na uskom ekranu.
-const WORDS = PHRASE.split(' ')
-const TOTAL = [...PHRASE].length
-let cursor = 0
+const PHRASES = {
+  sr: 'Građevinski materijal za profesionalce. Veleprodaja. Dostava po Banjoj Luci.',
+  en: 'Building materials for professionals. Wholesale. Delivery across Banja Luka.',
+}
 // Demo font nema slova sa dijakriticima: ispisujemo osnovno slovo iz fonta, a znak iznad
 // (kvačicu/akcenat) dodaje CSS. Kad se kupi puna verzija fonta, ovo se može isključiti.
 const DEMO_FONT_WITHOUT_DIACRITICS = false
 const MARKS: Record<string, [string, string]> = {
   š: ['s', 'ˇ'], č: ['c', 'ˇ'], ž: ['z', 'ˇ'], ć: ['c', '´'], đ: ['d', '-'],
 }
-const WORD_GLYPHS = WORDS.map((word) => {
-  const glyphs = [...word].map((glyph) => {
-    const mark = DEMO_FONT_WITHOUT_DIACRITICS ? MARKS[glyph] : undefined
-    return { glyph: mark ? mark[0] : glyph, mark: mark?.[1], th: (cursor++ / TOTAL) * 0.94 }
+// Slova se drže u rečima (nowrap), da se reč nikad ne prelomi usred slova na uskom ekranu.
+function buildGlyphs(phrase: string) {
+  const total = [...phrase].length
+  let cursor = 0
+  return phrase.split(' ').map((word) => {
+    const glyphs = [...word].map((glyph) => {
+      const mark = DEMO_FONT_WITHOUT_DIACRITICS ? MARKS[glyph] : undefined
+      return { glyph: mark ? mark[0] : glyph, mark: mark?.[1], th: (cursor++ / total) * 0.94 }
+    })
+    cursor++ // razmak iza reči
+    return glyphs
   })
-  cursor++ // razmak iza reči
-  return glyphs
-})
+}
+const GLYPHS = { sr: buildGlyphs(PHRASES.sr), en: buildGlyphs(PHRASES.en) }
 
 // Scena se pinuje; sve na njoj je štampa u tačkama (kobalt mastilo na papiru) koja mijenja boju
 // i raster po poglavljima. Ostatak visine je prazan prostor (story-immersion) kroz koji se
 // animacija krana odigra.
 export default function CraneHero() {
+  const { lang } = useLang()
+  const PHRASE = PHRASES[lang]
+  const WORD_GLYPHS = GLYPHS[lang]
   const root = useRef<HTMLElement>(null)
   useEffect(() => {
     let script: HTMLScriptElement | null = null
@@ -139,7 +148,7 @@ export default function CraneHero() {
             </span>
           </div>
 
-          <p className="story-type">
+          <p key={lang} className="story-type">
             {WORD_GLYPHS.map((glyphs, w) => (
               <Fragment key={w}>
                 {w > 0 ? ' ' : null}

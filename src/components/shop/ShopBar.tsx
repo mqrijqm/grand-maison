@@ -3,17 +3,19 @@
 import { useEffect, useState, type ReactNode } from 'react'
 import { cartCount, openCart, openPanel, useShop, type PanelKind } from '@/lib/cart'
 import { NAV } from '@/lib/shop'
+import { useLang } from '@/lib/i18n'
 import { useScrollTo } from '@/lib/useScrollTo'
 
 // Traka se lijepi na vrh samo dok se skrola kroz prodavnicu. Landing iznad nema navigaciju i ostaje čist.
 export default function ShopBar() {
+  const { t, lang } = useLang()
   const { cart, saved, compare } = useShop()
   const count = cartCount(cart)
   // Ulazi u panele iz grand-root: pretraga, sačuvano, poređenje. Na mobilnom samo ikona i broj.
   const tools: { kind: PanelKind; label: string; n?: number; icon: ReactNode }[] = [
-    { kind: 'search', label: 'Traži', icon: <path d="M10.5 17a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13Zm4.6-1.9L20 20" /> },
-    { kind: 'saved', label: 'Sačuvano', n: saved.length, icon: <path d="M6 3.5h12v17l-6-4.5-6 4.5z" /> },
-    { kind: 'compare', label: 'Poredi', n: compare.length, icon: <path d="M4 7h11m0 0-3-3m3 3-3 3M20 17H9m0 0 3-3m-3 3 3 3" /> },
+    { kind: 'search', label: t('Traži', 'Search'), icon: <path d="M10.5 17a6.5 6.5 0 1 0 0-13 6.5 6.5 0 0 0 0 13Zm4.6-1.9L20 20" /> },
+    { kind: 'saved', label: t('Sačuvano', 'Saved'), n: saved.length, icon: <path d="M6 3.5h12v17l-6-4.5-6 4.5z" /> },
+    { kind: 'compare', label: t('Poredi', 'Compare'), n: compare.length, icon: <path d="M4 7h11m0 0-3-3m3 3-3 3M20 17H9m0 0 3-3m-3 3 3 3" /> },
   ]
   const scrollTo = useScrollTo()
   const [active, setActive] = useState('')
@@ -33,11 +35,11 @@ export default function ShopBar() {
   return (
     <div className="sticky top-0 z-50 flex h-[var(--bar)] items-stretch border-b-2 border-ink bg-bg">
       <p className="hidden shrink-0 items-center border-r-2 border-ink px-[3.05vw] text-micro uppercase md:flex">
-        Prodavnica <span className="ml-2 border border-ink px-1 text-[10px] leading-4 text-ink/70">Demo</span>
+        {t('Prodavnica', 'Shop')} <span className="ml-2 border border-ink px-1 text-[10px] leading-4 text-ink/70">Demo</span>
       </p>
 
-      <nav aria-label="Prodavnica" className="flex min-w-0 flex-1 items-stretch overflow-x-auto [scrollbar-width:none]">
-        {NAV.map(({ id, label }) => (
+      <nav aria-label={t('Prodavnica', 'Shop')} className="flex min-w-0 flex-1 items-stretch overflow-x-auto [scrollbar-width:none]">
+        {NAV.map(({ id, label, labelEn }) => (
           <a
             key={id}
             href={`#${id}`}
@@ -50,7 +52,7 @@ export default function ShopBar() {
               active === id ? 'bg-ink text-bg' : 'hover:bg-ink/10'
             }`}
           >
-            {label}
+            {lang === 'en' ? labelEn : label}
           </a>
         ))}
       </nav>
@@ -74,10 +76,10 @@ export default function ShopBar() {
       <button
         type="button"
         onClick={openCart}
-        aria-label={`Otvori korpu, ${count} u korpi`}
+        aria-label={t(`Otvori korpu, ${count} u korpi`, `Open basket, ${count} in basket`)}
         className="group flex shrink-0 items-center gap-3 border-l-2 border-ink px-4 text-micro uppercase transition-colors duration-300 hover:bg-ink hover:text-bg md:px-[3.05vw]"
       >
-        <span className="hidden sm:inline">Korpa</span>
+        <span className="hidden sm:inline">{t('Korpa', 'Basket')}</span>
         <svg viewBox="0 0 24 24" aria-hidden className="size-[18px] sm:hidden" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M3 5h3l2.2 10.5h10.3L21 8H7" />
           <circle cx="10" cy="19.5" r="1.3" />

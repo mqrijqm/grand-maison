@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { addToCart, notify, openCart } from '@/lib/cart'
+import { useLang } from '@/lib/i18n'
+import { pName, tr } from '@/lib/portal-i18n'
 import { PRODUCT_MAP } from '@/lib/shop'
 import { APPROVALS, DOCS, FEED_POOL, FEED_START, FIRM, LISTS, ORDERS, QUOTES, SITES, WEEK, siteById, type Approval, type FeedItem, type Line, type MetricId, type QuoteStatus } from '@/lib/portal-demo'
 import { SITE_TERMS, TERMS, searchProducts, type SiteId } from '@/lib/portal-b2b'
@@ -57,15 +59,32 @@ const HEAD: Record<ViewId, [string, string]> = {
   tim: ['Tim i odobrenja', 'Ko u firmi šta smije, i zahtjevi poslovođa koji čekaju odobrenje.'],
 }
 
+const HEAD_EN: Record<ViewId, [string, string]> = {
+  pregled: ['Overview', 'Your procurement on one screen: credit line, orders in progress and quick entry.'],
+  katalog: ['Catalogue', 'Items with your net prices, stock levels and technical filters.'],
+  brza: ['Quick order', 'Code and quantity, no catalogue browsing. Paste a whole table too.'],
+  ponude: ['Quotes', 'Quotes prepared by sales in response to your inquiries.'],
+  narudzbe: ['Orders', 'The status of every order from receipt to delivery. Repeat an old one in a single click.'],
+  isporuke: ['Deliveries and pickups', "This week's time slots, by site."],
+  gradilista: ['Sites', 'Procurement, orders and time slots per project.'],
+  liste: ['Saved lists', 'Lists from the calculator and earlier orders, ready for a new inquiry.'],
+  dokumenti: ['Documents', 'Invoices, delivery notes, quotes and data sheets in one place.'],
+  tim: ['Team and approvals', 'Who in the company can do what, and site manager requests awaiting approval.'],
+}
+const NAV_EN: Record<string, string> = {
+  Nabavka: 'Procurement', Projekti: 'Projects', Nalog: 'Account', Pregled: 'Overview', Katalog: 'Catalogue', 'Brza narudžba': 'Quick order', Ponude: 'Quotes', Narudžbe: 'Orders',
+  Isporuke: 'Deliveries', Gradilišta: 'Sites', 'Sačuvane liste': 'Saved lists', Dokumenti: 'Documents', 'Tim i odobrenja': 'Team and approvals',
+}
+
 // Vožnja kursora: [selektor (data-tour), radnja]. Prazan selektor = pauza.
-type Step = { t: string; act?: 'click' | 'hover' | 'type'; text?: string; wait?: number }
+type Step = { t: string; act?: 'click' | 'hover' | 'type'; text?: string; textEn?: string; wait?: number }
 const TOUR: Step[] = [
   { t: 'credit', act: 'hover', wait: 1500 },
   { t: 'live-orders', act: 'hover', wait: 1300 },
   { t: 'qa-sku', act: 'type', text: 'GKP-001', wait: 900 },
   { t: 'qa-add', act: 'hover', wait: 900 },
   { t: 'nav-katalog', act: 'click', wait: 700 },
-  { t: 'cat-search', act: 'type', text: 'rigips', wait: 1600 },
+  { t: 'cat-search', act: 'type', text: 'rigips', textEn: 'plasterboard', wait: 1600 },
   { t: 'nav-brza', act: 'click', wait: 700 },
   { t: 'qo-add', act: 'click', wait: 500 },
   { t: 'qo-sku-last', act: 'type', text: 'ISO-001', wait: 900 },
@@ -90,6 +109,11 @@ type Props = {
 }
 
 export default function Dashboard({ variant = 'full', tour = true, show = null }: Props) {
+  const { t, lang } = useLang()
+  const langRef = useRef(lang)
+  useEffect(() => {
+    langRef.current = lang
+  }, [lang])
   const [view, setView] = useState<ViewId>('pregled')
   const [metric, setMetric] = useState<MetricId>('nabavka')
   const [zoom, setZoom] = useState<string | null>(null)
@@ -182,20 +206,21 @@ export default function Dashboard({ variant = 'full', tour = true, show = null }
   const addLines = useCallback(
     (lines: Line[], label: string) => {
       lines.forEach(([sku, q]) => PRODUCT_MAP[sku] && addToCart(sku, q))
-      notify(`${label}: ${lines.length} stavki dodato u upit`, { label: 'Korpa', open: 'cart' })
-      showToast(`${lines.length} stavki dodato u upit`)
+      const n = lines.length
+      notify(t(`${label}: ${n} stavki dodato u upit`, `${tr(label, 'en')}: ${n} ${n === 1 ? 'item' : 'items'} added to the inquiry`), { label: t('Korpa', 'Cart'), open: 'cart' })
+      showToast(t(`${n} stavki dodato u upit`, `${n} ${n === 1 ? 'item' : 'items'} added to the inquiry`))
       if (!touringRef.current) openCart()
     },
-    [showToast],
+    [showToast, t],
   )
 
   // U korpu bez otvaranja korpe: kupac ostaje na ekranu na kome radi.
   const addQuiet = useCallback(
     (lines: Line[], label: string) => {
       lines.forEach(([sku, q]) => PRODUCT_MAP[sku] && addToCart(sku, q))
-      showToast(`U korpi: ${label}`)
+      showToast(t(`U korpi: ${label}`, `In cart: ${tr(label, 'en')}`))
     },
-    [showToast],
+    [showToast, t],
   )
 
   const decide = useCallback(
@@ -203,9 +228,9 @@ export default function Dashboard({ variant = 'full', tour = true, show = null }
       setApprovals((q) => q.filter((x) => x.id !== a.id))
       push({ kind: 'tim', title: `${ok ? 'Odobren' : 'Odbijen'} zahtjev — ${a.who}`, meta: `${siteById(a.site).short} · ${a.lines.length} stavke` })
       if (ok) addLines(a.lines, `Zahtjev: ${a.who}`)
-      else showToast('Zahtjev je odbijen')
+      else showToast(t('Zahtjev je odbijen', 'Request rejected'))
     },
-    [push, addLines, showToast],
+    [push, addLines, showToast, t],
   )
 
   const api: Api = useMemo(
@@ -332,7 +357,7 @@ export default function Dashboard({ variant = 'full', tour = true, show = null }
             }
             node.dispatchEvent(new PointerEvent('pointerleave', { bubbles: false }))
           } else if (step.act === 'type' && node instanceof HTMLInputElement) {
-            await typeInto(node, step.text ?? '')
+            await typeInto(node, (langRef.current === 'en' ? step.textEn : undefined) ?? step.text ?? '')
           }
           await wait(step.wait ?? 800)
         }
@@ -393,16 +418,16 @@ export default function Dashboard({ variant = 'full', tour = true, show = null }
   const results = useMemo(() => {
     const q = query.trim().toLowerCase()
     if (q.length < 2) return []
-    const prods = searchProducts(query)
+    const prods = searchProducts(query, lang)
       .hits.slice(0, 4)
-      .map(({ product: p, fuzzy }) => ({ key: p.id, label: p.name, meta: fuzzy ? `${p.id} · slično` : p.id, run: () => openCatalog(p.id) }))
-    const docs = DOCS.filter((x) => x.id.toLowerCase().includes(q) || x.title.toLowerCase().includes(q)).map((x) => ({ key: x.id, label: x.title, meta: x.kind, run: () => go('dokumenti') }))
-    const quotes = QUOTES.filter((x) => x.no.toLowerCase().includes(q)).map((x) => ({ key: x.no, label: `Ponuda ${x.no}`, meta: x.status, run: () => go('ponude') }))
-    const orders = ORDERS.filter((x) => x.no.toLowerCase().includes(q)).map((x) => ({ key: x.no, label: `Narudžba ${x.no}`, meta: 'Narudžba', run: () => go('narudzbe') }))
+      .map(({ product: p, fuzzy }) => ({ key: p.id, label: pName(p.id, p.name, lang), meta: fuzzy ? `${p.id} · ${t('slično', 'similar')}` : p.id, run: () => openCatalog(p.id) }))
+    const docs = DOCS.filter((x) => x.id.toLowerCase().includes(q) || x.title.toLowerCase().includes(q) || tr(x.title, lang).toLowerCase().includes(q)).map((x) => ({ key: x.id, label: tr(x.title, lang), meta: tr(x.kind, lang), run: () => go('dokumenti') }))
+    const quotes = QUOTES.filter((x) => x.no.toLowerCase().includes(q)).map((x) => ({ key: x.no, label: `${t('Ponuda', 'Quote')} ${x.no}`, meta: tr(x.status, lang), run: () => go('ponude') }))
+    const orders = ORDERS.filter((x) => x.no.toLowerCase().includes(q)).map((x) => ({ key: x.no, label: `${t('Narudžba', 'Order')} ${x.no}`, meta: t('Narudžba', 'Order'), run: () => go('narudzbe') }))
     return [...prods, ...quotes, ...orders, ...docs].slice(0, 7)
-  }, [query, go, openCatalog])
+  }, [query, go, openCatalog, lang, t])
 
-  const [title, sub] = HEAD[view]
+  const [title, sub] = (lang === 'en' ? HEAD_EN : HEAD)[view]
 
   return (
     <div ref={win} className={s.window} data-variant={variant} data-touring={touring || undefined}>
@@ -428,18 +453,18 @@ export default function Dashboard({ variant = 'full', tour = true, show = null }
             <span className={s.avatar}>{FIRM.short}</span>
             <span>
               <b>{FIRM.name}</b>
-              <i>{FIRM.user}</i>
+              <i>{tr(FIRM.user, lang)}</i>
             </span>
             <span className={s.tag}>Demo</span>
           </div>
           <nav className={s.nav} aria-label="Portal">
             {NAV.map((g) => (
               <div key={g.group} className={s.navGroup}>
-                <span className={s.navLabel}>{g.group}</span>
+                <span className={s.navLabel}>{lang === 'en' ? NAV_EN[g.group] ?? g.group : g.group}</span>
                 {g.items.map((it) => (
                   <button key={it.id} type="button" data-nav={it.id} aria-current={view === it.id || undefined} onClick={() => go(it.id)}>
                     <Icon name={it.id} />
-                    <span>{it.label}</span>
+                    <span>{lang === 'en' ? NAV_EN[it.label] ?? it.label : it.label}</span>
                     {it.count !== undefined && <em>{it.count}</em>}
                   </button>
                 ))}
@@ -447,7 +472,7 @@ export default function Dashboard({ variant = 'full', tour = true, show = null }
             ))}
           </nav>
           <div className={s.sideFoot}>
-            <span className={s.muted}>Prodaja</span>
+            <span className={s.muted}>{t('Prodaja', 'Sales')}</span>
             <a href="tel:+38751388995">051 388-995</a>
           </div>
         </aside>
@@ -461,11 +486,11 @@ export default function Dashboard({ variant = 'full', tour = true, show = null }
             <div className={s.headBtns}>
               {zoom && (
                 <button type="button" className={s.btnGhost} data-zoomout onClick={unfocus}>
-                  <Icon name="back" /> Nazad
+                  <Icon name="back" /> {t('Nazad', 'Back')}
                 </button>
               )}
               <button type="button" className={s.btnSolid} onClick={() => go('brza')}>
-                <Icon name="plus" /> Brza narudžba
+                <Icon name="plus" /> {t('Brza narudžba', 'Quick order')}
               </button>
             </div>
           </header>
@@ -473,30 +498,30 @@ export default function Dashboard({ variant = 'full', tour = true, show = null }
           <div className={s.ctx}>
             <label className={s.sitePick}>
               <Icon name="gradilista" />
-              <span className={s.srOnly}>Aktivno gradilište</span>
+              <span className={s.srOnly}>{t('Aktivno gradilište', 'Active site')}</span>
               <select
                 value={site}
                 onChange={(e) => {
                   const v = e.target.value as SiteId
                   setSite(v)
-                  showToast(v === 'all' ? 'Sva gradilišta · osnovne cijene firme' : `${siteById(v).short} · adresa isporuke i cijene za gradilište`)
+                  showToast(v === 'all' ? t('Sva gradilišta · osnovne cijene firme', 'All sites · base company prices') : `${tr(siteById(v).short, lang)} · ${t('adresa isporuke i cijene za gradilište', 'delivery address and prices for the site')}`)
                 }}
-                aria-label="Aktivno gradilište"
+                aria-label={t('Aktivno gradilište', 'Active site')}
               >
-                <option value="all">Sva gradilišta</option>
+                <option value="all">{t('Sva gradilišta', 'All sites')}</option>
                 {SITES.map((x) => (
                   <option key={x.id} value={x.id}>
-                    {x.short}
+                    {tr(x.short, lang)}
                   </option>
                 ))}
               </select>
             </label>
             <span className={s.ctxInfo}>
-              <i>Isporuka</i>
-              {site === 'all' ? 'po gradilištu narudžbe' : siteById(site).address}
+              <i>{t('Isporuka', 'Delivery')}</i>
+              {site === 'all' ? t('po gradilištu narudžbe', 'per order site') : tr(siteById(site).address, lang)}
             </span>
             <span className={s.tag} data-solid={(site !== 'all' && !!SITE_TERMS[site]) || undefined}>
-              {site !== 'all' && SITE_TERMS[site] ? SITE_TERMS[site].label : `Cijene: ${TERMS.tier} · demo`}
+              {site !== 'all' && SITE_TERMS[site] ? tr(SITE_TERMS[site].label, lang) : `${t('Cijene', 'Prices')}: ${tr(TERMS.tier, lang)} · demo`}
             </span>
             <div className={s.ctxSearch}>
               <label className={`${s.search} ${s.searchLight}`}>
@@ -510,8 +535,8 @@ export default function Dashboard({ variant = 'full', tour = true, show = null }
                       setQuery('')
                     }
                   }}
-                  placeholder="Šifra, artikal, ponuda, faktura…"
-                  aria-label="Pretraga portala"
+                  placeholder={t('Šifra, artikal, ponuda, faktura…', 'Code, item, quote, invoice…')}
+                  aria-label={t('Pretraga portala', 'Portal search')}
                 />
               </label>
               {results.length > 0 && (
@@ -538,7 +563,7 @@ export default function Dashboard({ variant = 'full', tour = true, show = null }
                         setQuery('')
                       }}
                     >
-                      <b>Svi rezultati u katalogu →</b>
+                      <b>{t('Svi rezultati u katalogu →', 'All results in the catalogue →')}</b>
                       <i>Enter</i>
                     </button>
                   </li>
@@ -586,13 +611,13 @@ export default function Dashboard({ variant = 'full', tour = true, show = null }
       {/* Telefon: velike tipke za brzu kupovinu i poziv prodaji */}
       <div className={s.mobileBar}>
         <button type="button" className={s.btnSolid} onClick={() => go('brza')}>
-          <Icon name="brza" /> Brza narudžba
+          <Icon name="brza" /> {t('Brza narudžba', 'Quick order')}
         </button>
         <a className={s.btnGhost} href="tel:+38751388995">
-          <Icon name="phone" /> Pozovi prodaju
+          <Icon name="phone" /> {t('Pozovi prodaju', 'Call sales')}
         </a>
       </div>
-      {touring && <span className={s.tourHint}>Demo vožnja · pomjerite miš da preuzmete</span>}
+      {touring && <span className={s.tourHint}>{t('Demo vožnja · pomjerite miš da preuzmete', 'Demo tour · move your mouse to take over')}</span>}
       <div className={s.toast} data-on={toast ? true : undefined} role="status" aria-live="polite">
         <Icon name="check" />
         {toast}

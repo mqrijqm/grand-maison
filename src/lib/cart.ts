@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react'
-import { DEFAULT_FILTERS, PRODUCT_MAP, resolveLine, type Filters } from './shop'
+import { DEFAULT_FILTERS, PRODUCT_MAP, curLang, resolveLine, type Filters } from './shop'
 
 // Jedno zajedničko stanje prodavnice: korpa, sačuvani artikli, poređenje, filteri, otvoreni panel i obavijest.
 // Korpa, sačuvano i poređenje se pamte u browseru (localStorage), a filteri, paneli i obavijest ne.
@@ -103,7 +103,8 @@ export function addToCart(key: string, qty?: number) {
   const add = qty ?? line.step
   const next = Math.min(MAX_QTY, round2((state.cart[key] ?? 0) + add))
   set({ cart: { ...state.cart, [key]: next } })
-  notify(`${line.name}: dodato u korpu`, { label: 'Korpa', open: 'cart' })
+  const en = curLang() === 'en'
+  notify(en ? `${line.nameEn ?? line.name}: added to basket` : `${line.name}: dodato u korpu`, { label: en ? 'Basket' : 'Korpa', open: 'cart' })
 }
 
 export function setQty(key: string, qty: number) {
@@ -124,9 +125,14 @@ export function toggleSaved(id: string) {
 export function toggleCompare(id: string) {
   const c = state.compare
   if (c.includes(id)) return set({ compare: c.filter((x) => x !== id) })
-  if (c.length >= COMPARE_MAX) return notify(`Poredite najviše ${COMPARE_MAX} artikla odjednom`, { label: 'Poređenje', open: 'compare' })
+  const en = curLang() === 'en'
+  if (c.length >= COMPARE_MAX)
+    return notify(en ? `You can compare up to ${COMPARE_MAX} items at a time` : `Poredite najviše ${COMPARE_MAX} artikla odjednom`, {
+      label: en ? 'Compare' : 'Poređenje',
+      open: 'compare',
+    })
   set({ compare: [...c, id] })
-  notify('Dodato u poređenje', { label: 'Poređenje', open: 'compare' })
+  notify(en ? 'Added to compare' : 'Dodato u poređenje', { label: en ? 'Compare' : 'Poređenje', open: 'compare' })
 }
 
 // Korpa (ladica iz grand-maison) i bočni paneli (iz grand-root) se ne otvaraju istovremeno.

@@ -6,7 +6,8 @@ import { useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { inquiryHref, inquiryLines, toggleInquiryItem, useCatalogInquiry } from '@/lib/catalog-inquiry'
 import { gsap, ScrollTrigger, useGSAP } from '@/lib/gsap'
-import { BRANDS, CATALOG_ITEMS, CATEGORY_NAMES, inquiryFormHref, normalize, type BrandId, type CatalogItem } from './catalog-items'
+import { useLang } from '@/lib/i18n'
+import { BRANDS, CATALOG_ITEMS, CATEGORY_NAMES, CATEGORY_NAMES_EN, inquiryFormHref, normalize, type BrandId, type CatalogItem } from './catalog-items'
 import styles from './CatalogBrowse.module.css'
 
 // Katalog po proizvođačima, UI i UX preuzet sa mtponos.studioblink.ba/asortiman/laminati:
@@ -17,14 +18,17 @@ import styles from './CatalogBrowse.module.css'
 // (kartice proizvođača) i iz trake kategorija iznad otvaraju već filtrirani.
 
 type Sort = 'preporuceno' | 'naziv' | 'naziv-obrnuto' | 'izdvojeno'
-const SORTS: [Sort, string][] = [
-  ['preporuceno', 'Preporučeno'],
-  ['naziv', 'Naziv A–Ž'],
-  ['naziv-obrnuto', 'Naziv Ž–A'],
-  ['izdvojeno', 'Prvo izdvojeno'],
+const SORTS: [Sort, string, string][] = [
+  ['preporuceno', 'Preporučeno', 'Recommended'],
+  ['naziv', 'Naziv A–Ž', 'Name A–Z'],
+  ['naziv-obrnuto', 'Naziv Ž–A', 'Name Z–A'],
+  ['izdvojeno', 'Prvo izdvojeno', 'Featured first'],
 ]
 const BRAND_IDS = BRANDS.map((b) => b.id)
-const count = (n: number) => `${n} ${n % 10 === 1 && n % 100 !== 11 ? 'artikal' : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 'artikla' : 'artikala'}`
+// Srpski izrazi namjene i jedinice (vrijednosti filtera) -> engleski prikaz.
+const USE_EN: Record<string, string> = {}
+CATALOG_ITEMS.forEach((i) => i.uses.forEach((u, k) => (USE_EN[u] = i.en.uses[k] ?? u)))
+const count = (n: number, lang: 'sr' | 'en' = 'sr') => lang === 'en' ? `${n} ${n === 1 ? 'item' : 'items'}` : `${n} ${n % 10 === 1 && n % 100 !== 11 ? 'artikal' : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 'artikla' : 'artikala'}`
 
 // Vrijednosti za panel filtera, svaka sa brojem artikala (kao na mtponos).
 function facet(items: CatalogItem[], pick: (i: CatalogItem) => string[]) {
@@ -41,6 +45,12 @@ const Eye = () => (
 )
 
 export default function CatalogBrowse() {
+  const { t, lang } = useLang()
+  const en = lang === 'en'
+  // Tekstovi artikla na izabranom jeziku (podaci ostaju srpski, paralelni engleski je u `item.en`).
+  const loc = (i: CatalogItem) => (en ? i.en : { brandName: i.brandName, code: i.code, name: i.name, spec: i.spec, lead: i.lead, uses: i.uses, unit: i.unit })
+  const catName = (id: string) => (en ? (CATEGORY_NAMES_EN[id] ?? id) : (CATEGORY_NAMES[id] ?? id))
+  const unitName = (u: string) => (en ? (CATALOG_ITEMS.find((i) => i.unit === u)?.en.unit ?? u) : u)
   const root = useRef<HTMLElement>(null)
   const search = useSearchParams()
   const selection = useCatalogInquiry()
@@ -104,16 +114,18 @@ export default function CatalogBrowse() {
           (units.length === 0 || units.includes(i.unit)) &&
           (uses.length === 0 || i.uses.some((u) => uses.includes(u))) &&
           (!featuredOnly || i.featured) &&
-          words.every((w) => normalize(`${i.name} ${i.code} ${i.spec} ${i.brandName} ${i.lead} ${CATEGORY_NAMES[i.category] ?? ''}`).includes(w)),
+          words.every((w) => normalize(`${i.name} ${i.code} ${i.spec} ${i.brandName} ${i.lead} ${CATEGORY_NAMES[i.category] ?? ''} ${i.en.name} ${i.en.spec} ${i.en.lead} ${CATEGORY_NAMES_EN[i.category] ?? ''}`).includes(w)),
     )
   }, [cats, units, uses, featuredOnly, q])
   const visible = useMemo(() => {
     const list = base.filter((i) => brand === 'sve' || i.brand === brand)
-    if (sort === 'naziv') list.sort((a, b) => a.code.localeCompare(b.code, 'bs'))
-    if (sort === 'naziv-obrnuto') list.sort((a, b) => b.code.localeCompare(a.code, 'bs'))
+    const loc2 = en ? 'en' : 'bs'
+    if (sort === 'naziv') list.sort((a, b) => loc(a).code.localeCompare(loc(b).code, loc2))
+    if (sort === 'naziv-obrnuto') list.sort((a, b) => loc(b).code.localeCompare(loc(a).code, loc2))
     if (sort === 'izdvojeno') list.sort((a, b) => Number(b.featured) - Number(a.featured))
     return list
-  }, [base, brand, sort])
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- loc zavisi samo od jezika
+  }, [base, brand, sort, en])
   const groups = BRANDS.map((b) => ({ brand: b, items: visible.filter((i) => i.brand === b.id) })).filter((g) => g.items.length > 0)
   const filtered = brand !== 'sve' || cats.length > 0 || units.length > 0 || uses.length > 0 || featuredOnly || !!q.trim()
 
@@ -182,16 +194,16 @@ export default function CatalogBrowse() {
     if (item.product) {
       const p = item.product
       return (
-        <button type="button" className={cls} aria-pressed={on} aria-label={`${on ? 'Ukloni iz upita' : 'Dodaj u upit'}: ${item.name}`} onClick={() => toggleInquiryItem(p)}>
+        <button type="button" className={cls} aria-pressed={on} aria-label={`${on ? t('Ukloni iz upita', 'Remove from enquiry') : t('Dodaj u upit', 'Add to enquiry')}: ${loc(item).name}`} onClick={() => toggleInquiryItem(p)}>
           <span aria-hidden>{on ? '✓' : '+'}</span>
-          <em>{on ? 'U upitu' : 'Dodaj u upit'}</em>
+          <em>{on ? t('U upitu', 'In enquiry') : t('Dodaj u upit', 'Add to enquiry')}</em>
         </button>
       )
     }
     return (
-      <Link href={inquiryFormHref(item)} className={cls} aria-label={`Dodaj u upit: ${item.name}`}>
+      <Link href={inquiryFormHref(item)} className={cls} aria-label={`${t('Dodaj u upit', 'Add to enquiry')}: ${loc(item).name}`}>
         <span aria-hidden>+</span>
-        <em>Dodaj u upit</em>
+        <em>{t('Dodaj u upit', 'Add to enquiry')}</em>
       </Link>
     )
   }
@@ -199,12 +211,12 @@ export default function CatalogBrowse() {
   return (
     <section ref={root} id="artikli" aria-labelledby="artikli-naslov" className={styles.root}>
       <header data-intro className={styles.intro}>
-        <p className={styles.kicker}>Asortiman</p>
+        <p className={styles.kicker}>{t('Asortiman', 'Range')}</p>
         <h2 id="artikli-naslov" className={styles.title}>
-          Svi artikli
+          {t('Svi artikli', 'All items')}
         </h2>
         <p className={styles.lead}>
-          Tondach crijep, Porotherm opeka i Baumalt malteri i ljepila, uz suhu gradnju i kamenu vunu. Cijene i dostupnost na upit, dostava po Banjoj Luci.
+          {t('Tondach crijep, Porotherm opeka i Baumalt malteri i ljepila, uz suhu gradnju i kamenu vunu. Cijene i dostupnost na upit, dostava po Banjoj Luci.', 'Tondach roof tiles, Porotherm clay blocks and Baumalt plasters and adhesives, along with drywall and stone wool. Prices and availability on request, delivery within Banja Luka.')}
         </p>
       </header>
 
@@ -216,51 +228,51 @@ export default function CatalogBrowse() {
               <circle cx="9" cy="9" r="6" />
               <path d="m13.5 13.5 4 4" />
             </svg>
-            <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Naziv, dimenzija ili proizvođač" aria-label="Pretraga artikala" />
+            <input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('Naziv, dimenzija ili proizvođač', 'Name, dimensions or manufacturer')} aria-label={t('Pretraga artikala', 'Search items')} />
           </label>
           <button type="button" className={styles.filterBtn} aria-expanded={panel} aria-controls="katalog-filteri" onClick={() => setPanel((p) => !p)}>
-            Filteri
+            {t('Filteri', 'Filters')}
             {cats.length + units.length + uses.length + Number(featuredOnly) > 0 && <sup>{cats.length + units.length + uses.length + Number(featuredOnly)}</sup>}
           </button>
           <label className={styles.sort}>
-            <span>Sortiraj</span>
-            <select value={sort} onChange={(e) => setSort(e.target.value as Sort)} aria-label="Sortiranje">
-              {SORTS.map(([id, label]) => (
+            <span>{t('Sortiraj', 'Sort by')}</span>
+            <select value={sort} onChange={(e) => setSort(e.target.value as Sort)} aria-label={t('Sortiranje', 'Sorting')}>
+              {SORTS.map(([id, label, labelEn]) => (
                 <option key={id} value={id}>
-                  {label}
+                  {en ? labelEn : label}
                 </option>
               ))}
             </select>
           </label>
           <p className={styles.total} aria-live="polite">
-            {count(visible.length)}
+            {count(visible.length, lang)}
           </p>
         </div>
-        <div className={styles.chips} role="group" aria-label="Proizvođač">
-          {chip('Sve', base.length, brand === 'sve', () => setBrand('sve'))}
-          {BRANDS.map((b) => chip(b.id === 'ostalo' ? 'Ostali program' : b.name, base.filter((i) => i.brand === b.id).length, brand === b.id, () => setBrand(b.id), b.id))}
+        <div className={styles.chips} role="group" aria-label={t('Proizvođač', 'Manufacturer')}>
+          {chip(t('Sve', 'All'), base.length, brand === 'sve', () => setBrand('sve'))}
+          {BRANDS.map((b) => chip(b.id === 'ostalo' ? t('Ostali program', 'Other range') : b.name, base.filter((i) => i.brand === b.id).length, brand === b.id, () => setBrand(b.id), b.id))}
         </div>
 
         <div id="katalog-filteri" className={styles.panel} data-open={panel} hidden={!panel}>
           <div className={styles.facet}>
-            <p>Kategorija</p>
-            <div>{facet(CATALOG_ITEMS, (i) => [i.category]).map(([v, n]) => chip(CATEGORY_NAMES[v] ?? v, n, cats.includes(v), () => toggle(cats, setCats, v), v))}</div>
+            <p>{t('Kategorija', 'Category')}</p>
+            <div>{facet(CATALOG_ITEMS, (i) => [i.category]).map(([v, n]) => chip(catName(v), n, cats.includes(v), () => toggle(cats, setCats, v), v))}</div>
           </div>
           <div className={styles.facet}>
-            <p>Namjena</p>
-            <div>{facet(CATALOG_ITEMS, (i) => i.uses).map(([v, n]) => chip(v, n, uses.includes(v), () => toggle(uses, setUses, v), v))}</div>
+            <p>{t('Namjena', 'Application')}</p>
+            <div>{facet(CATALOG_ITEMS, (i) => i.uses).map(([v, n]) => chip(en ? (USE_EN[v] ?? v) : v, n, uses.includes(v), () => toggle(uses, setUses, v), v))}</div>
           </div>
           <div className={styles.facet}>
-            <p>Jedinica</p>
-            <div>{facet(CATALOG_ITEMS, (i) => [i.unit]).map(([v, n]) => chip(v, n, units.includes(v), () => toggle(units, setUnits, v), v))}</div>
+            <p>{t('Jedinica', 'Unit')}</p>
+            <div>{facet(CATALOG_ITEMS, (i) => [i.unit]).map(([v, n]) => chip(unitName(v), n, units.includes(v), () => toggle(units, setUnits, v), v))}</div>
           </div>
           <div className={styles.facet}>
-            <p>Ponuda</p>
-            <div>{chip('Izdvojeno', CATALOG_ITEMS.filter((i) => i.featured).length, featuredOnly, () => setFeaturedOnly((f) => !f))}</div>
+            <p>{t('Ponuda', 'Range')}</p>
+            <div>{chip(t('Izdvojeno', 'Featured'), CATALOG_ITEMS.filter((i) => i.featured).length, featuredOnly, () => setFeaturedOnly((f) => !f))}</div>
           </div>
           {filtered && (
             <button type="button" className={styles.resetLink} onClick={reset}>
-              Poništi filtere
+              {t('Poništi filtere', 'Clear filters')}
             </button>
           )}
         </div>
@@ -268,9 +280,9 @@ export default function CatalogBrowse() {
 
       {groups.length === 0 && (
         <div className={styles.empty}>
-          <p>Nema artikala za ove filtere.</p>
+          <p>{t('Nema artikala za ove filtere.', 'No items match these filters.')}</p>
           <button type="button" className={styles.resetLink} onClick={reset}>
-            Poništi filtere
+            {t('Poništi filtere', 'Clear filters')}
           </button>
         </div>
       )}
@@ -285,12 +297,12 @@ export default function CatalogBrowse() {
                 <span className={styles.of}>/ {String(BRANDS.length).padStart(2, '0')}</span>
               </p>
               <h3 data-lift id={`${b.id}-naslov`} className={styles.brandName}>
-                {b.name}
+                {en ? (b.nameEn ?? b.name) : b.name}
               </h3>
               <div data-lift className={styles.brandText}>
-                {b.logo ? <img className={styles.logo} src={b.logo} alt={`${b.name} logo`} height={56} decoding="async" /> : <span className={styles.logoWord}>Grand Company · stovarište</span>}
-                <p>{b.text}</p>
-                <p className={styles.groupCount}>{count(items.length)}</p>
+                {b.logo ? <img className={styles.logo} src={b.logo} alt={`${b.name} logo`} height={56} decoding="async" /> : <span className={styles.logoWord}>{t('Grand Company · stovarište', 'Grand Company · building materials yard')}</span>}
+                <p>{en ? (b.textEn ?? b.text) : b.text}</p>
+                <p className={styles.groupCount}>{count(items.length, lang)}</p>
               </div>
             </div>
 
@@ -300,24 +312,24 @@ export default function CatalogBrowse() {
                 return (
                   <li key={item.key} data-item className={styles.card}>
                     <div className={styles.photo}>
-                      <img src={item.image} alt={item.name} width={600} height={600} loading={i < 4 ? 'eager' : 'lazy'} decoding="async" />
+                      <img src={item.image} alt={loc(item).name} width={600} height={600} loading={i < 4 ? 'eager' : 'lazy'} decoding="async" />
                       {item.hover && <img className={styles.project} src={item.hover} alt="" width={600} height={600} loading="lazy" decoding="async" aria-hidden />}
-                      {item.featured && <span className={styles.badge}>Izdvojeno</span>}
+                      {item.featured && <span className={styles.badge}>{t('Izdvojeno', 'Featured')}</span>}
                       {item.href ? (
-                        <Link href={item.href} className={styles.cover} aria-label={`Pogledaj proizvod: ${item.name}`}>
-                          <span className={styles.view}>Pogledaj proizvod →</span>
+                        <Link href={item.href} className={styles.cover} aria-label={`${t('Pogledaj proizvod', 'View product')}: ${loc(item).name}`}>
+                          <span className={styles.view}>{t('Pogledaj proizvod →', 'View product →')}</span>
                         </Link>
                       ) : (
-                        <button type="button" className={styles.cover} aria-label={`Pogledaj proizvod: ${item.name}`} onClick={() => setQuick(item)}>
-                          <span className={styles.view}>Pogledaj proizvod →</span>
+                        <button type="button" className={styles.cover} aria-label={`${t('Pogledaj proizvod', 'View product')}: ${loc(item).name}`} onClick={() => setQuick(item)}>
+                          <span className={styles.view}>{t('Pogledaj proizvod →', 'View product →')}</span>
                         </button>
                       )}
-                      <button type="button" className={styles.compare} aria-pressed={inCompare} onClick={() => toggleCompare(item.key)} aria-label={`Uporedi: ${item.name}`}>
+                      <button type="button" className={styles.compare} aria-pressed={inCompare} onClick={() => toggleCompare(item.key)} aria-label={`${t('Uporedi', 'Compare')}: ${loc(item).name}`}>
                         <span className={styles.box} aria-hidden />
-                        <em>Uporedi</em>
+                        <em>{t('Uporedi', 'Compare')}</em>
                       </button>
                       <div className={styles.tools}>
-                        <button type="button" className={styles.icon} onClick={() => setQuick(item)} aria-label={`Brzi pregled: ${item.name}`}>
+                        <button type="button" className={styles.icon} onClick={() => setQuick(item)} aria-label={`${t('Brzi pregled', 'Quick view')}: ${loc(item).name}`}>
                           <Eye />
                         </button>
                         {addButton(item)}
@@ -326,11 +338,11 @@ export default function CatalogBrowse() {
                     <p className={styles.caption}>
                       {item.href ? (
                         <Link href={item.href} className={styles.code}>
-                          {item.code}
+                          {loc(item).code}
                         </Link>
                       ) : (
                         <button type="button" className={styles.code} onClick={() => setQuick(item)}>
-                          {item.code}
+                          {loc(item).code}
                         </button>
                       )}
                     </p>
@@ -347,67 +359,67 @@ export default function CatalogBrowse() {
         <div className={styles.tray} role="status">
           {compare.length > 0 && (
             <div className={styles.trayCompare}>
-              <span>Uporedi: {compare.length} / 4</span>
+              <span>{t('Uporedi', 'Compare')}: {compare.length} / 4</span>
               <button type="button" onClick={() => setCompareOpen(true)} disabled={compare.length < 2}>
-                {compare.length < 2 ? 'Izaberite još jedan' : 'Prikaži poređenje'}
+                {compare.length < 2 ? t('Izaberite još jedan', 'Choose one more') : t('Prikaži poređenje', 'Show comparison')}
               </button>
-              <button type="button" onClick={() => setCompare([])} aria-label="Očisti poređenje">
+              <button type="button" onClick={() => setCompare([])} aria-label={t('Očisti poređenje', 'Clear comparison')}>
                 ×
               </button>
             </div>
           )}
           {picked > 0 && (
             <Link className={styles.trayInquiry} href={inquiryHref(selection)}>
-              U upitu: {count(picked)} · Pošaljite upit →
+              {t('U upitu', 'In enquiry')}: {count(picked, lang)} · {t('Pošaljite upit →', 'Send enquiry →')}
             </Link>
           )}
         </div>
       )}
 
       {quick && (
-        <div className={styles.modal} role="dialog" aria-modal="true" aria-label={quick.name} onClick={() => setQuick(null)}>
+        <div className={styles.modal} role="dialog" aria-modal="true" aria-label={loc(quick).name} onClick={() => setQuick(null)}>
           <div className={styles.sheet} onClick={(e) => e.stopPropagation()} data-lenis-prevent>
-            <button type="button" className={styles.close} onClick={() => setQuick(null)} aria-label="Zatvori">
+            <button type="button" className={styles.close} onClick={() => setQuick(null)} aria-label={t('Zatvori', 'Close')}>
               ×
             </button>
             <div className={styles.sheetPhoto}>
-              <img src={quick.image} alt={quick.name} width={600} height={600} />
+              <img src={quick.image} alt={loc(quick).name} width={600} height={600} />
             </div>
             <div className={styles.sheetBody}>
               <p className={styles.kicker}>
-                {quick.brandName} · {CATEGORY_NAMES[quick.category]}
+                {loc(quick).brandName} · {catName(quick.category)}
               </p>
-              <h3 className={styles.sheetTitle}>{quick.name}</h3>
-              <p className={styles.sheetLead}>{quick.lead}</p>
+              <h3 className={styles.sheetTitle}>{loc(quick).name}</h3>
+              <p className={styles.sheetLead}>{loc(quick).lead}</p>
               <dl className={styles.specs}>
                 <div>
-                  <dt>Specifikacija</dt>
-                  <dd>{quick.spec}</dd>
+                  <dt>{t('Specifikacija', 'Specification')}</dt>
+                  <dd>{loc(quick).spec}</dd>
                 </div>
                 <div>
-                  <dt>Jedinica</dt>
-                  <dd>{quick.unit}</dd>
+                  <dt>{t('Jedinica', 'Unit')}</dt>
+                  <dd>{loc(quick).unit}</dd>
                 </div>
                 {quick.uses.length > 0 && (
                   <div>
-                    <dt>Namjena</dt>
-                    <dd>{quick.uses.join(', ')}</dd>
+                    <dt>{t('Namjena', 'Application')}</dt>
+                    <dd>{loc(quick).uses.join(', ')}</dd>
                   </div>
                 )}
                 <div>
-                  <dt>Cijena</dt>
-                  <dd>Na upit</dd>
+                  <dt>{t('Cijena', 'Price')}</dt>
+                  <dd>{t('Na upit', 'On request')}</dd>
                 </div>
               </dl>
               <div className={styles.sheetActions}>
                 {addButton(quick, true)}
                 {quick.href ? (
                   <Link className={styles.ghost} href={quick.href}>
-                    Stranica artikla →
+                    {t('Stranica artikla →', 'Product page →')}
                   </Link>
                 ) : quick.source ? (
                   <a className={styles.ghost} href={quick.source} target="_blank" rel="noopener noreferrer">
-                    Podaci proizvođača ↗
+                    {t('Podaci proizvođača ↗', 'Manufacturer data ↗')}
                   </a>
                 ) : null}
               </div>
@@ -417,30 +429,30 @@ export default function CatalogBrowse() {
       )}
 
       {compareOpen && compared.length > 1 && (
-        <div className={styles.modal} role="dialog" aria-modal="true" aria-label="Poređenje artikala" onClick={() => setCompareOpen(false)}>
+        <div className={styles.modal} role="dialog" aria-modal="true" aria-label={t('Poređenje artikala', 'Item comparison')} onClick={() => setCompareOpen(false)}>
           <div className={`${styles.sheet} ${styles.compareSheet}`} onClick={(e) => e.stopPropagation()} data-lenis-prevent>
-            <button type="button" className={styles.close} onClick={() => setCompareOpen(false)} aria-label="Zatvori">
+            <button type="button" className={styles.close} onClick={() => setCompareOpen(false)} aria-label={t('Zatvori', 'Close')}>
               ×
             </button>
-            <p className={styles.kicker}>Poređenje</p>
+            <p className={styles.kicker}>{t('Poređenje', 'Comparison')}</p>
             <div className={styles.table} style={{ '--cols': compared.length } as React.CSSProperties}>
               <div className={styles.tRow}>
                 <span />
                 {compared.map((i) => (
                   <div key={i.key} className={styles.tHead}>
                     <img src={i.image} alt="" width={160} height={160} />
-                    <strong>{i.code}</strong>
+                    <strong>{loc(i).code}</strong>
                   </div>
                 ))}
               </div>
               {(
                 [
-                  ['Proizvođač', (i: CatalogItem) => i.brandName],
-                  ['Kategorija', (i: CatalogItem) => CATEGORY_NAMES[i.category]],
-                  ['Specifikacija', (i: CatalogItem) => i.spec],
-                  ['Jedinica', (i: CatalogItem) => i.unit],
-                  ['Namjena', (i: CatalogItem) => i.uses.join(', ') || '—'],
-                  ['Cijena', () => 'Na upit'],
+                  [t('Proizvođač', 'Manufacturer'), (i: CatalogItem) => loc(i).brandName],
+                  [t('Kategorija', 'Category'), (i: CatalogItem) => catName(i.category)],
+                  [t('Specifikacija', 'Specification'), (i: CatalogItem) => loc(i).spec],
+                  [t('Jedinica', 'Unit'), (i: CatalogItem) => loc(i).unit],
+                  [t('Namjena', 'Application'), (i: CatalogItem) => loc(i).uses.join(', ') || '—'],
+                  [t('Cijena', 'Price'), () => t('Na upit', 'On request')],
                 ] as [string, (i: CatalogItem) => string][]
               ).map(([label, get]) => (
                 <div key={label} className={styles.tRow}>

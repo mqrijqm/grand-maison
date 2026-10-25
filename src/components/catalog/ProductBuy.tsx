@@ -3,7 +3,8 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { addToCart } from '@/lib/cart'
-import { defaultQty, qtyLabel, type Product } from '@/lib/shop'
+import { defaultQty, packNameL, qtyLabelL, unitL, type Product } from '@/lib/shop'
+import { useLang } from '@/lib/i18n'
 import { inquiryHref, inquiryQty, setInquiryQuantity, useCatalogInquiry } from '@/lib/catalog-inquiry'
 import Price from '@/components/b2b/Price'
 import styles from './CatalogSupport.module.css'
@@ -11,6 +12,7 @@ import styles from './CatalogSupport.module.css'
 type Props = { product: Product }
 
 export default function ProductBuy({ product }: Props) {
+  const { t, lang } = useLang()
   const step = defaultQty(product)
   const [input, setInput] = useState(String(step))
   const qty = inquiryQty(input)
@@ -20,22 +22,22 @@ export default function ProductBuy({ product }: Props) {
   return (
     <div>
       <div className={styles.purchase}>
-        <label className="label opacity-55" htmlFor={`qty-${product.sku}`}>Količina u jedinici prodaje</label>
+        <label className="label opacity-55" htmlFor={`qty-${product.sku}`}>{t('Količina u jedinici prodaje', 'Quantity in sales units')}</label>
         <div className={styles.quantityRow}>
           <div className={styles.quantity}>
-            <button type="button" aria-label="Smanji količinu" onClick={() => changeQuantity(-1)}>−</button>
+            <button type="button" aria-label={t('Smanji količinu', 'Decrease quantity')} onClick={() => changeQuantity(-1)}>−</button>
             <input id={`qty-${product.sku}`} type="number" min={.01} max={9999} step={.01} required value={input} onChange={event => setInput(event.target.value)} aria-invalid={qty === null} aria-describedby={`quantity-hint-${product.sku}`} />
-            <span className="pr-3 text-[12px]">{product.unit}</span>
-            <button type="button" aria-label="Povećaj količinu" onClick={() => changeQuantity(1)}>+</button>
+            <span className="pr-3 text-[12px]">{unitL(product.unit, lang)}</span>
+            <button type="button" aria-label={t('Povećaj količinu', 'Increase quantity')} onClick={() => changeQuantity(1)}>+</button>
           </div>
-          {qty !== null && <span className="text-[12px]" aria-live="polite"><span className="block text-[9px] opacity-55">Iznos</span><Price /></span>}
+          {qty !== null && <span className="text-[12px]" aria-live="polite"><span className="block text-[9px] opacity-55">{t('Iznos', 'Amount')}</span><Price /></span>}
         </div>
-        <p id={`quantity-hint-${product.sku}`} className="text-[10px] normal-case leading-relaxed opacity-60">{qty === null ? 'Unesite količinu od 0,01 do 9.999.' : product.pack ? `Pakovanje: ${qtyLabel(product.pack.size, product.unit)} / ${product.pack.name}. Količine i dostupnost potvrđuje prodaja.` : `Jedinica prodaje: ${product.unit}. Količine i dostupnost potvrđuje prodaja.`}</p>
+        <p id={`quantity-hint-${product.sku}`} className="text-[10px] normal-case leading-relaxed opacity-60">{qty === null ? t('Unesite količinu od 0,01 do 9.999.', 'Enter a quantity from 0.01 to 9,999.') : product.pack ? t(`Pakovanje: ${qtyLabelL(product.pack.size, product.unit, 'sr')} / ${product.pack.name}. Količine i dostupnost potvrđuje prodaja.`, `Pack: ${qtyLabelL(product.pack.size, product.unit, 'en')} / ${packNameL(product.pack.name, 'en')}. Quantities and availability are confirmed by sales.`) : t(`Jedinica prodaje: ${product.unit}. Količine i dostupnost potvrđuje prodaja.`, `Sales unit: ${unitL(product.unit, 'en')}. Quantities and availability are confirmed by sales.`)}</p>
         <div className={styles.purchaseActions}>
-          <button type="button" disabled={qty === null} onClick={() => { if (qty !== null) setInquiryQuantity(product.sku, qty) }}><span>{items[product.sku] ? 'Ažuriraj količinu u upitu' : 'Dodaj u upit za ponudu'}</span><span aria-hidden>+</span></button>
-          <button type="button" disabled={qty === null} onClick={() => { if (qty !== null) addToCart(product.id, qty) }}><span>Dodaj u korpu</span><span aria-hidden>+</span></button>
+          <button type="button" disabled={qty === null} onClick={() => { if (qty !== null) setInquiryQuantity(product.sku, qty) }}><span>{items[product.sku] ? t('Ažuriraj količinu u upitu', 'Update quantity in enquiry') : t('Dodaj u upit za ponudu', 'Add to quote enquiry')}</span><span aria-hidden>+</span></button>
+          <button type="button" disabled={qty === null} onClick={() => { if (qty !== null) addToCart(product.id, qty) }}><span>{t('Dodaj u korpu', 'Add to basket')}</span><span aria-hidden>+</span></button>
         </div>
-        <p className={styles.purchaseStatus} aria-live="polite">{items[product.sku] && <><span>U upitu: {qtyLabel(items[product.sku], product.unit)} · </span><Link href={inquiryHref(items)}>Pošaljite upit ↗</Link></>}</p>
+        <p className={styles.purchaseStatus} aria-live="polite">{items[product.sku] && <><span>{t('U upitu', 'In enquiry')}: {qtyLabelL(items[product.sku], product.unit, lang)} · </span><Link href={inquiryHref(items)}>{t('Pošaljite upit ↗', 'Send enquiry ↗')}</Link></>}</p>
       </div>
     </div>
   )

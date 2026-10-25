@@ -1,11 +1,12 @@
+import { T } from '@/lib/i18n'
 import Reveal from './Reveal'
 
 // Četiri obećanja firme (iz podataka Grand Company: istovar kranom, stanje iz Pantheona, atesti, valuta partnera).
 const ITEMS = [
-  { title: 'Istovar kranom na etažu', text: 'Vlastiti kamioni sa kranom spuštaju paletu na etažu ili skelu, ne na ulicu.' },
-  { title: 'Zalihe uživo iz Pantheona', text: 'Stanje na sajtu čitamo iz istog sistema iz kojeg radi prodaja.' },
-  { title: 'Atesti uz robu', text: 'CE deklaracija i protivpožarni atest uz otpremnicu, za tehnički prijem.' },
-  { title: 'Plaćanje do 90 dana', text: 'Za ugovorne partnere, po fakturi, uz mjenicu ili bankarsku garanciju.' },
+  { title: 'Istovar kranom na etažu', text: 'Vlastiti kamioni sa kranom spuštaju paletu na etažu ili skelu, ne na ulicu.', titleEn: 'Crane unloading to the floor', textEn: 'Our own crane trucks lower the pallet onto the floor or the scaffold, not onto the street.' },
+  { title: 'Zalihe uživo iz Pantheona', text: 'Stanje na sajtu čitamo iz istog sistema iz kojeg radi prodaja.', titleEn: 'Live stock from Pantheon', textEn: 'We read the stock shown on the site from the same system the sales team works in.' },
+  { title: 'Atesti uz robu', text: 'CE deklaracija i protivpožarni atest uz otpremnicu, za tehnički prijem.', titleEn: 'Certificates with the goods', textEn: 'CE declaration and fire certificate with the delivery note, for technical acceptance.' },
+  { title: 'Plaćanje do 90 dana', text: 'Za ugovorne partnere, po fakturi, uz mjenicu ili bankarsku garanciju.', titleEn: 'Payment up to 90 days', textEn: 'For contract partners, by invoice, against a promissory note or bank guarantee.' },
 ]
 
 export default function TrustStrip() {
@@ -21,8 +22,8 @@ export default function TrustStrip() {
         >
           <p className="text-micro tabular-nums">0{i + 1}</p>
           <div>
-            <h2 className="text-small uppercase">{item.title}</h2>
-            <p className="mt-3 max-w-[30ch] text-micro uppercase text-ink/60">{item.text}</p>
+            <h2 className="text-small uppercase"><T sr={item.title} en={item.titleEn} /></h2>
+            <p className="mt-3 max-w-[30ch] text-micro uppercase text-ink/60"><T sr={item.text} en={item.textEn} /></p>
           </div>
         </Reveal>
       ))}

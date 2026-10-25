@@ -2,8 +2,9 @@
 
 import type { CSSProperties } from 'react'
 import { addToCart, openPanel, toggleCompare, toggleSaved } from '@/lib/cart'
-import { money, qtyLabel, type Product } from '@/lib/shop'
-import { STOCK_LABEL, stockLevel } from '@/gc/gc'
+import { brandL, moneyL, pName, pSpec, qtyLabelL, unitL, type Product } from '@/lib/shop'
+import { STOCK_LABEL, STOCK_LABEL_EN, stockLevel } from '@/gc/gc'
+import { useLang } from '@/lib/i18n'
 import { useInView } from '@/lib/useInView'
 import ProductImage from './ProductImage'
 
@@ -38,6 +39,8 @@ const SWAP = 'M4 7h11m0 0-3-3m3 3-3 3M20 17H9m0 0 3-3m-3 3 3 3'
 export default function ProductCard({ product: p, index, qty, saved, compared, reveal = true }: Props) {
   const [ref, seen] = useInView<HTMLElement>()
   const level = stockLevel(p)
+  const { t, lang } = useLang()
+  const name = pName(p, lang)
 
   return (
     <article
@@ -50,37 +53,37 @@ export default function ProductCard({ product: p, index, qty, saved, compared, r
         <button
           type="button"
           onClick={() => openPanel({ kind: 'product', id: p.id })}
-          aria-label={`Brzi pregled: ${p.name}`}
+          aria-label={`${t('Brzi pregled', 'Quick view')}: ${name}`}
           className="block w-full"
         >
           <div data-plate style={{ '--d': `${(index % 4) * 90}ms` } as CSSProperties}>
             <ProductImage
               src={p.image}
               drawing={p.drawing}
-              alt={p.name}
+              alt={name}
               className="aspect-[4/5] w-full transition-[filter] duration-500 group-hover:brightness-95"
             />
           </div>
           <span className="absolute inset-x-3 bottom-3 hidden bg-ink px-2 py-2 text-center text-micro uppercase text-bg opacity-0 transition-opacity duration-300 group-hover:opacity-100 md:block">
-            Brzi pregled
+            {t('Brzi pregled', 'Quick view')}
           </span>
         </button>
         {p.badge && (
           <span className="pointer-events-none absolute left-3 top-3 bg-ink px-2 py-1 text-micro uppercase text-bg">
-            {p.badge}
+            {t(p.badge, 'Most popular')}
           </span>
         )}
       </div>
 
       <div className="mt-3 flex items-start justify-between gap-3 uppercase">
         <div className="min-w-0">
-          <p className="text-micro text-ink/60">{p.brand}</p>
-          <h3 className="mt-1 text-small">{p.name}</h3>
-          <p className="mt-1.5 text-micro text-ink/60">{p.spec}</p>
+          <p className="text-micro text-ink/60">{brandL(p.brand, lang)}</p>
+          <h3 className="mt-1 text-small">{name}</h3>
+          <p className="mt-1.5 text-micro text-ink/60">{pSpec(p, lang)}</p>
         </div>
         <p className="shrink-0 text-right">
-          <span className="block whitespace-nowrap text-small tabular-nums">{money(p.price)}</span>
-          <span className="mt-1.5 block text-micro text-ink/60">/ {p.unit}</span>
+          <span className="block whitespace-nowrap text-small tabular-nums">{moneyL(p.price, lang)}</span>
+          <span className="mt-1.5 block text-micro text-ink/60">/ {unitL(p.unit, lang)}</span>
         </p>
       </div>
 
@@ -89,7 +92,7 @@ export default function ProductCard({ product: p, index, qty, saved, compared, r
           aria-hidden
           className={`inline-block size-2 ${level === 'high' ? 'bg-ink' : level === 'mid' ? 'bg-ink/50' : 'border-2 border-ink'}`}
         />
-        {STOCK_LABEL[level]}
+        {lang === 'en' ? STOCK_LABEL_EN[level] : STOCK_LABEL[level]}
       </p>
 
       {/* mt-auto: dugmad svih kartica u redu stoje na istoj visini, bez obzira na dužinu naziva. */}
@@ -98,37 +101,37 @@ export default function ProductCard({ product: p, index, qty, saved, compared, r
           <button
             type="button"
             className={CHIP}
-            aria-label={`Brzi pregled: ${p.name}`}
+            aria-label={`${t('Brzi pregled', 'Quick view')}: ${name}`}
             onClick={() => openPanel({ kind: 'product', id: p.id })}
           >
-            <Chip icon={EYE} label="Pregled" />
+            <Chip icon={EYE} label={t('Pregled', 'View')} />
           </button>
           <button
             type="button"
             className={CHIP}
             aria-pressed={saved}
-            aria-label={`${saved ? 'Ukloni iz sačuvanih' : 'Sačuvaj'}: ${p.name}`}
+            aria-label={`${saved ? t('Ukloni iz sačuvanih', 'Remove from saved') : t('Sačuvaj', 'Save')}: ${name}`}
             onClick={() => toggleSaved(p.id)}
           >
-            <Chip icon={MARK} label={saved ? 'Sačuvano' : 'Sačuvaj'} />
+            <Chip icon={MARK} label={saved ? t('Sačuvano', 'Saved') : t('Sačuvaj', 'Save')} />
           </button>
           <button
             type="button"
             className={CHIP}
             aria-pressed={compared}
-            aria-label={`${compared ? 'Ukloni iz poređenja' : 'Poredi'}: ${p.name}`}
+            aria-label={`${compared ? t('Ukloni iz poređenja', 'Remove from compare') : t('Poredi', 'Compare')}: ${name}`}
             onClick={() => toggleCompare(p.id)}
           >
-            <Chip icon={SWAP} label="Poredi" />
+            <Chip icon={SWAP} label={t('Poredi', 'Compare')} />
           </button>
         </div>
         <button
           type="button"
           onClick={() => addToCart(p.id)}
-          aria-label={`Dodaj u korpu: ${p.name}`}
+          aria-label={`${t('Dodaj u korpu', 'Add to basket')}: ${name}`}
           className="flex w-full items-center justify-between gap-2 border-2 border-ink px-3 py-3 text-micro uppercase transition-colors duration-300 hover:bg-ink hover:text-bg"
         >
-          <span className="truncate">{qty ? `U korpi · ${qtyLabel(qty, p.unit)}` : 'U korpu'}</span>
+          <span className="truncate">{qty ? `${t('U korpi', 'In basket')} · ${qtyLabelL(qty, p.unit, lang)}` : t('U korpu', 'Add to basket')}</span>
           <span aria-hidden>+</span>
         </button>
       </div>

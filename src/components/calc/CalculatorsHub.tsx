@@ -9,6 +9,7 @@ import { CALC_GROUPS, MANUFACTURER_CALCS } from '@/lib/manufacturer-calculators'
 import { useMediaMotion } from '@/lib/media'
 import { EASE, MQ } from '@/lib/motion'
 import { revealChars } from '@/lib/reveal'
+import { useLang } from '@/lib/i18n'
 import styles from './CalculatorsHub.module.css'
 
 // "Kalkulatori": kartice koje vode na zvanične kalkulatore Wienerbergera (Tondach krov, Porotherm zid).
@@ -22,6 +23,8 @@ const External = () => (
 )
 
 export default function CalculatorsHub({ embedded = false }: { embedded?: boolean }) {
+  const { t, lang } = useLang()
+  const en = lang === 'en'
   const root = useRef<HTMLElement>(null)
   useMediaMotion(root)
 
@@ -44,7 +47,8 @@ export default function CalculatorsHub({ embedded = false }: { embedded?: boolea
         })
       })
     },
-    { scope: root },
+    // Naslov se dijeli (SplitText) jednom po jeziku: element se remontira (key), pa se podjela ponovi.
+    { scope: root, dependencies: [lang], revertOnUpdate: true },
   )
 
   const Heading = embedded ? 'h2' : 'h1'
@@ -53,21 +57,23 @@ export default function CalculatorsHub({ embedded = false }: { embedded?: boolea
     <section ref={root} id={embedded ? 'kalkulator' : undefined} aria-labelledby="calcs-title" className={styles.page}>
       <header className={`gutter ${styles.head}`}>
         <div>
-          <p className="label opacity-60">Kalkulatori · Tondach i Porotherm</p>
-          <Heading id="calcs-title" data-head className={`display invisible ${styles.title}`}>
-            Izračunajte krov i zid
+          <p className="label opacity-60">{t('Kalkulatori · Tondach i Porotherm', 'Calculators · Tondach and Porotherm')}</p>
+          <Heading key={`h-${lang}`} id="calcs-title" data-head className={`display invisible ${styles.title}`}>
+            {t('Izračunajte krov i zid', 'Calculate your roof and wall')}
           </Heading>
         </div>
         <p data-up className={`${styles.lead} ${styles.headLead}`}>
-          Za krov od Tondach crijepa i zid od Porotherm opeke proizvođač Wienerberger nudi besplatne kalkulatore. Grand
-          Company je na Wienerbergerovoj listi prodajnih mjesta za ove proizvode, a dostupnost modela potvrđuje prodaja.
+          {t(
+            'Za krov od Tondach crijepa i zid od Porotherm opeke proizvođač Wienerberger nudi besplatne kalkulatore. Grand Company je na Wienerbergerovoj listi prodajnih mjesta za ove proizvode, a dostupnost modela potvrđuje prodaja.',
+            'For a roof of Tondach tiles and a wall of Porotherm clay blocks, the manufacturer Wienerberger offers free calculators. Grand Company is on Wienerberger’s list of points of sale for these products, and sales confirms the availability of each model.',
+          )}
         </p>
       </header>
 
       {CALC_GROUPS.map((g) => (
         <div key={g.id} data-group className={`gutter ${styles.group}`}>
           <p className={styles.groupLabel}>
-            <span>{g.label}</span>
+            <span>{en ? g.labelEn : g.label}</span>
             <span className="opacity-60">{g.brand}</span>
           </p>
           <ul className={styles.grid}>
@@ -78,10 +84,10 @@ export default function CalculatorsHub({ embedded = false }: { embedded?: boolea
                   <img src={c.image} alt="" width={1200} height={800} loading="lazy" decoding="async" />
                 </a>
                 <div className={styles.body}>
-                  <h3 className={`font-pretty ${styles.cardTitle}`}>{c.title}</h3>
-                  <p className={styles.cardText}>{c.text}</p>
-                  <a className={styles.open} href={c.href} target="_blank" rel="noopener noreferrer" aria-label={`${c.title} (otvara se na sajtu Wienerbergera)`}>
-                    Otvori kalkulator
+                  <h3 className={`font-pretty ${styles.cardTitle}`}>{en ? (c.titleEn ?? c.title) : c.title}</h3>
+                  <p className={styles.cardText}>{en ? (c.textEn ?? c.text) : c.text}</p>
+                  <a className={styles.open} href={c.href} target="_blank" rel="noopener noreferrer" aria-label={t(`${c.title} (otvara se na sajtu Wienerbergera)`, `${c.titleEn ?? c.title} (opens on the Wienerberger site)`)}>
+                    {t('Otvori kalkulator', 'Open calculator')}
                     <External />
                   </a>
                 </div>
@@ -94,21 +100,23 @@ export default function CalculatorsHub({ embedded = false }: { embedded?: boolea
       <div className={`gutter ${styles.after}`}>
         <div data-up className={styles.other}>
           <div>
-            <p className="label opacity-60">Upit</p>
-            <h2 className={`display ${styles.otherTitle}`}>Nešto drugo ili složen objekat?</h2>
+            <p className="label opacity-60">{t('Upit', 'Enquiry')}</p>
+            <h2 className={`display ${styles.otherTitle}`}>{t('Nešto drugo ili složen objekat?', 'Something else, or a complex project?')}</h2>
           </div>
           <div className="grid justify-items-start gap-5">
             <p className={styles.lead}>
-              Pošaljite mjere, plan ili rezultat iz kalkulatora, a prodaja vam javlja dostupnost, količinu i cijenu.
+              {t('Pošaljite mjere, plan ili rezultat iz kalkulatora, a prodaja vam javlja dostupnost, količinu i cijenu.', 'Send the dimensions, a plan or the result from the calculator, and sales will get back to you with availability, quantity and price.')}
             </p>
             <Cta href="/upit-za-izvodjace?program=zidni-krovni&izvor=kalkulator" solid>
-              Pošaljite upit
+              {t('Pošaljite upit', 'Send an enquiry')}
             </Cta>
           </div>
         </div>
         <p data-up className={styles.note}>
-          Kalkulatori su alati proizvođača Wienerberger i otvaraju se na njihovom sajtu. Grand Company ih ne izrađuje.
-          Tačnu količinu i cijenu potvrđuje prodaja.
+          {t(
+            'Kalkulatori su alati proizvođača Wienerberger i otvaraju se na njihovom sajtu. Grand Company ih ne izrađuje. Tačnu količinu i cijenu potvrđuje prodaja.',
+            'The calculators are tools by the manufacturer Wienerberger and open on their website. Grand Company does not build them. Sales confirms the exact quantity and price.',
+          )}
         </p>
       </div>
     </section>

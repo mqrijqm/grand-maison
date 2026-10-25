@@ -4,6 +4,8 @@
 import type { CSSProperties } from 'react'
 import { resetFilters } from '@/lib/cart'
 import { CATEGORIES, PRODUCTS, artikala } from '@/lib/shop'
+import { CATEGORIES_EN } from '@/gc/gc'
+import { useLang } from '@/lib/i18n'
 import { useInView } from '@/lib/useInView'
 import { useScrollTo } from '@/lib/useScrollTo'
 import SectionHead from './SectionHead'
@@ -11,7 +13,9 @@ import SectionHead from './SectionHead'
 // Kategorije kao velike foto-pločice (obrazac iz Korvae inspiracije), u jeziku grand-maison: linije od 2px,
 // uppercase grotesk, ploča se otvara iz srednje linije. Fotografija prikazuje primjenu grupe, ne artikal.
 function Tile({ index }: { index: number }) {
+  const { t, lang } = useLang()
   const c = CATEGORIES[index]
+  const en = CATEGORIES_EN[c.id]
   const [ref, seen] = useInView<HTMLLIElement>()
   const scrollTo = useScrollTo()
   const n = PRODUCTS.filter((p) => p.category === c.id).length
@@ -42,12 +46,12 @@ function Tile({ index }: { index: number }) {
         <div className="absolute inset-x-0 bottom-0 flex flex-col gap-3 p-5 uppercase md:p-[1.6vw]">
           <p className="flex justify-between text-micro">
             <span className="tabular-nums">0{index + 1}</span>
-            <span>{artikala(n)}</span>
+            <span>{artikala(n, lang)}</span>
           </p>
-          <h3 className="text-[clamp(26px,2.6vw,48px)] leading-[0.95]">{c.name}</h3>
-          <p className="max-w-[30ch] text-micro opacity-80">{c.lead}</p>
+          <h3 className="text-[clamp(26px,2.6vw,48px)] leading-[0.95]">{lang === 'en' ? en.label : c.name}</h3>
+          <p className="max-w-[30ch] text-micro opacity-80">{lang === 'en' ? en.lead : c.lead}</p>
           <span className="mt-1 inline-flex w-fit items-center gap-3 border-2 border-bg px-3 py-2 text-micro transition-colors duration-300 group-hover:bg-bg group-hover:text-ink">
-            Pogledaj <span aria-hidden>→</span>
+            {t('Pogledaj', 'View')} <span aria-hidden>→</span>
           </span>
         </div>
       </button>
@@ -56,15 +60,16 @@ function Tile({ index }: { index: number }) {
 }
 
 export default function CategoryTiles() {
+  const { t } = useLang()
   return (
     <section id="kategorije" data-spy className="scroll-mt-[var(--bar)] pt-[14dvh]">
       <div className="gutter">
         <SectionHead
           no="01"
-          label="Kategorije"
-          title="Šta držimo na stanju"
-          lead="Četiri grupe materijala za suhu gradnju i izolaciju. Fotografije prikazuju primjenu, ne pojedinačni artikal."
-          meta={`${CATEGORIES.length} grupe`}
+          label={t('Kategorije', 'Categories')}
+          title={t('Šta držimo na stanju', 'What we keep in stock')}
+          lead={t('Četiri grupe materijala za suhu gradnju i izolaciju. Fotografije prikazuju primjenu, ne pojedinačni artikal.', 'Four groups of materials for drywall and insulation. The photos show the application, not an individual item.')}
+          meta={t(`${CATEGORIES.length} grupe`, `${CATEGORIES.length} groups`)}
         />
       </div>
       <ul className="mt-[8dvh] grid border-y-2 border-ink md:grid-cols-4 md:divide-x-2 md:divide-ink">

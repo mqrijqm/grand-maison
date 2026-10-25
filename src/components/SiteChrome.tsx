@@ -4,11 +4,13 @@ import { useRef } from 'react'
 import { gsap, ScrollTrigger, SplitText, useGSAP } from '@/lib/gsap'
 import { EASE, INTRO, SIDE, fitFontSize } from '@/lib/motion'
 import LogoMark from './site/LogoMark'
+import { useLang } from '@/lib/i18n'
 
 export const BRAND = 'GRAND COMPANY'
 
 // Elementi koji stoje fiksno preko cijele stranice: wordmark i značka.
 export default function SiteChrome() {
+  const { t } = useLang()
   const root = useRef<HTMLDivElement>(null)
 
   useGSAP(
@@ -258,7 +260,7 @@ export default function SiteChrome() {
         data-mini
         onClick={() => window.__gcLenis?.scrollTo(0)}
         className="invisible fixed left-5 top-4 z-[150] hidden text-[15px] font-bold uppercase leading-none tracking-[-0.01em] text-white mix-blend-difference md:left-[3.05vw] md:top-5 md:text-[17px]"
-        aria-label="Na vrh stranice"
+        aria-label={t('Na vrh stranice', 'Back to top')}
       >
         {BRAND}
       </button>
@@ -273,7 +275,7 @@ export default function SiteChrome() {
           e.preventDefault()
           window.__gcLenis.scrollTo(target.getBoundingClientRect().top + window.scrollY - 80)
         }}
-        aria-label="Artikli u ponudi"
+        aria-label={t('Artikli u ponudi', 'Products on offer')}
         className="fixed bottom-4 right-4 z-[500] block w-[22px] transition-transform duration-300 hover:scale-110 md:bottom-6 md:right-6 md:w-[28px]"
         style={{ color: '#fff' }}
       >

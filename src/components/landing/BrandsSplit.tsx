@@ -2,6 +2,7 @@
 
 import BlueWipe from '@/components/ui/BlueWipe'
 import { useRef } from 'react'
+import { useLang } from '@/lib/i18n'
 import { gsap, ScrollTrigger, useGSAP } from '@/lib/gsap'
 import { EASE, MQ } from '@/lib/motion'
 import { revealChars } from '@/lib/reveal'
@@ -89,22 +90,26 @@ const globe: Art = {
 
 const ARTS = [rays, torus, globe]
 
-const USPS: { title: string; text: string }[] = [
+const USPS: { title: string; text: string; en: { title: string; text: string } }[] = [
   {
     title: 'Dostava i istovar',
     text: 'Za dostavu paletirane i teške robe pošaljite lokaciju i količine. Dostavu na adresu u Banjoj Luci i način istovara dogovarate s prodajom prema robi i pristupu gradilištu.',
+    en: { title: 'Delivery and unloading', text: 'For palletised and heavy goods, send us the location and quantities. Delivery to an address in Banja Luka and the unloading method are agreed with our sales team, based on the goods and site access.' },
   },
   {
     title: 'Cijena prilagođena vama',
     text: 'Opišite šta gradite i koji vam materijal treba. Prodaja vam šalje ponudu prema vašem projektu.',
+    en: { title: 'Pricing built around you', text: 'Tell us what you are building and what material you need. Our sales team sends you a quote tailored to your project.' },
   },
   {
     title: 'Stovarište',
     text: 'Stovarište u Banjoj Luci: ploče, vuna, profili i veziva. Dostupnost i količine potvrđujemo prije narudžbe.',
+    en: { title: 'The yard', text: 'Our yard in Banja Luka: boards, wool, profiles and binders. We confirm availability and quantities before you order.' },
   },
 ]
 
 export default function BrandsSplit() {
+  const { t, lang } = useLang()
   const root = useRef<HTMLElement>(null)
 
   useGSAP(
@@ -141,22 +146,34 @@ export default function BrandsSplit() {
         })
       })
     },
-    { scope: root },
+    { scope: root, dependencies: [lang] },
   )
 
   return (
-    <section ref={root} id="prednosti" className="relative z-20 md:grid md:grid-cols-2" aria-label="Zašto Grand Company">
+    <section ref={root} id="prednosti" className="relative z-20 md:grid md:grid-cols-2" aria-label={t('Zašto Grand Company', 'Why Grand Company')}>
       {/* Plavi panel lijevo; originalni animirani crteži na svijetloj pozadini desno. */}
       <BlueWipe from="left" className="text-bg md:sticky md:top-0 md:h-dvh md:self-start" contentClassName="split-panel">
-        <h2 data-head className="split-panel__head display invisible">
-          <span className="block">Tri</span>
-          <span className="block">prednosti</span>
-          <span className="block">saradnje</span>
+        <h2 key={lang} data-head className="split-panel__head display invisible">
+          {lang === 'en' ? (
+            <>
+              <span className="block">Three</span>
+              <span className="block">advantages</span>
+              <span className="block">of working with us</span>
+            </>
+          ) : (
+            <>
+              <span className="block">Tri</span>
+              <span className="block">prednosti</span>
+              <span className="block">saradnje</span>
+            </>
+          )}
         </h2>
         <div className="split-panel__foot">
           <p data-lead className="split-panel__lead">
-            Grand Company snabdijeva gradilišta građevinskim materijalom: dostava i istovar po dogovoru i stovarište u
-            Banjoj Luci.
+            {t(
+              'Grand Company snabdijeva gradilišta građevinskim materijalom: dostava i istovar po dogovoru i stovarište u Banjoj Luci.',
+              'Grand Company supplies building sites with construction materials: delivery and unloading by arrangement, and a yard in Banja Luka.',
+            )}
           </p>
         </div>
       </BlueWipe>
@@ -174,10 +191,10 @@ export default function BrandsSplit() {
               <g data-gen />
               <circle r={3} fill="var(--signal)" stroke="none" />
             </svg>
-            <h3 data-title className="display invisible max-w-full text-[clamp(28px,3.6vw,64px)]">
-              {u.title}
+            <h3 key={lang} data-title className="display invisible max-w-full text-[clamp(28px,3.6vw,64px)]">
+              {t(u.title, u.en.title)}
             </h3>
-            <p className="max-w-[48ch] text-[12.5px] leading-[1.65] opacity-75">{u.text}</p>
+            <p className="max-w-[48ch] text-[12.5px] leading-[1.65] opacity-75">{t(u.text, u.en.text)}</p>
           </article>
         ))}
       </div>
